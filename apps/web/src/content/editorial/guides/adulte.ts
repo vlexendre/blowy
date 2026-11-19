@@ -80,7 +80,7 @@ export const adulte: GuidePage = {
     {
       title: 'Et les applis dans tout ça ?',
       blocks: [
-        'Une appli ne remplace pas un club ou une association, mais elle peut t’aider à trouver des gens disponibles près de chez toi, ce qui est la partie la plus difficile à l’âge adulte. C’est l’idée de [Minimoa](/) : un petit compagnon que tu élèves, et qui te présente des gens de ton quartier dont la vision de la vie va avec la tienne, en te disant pourquoi. Vous pouvez ensuite tenir une habitude ensemble, ce qui recrée justement la régularité qui manque. Si tu es curieux, le [quiz](/quiz/) prend deux minutes.',
+        'Une appli ne remplace pas un club ou une association, mais elle peut t’aider à trouver des gens disponibles près de chez toi, ce qui est la partie la plus difficile à l’âge adulte. C’est l’idée de [Minimoa](/) : un petit compagnon que tu élèves, et qui te présente des gens de ton quartier dont la vision de la vie va avec la tienne, en te disant pourquoi. Vous pouvez ensuite tenir une habitude ensemble, ce qui recrée justement la régularité qui manque. Si tu es curieux, le [quiz](/quiz/) prend deux minutes. Et pour comparer avec les autres options, lis notre guide pour [choisir une application pour se faire des amis](/guides/application-pour-se-faire-des-amis/).',
         'Quel que soit l’outil, la règle reste la même : du temps, de la régularité, et oser proposer la suite.',
       ],
     },
@@ -108,5 +108,5 @@ export const adulte: GuidePage = {
   image: { src: '/img/m/duo_check.webp', width: 700, height: 456, alt: 'Nino et Pia, deux minimoas, qui se font un check' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'ADULTE.'], panel: 'accent' },
   published: '2026-11-18',
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

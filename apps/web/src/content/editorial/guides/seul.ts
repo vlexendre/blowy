@@ -125,7 +125,7 @@ export const seul: GuidePage = {
     {
       title: 'Une aide pour faire le premier pas',
       blocks: [
-        'Le plus dur, quand on est seul, c’est souvent de savoir **qui**, près de chez soi, a envie de voir du monde. Sur [Minimoa](/), un petit compagnon que tu élèves te présente des gens de ton quartier qui voient la vie comme toi, en t’expliquant ce que vous partagez. Rien ne se passe sans ton accord, et ta position n’est jamais affichée précisément. Ça ne remplace pas un club ou un café-langue, mais ça peut t’éviter d’y aller seul.',
+        'Le plus dur, quand on est seul, c’est souvent de savoir **qui**, près de chez soi, a envie de voir du monde. Sur [Minimoa](/), un petit compagnon que tu élèves te présente des gens de ton quartier qui voient la vie comme toi, en t’expliquant ce que vous partagez. Rien ne se passe sans ton accord, et ta position n’est jamais affichée précisément. Ça ne remplace pas un club ou un café-langue, mais ça peut t’éviter d’y aller seul. Si tu veux comparer, nous avons passé en revue [les différentes applis pour rencontrer du monde](/guides/application-pour-se-faire-des-amis/).',
       ],
     },
   ],
@@ -152,5 +152,5 @@ export const seul: GuidePage = {
   image: { src: '/img/m/nino_pense.webp', width: 450, height: 500, alt: 'Nino, un minimoa vert à mèche orange, qui réfléchit' },
   og: { lines: ['SEUL ?', 'OÙ', 'RENCONTRER', 'DU MONDE.'], panel: 'night' },
   published: '2026-11-18',
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

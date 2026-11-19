@@ -47,7 +47,8 @@ export const bordeaux: CityPage = {
         '**Le Jardin public** et le parc Bordelais accueillent pique-niques, lectures au soleil et parties de molkky, qui se rejoignent volontiers.',
         '**Le sport collectif** : rugby à toucher, volley sur sable, aviron. Bordeaux a une vraie culture sportive, et les clubs loisirs cherchent souvent des joueurs.',
         '**Le vin**, évidemment. Les ateliers de dégustation, souvent en petit groupe, sont un excellent prétexte pour parler à des inconnus sans malaise.',
-        'Tu viens de poser tes cartons ? Lis aussi notre guide pour [se faire des amis dans une nouvelle ville](/guides/se-faire-des-amis-nouvelle-ville/).',
+        'Tu viens de poser tes cartons ? Lis aussi notre guide pour [te construire un cercle quand tu viens d’arriver](/guides/se-faire-des-amis-nouvelle-ville/).',
+        'Si tu gardes un pied ailleurs dans le Sud-Ouest ou sur la façade atlantique, jette un œil à nos pistes pour [se faire des amis à Toulouse](/se-faire-des-amis/toulouse/) ou pour [rencontrer des gens à Nantes](/se-faire-des-amis/nantes/). Et pour que Minimoa arrive dans ta rue, [ouvre ton quartier](/quartier/).',
       ],
     },
   ],
@@ -81,5 +82,5 @@ export const bordeaux: CityPage = {
   guides: ['se-faire-des-amis-nouvelle-ville', 'associations-activites-rencontrer-du-monde', 'rencontrer-des-gens-seul'],
   image: { src: '/img/m/nino_marche.webp', width: 450, height: 500, alt: 'Nino, un minimoa vert à mèche orange, qui part en balade' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À BORDEAUX.'], panel: 'wine' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

@@ -48,7 +48,8 @@ export const montpellier: CityPage = {
         '**Les marchés** : celui des Arceaux, sous l’aqueduc, et ceux des quartiers. Y retourner chaque semaine fait de toi un habitué.',
         '**L’arrière-pays** : le pic Saint-Loup et les garrigues sont à moins d’une heure. Les clubs de randonnée y emmènent des groupes le week-end, et une montée partagée rapproche vite.',
         '**Les associations** : clubs sportifs, langues, danse, théâtre. Le forum des associations de la rentrée permet d’en rencontrer beaucoup en un après-midi.',
-        'Pour savoir quelle activité te ressemble, lis le guide [associations et activités pour rencontrer du monde](/guides/associations-activites-rencontrer-du-monde/).',
+        'Pour savoir quelle activité te ressemble, lis le guide pour [trouver l’association ou le club qui te va](/guides/associations-activites-rencontrer-du-monde/).',
+        'Montpellier est au milieu de l’arc méditerranéen. Si tu fais souvent la route, nos pistes pour [rencontrer des gens à Toulouse](/se-faire-des-amis/toulouse/) et pour [se faire des amis à Marseille](/se-faire-des-amis/marseille/) te seront utiles. Et pour que Minimoa ouvre chez toi, [inscris ton quartier](/quartier/).',
       ],
     },
   ],
@@ -82,5 +83,5 @@ export const montpellier: CityPage = {
   guides: ['associations-activites-rencontrer-du-monde', 'se-faire-des-amis-nouvelle-ville', 'se-faire-des-amis-timide'],
   image: { src: '/img/m/gaston_joue.webp', width: 450, height: 500, alt: 'Gaston, un minimoa orange à un seul grand œil, qui joue au ballon' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À MONTPELLIER.'], panel: 'orange' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

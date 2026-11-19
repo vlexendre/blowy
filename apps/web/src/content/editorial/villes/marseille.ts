@@ -47,7 +47,8 @@ export const marseille: CityPage = {
         '**La pétanque** : pas un cliché, une vraie porte d’entrée. Dans beaucoup de quartiers, un terrain voit les mêmes joueurs revenir chaque soir. Demande à faire une partie.',
         '**La culture** : concerts au Cours Julien, expositions, cinémas de quartier, et des institutions comme le Mucem dont les esplanades sont aussi des lieux de rendez-vous.',
         '**Les associations de quartier** : comités d’intérêt de quartier, jardins partagés, aide aux devoirs. Marseille a une vie associative très locale.',
-        'Tu préfères les sorties en petit comité ? Le guide [se faire des amis quand on est timide](/guides/se-faire-des-amis-timide/) est pour toi.',
+        'Tu préfères les sorties en petit comité ? Le guide [rencontrer du monde quand on est réservé](/guides/se-faire-des-amis-timide/) est pour toi.',
+        'Le littoral se partage. Si tu as de la famille ou des amis plus loin sur la côte, voici comment [se faire des amis à Nice](/se-faire-des-amis/nice/) et où [rencontrer des gens à Montpellier](/se-faire-des-amis/montpellier/).',
       ],
     },
   ],
@@ -81,5 +82,5 @@ export const marseille: CityPage = {
   guides: ['se-faire-des-amis-timide', 'se-faire-des-amis-nouvelle-ville', 'associations-activites-rencontrer-du-monde'],
   image: { src: '/img/m/nino_bain.webp', width: 450, height: 500, alt: 'Nino, un minimoa vert à mèche orange, qui prend son bain' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À MARSEILLE.'], panel: 'violet' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

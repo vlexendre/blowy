@@ -3,6 +3,7 @@
  * - titres ≤ 60 caractères, descriptions ≤ 155, longueur des textes (villes 600-900 mots, guides 1 200-1 800, page
  *   néerlandaise /nl/vrienden-maken/ 700-1 000) ;
  * - FAQ, villes proches, zones de quartier et liens internes valides ;
+ * - maillage : chaque ville et chaque guide est cité dans le texte d'au moins 3 autres pages, avec des ancres variées ;
  * - contenu propre à chaque ville : deux villes ne partagent pas plus de 30 % de phrases identiques (le nom de la ville
  *   neutralisé), ni plus de 20 % de suites de 6 mots.
  * `--report` : affiche le détail (mots, similarité la plus forte).
@@ -78,6 +79,35 @@ for (const g of GUIDE_LIST) {
   if (p.faq.length < 3 || p.faq.length > 4) fail(`${where} : ${p.faq.length} questions (attendu 3-4)`);
   checkLinks(where, buurtTexts(p));
   if (report) console.log(`nl/vrienden-maken ${String(words).padStart(5)} mots`);
+}
+
+// ── Maillage interne contextuel ───────────────────────────────────────────
+// Chaque ville et chaque guide reçoit au moins 3 liens dans le texte d'autres pages éditoriales, avec au moins 2 ancres
+// différentes (les cartes « villes proches » et « autres guides » ne comptent pas : ce sont des blocs, pas du texte).
+{
+  const inbound = new Map<string, { from: string; anchor: string }[]>();
+  const pages: [string, readonly string[]][] = [
+    ...CITY_LIST.map((c) => [cityPath(c.slug), cityTexts(c)] as [string, readonly string[]]),
+    ...GUIDE_LIST.map((g) => [guidePath(g.slug), guideTexts(g)] as [string, readonly string[]]),
+  ];
+  for (const [from, texts] of pages) {
+    for (const t of texts) {
+      for (const m of t.matchAll(/\[([^\]]+)\]\((\/[^)\s]*)\)/g)) {
+        if (m[2] === from) continue;
+        const list = inbound.get(m[2]!) ?? [];
+        list.push({ from, anchor: m[1]!.toLowerCase() });
+        inbound.set(m[2]!, list);
+      }
+    }
+  }
+  for (const [path] of pages) {
+    const links = inbound.get(path) ?? [];
+    const sources = new Set(links.map((l) => l.from)).size;
+    const anchors = new Set(links.map((l) => l.anchor)).size;
+    if (sources < 3) fail(`${path} : ${sources} page(s) le citent dans leur texte (attendu ≥ 3)`);
+    if (links.length >= 3 && anchors < 2) fail(`${path} : toujours la même ancre (« ${links[0]!.anchor} »)`);
+    if (report) console.log(`maillage ${path.padEnd(54)} ${sources} pages, ${anchors} ancres`);
+  }
 }
 
 // ── Similarité entre villes ───────────────────────────────────────────────

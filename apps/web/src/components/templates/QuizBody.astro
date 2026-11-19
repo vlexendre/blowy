@@ -44,7 +44,7 @@ const pets = ['nino', 'suzie', 'gaston', 'pia'];
 
   <section class="pub-state quiz-result" data-state="result" hidden>
     <span class="lbl">{t.result.kicker}</span>
-    <h1 class="pub-title" tabindex="-1" data-quiz-headline></h1>
+    <h2 class="pub-title" tabindex="-1" data-quiz-headline></h2>
     <span class="quiz-pill" data-quiz-species></span>
     <p class="quiz-sentence" data-quiz-sentence></p>
     <p class="quiz-second" data-quiz-second></p>
@@ -73,7 +73,7 @@ const pets = ['nino', 'suzie', 'gaston', 'pia'];
     <img class="pub-pet" data-quiz-shared-pet src="/img/m/quiz_sociable.webp" alt="" width="720" height="800" />
     <span class="quiz-pill" data-quiz-shared-species></span>
     <span class="lbl">{t.shared.kicker}</span>
-    <h1 class="pub-title" tabindex="-1">{t.shared.title.map((l, i) => <span class:list={['ln', { acc: i === 1 }]}>{l}</span>)}</h1>
+    <h2 class="pub-title" tabindex="-1">{t.shared.title.map((l, i) => <span class:list={['ln', { acc: i === 1 }]}>{l}</span>)}</h2>
     <p class="pub-text">{t.shared.text}</p>
     <button type="button" class="btn l quiz-go" data-quiz-start>{t.shared.cta}</button>
   </section>

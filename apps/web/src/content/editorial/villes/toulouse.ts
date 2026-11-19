@@ -48,7 +48,8 @@ export const toulouse: CityPage = {
         '**Le rugby** : ici, c’est une culture. Regarder un match dans un bar de quartier, c’est se retrouver à commenter avec les voisins de table, même sans y connaître grand-chose.',
         '**Le marché Saint-Aubin** du dimanche : marché, brocante et rendez-vous de quartier. Un bon endroit pour devenir un visage familier.',
         '**Les associations** : clubs de sport loisir, danse, théâtre, jardins partagés, astronomie. Ta mairie de quartier et les forums des associations de la rentrée sont les meilleurs points d’entrée.',
-        'Si les week-ends te pèsent, notre guide [où rencontrer des gens quand on est seul](/guides/rencontrer-des-gens-seul/) propose des idées pour les sorties en solo.',
+        'Si les week-ends te pèsent, notre guide pour [sortir seul sans se sentir bizarre](/guides/rencontrer-des-gens-seul/) propose des idées pour les sorties en solo.',
+        'Toulouse se vit aussi avec ses voisines. Si ta vie t’emmène souvent vers l’Atlantique ou la Méditerranée, regarde où [rencontrer du monde à Bordeaux](/se-faire-des-amis/bordeaux/) ou comment [se faire des amis à Montpellier](/se-faire-des-amis/montpellier/), et pense à [inscrire ton quartier toulousain](/quartier/) pour que Minimoa y ouvre.',
       ],
     },
   ],
@@ -82,5 +83,5 @@ export const toulouse: CityPage = {
   guides: ['rencontrer-des-gens-seul', 'se-faire-des-amis-adulte', 'associations-activites-rencontrer-du-monde'],
   image: { src: '/img/m/suzie_danse.webp', width: 450, height: 500, alt: 'Suzie, une minimoa rose à antennes pompons, qui danse' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À TOULOUSE.'], panel: 'rose' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

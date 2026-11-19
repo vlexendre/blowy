@@ -47,7 +47,8 @@ export const geneve: CityPage = {
         '**L’Escalade** : la grande fête genevoise de décembre, avec sa course à pied populaire. S’inscrire avec des collègues ou des voisins, c’est un objectif commun et des entraînements ensemble.',
         '**Les associations de quartier et maisons de quartier** : repas canadiens, ateliers, fêtes de rue. C’est souvent là qu’on rencontre des Genevois installés, pas seulement d’autres expatriés.',
         '**Les cafés-langues et tandems** : avec autant de nationalités, ils sont partout. Tu apprends l’allemand ou l’espagnol, quelqu’un améliore son français : la conversation est lancée.',
-        'Nouveau dans la région ? Notre guide [se faire des amis dans une nouvelle ville](/guides/se-faire-des-amis-nouvelle-ville/) t’aide à construire un cercle à partir de zéro.',
+        'Nouveau dans la région ? Notre guide pour [construire un cercle d’amis après une expatriation](/guides/se-faire-des-amis-nouvelle-ville/) t’aide à partir de zéro.',
+        'Le bassin lémanique se vit à plusieurs villes : on habite d’un côté, on travaille de l’autre. Si c’est ton cas, lis aussi comment [se faire des amis à Lausanne](/se-faire-des-amis/lausanne/), ou, côté français, où [rencontrer des gens à Lyon](/se-faire-des-amis/lyon/).',
       ],
     },
   ],
@@ -81,5 +82,5 @@ export const geneve: CityPage = {
   guides: ['se-faire-des-amis-nouvelle-ville', 'associations-activites-rencontrer-du-monde', 'rencontrer-des-gens-seul'],
   image: { src: '/img/m/pia_bain.webp', width: 450, height: 500, alt: 'Pia, une minimoa violette à petites cornes, qui prend son bain' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À GENÈVE.'], panel: 'violet' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

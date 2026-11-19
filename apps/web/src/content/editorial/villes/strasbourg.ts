@@ -47,7 +47,8 @@ export const strasbourg: CityPage = {
         '**Les winstubs** : ces petites tavernes alsaciennes ont souvent de grandes tables. Une soirée en groupe y est conviviale par nature.',
         '**Le marché de Noël** : l’hiver, la ville entière est dehors. Un vin chaud partagé est un très bon deuxième rendez-vous.',
         '**De l’autre côté du Rhin** : Kehl est à quelques arrêts de tram. Une sortie transfrontalière en petit groupe, ça crée des souvenirs communs.',
-        'Pour choisir une association qui te ressemble, lis notre guide [associations et activités pour rencontrer du monde](/guides/associations-activites-rencontrer-du-monde/).',
+        'Pour choisir une association qui te ressemble, lis notre guide des [associations où l’on se fait vraiment des amis](/guides/associations-activites-rencontrer-du-monde/).',
+        'Ville européenne, Strasbourg voit passer beaucoup de monde pour quelques années. Si ta route continue vers le Grand-Duché ou la capitale, nos pages [se faire des amis au Luxembourg](/se-faire-des-amis/luxembourg/) et [rencontrer des gens à Paris](/se-faire-des-amis/paris/) prennent le relais. Pour que Minimoa ouvre près de chez toi, [inscris ton quartier strasbourgeois](/quartier/).',
       ],
     },
   ],
@@ -81,5 +82,5 @@ export const strasbourg: CityPage = {
   guides: ['se-faire-des-amis-nouvelle-ville', 'se-faire-des-amis-timide', 'associations-activites-rencontrer-du-monde'],
   image: { src: '/img/m/nino_coucou.webp', width: 450, height: 500, alt: 'Nino, un minimoa vert à mèche orange, qui fait coucou' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À STRASBOURG.'], panel: 'night' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

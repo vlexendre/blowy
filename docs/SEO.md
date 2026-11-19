@@ -73,3 +73,13 @@ Fait (18 novembre 2026) : `/se-faire-des-amis/bruxelles/`, `/liege/`, `/geneve/`
 (section « Belgique, Suisse, Luxembourg » du sommaire ; seule Bruxelles a une zone de quartier dans `@blowy/domain`, les
 autres renvoient à `/quartier/`) et `/nl/vrienden-maken/` (néerlandais seul, canonique, sans hreflang, lien dans le
 pied de page des pages en néerlandais ; texte : `apps/web/src/content/editorial/nl/vrienden-maken.ts`).
+
+## 5. Suivi quotidien
+
+Positions : `docs/seo/positions.csv` (date, requête, position Google France ou vide, URL classée), relevées par la routine
+SEO quand `treg` est disponible.
+
+- 19 novembre 2026 : guide `/guides/application-pour-se-faire-des-amis/` (requêtes « application / appli / app / site pour
+  se faire des amis », intention « liste » de la première page : comparaison honnête des familles d'applis) ; maillage
+  contextuel (chaque ville et chaque guide cité dans le texte d'au moins 3 autres pages, ancres variées, contrôle ajouté à
+  `scripts/editorial-check.mts`) ; un seul `h1` sur /quiz/ et /quartier/ (les états cachés passent en `h2`).
