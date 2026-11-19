@@ -7,7 +7,7 @@ import { AgeCard, AgeGate, DateWheel, type DateParts, OnboardingTemplate, Screen
 import { Redirect, router } from 'expo-router';
 import { useMemo, useState } from 'react';
 
-import { ScreenMotion, useSession } from '@/core';
+import { ScreenMotion } from '@/core';
 import { isValidBirthdate, progressAt, useDraft, useDraftGate, useStep } from '@/features/onboarding';
 import { goBack, useSignOut } from '@/features/session';
 import { common } from '@/locales/common';
@@ -54,7 +54,6 @@ function NaissanceStep({ onTooYoung }: { onTooYoung: (v: { name: string; species
   useStep('naissance');
   const species = useDraft((d) => d.species);
   const petName = useDraft((d) => d.petName);
-  const session = useSession();
   const today = dayOf(new Date());
   const thisYear = Number(today.slice(0, 4));
   const [date, setDate] = useState<DateParts>(() => {
@@ -74,8 +73,8 @@ function NaissanceStep({ onTooYoung }: { onTooYoung: (v: { name: string; species
       return;
     }
     useDraft.getState().set({ birthdate: iso });
-    // Déjà connecté (compte sans minimoa) : pas besoin de repasser par la connexion.
-    router.push(session ? '/(onboarding)/preparation' : '/(onboarding)/connexion');
+    // Puis le quartier (avant de montrer qui que ce soit) ; la suite (connexion ou préparation) se décide là-bas.
+    router.push('/(onboarding)/localisation');
   };
 
   return (

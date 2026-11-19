@@ -21,11 +21,12 @@ export * from './permissions';
 
 /** Les écrans du parcours d'inscription qu'on peut reprendre (nom de la route dans `app/(onboarding)`). */
 /**
- * Inscription courte (8 écrans jusqu'au minimoa vivant) : création, test, résultat, prénom (et « Tu es… »), naissance,
- * connexion, préparation, « tout est prêt ». La position et les notifications se demandent au moment où elles servent
- * (accueil), les habitudes après la première journée, les invitations depuis l'accueil.
+ * Inscription (9 écrans jusqu'au minimoa vivant) : création, test (« Ton chemin · Étape 1 »), résultat, prénom (et « Tu
+ * es… »), naissance, quartier (la position, expliquée d'abord : on ne montre personne sans l'âge ni le coin, V1 de Ton
+ * chemin), connexion, préparation, « tout est prêt » (ou « Nino a quelqu'un pour toi »). Les notifications se demandent
+ * au moment où elles servent (accueil), les invitations depuis l'accueil.
  */
-export const RESUMABLE = ['craft', 'vision', 'ta-vision', 'prenom', 'naissance', 'connexion'] as const;
+export const RESUMABLE = ['craft', 'vision', 'ta-vision', 'prenom', 'naissance', 'localisation', 'connexion'] as const;
 export type OnboardingStep = (typeof RESUMABLE)[number];
 
 export type PermissionAnswer = 'granted' | 'denied' | 'unavailable';
@@ -146,7 +147,6 @@ const LEGACY_STEP: Readonly<Record<string, OnboardingStep>> = {
   cherche: 'naissance',
   sexe: 'naissance',
   habitudes: 'naissance',
-  localisation: 'connexion',
   notifications: 'connexion',
   promesse: 'connexion',
 };
@@ -264,6 +264,7 @@ const FLOW: readonly [OnboardingStep, number][] = [
   ['ta-vision', 1],
   ['prenom', 1],
   ['naissance', 1],
+  ['localisation', 1],
   ['connexion', 1],
 ];
 const FLOW_TOTAL = FLOW.reduce((n, [, w]) => n + w, 0) + 1;

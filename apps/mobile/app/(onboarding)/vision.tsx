@@ -23,6 +23,7 @@ import {
   visionNow,
 } from '@/features/onboarding';
 import { goBack } from '@/features/session';
+import { chemin } from '@/locales/chemin';
 import { common } from '@/locales/common';
 import { onboarding, visionLabels } from '@/locales/onboarding';
 
@@ -109,6 +110,8 @@ function VisionTest() {
         onBack={back}
         backLabel={i ? t.previous : common.back}
         gap={0}
+        // Le test, présenté comme la première étape de Ton chemin (il vaut l'unité 1 côté serveur, docs/CHEMIN.md).
+        kicker={chemin.onboarding.visionKicker(total)}
         host={{ species, line: q?.situation ?? '…', reactKey, seed: petName, name: petName }}
       >
         {q ? (
