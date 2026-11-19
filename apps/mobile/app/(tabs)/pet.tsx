@@ -3,7 +3,7 @@
  * ce que ton minimoa a pour toi (« Léa te fait signe », « Nino a 3 personnes à te présenter », « Ton groupe : 2/3 ont
  * tenu »), ou ce qui lui manque (test, position, inviter) ; chaque action mène à la suivante (Rencontres, le chat, le
  * groupe). Dessous, le minimoa (nom, forme, bulle, envie de sortir) et trois soins ; le câlin se fait en le touchant.
- * La question de sortie quand il a besoin de sortir (« plus tu sors, plus il te présente de monde »). Puis trois
+ * La question de sortie quand il a besoin de sortir (« Tu sors, tu écris, tu réponds : Nino a plus d’énergie pour te présenter du monde »). Puis trois
  * tuiles : défi (ou question) du jour, habitudes, « tout sur lui » (caractère, série, bilans, souvenirs). Une seule
  * série visible : la semaine, avec ses jokers. À la première ouverture du jour, la carte du défi monte en plein écran
  * (`/pet/defi`, décidé par le serveur).
@@ -421,7 +421,7 @@ export default function PetHome() {
                   canAnswer={d.outing.canAnswer}
                   busy={outing.isPending ? (outing.variables?.answer ?? null) : null}
                   onAnswer={onOuting}
-                  line={outingLine ?? a.rule}
+                  line={outingLine ?? a.rule(p.name)}
                   confirmedLabel={d.outing.confirmed ? r.outing.confirmed : null}
                   doneLabel={r.outing.done}
                   stayId="not_yet"

@@ -373,7 +373,7 @@ export function createApiClient(opts: ApiClientOptions) {
       moment: (body?: PlusMomentBody) => call('POST', billingRoutes.plusMoment(), PlusMomentZ, body),
     },
     /**
-     * Les minimoas dans le chat : accord de lecture par l'IA (à demander à la première ouverture du chat quand
+     * Les minimoas dans le chat : accord de lecture par l'IA (à demander après quelques messages échangés quand
      * `consent.mine` est null, avec `consent.text` tel quel) et coupure, par lien ; liste pour l'écran « Moi ».
      */
     minimoas: {

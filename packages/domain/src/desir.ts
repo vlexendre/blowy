@@ -178,7 +178,7 @@ function lastStrong(keys: ReadonlySet<string>): Day | null {
 
 /**
  * Le moment à saluer d'une proposition Minimoa+ maintenant, ou null. Jamais avec Minimoa+, jamais le jour de
- * l'inscription (la feuille de l'inscription suffit), jamais deux fois le même moment, jamais moins de
+ * l'inscription (la première session sert à découvrir les gens), jamais deux fois le même moment, jamais moins de
  * `STRONG_GAP_DAYS` jours après une autre proposition forte, et seulement juste après le moment.
  */
 export function plusMomentDue(f: PlusMomentFacts): PlusMoment | null {

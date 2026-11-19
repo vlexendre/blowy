@@ -68,6 +68,9 @@ import { chat as chatText, ghost as ghostText, link as t, memories as memText, m
  * Sans photo du jour, il n'y a plus rien à faire ailleurs que dans le chat : la journée et les souvenirs tiennent sur
  * une seule page. Les anciens liens profonds (`?tab=today`, `?tab=memories`) ouvrent « Le lien ».
  */
+/** Messages échangés (les deux personnes, sans les minimoas) avant de proposer l'accord de lecture par l'IA. */
+const CONSENT_AFTER_MESSAGES = 6;
+
 type Tab = 'chat' | 'lien';
 const TABS = [
   { key: 'chat', label: t.tabs.chat },
@@ -96,10 +99,13 @@ export default function LinkScreen() {
   }, [notice]);
 
   const l = link.data;
-  // Les minimoas de ce chat : accord de lecture (demandé à la première ouverture), coupure, explication des rôles.
+  // Les minimoas de ce chat : accord de lecture (demandé une fois la conversation lancée), coupure, explication des rôles.
   const minimoas = useLinkMinimoas(id);
   const updateMinimoas = useUpdateLinkMinimoas(id);
   const guide = useMinimoaGuide();
+  // Même requête que le fil (cache partagé) : combien de messages les deux personnes ont déjà échangés.
+  const thread = useMessages(id);
+  const exchanged = thread.messages.filter((m) => m.author === 'me' || m.author === 'other').length;
   const [consentLater, setConsentLater] = useState(false);
   const [defaultNoticeClosed, setDefaultNoticeClosed] = useState(false);
   const [rolesOpen, setRolesOpen] = useState(false);
@@ -150,7 +156,9 @@ export default function LinkScreen() {
 
   const mm = minimoas.data;
   const muted = mm?.muted ?? false;
-  const askConsent = !!mm && mm.consent.mine === null && !consentLater;
+  // Pas à la première ouverture : d'abord se parler. L'accord est proposé après quelques messages échangés (sans
+  // réponse, les minimoas parlent sans lire : `consent.mine` null), et reste dans Options à tout moment.
+  const askConsent = !!mm && mm.consent.mine === null && !consentLater && exchanged >= CONSENT_AFTER_MESSAGES;
   const toggleMuted = () =>
     updateMinimoas.mutate(
       { muted: !muted },
@@ -232,7 +240,7 @@ export default function LinkScreen() {
         )}
       </LinkTemplate>
 
-      {/* Accord de lecture : à la première ouverture du chat, la phrase de l'API telle quelle et les deux choix. */}
+      {/* Accord de lecture : après quelques messages échangés, la phrase de l'API telle quelle et les deux choix. */}
       <SheetTemplate
         visible={askConsent && active === 'chat'}
         onClose={() => setConsentLater(true)}

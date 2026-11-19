@@ -1,5 +1,5 @@
 /**
- * Textes de la feuille Minimoa+ (paywall de l'inscription, « Moi › Minimoa+ », points d'entrée `openPlus`). Les faits (offres,
+ * Textes de la feuille Minimoa+ (« Moi › Minimoa+ », moments clés, points d'entrée `openPlus`). Les faits (offres,
  * avantages, frise de l'essai, mentions, nombre de personnes compatibles) viennent de l'API dans la langue de l'app ;
  * ici, seulement ce que l'app compose elle-même. Un prix n'est jamais écrit dans une phrase : il arrive mis en forme.
  */

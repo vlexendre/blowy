@@ -71,7 +71,7 @@ export const onboarding = messages({
       between: 'entre les deux',
       lean: (pole: string) => `plutôt ${pole}`,
       promise: (pet: string) => `${pet} ne te présentera que des gens compatibles.`,
-      cta: 'Montre-moi qui me ressemble',
+      cta: 'Continuer : on crée ton compte',
       /** La phrase de synthèse, en tête du résultat : les traits les plus marqués (2 ou 3), sans genre supposé. */
       summary: {
         lead: (traits: readonly string[]): string => `Tu es plutôt quelqu’un qui ${listFr(traits)}.`,
@@ -202,7 +202,7 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: 'TOUT EST PRÊT,\n' }, { text: `${up(name)} !`, dim: true }],
-      text: (pet: string) => `${pet} est arrivé. Plus tu sors, plus il te présente de monde.`,
+      text: (pet: string) => `${pet} est arrivé. Il va te présenter des gens près de chez toi qui voient la vie comme toi.`,
       cta: 'On y va',
     },
     invite: {
@@ -280,7 +280,7 @@ export const onboarding = messages({
       between: 'in between',
       lean: (pole: string) => `mostly ${pole}`,
       promise: (pet: string) => `${pet} will only introduce you to compatible people.`,
-      cta: 'Show me who’s like me',
+      cta: 'Continue: let’s create your account',
       summary: {
         lead: (traits: readonly string[]): string => `You’re someone who ${listEn(traits)}.`,
         even: 'Nothing extreme about you: a bit of everything.',
@@ -406,7 +406,7 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: 'ALL SET,\n' }, { text: `${up(name)}!`, dim: true }],
-      text: (pet: string) => `${pet} has arrived. The more you go out, the more people it introduces you to.`,
+      text: (pet: string) => `${pet} has arrived. It’ll introduce you to people near you who see life like you do.`,
       cta: 'Let’s go',
     },
     invite: {
@@ -483,7 +483,7 @@ export const onboarding = messages({
       between: 'a medio camino',
       lean: (pole: string) => `más bien ${pole}`,
       promise: (pet: string) => `${pet} solo te presentará a gente compatible.`,
-      cta: 'Enséñame quién se me parece',
+      cta: 'Continuar: creamos tu cuenta',
       summary: {
         lead: (traits: readonly string[]): string => `Eres más bien alguien que ${listEs(traits)}.`,
         even: 'Nada extremo en ti: un poco de todo.',
@@ -609,7 +609,7 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: '¡TODO LISTO,\n' }, { text: `${up(name)}!`, dim: true }],
-      text: (pet: string) => `${pet} ya está aquí. Cuanto más sales, más gente te presenta.`,
+      text: (pet: string) => `${pet} ya está aquí. Te presentará a gente cerca de ti que ve la vida como tú.`,
       cta: 'Vamos',
     },
     invite: {
@@ -686,7 +686,7 @@ export const onboarding = messages({
       between: 'no meio-termo',
       lean: (pole: string) => `mais para ${pole}`,
       promise: (pet: string) => `${pet} só vai te apresentar gente compatível.`,
-      cta: 'Me mostra quem combina comigo',
+      cta: 'Continuar: vamos criar sua conta',
       summary: {
         lead: (traits: readonly string[]): string => `Você é mais alguém que ${listPt(traits)}.`,
         even: 'Nada de extremos: um pouco de tudo.',
@@ -812,7 +812,7 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: 'TUDO PRONTO,\n' }, { text: `${up(name)}!`, dim: true }],
-      text: (pet: string) => `${pet} chegou. Quanto mais você sai, mais gente ele te apresenta.`,
+      text: (pet: string) => `${pet} chegou. Ele vai te apresentar gente perto de você que vê a vida como você.`,
       cta: 'Vamos lá',
     },
     invite: {
@@ -889,7 +889,7 @@ export const onboarding = messages({
       between: 'ertussenin',
       lean: (pole: string) => `eerder ${pole}`,
       promise: (pet: string) => `${pet} stelt je alleen voor aan mensen die bij je passen.`,
-      cta: 'Laat zien wie op me lijkt',
+      cta: 'Verder: we maken je account aan',
       summary: {
         lead: (traits: readonly string[]): string => `Je bent eerder iemand die ${listNl(traits)}.`,
         even: 'Niets extreems aan jou: van alles een beetje.',
@@ -1015,7 +1015,7 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: 'ALLES KLAAR,\n' }, { text: `${up(name)}!`, dim: true }],
-      text: (pet: string) => `${pet} is er. Hoe meer je eropuit gaat, hoe meer mensen hij je voorstelt.`,
+      text: (pet: string) => `${pet} is er. Hij gaat je mensen in je buurt voorstellen die het leven zien zoals jij.`,
       cta: 'Daar gaan we',
     },
     invite: {
