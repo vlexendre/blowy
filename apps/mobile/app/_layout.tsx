@@ -25,7 +25,14 @@ if (!amplitudeKey) {
   void analyticsConsentLoaded().then((granted) => {
     // serverZone is 'US' by default; pass 'EU' only for EU-residency projects.
     // Second arg is userId — use undefined when unknown; do NOT pass the options object here.
-    init(amplitudeKey, undefined, { serverZone: 'US', optOut: !granted });
+    // Ni adresse IP ni localisation : sans `ipAddress`, le SDK n'ajoute plus `ip: '$remote'` à l'événement, et Amplitude
+    // ne déduit ni ville, ni région, ni pays, ni DMA ; `country` (région du téléphone) et `carrier` (opérateur) coupés
+    // aussi, comme les identifiants publicitaires (`adid`, `appSetId`).
+    init(amplitudeKey, undefined, {
+      serverZone: 'US',
+      optOut: !granted,
+      trackingOptions: { ipAddress: false, country: false, carrier: false, adid: false, appSetId: false },
+    });
   });
 }
 

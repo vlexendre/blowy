@@ -244,7 +244,7 @@ export const confidentialite: LegalPage = {
     { h3: 'Statistiques d’usage, seulement avec ton accord', id: 'statistiques-usage' },
     {
       ul: [
-        '**Données :** un identifiant aléatoire créé par l’outil sur ton téléphone (sans ton prénom, ton adresse e-mail ni l’identifiant de ton compte), l’adresse IP, le modèle et le système de l’appareil, la version de l’app, la langue, et des actions faites dans l’app (pour l’instant, une seule : la création de ton compte). Ces données sont pseudonymes, pas anonymes : elles ne disent pas qui tu es, mais concernent ton téléphone.',
+        '**Données :** un identifiant aléatoire créé par l’outil sur ton téléphone (sans ton prénom, ton adresse e-mail ni l’identifiant de ton compte), le modèle et le système de l’appareil, la version de l’app, la langue, et des actions faites dans l’app (pour l’instant, une seule : la création de ton compte). Ces données sont pseudonymes, pas anonymes : elles ne disent pas qui tu es, mais concernent ton téléphone. **Ni adresse IP ni localisation :** l’outil est réglé pour ne pas enregistrer ton adresse IP, et n’en déduit donc ni ville, ni région, ni pays ; il ne lit pas non plus ton opérateur mobile ni la région de ton téléphone.',
         '**But :** comprendre comment l’app est utilisée, pour l’améliorer. Jamais de publicité, jamais de suivi d’une app ou d’un site à l’autre.',
         '**Base légale :** ton consentement. On te pose la question juste avant de créer ton compte (« Oui, je participe » ou « Non merci », rien n’est choisi d’avance). Sans ton accord, rien n’est envoyé.',
         '**Retrait :** à tout moment, dans **Moi → Réglages → Statistiques d’usage**. L’envoi s’arrête aussitôt.',

@@ -236,7 +236,7 @@ export const confidentialite: LegalPage = {
     { h3: 'Gebruiksstatistieken, alleen met jouw toestemming', id: 'statistiques-usage' },
     {
       ul: [
-        '**Gegevens:** een willekeurige identificatiecode die de tool op je telefoon aanmaakt (zonder je voornaam, je e-mailadres of de identificatiecode van je account), het IP-adres, het model en het systeem van het toestel, de versie van de app, de taal, en handelingen in de app (voorlopig maar één: het aanmaken van je account). Deze gegevens zijn gepseudonimiseerd, niet anoniem: ze zeggen niet wie je bent, maar gaan over je telefoon.',
+        '**Gegevens:** een willekeurige identificatiecode die de tool op je telefoon aanmaakt (zonder je voornaam, je e-mailadres of de identificatiecode van je account), het model en het systeem van het toestel, de versie van de app, de taal, en handelingen in de app (voorlopig maar één: het aanmaken van je account). Deze gegevens zijn gepseudonimiseerd, niet anoniem: ze zeggen niet wie je bent, maar gaan over je telefoon. **Geen IP-adres, geen locatie:** de tool is zo ingesteld dat hij je IP-adres niet vastlegt, en leidt er dus geen stad, regio of land uit af; hij leest ook je provider en de regio van je telefoon niet.',
         '**Doel:** begrijpen hoe de app wordt gebruikt, om hem te verbeteren. Nooit reclame, nooit volgen tussen apps of websites.',
         '**Rechtsgrond:** je toestemming. We vragen het je vlak voordat je account wordt aangemaakt („Ja, ik doe mee” of „Nee, bedankt”, niets is vooraf gekozen). Zonder je toestemming wordt er niets verstuurd.',
         '**Intrekken:** altijd, in **Ik → Instellingen → Gebruiksstatistieken**. Het versturen stopt meteen.',

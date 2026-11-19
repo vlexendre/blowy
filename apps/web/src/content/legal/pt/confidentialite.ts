@@ -244,7 +244,7 @@ export const confidentialite: LegalPage = {
     { h3: 'Estatísticas de uso, só com o seu consentimento', id: 'statistiques-usage' },
     {
       ul: [
-        '**Dados:** um identificador aleatório criado pela ferramenta no seu celular (sem o seu nome, o seu e-mail nem o identificador da sua conta), o endereço IP, o modelo e o sistema do aparelho, a versão do app, o idioma e ações feitas no app (por enquanto, só uma: a criação da sua conta). Esses dados são pseudônimos, não anônimos: não dizem quem você é, mas se referem ao seu celular.',
+        '**Dados:** um identificador aleatório criado pela ferramenta no seu celular (sem o seu nome, o seu e-mail nem o identificador da sua conta), o modelo e o sistema do aparelho, a versão do app, o idioma e ações feitas no app (por enquanto, só uma: a criação da sua conta). Esses dados são pseudônimos, não anônimos: não dizem quem você é, mas se referem ao seu celular. **Nem endereço IP nem localização:** a ferramenta está configurada para não registrar o seu endereço IP, então não deduz dele nem cidade, nem região, nem país; também não lê a sua operadora nem a região do seu celular.',
         '**Finalidade:** entender como o app é usado, para melhorá-lo. Nunca publicidade, nunca rastreamento entre apps ou sites.',
         '**Base legal:** o seu consentimento. A pergunta é feita logo antes da criação da sua conta (“Sim, quero participar” ou “Não, obrigado”, nada vem escolhido de antemão). Sem o seu consentimento, nada é enviado.',
         '**Retirada:** a qualquer momento, em **Eu → Ajustes → Estatísticas de uso**. O envio para na hora.',

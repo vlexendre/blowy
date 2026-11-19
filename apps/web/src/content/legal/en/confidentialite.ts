@@ -236,7 +236,7 @@ export const confidentialite: LegalPage = {
     { h3: 'Usage statistics, only with your consent', id: 'statistiques-usage' },
     {
       ul: [
-        '**Data:** a random identifier created by the tool on your phone (without your first name, your email address or your account identifier), the IP address, the device model and system, the app version, the language, and actions taken in the app (for now, just one: creating your account). This data is pseudonymous, not anonymous: it does not say who you are, but it relates to your phone.',
+        '**Data:** a random identifier created by the tool on your phone (without your first name, your email address or your account identifier), the device model and system, the app version, the language, and actions taken in the app (for now, just one: creating your account). This data is pseudonymous, not anonymous: it does not say who you are, but it relates to your phone. **No IP address, no location:** the tool is set not to record your IP address, so it derives no city, region or country from it; it does not read your mobile carrier or your phone’s region either.',
         '**Purpose:** understanding how the app is used, to improve it. Never advertising, never tracking across apps or websites.',
         '**Legal basis:** your consent. We ask you just before creating your account (“Yes, count me in” or “No thanks”, nothing is chosen in advance). Without your consent, nothing is sent.',
         '**Withdrawal:** at any time, in **Me → Settings → Usage statistics**. Sending stops immediately.',

@@ -71,7 +71,7 @@ de l'app (`NSPrivacyCollectedDataTypes`, `apps/mobile/app.config.ts`) : changer 
 | User Content | Customer Support | Oui (e-mails) | App Functionality |
 | User Content | Other User Content (réponses au test de vision et aux questions du jour, habitudes, « 3 mots », texte des signalements) | Oui | App Functionality, Product Personalization |
 | Identifiers | User ID | Oui | App Functionality |
-| Identifiers | Device ID (identifiant aléatoire créé par le SDK Amplitude, seulement si la personne a dit oui ; jamais relié au compte : pas de `setUserId`) | Oui, **non lié** à l'identité | Analytics |
+| Identifiers | Device ID (identifiant aléatoire créé par le SDK Amplitude, seulement si la personne a dit oui ; jamais relié au compte : pas de `setUserId`). Amplitude ne reçoit ni l'adresse IP ni de quoi déduire une localisation (`trackingOptions` : `ipAddress`, `country`, `carrier`, `adid`, `appSetId` à `false` dans `app/_layout.tsx`) : rien à déclarer pour lui en Location | Oui, **non lié** à l'identité | Analytics |
 | Purchases | Purchase History | Oui | App Functionality |
 | Usage Data | Product Interaction (événements Amplitude, avec accord : pour l'instant `Account Created` ; soins, séries, défis, rencontres acceptées ; étapes du parcours — inscription finie, premier lien, retour à J1/J7/J30, essai, paiement — et **source d'arrivée** : code créateur, lien « 3 mots », lien de groupe ou invitation, lue dans le lien ouvert ou le code tapé, depuis le 18 nov. 2026, `docs/VIRALITE.md`) | Oui | App Functionality, Analytics |
 | Other Data | Other Data Types (date de naissance, sexe) | Oui | App Functionality |

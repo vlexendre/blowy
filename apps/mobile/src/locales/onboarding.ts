@@ -177,7 +177,7 @@ export const onboarding = messages({
     /** Juste avant la création du compte : statistiques d’usage (Amplitude), seulement si la personne dit oui. */
     statistiques: {
       title: [{ text: 'AIDE-NOUS À\n' }, { text: 'AMÉLIORER MINIMOA', dim: true }],
-      text: 'Des statistiques d’usage anonymes, envoyées à Amplitude (États-Unis), ne sont collectées qu’avec ton accord, modifiable à tout moment dans Moi › Réglages.',
+      text: 'Des statistiques d’usage, sans ton nom ni ton adresse IP, envoyées à Amplitude (États-Unis), ne sont collectées qu’avec ton accord, modifiable à tout moment dans Moi › Réglages.',
       accept: 'Oui, je participe',
       refuse: 'Non merci',
       policy: 'Politique de confidentialité',
@@ -383,7 +383,7 @@ export const onboarding = messages({
     },
     statistiques: {
       title: [{ text: 'HELP US\n' }, { text: 'IMPROVE MINIMOA', dim: true }],
-      text: 'Anonymous usage statistics, sent to Amplitude (United States), are only collected with your agreement, which you can change at any time in Me › Settings.',
+      text: 'Usage statistics, without your name or IP address, sent to Amplitude (United States), are only collected with your agreement, which you can change at any time in Me › Settings.',
       accept: 'Yes, count me in',
       refuse: 'No thanks',
       policy: 'Privacy policy',
@@ -586,7 +586,7 @@ export const onboarding = messages({
     },
     statistiques: {
       title: [{ text: 'AYÚDANOS A\n' }, { text: 'MEJORAR MINIMOA', dim: true }],
-      text: 'Las estadísticas de uso anónimas, enviadas a Amplitude (Estados Unidos), solo se recogen con tu permiso, que puedes cambiar cuando quieras en Yo › Ajustes.',
+      text: 'Las estadísticas de uso, sin tu nombre ni tu dirección IP, enviadas a Amplitude (Estados Unidos), solo se recogen con tu permiso, que puedes cambiar cuando quieras en Yo › Ajustes.',
       accept: 'Sí, participo',
       refuse: 'No, gracias',
       policy: 'Política de privacidad',
@@ -789,7 +789,7 @@ export const onboarding = messages({
     },
     statistiques: {
       title: [{ text: 'AJUDE A\n' }, { text: 'MELHORAR O MINIMOA', dim: true }],
-      text: 'Estatísticas de uso anônimas, enviadas à Amplitude (Estados Unidos), só são coletadas com a sua permissão, que você pode mudar a qualquer momento em Eu › Ajustes.',
+      text: 'Estatísticas de uso, sem o seu nome nem o seu endereço IP, enviadas à Amplitude (Estados Unidos), só são coletadas com a sua permissão, que você pode mudar a qualquer momento em Eu › Ajustes.',
       accept: 'Sim, quero participar',
       refuse: 'Não, obrigado',
       policy: 'Política de privacidade',
@@ -992,7 +992,7 @@ export const onboarding = messages({
     },
     statistiques: {
       title: [{ text: 'HELP ONS\n' }, { text: 'MINIMOA BETER MAKEN', dim: true }],
-      text: 'Anonieme gebruiksstatistieken, verstuurd naar Amplitude (Verenigde Staten), worden alleen verzameld met jouw toestemming, die je altijd kunt wijzigen in Ik › Instellingen.',
+      text: 'Gebruiksstatistieken, zonder je naam of IP-adres, verstuurd naar Amplitude (Verenigde Staten), worden alleen verzameld met jouw toestemming, die je altijd kunt wijzigen in Ik › Instellingen.',
       accept: 'Ja, ik doe mee',
       refuse: 'Nee, bedankt',
       policy: 'Privacybeleid',

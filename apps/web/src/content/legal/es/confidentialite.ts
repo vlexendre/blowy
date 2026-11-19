@@ -236,7 +236,7 @@ export const confidentialite: LegalPage = {
     { h3: 'Estadísticas de uso, solo con tu consentimiento', id: 'statistiques-usage' },
     {
       ul: [
-        '**Datos:** un identificador aleatorio creado por la herramienta en tu teléfono (sin tu nombre, tu dirección de correo ni el identificador de tu cuenta), la dirección IP, el modelo y el sistema del dispositivo, la versión de la app, el idioma y acciones realizadas en la app (por ahora, solo una: la creación de tu cuenta). Estos datos son seudónimos, no anónimos: no dicen quién eres, pero se refieren a tu teléfono.',
+        '**Datos:** un identificador aleatorio creado por la herramienta en tu teléfono (sin tu nombre, tu dirección de correo ni el identificador de tu cuenta), el modelo y el sistema del dispositivo, la versión de la app, el idioma y acciones realizadas en la app (por ahora, solo una: la creación de tu cuenta). Estos datos son seudónimos, no anónimos: no dicen quién eres, pero se refieren a tu teléfono. **Ni dirección IP ni ubicación:** la herramienta está configurada para no registrar tu dirección IP, así que no deduce de ella ni ciudad, ni región, ni país; tampoco lee tu operador móvil ni la región de tu teléfono.',
         '**Finalidad:** entender cómo se usa la app, para mejorarla. Nunca publicidad, nunca seguimiento entre apps o sitios web.',
         '**Base jurídica:** tu consentimiento. Te lo preguntamos justo antes de crear tu cuenta («Sí, participo» o «No, gracias», nada viene elegido de antemano). Sin tu consentimiento, no se envía nada.',
         '**Retirada:** en cualquier momento, en **Yo → Ajustes → Estadísticas de uso**. El envío se detiene al instante.',

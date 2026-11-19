@@ -115,6 +115,8 @@ const PRIVACY_MANIFEST = {
       ['ProductInteraction', ['AppFunctionality', 'Analytics']],
       ['OtherDataTypes', ['AppFunctionality']],
       // Statistiques d'usage (Amplitude), seulement avec l'accord : identifiant aléatoire de l'appareil, jamais relié au compte.
+      // Ni adresse IP ni localisation pour Amplitude (`trackingOptions` dans app/_layout.tsx) : rien à ajouter pour lui en
+      // Location ; `CoarseLocation` ci-dessus reste celle de la carte (App Functionality).
       ['DeviceID', ['Analytics'], false],
     ] as const
   ).map(([type, purposes, linked]: readonly [string, readonly string[], boolean?]) => ({

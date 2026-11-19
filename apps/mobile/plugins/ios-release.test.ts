@@ -51,6 +51,16 @@ describe('manifestes de confidentialité (B4)', () => {
     expect(collected.map((c) => c.NSPrivacyCollectedDataType)).not.toContain('NSPrivacyCollectedDataTypePreciseLocation');
   });
 
+  it('statistiques d’usage (Amplitude) : ni adresse IP ni localisation, ni opérateur, ni identifiant publicitaire', () => {
+    const layout = fs.readFileSync(path.join(mobile, 'app/_layout.tsx'), 'utf8');
+    const options = /trackingOptions:\s*\{([^}]*)\}/.exec(layout)?.[1] ?? '';
+    for (const key of ['ipAddress', 'country', 'carrier', 'adid', 'appSetId']) expect(options, key).toMatch(new RegExp(`\\b${key}:\\s*false\\b`));
+    // Sans `ipAddress`, le SDK n'ajoute pas `ip: '$remote'` à l'événement (plugins/context.js du SDK).
+    const m = config.ios?.privacyManifests as { NSPrivacyCollectedDataTypes?: { NSPrivacyCollectedDataType: string; NSPrivacyCollectedDataTypePurposes: string[] }[] } | undefined;
+    const coarse = m?.NSPrivacyCollectedDataTypes?.find((c) => c.NSPrivacyCollectedDataType === 'NSPrivacyCollectedDataTypeCoarseLocation');
+    expect(coarse?.NSPrivacyCollectedDataTypePurposes).not.toContain('NSPrivacyCollectedDataTypePurposeAnalytics');
+  });
+
   it("extension des widgets : son propre manifeste, UserDefaults du groupe d'apps (1C8F.1), rien de collecté", () => {
     const m = readManifest('targets/widget/PrivacyInfo.xcprivacy');
     expect(m.NSPrivacyTracking).toBe(false);
