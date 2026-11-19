@@ -43,18 +43,18 @@ import {
   GroupReportSheet,
   type GroupReportTarget,
   useGroup,
+  useGroupChat,
   useGroupJoker,
-  useGroupMessages,
   useLeaveGroup,
   useMarkGroupRead,
   useGroupLink,
   useRenameGroup,
   useResetGroupLink,
-  useSendGroupMessage,
   useShareGroupInvite,
   useWakeGroup,
 } from '@/features/groups';
 import { MomentSheet, useMomentOffer } from '@/features/moments';
+import { useDraft, useRefusal } from '@/features/chat';
 import { groupUrl } from '@/core';
 import { croissance } from '@/locales/croissance';
 import { chatDayLabel, ConfirmSheet, errorText } from '@/features/links';
@@ -85,6 +85,9 @@ export default function GroupScreen() {
   }, [notice]);
   const goChats = useCallback(() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chats')), [router]);
 
+  // Le fil (envoi optimiste compris), lu ici une fois pour le fil et le champ.
+  const chat = useGroupChat(id);
+  const onReportMessage = useCallback((m: GroupMessage) => setReport({ kind: 'message', messageId: m.id, quote: m.body }), []);
   const g = group.data;
   if (!g) {
     const gone = group.error instanceof ApiError && (group.error.code === 'not_found' || group.error.code === 'forbidden');
@@ -130,10 +133,10 @@ export default function GroupScreen() {
         scroll={tab === 'groupe'}
         refreshControl={<Refresh id={g.id} />}
         notice={notice ? <Banner tone="success" text={notice} onClose={() => setNotice(null)} closeLabel={t.cancel} /> : undefined}
-        footer={tab === 'chat' ? <GroupComposer group={g} /> : undefined}
+        footer={tab === 'chat' ? <GroupComposer group={g} send={chat.send} /> : undefined}
       >
         {tab === 'chat' ? (
-          <ChatBody group={g} onReport={(m) => setReport({ kind: 'message', messageId: m.id, quote: m.body })} />
+          <ChatBody group={g} chat={chat} onReport={onReportMessage} />
         ) : (
           <GroupBody group={g} onReport={setReport} onLeft={() => router.replace('/(tabs)/chats')} />
         )}
@@ -192,18 +195,10 @@ function GroupMoment({ group }: { group: GroupDetail }) {
 }
 
 // ── Chat ─────────────────────────────────────────────────────────────────────
-const toLook = (m: GroupMessage): MessageLook => ({
-  id: m.id,
-  // Les minimoas ne parlent que d'événements : une ligne centrée, comme les annonces du système.
-  author: m.author === 'me' ? 'me' : m.author === 'member' ? 'other' : 'system',
-  kind: m.kind === 'event' || m.author === 'minimoa' || m.author === 'system' ? 'event' : 'text',
-  body: m.body,
-  mediaUrl: null,
-  at: m.at,
-});
+type GroupChat = ReturnType<typeof useGroupChat>;
 
-function ChatBody({ group, onReport }: { group: GroupDetail; onReport: (m: GroupMessage) => void }) {
-  const thread = useGroupMessages(group.id);
+function ChatBody({ group, chat, onReport }: { group: GroupDetail; chat: GroupChat; onReport: (m: GroupMessage) => void }) {
+  const { thread, looks, retry } = chat;
   useMarkGroupRead(group.id, thread.messages.at(-1)?.id);
   const dayLabel = useCallback((day: string) => chatDayLabel(day), []);
   const me = group.members.find((m) => m.me);
@@ -220,9 +215,19 @@ function ChatBody({ group, onReport }: { group: GroupDetail; onReport: (m: Group
     },
     [byId, people, first],
   );
-  const looks = useMemo(() => thread.messages.map(toLook), [thread.messages]);
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = thread;
+  const older = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) void fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const longPress = useCallback(
+    (m: MessageLook) => {
+      const found = byId.get(m.id);
+      if (found) onReport(found);
+    },
+    [byId, onReport],
+  );
 
-  if (thread.isPending) {
+  if (thread.isPending && looks.length === 0) {
     return (
       <View style={[styles.gap, styles.padded]}>
         <Skeleton width="60%" height={52} radius="lg" />
@@ -231,7 +236,7 @@ function ChatBody({ group, onReport }: { group: GroupDetail; onReport: (m: Group
       </View>
     );
   }
-  if (thread.isError && thread.messages.length === 0) {
+  if (thread.isError && looks.length === 0) {
     return (
       <View style={styles.padded}>
         <Banner tone="error" title={chatText.loadError} text={thread.error.message} actionLabel={t.retry} onAction={() => void thread.refetch()} />
@@ -253,15 +258,13 @@ function ChatBody({ group, onReport }: { group: GroupDetail; onReport: (m: Group
       whoIs={whoIs}
       dayLabel={dayLabel}
       header={privacy}
-      onEndReached={() => {
-        if (thread.hasNextPage && !thread.isFetchingNextPage) void thread.fetchNextPage();
-      }}
-      loadingOlder={thread.isFetchingNextPage}
-      onMessageLongPress={(m) => {
-        const found = byId.get(m.id);
-        if (found) onReport(found);
-      }}
+      onEndReached={older}
+      loadingOlder={isFetchingNextPage}
+      onMessageLongPress={longPress}
       longPressHint={chatText.longPressHint}
+      sendingLabel={chatText.sending}
+      failedLabel={chatText.failed}
+      onRetry={retry}
       empty={
         <View style={styles.gap}>
           <EmptyState peek seed={group.id} species={me.person.pet.species} mood="salut" title={t.emptyTitle} text={t.emptyText} />
@@ -272,34 +275,34 @@ function ChatBody({ group, onReport }: { group: GroupDetail; onReport: (m: Group
   );
 }
 
-function GroupComposer({ group }: { group: GroupDetail }) {
-  const send = useSendGroupMessage(group.id);
-  const [draft, setDraft] = useState('');
+/** Le champ : son texte vit ici (et dans la mémoire du fil) ; envoyer le vide tout de suite, le message est déjà dans le fil. */
+function GroupComposer({ group, send }: { group: GroupDetail; send: (body: string) => void }) {
+  const [draft, setDraft] = useDraft(`group:${group.id}`);
+  const { refusal, clear } = useRefusal(`group:${group.id}`);
   const closed = group.status === 'closed';
-  const refused = send.error instanceof ApiError && send.error.code === 'content_refused' ? send.error.message : null;
   const submit = () => {
     const body = draft.trim();
-    if (!body || send.isPending) return;
-    send.mutate(body, { onSuccess: () => setDraft('') });
+    if (!body) return;
+    setDraft('');
+    send(body);
   };
   return (
     <View style={styles.composer}>
-      {refused ? (
-        <Banner tone="error" title={refused} text={chatText.refusedKeep} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
-      ) : send.isError ? (
-        <Banner tone="error" title={chatText.notSent} text={errorText(send.error, chatText.sendError)} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
+      {refusal?.code === 'content_refused' ? (
+        <Banner tone="error" title={refusal.message || chatText.notSent} text={chatText.refusedKeep} onClose={clear} closeLabel={todayText.dismiss} />
+      ) : refusal ? (
+        <Banner tone="error" title={chatText.notSent} text={chatText.sendError} onClose={clear} closeLabel={todayText.dismiss} />
       ) : null}
       <Composer
         value={draft}
         onChangeText={(v) => {
           setDraft(v);
-          if (send.isError) send.reset();
+          if (refusal) clear();
         }}
         onSend={submit}
         placeholder={t.placeholder}
         disabled={closed}
         disabledText={t.closedComposer}
-        sending={send.isPending}
         sendLabel={chatText.send}
         maxLength={2000}
       />

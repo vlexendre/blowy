@@ -176,7 +176,8 @@ export const CreateGroupBody = z
 export type CreateGroupBody = z.infer<typeof CreateGroupBody>;
 export const InviteToGroupBody = z.object({ memberIds: z.array(Id).min(1).max(GROUP_MAX_INVITES) });
 export const RenameGroupBody = z.object({ name: z.string().trim().min(1).max(GROUP_NAME_MAX) });
-export const SendGroupMessageBody = z.object({ body: z.string().trim().min(1).max(2000) });
+/** `clientId` : clé d'idempotence de l'envoi optimiste (même rôle que dans `SendMessageBody`). */
+export const SendGroupMessageBody = z.object({ body: z.string().trim().min(1).max(2000), clientId: Id.optional() });
 export type SendGroupMessageBody = z.infer<typeof SendGroupMessageBody>;
 /** Poser un joker pour le jour du groupe : aujourd'hui, ou hier jusqu'à midi. */
 export const GroupJokerBody = z.object({ day: Day });

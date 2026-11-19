@@ -37,6 +37,7 @@ import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser, Public } from '../../../shared/auth.guard';
 import { DomainError } from '../../../shared/errors';
 import { RateLimit } from '../../../shared/user-rate-limit';
+import { Idempotency } from '../../../shared/idempotency';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { AdminGuard } from '../../admin/interface/admin.guard';
 import { GroupChat } from '../application/group-chat';
@@ -55,6 +56,7 @@ export class GroupsController {
   constructor(
     @Inject(GroupsUseCases) private readonly groups: GroupsUseCases,
     @Inject(GroupChat) private readonly chat: GroupChat,
+    @Inject(Idempotency) private readonly idempotency: Idempotency,
   ) {}
 
   @Get()
@@ -154,7 +156,8 @@ export class GroupsController {
     @Param('id', GroupId) id: string,
     @Body(new ZodPipe(SendGroupMessageBody)) body: z.infer<typeof SendGroupMessageBody>,
   ): Promise<GroupAction> {
-    return this.chat.send(user.userId, id, body.body);
+    // Envoi optimiste : un réessai avec le même `clientId` rend la première réponse, sans écrire deux fois.
+    return this.idempotency.once(`group:${user.userId}:${id}`, body.clientId, () => this.chat.send(user.userId, id, body.body));
   }
 
   @Post(':id/read')

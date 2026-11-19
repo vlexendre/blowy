@@ -251,8 +251,13 @@ export type MessagesPage = z.infer<typeof MessagesPageZ>;
 
 export const SendMessageBody = z.object({
   body: z.string().trim().min(1).max(2000),
-  /** Ton choisi : fait bouger la jauge piquant ↔ tendre. */
+  /** Ton choisi : fait bouger la jauge piquant ↔ tendre. Les apps récentes ne l'envoient plus (bascules retirées du chat). */
   tone: z.enum(['sweet', 'tease']).optional(),
+  /**
+   * Clé d'idempotence tirée par l'app pour ce message (envoi optimiste) : un même `clientId` renvoyé par la même
+   * personne (réessai après une coupure) rend la première réponse au lieu d'écrire le message deux fois.
+   */
+  clientId: Uuid.optional(),
 });
 export type SendMessageBody = z.infer<typeof SendMessageBody>;
 

@@ -60,20 +60,55 @@ export const keys = {
   together: ['together'] as const,
 };
 
+/** Délai de regroupement des événements temps réel : un message déclenche deux événements (message et lien). */
+const REALTIME_COALESCE_MS = 120;
+
+/**
+ * Temps réel → cache. Ce qui arrive en rafale (un message = une ligne `messages` et une mise à jour de `links`) est
+ * regroupé : une seule relecture par fil, et seulement de ce qui a changé (pas tout le cache des liens ou des groupes).
+ * À la reconnexion (retour au premier plan, réseau revenu), tout ce qui est affiché est relu : rien n'est perdu.
+ */
 function RealtimeBridge({ ports, session }: { ports: Ports; session: Session | null | undefined }) {
   const qc = useQueryClient();
   const userId = session?.userId;
   useEffect(() => {
     if (!userId) return;
-    return ports.realtime.subscribe(({ linkId, groupId }) => {
-      if (groupId) {
-        // Messages d'un groupe : sa conversation, son détail et la liste (non-lus) sont relus.
+    const links = new Set<string>();
+    const groups = new Set<string>();
+    let all = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const flush = () => {
+      timer = null;
+      if (all) {
+        void qc.invalidateQueries({ queryKey: keys.links });
         void qc.invalidateQueries({ queryKey: keys.groups });
-        return;
+      } else {
+        for (const id of links) {
+          void qc.invalidateQueries({ queryKey: keys.messages(id) });
+          void qc.invalidateQueries({ queryKey: keys.link(id), exact: true });
+          void qc.invalidateQueries({ queryKey: keys.memories(id) });
+        }
+        if (links.size > 0) void qc.invalidateQueries({ queryKey: keys.links, exact: true });
+        for (const id of groups) {
+          void qc.invalidateQueries({ queryKey: keys.groupMessages(id) });
+          void qc.invalidateQueries({ queryKey: keys.group(id), exact: true });
+        }
+        if (groups.size > 0) void qc.invalidateQueries({ queryKey: keys.groups, exact: true });
       }
-      void qc.invalidateQueries({ queryKey: linkId ? keys.link(linkId) : keys.links });
-      void qc.invalidateQueries({ queryKey: keys.links, exact: true });
+      links.clear();
+      groups.clear();
+      all = false;
+    };
+    const off = ports.realtime.subscribe(({ linkId, groupId, resync }) => {
+      if (resync || (!linkId && !groupId)) all = true;
+      else if (groupId) groups.add(groupId);
+      else if (linkId) links.add(linkId);
+      timer ??= setTimeout(flush, REALTIME_COALESCE_MS);
     });
+    return () => {
+      off();
+      if (timer) clearTimeout(timer);
+    };
   }, [ports, qc, userId]);
   return null;
 }

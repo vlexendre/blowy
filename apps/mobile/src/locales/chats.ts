@@ -496,7 +496,9 @@ export const chat = messages({
   fr: {
     /** Pas de « lit tout » : le minimoa ne lit que si vous avez dit oui tous les deux (et c'est une IA). */
     placeholder: (name: string, _pet: string): string => `Écris à ${name}`,
-    tones: { sweet: 'Mot doux', tease: 'Vanne' },
+    /** Envoi optimiste : sous une bulle en route depuis un moment, puis sous une bulle pas partie (la toucher la renvoie). */
+    sending: 'Envoi…',
+    failed: 'Pas envoyé · Réessayer',
     send: 'Envoyer',
     ghostDisabled: 'Lien fantôme : ranime-le pour écrire',
     sendError: 'Ton message n’est pas parti. Il est toujours là, réessaie.',
@@ -537,7 +539,8 @@ export const chat = messages({
   },
   en: {
     placeholder: (name: string, _pet: string): string => `Write to ${name}`,
-    tones: { sweet: 'Sweet note', tease: 'Tease' },
+    sending: 'Sending…',
+    failed: 'Not sent · Retry',
     send: 'Send',
     ghostDisabled: 'Ghost link: revive it to write',
     sendError: 'Your message didn’t go out. It’s still here, try again.',
@@ -571,7 +574,8 @@ export const chat = messages({
   },
   es: {
     placeholder: (name: string, _pet: string): string => `Escribe a ${name}`,
-    tones: { sweet: 'Cariño', tease: 'Broma' },
+    sending: 'Enviando…',
+    failed: 'No enviado · Reintentar',
     send: 'Enviar',
     ghostDisabled: 'Vínculo fantasma: reanímalo para escribir',
     sendError: 'Tu mensaje no se envió. Sigue aquí, inténtalo de nuevo.',
@@ -605,7 +609,8 @@ export const chat = messages({
   },
   pt: {
     placeholder: (name: string, _pet: string): string => `Escreva para ${name}`,
-    tones: { sweet: 'Carinho', tease: 'Provocação' },
+    sending: 'Enviando…',
+    failed: 'Não enviado · Tentar de novo',
     send: 'Enviar',
     ghostDisabled: 'Vínculo fantasma: reanime para escrever',
     sendError: 'Sua mensagem não foi enviada. Ela continua aqui, tente de novo.',
@@ -639,7 +644,8 @@ export const chat = messages({
   },
   nl: {
     placeholder: (name: string, _pet: string): string => `Bericht aan ${name}`,
-    tones: { sweet: 'Lief woordje', tease: 'Plagerij' },
+    sending: 'Versturen…',
+    failed: 'Niet verstuurd · Opnieuw',
     send: 'Versturen',
     ghostDisabled: 'Spookband: reanimeer hem om te schrijven',
     sendError: 'Je bericht is niet verstuurd. Het staat er nog, probeer het opnieuw.',

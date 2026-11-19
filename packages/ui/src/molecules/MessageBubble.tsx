@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -12,7 +12,7 @@ import { Text } from '../atoms/Text';
 import { fadeTo, springs, useReducedMotion } from '../lib/motion';
 import { TypingDots } from '../motion/TypingDots';
 import { alpha, color, motion, petTint, radius, space, veil } from '../theme';
-import type { MessageLook, PersonLook, PetLook, PetRoleLook } from '../types';
+import type { MessageLook, MessageStatus, PersonLook, PetLook, PetRoleLook } from '../types';
 
 export interface MessageBubbleProps {
   message: Pick<MessageLook, 'author' | 'kind' | 'body' | 'mediaUrl'> & { petRole?: PetRoleLook | null };
@@ -50,7 +50,17 @@ export interface MessageBubbleProps {
   onLongPress?: () => void;
   /** Libellé lu de l'appui long (« Signaler ce message »). */
   longPressHint?: string;
+  /** Message à soi pas encore confirmé (envoi optimiste) : `sending` (bulle un peu pâle), `failed` (à réessayer). */
+  status?: MessageStatus;
+  /** Sous une bulle en route depuis un moment (« Envoi… »). */
+  sendingLabel?: string;
+  /** Sous une bulle pas partie (« Pas envoyé · Réessayer ») : la toucher appelle `onRetry`. */
+  failedLabel?: string;
+  onRetry?: () => void;
 }
+
+/** Une bulle en route n'affiche « Envoi… » qu'au-delà de ce délai (un envoi normal ne fait rien clignoter). */
+const SENDING_HINT_AFTER = 900;
 
 const AVATAR = 30;
 
@@ -73,6 +83,10 @@ export const MessageBubble = memo(function MessageBubble({
   typingLabel,
   onLongPress,
   longPressHint,
+  status,
+  sendingLabel,
+  failedLabel,
+  onRetry,
 }: MessageBubbleProps) {
   const { author, kind, body, mediaUrl, petRole } = message;
   const entrance = useEntrance(enter, !!typing);
@@ -152,11 +166,40 @@ export const MessageBubble = memo(function MessageBubble({
             {name}
           </Text>
         ) : null}
-        <Animated.View style={[mine ? styles.originMine : styles.originOther, entrance.bubble]}>{pressable}</Animated.View>
+        <Animated.View style={[mine ? styles.originMine : styles.originOther, entrance.bubble, status ? styles.unconfirmed : null]}>{pressable}</Animated.View>
+        {mine && status ? <SendState status={status} sendingLabel={sendingLabel} failedLabel={failedLabel} onRetry={onRetry} /> : null}
       </View>
     </Animated.View>
   );
 });
+
+/** Sous une bulle à soi pas encore confirmée : « Envoi… » (après un délai) ou « Pas envoyé · Réessayer ». */
+function SendState({ status, sendingLabel, failedLabel, onRetry }: Pick<MessageBubbleProps, 'sendingLabel' | 'failedLabel' | 'onRetry'> & { status: MessageStatus }) {
+  const [late, setLate] = useState(false);
+  useEffect(() => {
+    if (status !== 'sending') return;
+    setLate(false);
+    const timer = setTimeout(() => setLate(true), SENDING_HINT_AFTER);
+    return () => clearTimeout(timer);
+  }, [status]);
+  if (status === 'failed') {
+    return (
+      <Pressable onPress={onRetry} disabled={!onRetry} accessibilityRole="button" accessibilityLabel={failedLabel} hitSlop={10} scaleTo={0.96} haptic="light" style={styles.state}>
+        <Text variant="bodyBold" size={12} color={color.coral}>
+          {failedLabel ?? ''}
+        </Text>
+      </Pressable>
+    );
+  }
+  if (!late || !sendingLabel) return null;
+  return (
+    <Animated.View entering={FadeIn.duration(motion.fast)} style={styles.state} accessibilityLiveRegion="polite">
+      <Text size={12} muted>
+        {sendingLabel}
+      </Text>
+    </Animated.View>
+  );
+}
 
 /**
  * Bulle d'un minimoa selon son rôle (spéc §9) : jamais pleine comme celles des humains (jaune pour toi, blanche pour
@@ -255,6 +298,8 @@ const styles = StyleSheet.create({
     padding: space.md,
   },
   typing: { paddingVertical: space.sm + 3 },
+  unconfirmed: { opacity: 0.72 },
+  state: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end', gap: space.xs, marginTop: space.xs, marginRight: space.xs },
   guardLock: { position: 'absolute', left: space.md, top: space.sm + 4 },
   // Les bulles grandissent depuis leur coin pointu (vers le champ pour moi, vers l'avatar pour l'autre).
   originMine: { transformOrigin: '100% 100%' },

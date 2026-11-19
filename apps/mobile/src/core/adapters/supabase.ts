@@ -157,12 +157,16 @@ export function supabaseAuth(sb: SupabaseClient): AuthPort {
   };
 }
 
+let channels = 0;
+
 /** Temps réel : les politiques RLS ne laissent passer que les lignes des liens de la personne connectée. */
 export function supabaseRealtime(sb: SupabaseClient): RealtimePort {
   return {
     subscribe(onChange) {
+      let joined = false;
+      // Un nom par abonnement : une reconnexion rapide (changement de compte) ne retombe pas sur le canal en cours de retrait.
       const channel = sb
-        .channel('blowy-links')
+        .channel(`blowy-links-${++channels}`)
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
           const row = payload.new as { link_id?: string };
           onChange({ linkId: row.link_id ?? null });
@@ -176,7 +180,13 @@ export function supabaseRealtime(sb: SupabaseClient): RealtimePort {
           const row = payload.new as { group_id?: string };
           onChange({ linkId: null, groupId: row.group_id ?? null });
         })
-        .subscribe();
+        .subscribe((status) => {
+          // Rejoint après une coupure (arrière-plan, réseau) : des messages ont pu passer pendant ce temps.
+          if (status === 'SUBSCRIBED') {
+            if (joined) onChange({ linkId: null, resync: true });
+            joined = true;
+          }
+        });
       return () => {
         void sb.removeChannel(channel);
       };

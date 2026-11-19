@@ -7,7 +7,6 @@ import {
   Banner,
   ChatThread,
   Composer,
-  type ComposerTone,
   CountTitle,
   EmptyState,
   FeatureRow,
@@ -30,14 +29,16 @@ import {
   Text,
   TodoRow,
   Button,
+  type MessageLook,
 } from '@blowy/ui';
 import type { Message } from '@blowy/contract';
 import { ApiError } from '@blowy/api-client';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
+import { useDraft, useRefusal } from '@/features/chat';
 import { sharedHabitsView } from '@/features/groups';
 import { openLegal } from '@/features/me';
 import { MEET_LEVEL, useMeetReminders } from '@/features/safety';
@@ -51,13 +52,12 @@ import {
   useArchiveLink,
   useLevelUps,
   useLink,
+  useLinkChat,
   useLinkMinimoas,
   useMarkRead,
   useMinimoaGuide,
   useMemories,
-  useMessages,
   useRevive,
-  useSendMessage,
   useUpdateLinkMinimoas,
   weekStrip,
 } from '@/features/links';
@@ -89,8 +89,6 @@ export default function LinkScreen() {
     const next = tabOf(params.tab);
     if (next) setTab(next);
   }, [params.tab]);
-  const [draft, setDraft] = useState('');
-  const [tone, setTone] = useState<ComposerTone | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   useEffect(() => {
     if (notice?.tone !== 'success') return;
@@ -103,9 +101,18 @@ export default function LinkScreen() {
   const minimoas = useLinkMinimoas(id);
   const updateMinimoas = useUpdateLinkMinimoas(id);
   const guide = useMinimoaGuide();
-  // Même requête que le fil (cache partagé) : combien de messages les deux personnes ont déjà échangés.
-  const thread = useMessages(id);
+  // Le fil (envoi optimiste compris) : lu une fois ici, passé au fil et au champ. Le texte tapé vit dans le champ seul
+  // (une frappe ne redessine ni l'écran ni le fil).
+  const chat = useLinkChat(id);
+  const thread = chat.thread;
   const exchanged = thread.messages.filter((m) => m.author === 'me' || m.author === 'other').length;
+  const onReport = useCallback(
+    (m: MessageLook) => {
+      const found = thread.messages.find((x) => x.id === m.id);
+      if (found) setReporting(found);
+    },
+    [thread.messages],
+  );
   const [consentLater, setConsentLater] = useState(false);
   const [defaultNoticeClosed, setDefaultNoticeClosed] = useState(false);
   const [rolesOpen, setRolesOpen] = useState(false);
@@ -216,10 +223,7 @@ export default function LinkScreen() {
           active === 'chat' ? (
             <ChatComposer
               link={l}
-              draft={draft}
-              setDraft={setDraft}
-              tone={tone}
-              setTone={setTone}
+              send={chat.send}
               notice={notice}
               onNotice={setNotice}
               onRhythm={() => setRolesOpen(true)}
@@ -236,7 +240,7 @@ export default function LinkScreen() {
         {active === 'lien' ? (
           <LienBody link={l} onWrite={() => setTab('chat')} onLevels={() => router.push(`/link/${l.id}/niveaux`)} />
         ) : (
-          <ChatBody link={l} onReport={setReporting} />
+          <ChatBody link={l} chat={chat} onReport={onReport} />
         )}
       </LinkTemplate>
 
@@ -495,12 +499,18 @@ function Milestones({ link }: { link: Link }) {
 }
 
 // ── Chat ─────────────────────────────────────────────────────────────────────
-function ChatBody({ link, onReport }: { link: Link; onReport: (m: Message) => void }) {
-  const thread = useMessages(link.id);
+type LinkChat = ReturnType<typeof useLinkChat>;
+
+const ChatBody = memo(function ChatBody({ link, chat, onReport }: { link: Link; chat: LinkChat; onReport: (m: MessageLook) => void }) {
+  const { thread, looks, retry } = chat;
   useMarkRead(link.id, thread.messages[0]?.id);
   const dayLabel = useCallback((day: string) => chatDayLabel(day), []);
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = thread;
+  const older = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) void fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (thread.isPending) {
+  if (thread.isPending && looks.length === 0) {
     return (
       <View style={[styles.body, styles.padded]}>
         <Skeleton width="60%" height={52} radius="lg" />
@@ -509,7 +519,7 @@ function ChatBody({ link, onReport }: { link: Link; onReport: (m: Message) => vo
       </View>
     );
   }
-  if (thread.isError && thread.messages.length === 0) {
+  if (thread.isError && looks.length === 0) {
     return (
       <View style={styles.padded}>
         <Banner tone="error" title={chatText.loadError} text={thread.error.message} actionLabel={chatText.retry} onAction={() => void thread.refetch()} />
@@ -518,79 +528,67 @@ function ChatBody({ link, onReport }: { link: Link; onReport: (m: Message) => vo
   }
   return (
     <ChatThread
-      messages={chronological(thread.messages)}
+      messages={looks}
       myPet={link.myPet}
       other={link.other}
       dayLabel={dayLabel}
-      onEndReached={() => {
-        if (thread.hasNextPage && !thread.isFetchingNextPage) void thread.fetchNextPage();
-      }}
-      loadingOlder={thread.isFetchingNextPage}
+      onEndReached={older}
+      loadingOlder={isFetchingNextPage}
       lockedPhotoLabel={chatText.lockedPhoto}
       typingLabel={chatText.typing}
       roleLabel={chatText.role}
-      onMessageLongPress={(m) => {
-        const found = thread.messages.find((x) => x.id === m.id);
-        if (found) onReport(found);
-      }}
+      onMessageLongPress={onReport}
       longPressHint={chatText.longPressHint}
+      sendingLabel={chatText.sending}
+      failedLabel={chatText.failed}
+      onRetry={retry}
       empty={
         <EmptyState peek seed={link.id} species={link.myPet.species} mood="salut" title={chatText.emptyTitle} text={chatText.emptyText(link.myPet.name, link.other.pet.name)} />
       }
     />
   );
-}
+});
 
+/**
+ * Le champ : son texte vit ici (et dans la mémoire du fil : changer d'onglet ou revenir plus tard le retrouve).
+ * Envoyer vide le champ tout de suite ; le message est déjà dans le fil.
+ */
 function ChatComposer({
   link,
-  draft,
-  setDraft,
-  tone,
-  setTone,
+  send,
   notice,
   onNotice,
   rhythm,
   onRhythm,
 }: {
   link: Link;
+  send: (body: string) => void;
   rhythm: string | null;
   /** La ligne du rythme ouvre les rôles des minimoas (l'explication reste à un tap, jamais affichée en continu). */
   onRhythm: () => void;
   notice: Notice | null;
   onNotice: (n: Notice | null) => void;
-  draft: string;
-  setDraft: (v: string) => void;
-  tone: ComposerTone | null;
-  setTone: (v: ComposerTone | null) => void;
 }) {
-  const send = useSendMessage(link.id);
+  const [draft, setDraft] = useDraft(`link:${link.id}`);
+  const { refusal, clear } = useRefusal(`link:${link.id}`);
   const ghost = link.status !== 'active';
-  // Refusé par le filtre : le message n'est pas parti, la raison vient de l'API, le texte reste dans le champ.
-  const refused = send.error instanceof ApiError && send.error.code === 'content_refused' ? send.error.message : null;
   const edit = (v: string) => {
     setDraft(v);
-    if (send.isError) send.reset();
+    if (refusal) clear();
   };
   const submit = () => {
     const body = draft.trim();
-    if (!body || send.isPending) return;
-    send.mutate(
-      { body, tone: tone ?? undefined },
-      {
-        onSuccess: () => {
-          setDraft('');
-          setTone(null);
-        },
-      },
-    );
+    if (!body) return;
+    setDraft('');
+    send(body);
   };
   return (
     <View style={styles.composer}>
       {notice ? <NoticeBanner notice={notice} onClose={() => onNotice(null)} /> : null}
-      {refused ? (
-        <Banner tone="error" title={refused} text={chatText.refusedKeep} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
-      ) : send.isError ? (
-        <Banner tone="error" title={chatText.notSent} text={errorText(send.error, chatText.sendError, { link_not_active: chatText.ghostDisabled })} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
+      {refusal?.code === 'content_refused' ? (
+        <Banner tone="error" title={refusal.message || chatText.notSent} text={chatText.refusedKeep} onClose={clear} closeLabel={todayText.dismiss} />
+      ) : refusal ? (
+        <Banner tone="error" title={chatText.notSent} text={errorText(refusal, chatText.sendError, { link_not_active: chatText.ghostDisabled })} onClose={clear} closeLabel={todayText.dismiss} />
       ) : null}
       {rhythm ? (
         <Pressable onPress={onRhythm} accessibilityRole="button" accessibilityLabel={`${rhythm} ${chatText.rhythmA11y}`} hitSlop={12} dimTo={0.6} scaleTo={1} haptic={false} style={styles.rhythm}>
@@ -607,10 +605,6 @@ function ChatComposer({
         placeholder={chatText.placeholder(link.other.displayName, link.myPet.name)}
         disabled={ghost}
         disabledText={chatText.ghostDisabled}
-        sending={send.isPending}
-        tone={tone}
-        onToneChange={setTone}
-        toneLabels={chatText.tones}
         sendLabel={chatText.send}
       />
     </View>

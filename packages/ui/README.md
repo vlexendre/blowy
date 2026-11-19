@@ -79,7 +79,7 @@ PetLook = { name: string; species: Species; form?: PetForm; mood?: Mood; outfit?
 // LinkTemplate montrent le médaillon habillé, PetHero le pet habillé. Sans objet : rendu inchangé.
 PersonLook = { displayName: string; pet: PetLook; face: FaceVisibility; avatarUrl: string | null }   // ⊇ Person
 type MessageAuthor = 'me' | 'other' | 'my_pet' | 'other_pet' | 'system'; type MessageKind = 'text' | 'photo' | 'event'
-MessageLook = { id: string; author: MessageAuthor; kind: MessageKind; body: string | null; mediaUrl: string | null; at: string }
+MessageLook = { id: string; author: MessageAuthor; kind: MessageKind; body: string | null; mediaUrl: string | null; at: string; key?: string; status?: 'sending' | 'failed' }   // key : ligne stable d'un message envoyé de façon optimiste ; status : pas encore confirmé
 TodayLook = { mine: boolean; theirs: boolean; myPhotoUrl: string | null; theirPhotoUrl: string | null }
 LinkLook = { other: PersonLook; myPet: PetLook; status: LinkStatus; lives: number; level: number; unread: number; lastMessage: { preview: string; at: string } | null }
 PetEventLook = { id: string; kind: PetEventKind; delta: Partial<Gauges>; at: string }
@@ -384,12 +384,11 @@ ChallengeCardProps = { label: string; question: string; choices: readonly [strin
 ```
 #### `ChatThread` — `src/organisms/ChatThread.tsx`
 ```ts
-ChatThreadProps = { messages: readonly MessageLook[]; myPet: PetLook; other: Pick<PersonLook, 'displayName' | 'avatarUrl' | 'face' | 'pet'>; otherName?: string; dayLabel: (day: string) => string; dayKey?: (at: string) => string; onEndReached?: () => void; loadingOlder?: boolean; onPhotoPress?: (message: MessageLook) => void; lockedPhotoLabel?: string; header?: ReactElement; empty?: ReactElement; contentStyle?: StyleProp<ViewStyle>; }
+ChatThreadProps = { messages: readonly MessageLook[]; myPet: PetLook; other: Pick<PersonLook, 'displayName' | 'avatarUrl' | 'face' | 'pet'>; otherName?: string; dayLabel: (day: string) => string; dayKey?: (at: string) => string; onEndReached?: () => void; loadingOlder?: boolean; onPhotoPress?: (message: MessageLook) => void; lockedPhotoLabel?: string; header?: ReactElement; empty?: ReactElement; contentStyle?: StyleProp<ViewStyle>; sendingLabel?: string; failedLabel?: string; onRetry?: (message: MessageLook) => void; }   // lignes mémoïsées : une frappe ou un message ajouté ne redessine pas tout le fil
 ```
 #### `Composer` — `src/organisms/Composer.tsx`
 ```ts
-ComposerProps = { value: string; onChangeText: (text: string) => void; onSend: () => void; placeholder: string; disabled?: boolean; disabledText?: string; sending?: boolean; tone?: ComposerTone | null; onToneChange?: (tone: ComposerTone | null) => void; toneLabels?: Record<ComposerTone, string>; onAttach?: () => void; attachLabel?: string; sendLabel?: string; maxLength?: number; }
-type ComposerTone = 'sweet' | 'tease'
+ComposerProps = { value: string; onChangeText: (text: string) => void; onSend: () => void; placeholder: string; disabled?: boolean; disabledText?: string; sending?: boolean; onAttach?: () => void; attachLabel?: string; sendLabel?: string; maxLength?: number; }
 ```
 #### `EvolutionTimeline` — `src/organisms/EvolutionTimeline.tsx`
 ```ts

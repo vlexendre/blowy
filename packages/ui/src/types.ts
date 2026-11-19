@@ -36,7 +36,17 @@ export interface MessageLook {
   at: string;
   /** Rôle d'une réplique de minimoa (`Message.petRole`) : change le style de sa bulle. */
   petRole?: PetRoleLook | null;
+  /**
+   * Clé de ligne stable (défaut : `id`). Un message envoyé de façon optimiste garde la clé de son brouillon une fois
+   * remplacé par le message du serveur : la bulle n'est pas remontée, rien ne saute.
+   */
+  key?: string;
+  /** Message à soi pas encore confirmé par le serveur : en route, ou pas parti (à réessayer). */
+  status?: MessageStatus;
 }
+
+/** État d'envoi d'un message à soi (envoi optimiste). Absent : confirmé. */
+export type MessageStatus = 'sending' | 'failed';
 
 /** Rôles des répliques de minimoa (`PET_ROLES` du domaine). */
 export type PetRoleLook = 'icebreaker' | 'nudge' | 'remark' | 'guard' | 'event';

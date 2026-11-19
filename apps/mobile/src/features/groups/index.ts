@@ -4,9 +4,11 @@
  */
 import type { CreateGroupBody, GroupAction, GroupDetail, GroupMessage, GroupMessagesPage, GroupReportBody, Groups, Together } from '@blowy/contract';
 import { type InfiniteData, type QueryClient, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import type { MessageLook } from '@blowy/ui';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { groupUrl, keys, useApi } from '@/core';
+import { type ChatTransport, useOutbox, useThreadLooks } from '@/features/chat';
 import { useTrackShare } from '@/features/growth';
 import { useCopyShare } from '@/features/me';
 import { croissance } from '@/locales/croissance';
@@ -21,6 +23,22 @@ export function useGroup(id: string) {
   return useQuery({ queryKey: keys.group(id), queryFn: () => api.groups.get(id) });
 }
 
+/** Les messages des pages (la plus récente d'abord, chacune chronologique), du plus ancien au plus récent, sans doublon. */
+export function flattenGroupMessages(pages: readonly GroupMessagesPage[] | undefined): GroupMessage[] {
+  const seen = new Set<string>();
+  const messages: GroupMessage[] = [];
+  const list = pages ?? [];
+  for (let p = list.length - 1; p >= 0; p--) {
+    for (const m of list[p]?.messages ?? []) {
+      if (!seen.has(m.id)) {
+        seen.add(m.id);
+        messages.push(m);
+      }
+    }
+  }
+  return messages;
+}
+
 type Pages = InfiniteData<GroupMessagesPage, string | undefined>;
 
 /** Messages d'un groupe, du plus ancien au plus récent (ordre attendu par `ChatThread`). */
@@ -33,18 +51,9 @@ export function useGroupMessages(id: string, enabled = true) {
     getNextPageParam: (last) => last.nextBefore ?? undefined,
     enabled,
   });
-  const seen = new Set<string>();
-  const messages: GroupMessage[] = [];
-  // Pages : la plus récente d'abord ; chaque page est dans l'ordre chronologique.
-  const pages = query.data?.pages ?? [];
-  for (let p = pages.length - 1; p >= 0; p--) {
-    for (const m of pages[p]?.messages ?? []) {
-      if (!seen.has(m.id)) {
-        seen.add(m.id);
-        messages.push(m);
-      }
-    }
-  }
+  const pages = query.data?.pages;
+  // Même tableau tant que rien ne change : le fil ne se redessine pas pour rien.
+  const messages = useMemo(() => flattenGroupMessages(pages), [pages]);
   return { ...query, messages };
 }
 
@@ -55,8 +64,10 @@ function applyAction(qc: QueryClient, id: string, action: GroupAction): void {
     if (!data) return data;
     const [first, ...rest] = data.pages;
     if (!first) return data;
-    const known = new Set(first.messages.map((m) => m.id));
+    // Le temps réel a pu relire le fil avant la réponse : un message déjà là (dans n'importe quelle page) n'est pas remis.
+    const known = new Set(data.pages.flatMap((p) => p.messages.map((m) => m.id)));
     const fresh = action.messages.filter((m) => !known.has(m.id));
+    if (fresh.length === 0) return data;
     return { ...data, pages: [{ ...first, messages: [...first.messages, ...fresh] }, ...rest] };
   });
 }
@@ -71,23 +82,50 @@ function setDetail(qc: QueryClient, group: GroupDetail): void {
   });
 }
 
-/** Envoi d'un message ; jamais relancé tout seul (refus du filtre : le texte reste dans le champ). */
-export function useSendGroupMessage(id: string) {
+/** Un message de groupe tel que `ChatThread` le lit (les minimoas ne parlent que d'événements : lignes centrées). */
+export const groupMessageLook = (m: GroupMessage): MessageLook => ({
+  id: m.id,
+  author: m.author === 'me' ? 'me' : m.author === 'member' ? 'other' : 'system',
+  kind: m.kind === 'event' || m.author === 'minimoa' || m.author === 'system' ? 'event' : 'text',
+  body: m.body,
+  mediaUrl: null,
+  at: m.at,
+});
+
+const mineInGroup = (m: MessageLook): boolean => m.author === 'me';
+
+/** Le chat d'un groupe, optimiste (même file que les liens : `@/features/chat`). */
+export function useGroupChat(id: string) {
   const api = useApi();
   const qc = useQueryClient();
-  return useMutation({ retry: false, mutationFn: (body: string) => api.groups.send(id, body), onSuccess: (a) => applyAction(qc, id, a) });
+  const thread = useGroupMessages(id);
+  const transport = useMemo<ChatTransport<GroupAction>>(
+    () => ({
+      send: (p) => api.groups.send(id, p.body, p.clientId),
+      apply: (action) => applyAction(qc, id, action),
+      sentId: (action) => action.messages.find((m) => m.author === 'me')?.id,
+    }),
+    [api, qc, id],
+  );
+  const outbox = useOutbox(`group:${id}`, transport);
+  const server = useMemo(() => thread.messages.map(groupMessageLook), [thread.messages]);
+  const looks = useThreadLooks(`group:${id}`, server, outbox.pending, mineInGroup);
+  const { send: enqueue } = outbox;
+  const send = useCallback((body: string) => enqueue(body, server), [enqueue, server]);
+  return { thread, looks, send, retry: outbox.retry };
 }
 
-/** Marque le groupe comme lu à l'ouverture et à chaque nouveau message. */
+/** Marque le groupe comme lu à l'ouverture et à chaque nouveau message : la pastille s'éteint tout de suite. */
 export function useMarkGroupRead(id: string, newestMessageId: string | undefined) {
   const api = useApi();
   const qc = useQueryClient();
   useEffect(() => {
     if (!newestMessageId) return;
-    void api.groups
-      .read(id)
-      .then(() => qc.setQueryData<Groups>(keys.groups, (list) => list && { ...list, groups: list.groups.map((g) => (g.id === id ? { ...g, unread: 0 } : g)) }))
-      .catch(() => undefined);
+    const unread = qc.getQueryData<Groups>(keys.groups)?.groups.find((g) => g.id === id)?.unread ?? 0;
+    if (unread > 0) qc.setQueryData<Groups>(keys.groups, (list) => list && { ...list, groups: list.groups.map((g) => (g.id === id ? { ...g, unread: 0 } : g)) });
+    void api.groups.read(id).catch(() => {
+      if (unread > 0) void qc.invalidateQueries({ queryKey: keys.groups, exact: true });
+    });
   }, [api, id, newestMessageId, qc]);
 }
 
@@ -122,7 +160,17 @@ export function useDeclineGroup() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.groups.decline(id),
-    onSuccess: (_ok, id) => qc.setQueryData<Groups>(keys.groups, (list) => list && { ...list, invitations: list.invitations.filter((i) => i.groupId !== id) }),
+    // L'invitation part tout de suite ; elle revient si l'API refuse.
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: keys.groups, exact: true });
+      const before = qc.getQueryData<Groups>(keys.groups);
+      qc.setQueryData<Groups>(keys.groups, (list) => list && { ...list, invitations: list.invitations.filter((i) => i.groupId !== id) });
+      return { before };
+    },
+    onError: (_e, _id, ctx) => {
+      if (ctx?.before) qc.setQueryData(keys.groups, ctx.before);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: keys.groups, exact: true }),
   });
 }
 
@@ -162,7 +210,23 @@ export function useGroupJoker(id: string) {
 export function useRenameGroup(id: string) {
   const api = useApi();
   const qc = useQueryClient();
-  return useMutation({ mutationFn: (name: string) => api.groups.rename(id, name), onSuccess: (a) => applyAction(qc, id, a) });
+  return useMutation({
+    mutationFn: (name: string) => api.groups.rename(id, name),
+    // Le nouveau nom s'affiche tout de suite (en-tête et liste) ; l'ancien revient si l'API refuse (filtre, doublon).
+    onMutate: async (name) => {
+      await qc.cancelQueries({ queryKey: keys.group(id), exact: true });
+      const detail = qc.getQueryData<GroupDetail>(keys.group(id));
+      const list = qc.getQueryData<Groups>(keys.groups);
+      if (detail) qc.setQueryData<GroupDetail>(keys.group(id), { ...detail, name });
+      if (list) qc.setQueryData<Groups>(keys.groups, { ...list, groups: list.groups.map((g) => (g.id === id ? { ...g, name } : g)) });
+      return { detail, list };
+    },
+    onError: (_e, _name, ctx) => {
+      if (ctx?.detail) qc.setQueryData(keys.group(id), ctx.detail);
+      if (ctx?.list) qc.setQueryData(keys.groups, ctx.list);
+    },
+    onSuccess: (a) => applyAction(qc, id, a),
+  });
 }
 
 export function useReportGroup(id: string) {

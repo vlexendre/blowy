@@ -45,8 +45,11 @@ export interface AuthPort {
 }
 
 export interface RealtimePort {
-  /** Appelle `onChange` à chaque nouveau message ou changement d'un lien (ou message d'un groupe, `groupId`) de la personne connectée. */
-  subscribe(onChange: (event: { linkId: string | null; groupId?: string | null }) => void): () => void;
+  /**
+   * Appelle `onChange` à chaque nouveau message ou changement d'un lien (ou message d'un groupe, `groupId`) de la
+   * personne connectée ; `resync` après une reconnexion (des événements ont pu être manqués : tout relire).
+   */
+  subscribe(onChange: (event: { linkId: string | null; groupId?: string | null; resync?: boolean }) => void): () => void;
 }
 
 export interface PickedImage {

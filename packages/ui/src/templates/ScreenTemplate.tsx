@@ -1,7 +1,8 @@
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { cloneElement, type ComponentProps, type ComponentRef, type ReactElement, type ReactNode, type Ref, useCallback } from 'react';
+import { cloneElement, type ComponentProps, type ComponentRef, type ReactElement, type ReactNode, type Ref, useCallback, useEffect, useState } from 'react';
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   type NativeScrollEvent,
@@ -164,6 +165,8 @@ function ScreenBody({
 }: ScreenTemplateProps) {
   const insets = useSafeAreaInsets();
   const { locked } = useScrollLock();
+  // Clavier ouvert : il couvre déjà la zone du bas ; le pied (champ du chat) se pose juste dessus, sans marge en trop.
+  const keyboardUp = useKeyboardUp(keyboard && !!footer);
   const top = edges.includes('top') ? insets.top : 0;
   const safeBottom = edges.includes('bottom') ? insets.bottom : 0;
   const pad = padded ? { paddingHorizontal: gutter } : null;
@@ -224,7 +227,7 @@ function ScreenBody({
       {/* Corps fixe sous un en-tête (chat) : la liste s'efface sous l'en-tête au lieu d'être coupée net. */}
       {!scroll && header && background === 'night' ? <LinearGradient pointerEvents="none" colors={[color.night, alpha(color.night, 0)]} style={styles.headerFade} /> : null}
       {footer ? (
-        <View style={[pad, styles.footer, { paddingBottom: Math.max(safeBottom, space.lg) }]}>
+        <View style={[pad, styles.footer, { paddingBottom: keyboardUp ? space.sm : Math.max(safeBottom, space.lg) }]}>
           {/* Le contenu qui défile s'efface en douceur au-dessus du pied au lieu d'être coupé net. */}
           {scroll && background === 'night' ? <LinearGradient pointerEvents="none" colors={[alpha(color.night, 0), color.night]} style={styles.footerFade} /> : null}
           {footer}
@@ -248,6 +251,21 @@ function ScreenBody({
       </InkProvider>
     </View>
   );
+}
+
+/** Clavier affiché (iOS : dès qu'il commence à monter, pour bouger avec lui). Écoute seulement si `active`. */
+function useKeyboardUp(active: boolean): boolean {
+  const [up, setUp] = useState(false);
+  useEffect(() => {
+    if (!active || Platform.OS === 'web') return;
+    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setUp(true));
+    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setUp(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, [active]);
+  return active && up;
 }
 
 const styles = StyleSheet.create({

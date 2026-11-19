@@ -14,6 +14,7 @@ import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/p
 import { CurrentUser } from '../../../shared/auth.guard';
 import { STORAGE } from '../../../shared/tokens';
 import { RateLimit } from '../../../shared/user-rate-limit';
+import { Idempotency } from '../../../shared/idempotency';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { ArchiveLink } from '../application/archive-link.usecase';
 import { GetLink } from '../application/get-link.usecase';
@@ -47,6 +48,7 @@ export class LinksController {
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(ContentFilter) private readonly filter: ContentFilter,
     @Inject(HabitSharing) private readonly sharing: HabitSharing,
+    @Inject(Idempotency) private readonly idempotency: Idempotency,
     @Optional() @Inject(REVIEW_REPLIES) private readonly review: ReviewReplies | null,
   ) {}
 
@@ -83,13 +85,16 @@ export class LinksController {
     @Param('id', LinkId) id: string,
     @Body(new ZodPipe(SendMessageBody)) body: z.infer<typeof SendMessageBody>,
   ): Promise<LinkAction> {
-    // Filtre des contenus (audit B6) : une violation nette n'est jamais écrite ; un cas limite est signalé après coup.
-    const screened = await this.filter.screenMessage({ userId: user.userId, linkId: id, text: body.body });
-    const result = await this.sendMessage.execute({ linkId: id, userId: user.userId, body: body.body, tone: body.tone });
-    await this.filter.afterMessage({ userId: user.userId, linkId: id, text: body.body, screened, written: result.messages });
-    // Compte de revue d'Apple : la personne fictive répond (rien pour un vrai lien).
-    this.review?.afterUserMessage(id, user.userId);
-    return this.action(result, user.userId);
+    // Envoi optimiste : un réessai avec le même `clientId` rend la première réponse, sans écrire deux fois.
+    return this.idempotency.once(`link:${user.userId}:${id}`, body.clientId, async () => {
+      // Filtre des contenus (audit B6) : une violation nette n'est jamais écrite ; un cas limite est signalé après coup.
+      const screened = await this.filter.screenMessage({ userId: user.userId, linkId: id, text: body.body });
+      const result = await this.sendMessage.execute({ linkId: id, userId: user.userId, body: body.body, tone: body.tone });
+      await this.filter.afterMessage({ userId: user.userId, linkId: id, text: body.body, screened, written: result.messages });
+      // Compte de revue d'Apple : la personne fictive répond (rien pour un vrai lien).
+      this.review?.afterUserMessage(id, user.userId);
+      return this.action(result, user.userId);
+    });
   }
 
   @Post(':id/read')

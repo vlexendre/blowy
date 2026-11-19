@@ -387,7 +387,8 @@ export function createApiClient(opts: ApiClientOptions) {
       wake: (id: string) => call('POST', groupRoutes.wake(id), GroupActionZ),
       /** Par pages : passer le `nextBefore` de la page précédente. */
       messages: (id: string, before?: string) => call('GET', groupRoutes.messages(id) + (before ? `?before=${encodeURIComponent(before)}` : ''), GroupMessagesPageZ),
-      send: (id: string, body: string) => call('POST', groupRoutes.messages(id), GroupActionZ, { body }),
+      /** `clientId` : clé d'idempotence (envoi optimiste) ; un réessai avec la même clé n'écrit pas deux fois. */
+      send: (id: string, body: string, clientId?: string) => call('POST', groupRoutes.messages(id), GroupActionZ, clientId ? { body, clientId } : { body }),
       read: (id: string) => call('POST', groupRoutes.read(id), OkZ),
       /** Joker pour le jour du groupe : aujourd'hui, ou hier jusqu'à midi (`GroupDetail.jokers.canPlaceFor`). */
       joker: (id: string, day: string) => call('POST', groupRoutes.joker(id), GroupActionZ, { day }),

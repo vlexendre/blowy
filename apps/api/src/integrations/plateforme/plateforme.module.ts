@@ -20,6 +20,7 @@ import { TickService } from '../../modules/tick/tick.service';
 import { repository } from '../../persistence/repository';
 import { Background } from '../../shared/background';
 import { CACHE, type Cache, MemoryCache } from '../../shared/cache';
+import { Idempotency } from '../../shared/idempotency';
 import type { Clock } from '../../shared/clock';
 import { CLOCK } from '../../shared/tokens';
 import { MemoryRateLimitStore, RATE_LIMIT_STORE, UserRateLimitGuard } from '../../shared/user-rate-limit';
@@ -61,6 +62,7 @@ export class PlateformeModule {
       { provide: CACHE, useFactory: (clock: Clock) => new MemoryCache(clock), inject: [CLOCK] },
       { provide: RATE_LIMIT_STORE, useFactory: (clock: Clock) => new MemoryRateLimitStore(clock), inject: [CLOCK] },
       UserRateLimitGuard,
+      Idempotency,
       Background,
       repository<AiUsageStore>(AI_USAGE_STORE, env.adapters, (db) => new MemoryAiUsageStore(db), (c) => new SupabaseAiUsageStore(c)),
       { provide: AI_MODEL, useValue: model },
