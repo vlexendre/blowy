@@ -28,6 +28,7 @@ Lire d'abord `docs/ARCHITECTURE.md` (règles) et `docs/SCREENS.md` (écrans). Te
 - Après une migration SQL : mettre à jour `apps/api/src/persistence/database.types.ts`, puis lancer `check:schema`. Une migration doit passer sur une base peuplée (défaut constant pour une colonne non nulle, contraintes `not valid` puis `validate` sur les grosses tables, index `if not exists` à créer avant en `concurrently`).
 - « Qui est montré à qui » (supprimé, suspendu, bloqué, discret) : seulement par `Audience` (`modules/safety/application/audience.ts`).
 - Travail planifié : un `XxxJobs.runDue(now)` idempotent, une ligne dans `apps/api/src/modules/tick/jobs.ts`.
+- Production : rétro-compatibilité obligatoire (`docs/VERSIONING.md`). Contrat seulement par ajout (sinon `/v2/…` ou adaptation par build via `clientApp()`), migrations seulement par ajout (expand → migrate → contract, `-- destructive-ok: <raison>` pour la dernière phase) ; `pnpm contract:check` et `pnpm migrations:check` (dans `pnpm test`) ; `pnpm contract:snapshot` à chaque sortie de l'app.
 - Ne jamais mettre la clé secrète Supabase ni la clé Resend ailleurs que dans `apps/api/.env` (non versionné).
 
 ## Textes (deux minutes, détail dans `docs/I18N.md`)

@@ -66,7 +66,7 @@ e-mails de signe plafonnés, repérage des envois en masse pour la modération ;
 anniversaires ; journal `lifecycle_messages` partagé avec Minimoa+, `docs/FIDELISATION.md`), `growth` (codes créateurs,
 source d'arrivée, compteurs et étapes de l'entonnoir, tableau « Croissance » ; `Growth` et `Codes` globaux, docs/VIRALITE.md), `groups` (groupes, « la tenir ensemble », jours jugés ;
 `groups/sharing` : habitudes partagées et rigueur, module sans dépendance importé par les liens, les rencontres et les
-rituels ; docs/GROUPES.md), `tick` (minuteur), `health`, `moderation` (filtre des contenus :
+rituels ; docs/GROUPES.md), `tick` (minuteur), `health`, `app-config` (builds servis, `GET /v1/app/config` ; en-têtes `x-app-*` lus par `shared/client-app.ts`, 426 sous le minimum : docs/VERSIONING.md), `moderation` (filtre des contenus :
 règles du domaine `moderation.ts` puis IA si permise ; `ReportDesk`, seul créateur des signalements : priorité, escalade,
 suspension automatique, alertes de l'équipe), et `src/review` (compte de revue d'Apple et son monde d'exemple,
 `docs/APP-REVIEW.md` ; « qui voit qui » reste dans `Audience`, par `profiles.review_world`).

@@ -15,9 +15,12 @@
     "build:admin": "pnpm --filter @blowy/admin build",
     "build": "pnpm -r --if-present build",
     "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm i18n:check && pnpm -r --if-present test",
+    "test": "pnpm i18n:check && pnpm contract:check && pnpm migrations:check && pnpm -r --if-present test",
     "i18n:check": "tsx scripts/i18n-check.mts",
     "i18n:list": "tsx scripts/i18n-check.mts --list",
+    "contract:check": "tsx scripts/contract-check.mts",
+    "contract:snapshot": "tsx scripts/contract-check.mts --write",
+    "migrations:check": "tsx scripts/migrations-check.mts",
     "emails:preview": "tsx scripts/email-previews.mts",
     "format": "prettier --write ."
   },

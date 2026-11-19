@@ -45,6 +45,7 @@ Les valeurs secrètes ne vont que dans les tableaux de bord (Railway, Cloudflare
 | `ANTHROPIC_API_KEY`, `AI_PROVIDER`, `AI_DAILY_CEILING_USD`… | | `AI_PROVIDER=off`, ou une clé et un plafond bas |
 | `APPLE_SIGNIN_KEY_P8`, `APPLE_SIGNIN_KEY_ID`, `APPLE_SIGNIN_TEAM_ID`, `APPLE_SIGNIN_CLIENT_ID` | | rien (révocation coupée) |
 | `REVIEW_EMAIL`, `REVIEW_CODE` | | facultatifs (code de 10 caractères au moins) |
+| `APP_IOS_MIN_SUPPORTED_BUILD`, `APP_IOS_LATEST_BUILD` (`APP_IOS_STORE_URL`, `APP_ANDROID_…`) | builds servis et dernier publié (docs/VERSIONING.md ; défaut `0` : ni minimum ni bandeau) | ceux de « Minimoa Dev » (ses numéros de build sont à part) |
 
 En `staging`, l'API refuse de démarrer si une variable désigne la production (projet `sqxebllmatfflopqddaw`, adresses
 minimoa.app, www, api, admin), si `REVENUECAT_APPLE_NOTIFICATIONS_URL` est posée ou si `REVIEW_CODE` est court. Elle
