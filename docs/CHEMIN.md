@@ -185,9 +185,22 @@ Pour une app dont le build atteint `APP_IOS_CHEMIN_BUILD` : `GET /v1/rituals/tod
 3. Déployer l'API, puis `pnpm --filter @blowy/api chemin:seed` (production : contenu, pas de personnes).
 4. À la sortie du build : `APP_IOS_CHEMIN_BUILD=<build>`, `pnpm contract:snapshot`.
 
-## Ce qui reste pour l'app
+## App (V1)
 
-Carte (unités, étapes, état), écran de séance (choix illustré, curseur, réactions, transition, scène de fin),
-révélation, « Ta personne du jour » (réutiliser la carte des rencontres et « Faire signe »), profil, lien profond
-`blowy://chemin`, inscription en « Étape 1 » (ou garder le test : il vaut l'unité 1), illustrations des icônes et des
-animations nommées (`hop`, `confetti`), envoi de `?formats=choice,slider`.
+Fait dans `apps/mobile` et `packages/ui` (détail par écran : docs/SCREENS.md) :
+
+| Pièce | Où |
+|---|---|
+| Logique d'affichage (fenêtre du chemin, bandeau du jour, file des questions et « Passer », corps des réponses, réaction du curseur, distance à gros grains, jauges) | `apps/mobile/src/features/chemin/logic.ts` (tests : `logic.test.ts`) |
+| Données (`useCheminMap`, `useCheminSession` avec `formats=choice,slider`, `useAnswerSeance` optimiste, `useHelloFromChemin` = `useWave`, `useProfil`) | `apps/mobile/src/features/chemin/index.ts` |
+| Écrans | accueil `app/(tabs)/pet.tsx`, `app/chemin/seance.tsx`, `app/chemin/fin.tsx`, `app/pet/serie.tsx`, Moi, Chats (« On t’a dit bonjour »), carte, inscription (`localisation.tsx`, `pret.tsx`, « Étape 1 ») |
+| Composants | `CheminPath`, `SessionBanner`, `SeanceBar`, `SeanceQuestion`, `AnswerSlider`, `StreakRise`, `RevelationCard`, `PersonOfDayCard`, `CheminEmptyCard`, `HelloCard`, `MinimoaTypeCard`, `KnowsPanel`, `PreviewPeople` ; épingles `MapSticker hot` |
+| Animations nommées | `packages/ui/src/motion/named.ts` (`namedMotion` : `hop`, `confetti`, `stars`… ; inconnu → repli neutre, texte seul) |
+| Textes | `apps/mobile/src/locales/chemin.ts` (5 langues) |
+| Lien profond | `blowy://chemin` → `/pet?chemin=1` (accueil, puis la séance s'il y en a une) ; `/chemin` aussi |
+| Analytics (avec accord) | `Seance Started`, `Seance Completed`, `Person Of Day Shown`, `Hello Sent From Chemin` (`trackChemin`) |
+
+Limites connues : « Passer cette question » remet la question à la fin (l'API exige une réponse à chacune) ;
+`PersonZ` n'a ni âge ni quartier (l'app dit la distance à gros grains sur la carte, rien sur la fin de séance) ; le
+résultat d'une séance est gardé en mémoire (relancer l'app : l'accueil dit « faite », sans « Revoir ta personne du
+jour ») ; l'aperçu flouté n'existe qu'après la création du compte (aucune route publique) et la connexion reste avant.
