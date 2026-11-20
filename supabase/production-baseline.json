@@ -1,4 +1,4 @@
 {
   "note": "Dernière migration appliquée en production. Toute migration plus récente (nom de fichier plus grand) est vérifiée par `pnpm migrations:check` (docs/VERSIONING.md). À avancer après chaque `supabase db push` en production.",
-  "lastAppliedInProduction": "20261120100000_objets_retires.sql"
+  "lastAppliedInProduction": "20261121100000_chemin.sql"
 }
