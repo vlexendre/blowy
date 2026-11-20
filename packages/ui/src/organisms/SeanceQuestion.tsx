@@ -10,6 +10,7 @@ import { ChoiceCard } from '../molecules/ChoiceCard';
 import { HostBubble } from '../molecules/HostBubble';
 import { Appear } from '../motion/Appear';
 import { PopIn } from '../motion/PopIn';
+import type { MascotMoment, MascotSource } from '../motion/mascot';
 import type { PetActorReaction } from '../motion/pets/PetActor';
 import { alpha, color, petTint, radius, space } from '../theme';
 
@@ -41,6 +42,11 @@ export interface SeanceQuestionProps {
   questionKey: string;
   /** Sous la bulle, en petit (l'intro du minimoa avant la première question). */
   note?: string | null;
+  /** Minimoa animé réglé par l'API (à la place du petit minimoa) ; absent : affichage habituel. */
+  mascot?: MascotSource | null;
+  /** Moment joué à chaque nouvelle `mascotKey` (réfléchir à l'arrivée d'une question, rire à une réponse). */
+  mascotMoment?: MascotMoment | null;
+  mascotKey?: number;
 }
 
 /** Une icône d'option : une illustration de l'app si le nom est connu, sinon l'emoji tel quel. */
@@ -51,7 +57,7 @@ export const optionIcon = (icon: string): { emoji?: string; icon?: IconName } =>
  * Une question de la séance (V6-GSeance) : le minimoa la pose dans sa bulle, puis les réponses en cartes illustrées
  * (la choisie passe au jaune et s'incline) ou un curseur entre deux bouts ; sa réaction monte dessous.
  */
-export function SeanceQuestion({ kicker, text, pet, format, options, picked, onPick, slider, reaction, reactKey, reactWith, questionKey, note }: SeanceQuestionProps) {
+export function SeanceQuestion({ kicker, text, pet, format, options, picked, onPick, slider, reaction, reactKey, reactWith, questionKey, note, mascot, mascotMoment, mascotKey }: SeanceQuestionProps) {
   const low = options[0];
   const high = options[options.length - 1];
   return (
@@ -59,7 +65,7 @@ export function SeanceQuestion({ kicker, text, pet, format, options, picked, onP
       <Text variant="label" color={color.accent}>
         {kicker}
       </Text>
-      <HostBubble species={pet.species} line={text} seed={pet.id} name={pet.name} reactKey={reactKey} reaction={reactWith ?? 'joy'} mood="neutre" note={note ?? undefined} />
+      <HostBubble species={pet.species} line={text} seed={pet.id} name={pet.name} reactKey={reactKey} reaction={reactWith ?? 'joy'} mood="neutre" note={note ?? undefined} mascot={mascot} mascotMoment={mascotMoment} mascotKey={mascotKey} />
       <Appear key={questionKey} replay={questionKey} delay={180} style={styles.answers}>
         {format === 'slider' && slider && low && high ? (
           <AnswerSlider {...slider} low={{ label: low.label, icon: optionIcon(low.icon).emoji ?? null }} high={{ label: high.label, icon: optionIcon(high.icon).emoji ?? null }} />

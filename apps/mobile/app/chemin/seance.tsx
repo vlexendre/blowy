@@ -5,7 +5,7 @@
  * (idempotent), puis la fin de séance. Tout le contenu vient du serveur.
  */
 import { ApiError } from '@blowy/api-client';
-import { Banner, Button, EmptyState, namedMotion, type PetActorReaction, ScreenTemplate, SeanceBar, SeanceQuestion, Skeleton, Stack } from '@blowy/ui';
+import { Banner, Button, EmptyState, type MascotMoment, mascotMomentFor, namedMotion, type PetActorReaction, ScreenTemplate, SeanceBar, SeanceQuestion, Skeleton, Stack } from '@blowy/ui';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
@@ -45,7 +45,17 @@ export default function Seance() {
   const [reactKey, setReactKey] = useState(0);
   const [reactWith, setReactWith] = useState<PetActorReaction | null>(null);
   const started = useRef<string | null>(null);
+  // Minimoa animé (réglé par l'API) : il réfléchit à chaque question, réagit à chaque réponse.
+  const [mascotMoment, setMascotMoment] = useState<MascotMoment | null>(null);
+  const [mascotKey, setMascotKey] = useState(0);
   const session = query.data?.session ?? null;
+  const mascot = query.data?.mascot ?? null;
+  const asked = progress ? currentQuestionId(progress) : null;
+  useEffect(() => {
+    if (!asked) return;
+    setMascotMoment('think');
+    setMascotKey((k) => k + 1);
+  }, [asked]);
   const close = () => goBack('/(tabs)/pet');
 
   // Une nouvelle séance : la file des questions, et « Seance Started » une fois.
@@ -60,7 +70,7 @@ export default function Seance() {
   const send = (p: SeanceProgress) => {
     if (!session) return;
     answer.mutate(
-      { body: answersBody(session, p), slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation },
+      { body: answersBody(session, p), slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation, mascot },
       {
         onSuccess: (res) => {
           if (!res.alreadyRecorded && res.newItems.length > 0) useUnlocks.getState().push(res.newItems);
@@ -77,7 +87,7 @@ export default function Seance() {
     const o = q?.options[0];
     if (!q || !o) return;
     answer.mutate(
-      { body: { sessionId: session.id, answers: [{ questionId: q.id, optionId: o.id }] }, slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation },
+      { body: { sessionId: session.id, answers: [{ questionId: q.id, optionId: o.id }] }, slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation, mascot },
       { onSuccess: (res) => router.replace({ pathname: '/chemin/fin', params: { id: res.sessionId } }) },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -134,7 +144,10 @@ export default function Seance() {
   const pick = (next: AnswerPick) => {
     setDraft(next);
     setReactKey((k) => k + 1);
-    setReactWith(namedMotion(reactionFor(q, next)?.animation).reaction ?? 'joy');
+    const animation = reactionFor(q, next)?.animation;
+    setReactWith(namedMotion(animation).reaction ?? 'joy');
+    setMascotMoment(mascotMomentFor(animation));
+    setMascotKey((k) => k + 1);
   };
   const validate = () => {
     if (!draft || answer.isPending) return;
@@ -202,6 +215,9 @@ export default function Seance() {
           reactKey={reactKey}
           reactWith={reactWith}
           note={done === 0 && !draft ? session.intro : null}
+          mascot={mascot}
+          mascotMoment={mascotMoment}
+          mascotKey={mascotKey}
         />
         {answer.isError && answer.error instanceof ApiError && answer.error.code === 'not_found' ? (
           <Banner tone="info" text={common.errorTitle} actionLabel={t.backHome} onAction={close} />

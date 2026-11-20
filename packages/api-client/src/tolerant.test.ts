@@ -2,7 +2,7 @@
  * Une app installée a des semaines de retard sur l'API : quand l'API ajoute une valeur (nouvel objet, nouveau type
  * d'événement…), l'app doit continuer de marcher (docs/VERSIONING.md).
  */
-import { MeZ, PetViewZ, WardrobeZ } from '@blowy/contract';
+import { CheminSessionResponseZ, MeZ, PetViewZ, WardrobeZ } from '@blowy/contract';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { ApiError, createApiClient } from './index';
@@ -85,6 +85,15 @@ describe('réponses d’une API plus récente que l’app', () => {
     const S = z.object({ list: z.array(z.discriminatedUnion('kind', [z.object({ kind: z.literal('a') }), z.object({ kind: z.literal('b') })])) });
     const { data } = parseTolerant(S, { list: [{ kind: 'a' }, { kind: 'z' }, { kind: 'b' }] });
     expect(data.list).toEqual([{ kind: 'a' }, { kind: 'b' }]);
+  });
+
+  it('minimoa animé : un fournisseur inconnu retire tout le personnage (image habituelle), la séance reste lue', () => {
+    const quota = { free: 1, bonus: 0, used: 1, left: 0, nextSlot: null, bonusReason: null, bonusHint: null };
+    const json = { session: null, quota, reason: 'quota_used', message: null, mascot: { provider: 'rive', url: 'https://x.example/a', appKey: 'k', events: { happy: 'a', think: 'b', cheer: 'c' } } };
+    const { data, tolerated } = parseTolerant(CheminSessionResponseZ, json);
+    expect(data.mascot ?? null).toBeNull();
+    expect(data.reason).toBe('quota_used');
+    expect(tolerated?.removed.some((p) => p.startsWith('mascot'))).toBe(true);
   });
 
   it('un champ ajouté par l’API est ignoré (objets non stricts)', () => {

@@ -131,8 +131,8 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Défi du jour | la carte monte du bas en ressort, le minimoa jaillit derrière son bord haut (mèche allumée) | puce inclinée en « pop », tuiles de ce que ça rapporte en cascade ; réponse choisie qui s'incline ; voile qui s'assombrit |
 | Série | la mèche se rallume (braise → jaillit → se pose, étincelles) à la 1re visite, chiffre qui défile depuis 0 ; record : confettis | jours faits cochés un à un ; prochain objet qui bat deux fois ; objets en cascade |
 | Accueil (Ton chemin) | l'étape du jour bat deux fois (`CheminPath`, `Pulse`) | bulle « Commencer » en « pop » ; le minimoa attend à côté ; rien en boucle |
-| Séance | la bulle du minimoa se réécrit à chaque question | carte choisie qui s'incline ; curseur à ressort ; réaction du minimoa d'après le nom du serveur (`namedMotion` : `hop` → saute de joie, `confetti` → fête ; inconnu : rien) ; réaction écrite qui monte (`PopIn`) |
-| Fin de séance | le chiffre de la série défile d'un cran, la flamme fait « pop » (`StreakRise`) | palier : confettis et puce (moins de 3 s, coupée d'un tap) ; révélation puis personne du jour en cascade ; objets gagnés : `UnlockCelebration` |
+| Séance | la bulle du minimoa se réécrit à chaque question | carte choisie qui s'incline ; curseur à ressort ; réaction du minimoa d'après le nom du serveur (`namedMotion` : `hop` → saute de joie, `confetti` → fête ; inconnu : rien) ; réaction écrite qui monte (`PopIn`) ; minimoa animé (Masko, s'il est réglé) : il réfléchit à chaque question, rit ou applaudit à chaque réponse (`mascotMomentFor`) |
+| Fin de séance | le chiffre de la série défile d'un cran, la flamme fait « pop » (`StreakRise`) ; minimoa animé : il applaudit dans la révélation | palier : confettis et puce (moins de 3 s, coupée d'un tap) ; révélation puis personne du jour en cascade ; objets gagnés : `UnlockCelebration` |
 | Preuve | le verdict monte sur la photo, le minimoa en autocollant saute de joie (ou fait non, gentiment), étoiles | bulle de la demande qui s'écrit ; trois boules pendant la vérification |
 | Habitudes | — | cartes en cascade (une fois) ; pastille de rythme qui glisse au toucher (rebond de confirmation) |
 | Bilan | — | chiffres qui défilent, cartes en cascade (une fois par bilan) |
@@ -196,6 +196,55 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   loin, 110 ms d'écart, une fois par session (`useFirstTime('carte:land')`) ; au repos, flottement de 3 pt (boucle
   `useLoop`, coupée hors écran et en animations réduites) ; les silhouettes floues respirent (opacité, échelle). Sur iPhone,
   la carte Apple garde les mêmes autocollants dans ses annotations ; gratuit, elle ne bouge pas (gestes coupés).
+
+## Minimoa animé (Masko)
+
+Pour certaines espèces, un personnage animé fait par [Masko](https://masko.ai) remplace l'image du minimoa (séance et fin
+de séance pour l'instant). **Rien n'est codé en dur dans l'app** : l'API dit quel personnage jouer.
+
+| Pièce | Où |
+|---|---|
+| Réglage par espèce (adresse de livraison, clé d'application, défauts de Nino) | `apps/api/src/config/mascots.env.ts` |
+| Contrat : `mascot` (facultatif, nullable) dans `GET /v1/chemin/seance` : `{ provider: 'masko', url, appKey, events: { happy, think, cheer } }` | `MascotZ`, `packages/contract/src/v7/chemin.ts` |
+| Règles pures (réaction du serveur → moment, repli) | `packages/ui/src/motion/mascot.ts` (tests : `mascot.test.ts`) |
+| Composant | `AnimatedMascot` (`packages/ui/src/molecules`) ; utilisé par `HostBubble`/`SeanceQuestion` (`mascot`, `mascotMoment`, `mascotKey`) et `RevelationCard` |
+| Lecteur | `@masko/player-react-native` (module Expo : lié par l'autolinking au `expo prebuild` / build EAS, pas de plugin de configuration) |
+
+- **Trois moments**, déclenchés une fois (`fire`), il revient seul au repos (`neutre`) : `happy` (il rit), `think` (il
+  réfléchit), `cheer` (il applaudit). Les noms d'événements viennent du serveur (`events`). Séance : `think` à l'arrivée
+  de chaque question, à une réponse le moment qui correspond au nom d'animation de la réaction (`think` → réfléchit ;
+  `confetti`, `party`, `stars`, `clap`, `dance` → applaudit ; tout le reste, absent ou inconnu → rit). Fin : `cheer`.
+- **Jamais d'écran vide** : l'affichage habituel (`PetActor`, `PetImage`) reste en place jusqu'à la première pose du
+  personnage, puis s'efface en fondu (`fadeTo`). Retour à l'affichage habituel si : pas de réglage (`mascot` null ou
+  absent : vieille API, autre espèce), lecteur absent (web, Expo Go, ancien client de dev), « Réduire les animations »
+  (pas de boucle : l'affichage habituel sait déjà se tenir tranquille), erreur avant la première pose (pas de réseau
+  au premier lancement, release introuvable), rien de montré en 12 s, ou plantage du lecteur (`PlayerBoundary`).
+  Un moment demandé pendant le chargement est joué dès qu'il se montre (dans les 4 s).
+- **Son coupé** par défaut (`sound={false}` : la voix des clips) ; attention, d'après Masko les sons d'arête jouent
+  quand même : une release de mascotte pour l'app ne doit pas en avoir.
+- **Pause** quand l'écran n'est plus au premier plan (`useMotionActive` → `pause()` / `play()`) ; le lecteur se met
+  aussi en pause seul hors de sa fenêtre ou app en arrière-plan. Il garde ses fichiers : hors ligne, il rejoue ce qu'il
+  a déjà téléchargé.
+- **Confidentialité** : le lecteur, quand il lit un canvas par son adresse, envoie à Masko un identifiant d'installation
+  aléatoire (`Masko-Install-Id`, comptage des copies actives) ; son manifeste de confidentialité le déclare (« Device
+  ID », analytique, non lié à la personne, pas de pistage). À reporter dans les informations de confidentialité de la
+  fiche App Store (docs/APP-STORE-CONNECT.md) avant la sortie du build qui l'embarque.
+- Lecteur d'écran : le personnage est une image nommée (`accessibilityLabel` : le nom du minimoa) ; rien ne dépend de
+  lui pour être lisible.
+
+### Ajouter une espèce animée
+1. Sur masko.ai, avec le compte de l'équipe : créer le **canvas** de l'espèce (corps entier, fond transparent), avec
+   l'état de départ `neutre` (boucle de repos) et les événements `action::happy`, `action::think`, `action::cheer` (une
+   fois chacun, retour seul à `neutre`), **sans son d'arête**. Le publier (**release**).
+2. Prendre l'adresse de livraison du canvas (`https://api.masko.ai/v1/canvases/<id>/delivery`) et la **clé
+   d'application** du personnage (`masko_app_…`, publique : elle ne lit que ses releases). Jamais une clé de compte.
+3. Railway (API) : `MASKO_<ESPÈCE>_URL=<adresse>` (`MASKO_SUZIE_URL`, `MASKO_GASTON_URL`, `MASKO_PIA_URL`) ; si le
+   personnage est sous une autre clé d'application que Nino, ajouter d'abord la clé par espèce dans `mascots.env.ts`.
+   Pour l'avoir sans réglage, l'ajouter à `DEFAULT_MASKO_URLS`.
+4. Aucune version de l'app à sortir : le prochain `GET /v1/chemin/seance` l'envoie. Couper une espèce :
+   `MASKO_<ESPÈCE>_URL=off` ; tout couper : `MASKO_ENABLED=0`.
+5. Un nouveau fournisseur (autre que `masko`) serait une valeur d'enum en plus dans une réponse : la lecture tolérante
+   retire alors tout `mascot` (affichage habituel), voir docs/VERSIONING.md.
 
 ## Banc d'essai
 `apps/mobile/app/dev/motion.tsx` (route `/dev/motion`) : chaque primitive et chaque comportement des pets, avec des

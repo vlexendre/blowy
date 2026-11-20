@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Avatar } from '../atoms/Avatar';
+import { AnimatedMascot } from '../molecules/AnimatedMascot';
 import { Button } from '../atoms/Button';
 import { Icon } from '../atoms/Icon';
 import { Panel } from '../atoms/Panel';
@@ -14,6 +15,7 @@ import { layout } from '../lib/styles';
 import { Appear } from '../motion/Appear';
 import { Burst } from '../motion/Burst';
 import { CountUp } from '../motion/CountUp';
+import type { MascotMoment, MascotSource } from '../motion/mascot';
 import { PopIn } from '../motion/PopIn';
 import { color, radius, space } from '../theme';
 import type { PetLook } from '../types';
@@ -64,10 +66,17 @@ export interface RevelationCardProps {
   title: string;
   text?: string | null;
   species: Species;
+  /** Minimoa animé réglé par l'API, à la place de l'image ; absent : l'image. */
+  mascot?: MascotSource | null;
+  /** Moment joué à chaque nouvelle `mascotKey` (il applaudit à l'arrivée). */
+  mascotMoment?: MascotMoment | null;
+  mascotKey?: number;
+  /** Nom du minimoa, lu par le lecteur d'écran sur le minimoa animé. */
+  name?: string;
 }
 
 /** La révélation de fin de séance : un panneau jaune, une phrase sur toi, le minimoa qui dépasse en bas à droite. */
-export function RevelationCard({ kicker, title, text, species }: RevelationCardProps) {
+export function RevelationCard({ kicker, title, text, species, mascot, mascotMoment, mascotKey, name }: RevelationCardProps) {
   return (
     <Appear distance={16}>
       <Panel gradient="accent" radius={28} padding="lg" overflow style={styles.revelation}>
@@ -85,7 +94,18 @@ export function RevelationCard({ kicker, title, text, species }: RevelationCardP
           ) : null}
         </View>
         <View pointerEvents="none" style={styles.revelationPet}>
-          <PetImage species={species} mood="joie" size={112} />
+          {mascot ? (
+            <AnimatedMascot
+              source={mascot}
+              size={128}
+              moment={mascotMoment}
+              momentKey={mascotKey}
+              accessibilityLabel={name}
+              fallback={<PetImage species={species} mood="joie" size={112} />}
+            />
+          ) : (
+            <PetImage species={species} mood="joie" size={112} />
+          )}
         </View>
       </Panel>
     </Appear>

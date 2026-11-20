@@ -30,6 +30,8 @@ export default function Fin() {
   const waveBlock = useWaveBlock(hello.wave.error);
   const invite = useShareInvite(rencontres.shareMessage);
   const [party, setParty] = useState(0);
+  // Minimoa animé : il applaudit à l'arrivée.
+  const [cheerKey, setCheerKey] = useState(0);
   const [milestoneShown, setMilestoneShown] = useState(true);
   const shown = useRef(false);
   const home = () => router.dismissTo('/(tabs)/pet');
@@ -40,6 +42,7 @@ export default function Fin() {
     if (!result || shown.current) return;
     shown.current = true;
     if (person) trackChemin('Person Of Day Shown', { unit: entry?.unitTitle ?? null });
+    setCheerKey((n) => n + 1);
     // Scène de fin nommée par le serveur (confettis…) ; un nom inconnu : rien (repli neutre).
     if (namedMotion(entry?.endScene).burst && !result.alreadyRecorded) setParty((n) => n + 1);
     // Palier de série : confettis brefs (moins de 3 s), coupés d'un tap.
@@ -97,7 +100,15 @@ export default function Fin() {
             badge={result.milestone && milestoneShown ? { label: t.milestone(result.milestone), onPress: () => setMilestoneShown(false), accessibilityLabel: t.tap } : null}
           />
 
-          <RevelationCard kicker={result.revelation.title} title={result.revelation.text} species={species} />
+          <RevelationCard
+            kicker={result.revelation.title}
+            title={result.revelation.text}
+            species={species}
+            mascot={entry?.mascot ?? null}
+            mascotMoment="cheer"
+            mascotKey={cheerKey}
+            name={pet.data?.pet.name}
+          />
 
           {person ? (
             <PersonOfDayCard

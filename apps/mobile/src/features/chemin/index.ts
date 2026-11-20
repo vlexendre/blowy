@@ -3,7 +3,7 @@
  * Le contenu (questions, réactions, animations) vient du serveur ; l'app l'affiche. Lecture tolérante (client) :
  * une API plus ancienne sans ces routes rend une erreur, et l'accueil reste utilisable sans le chemin.
  */
-import type { CheminAnswersBody, CheminMap, CheminResult, Encounters } from '@blowy/contract';
+import type { CheminAnswersBody, CheminMap, CheminResult, Encounters, Mascot } from '@blowy/contract';
 import { NAMED_MOTIONS } from '@blowy/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
@@ -51,6 +51,8 @@ export interface CheminDone {
   unitTitle: string | null;
   /** Scène de fin nommée par le serveur (`confetti`) ; jouée par `namedMotion`, repli neutre. */
   endScene: string | null;
+  /** Minimoa animé réglé par l'API (reçu avec la séance) ; null : l'image habituelle. */
+  mascot: Mascot | null;
 }
 
 /**
@@ -85,7 +87,7 @@ export function useAnswerSeance() {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (v: { body: CheminAnswersBody; slot: 'daily' | 'bonus'; unitTitle: string | null; endScene?: string | null }) => api.chemin.answer(v.body),
+    mutationFn: (v: { body: CheminAnswersBody; slot: 'daily' | 'bonus'; unitTitle: string | null; endScene?: string | null; mascot?: Mascot | null }) => api.chemin.answer(v.body),
     onMutate: async (v) => {
       const prev = qc.getQueryData<CheminMap>(keys.chemin);
       const snap = await optimistic(qc, [
@@ -100,7 +102,7 @@ export function useAnswerSeance() {
     onSuccess: (result, v, ctx) => {
       // La série d'avant (le chiffre défile d'un cran) ; déjà comptée aujourd'hui : rien ne bouge.
       const before = ctx?.before ?? result.streak.current;
-      useCheminResults.getState().put(result.sessionId, { result, streakBefore: Math.max(0, Math.min(before, result.streak.current)), unitTitle: v.unitTitle, endScene: v.endScene ?? null });
+      useCheminResults.getState().put(result.sessionId, { result, streakBefore: Math.max(0, Math.min(before, result.streak.current)), unitTitle: v.unitTitle, endScene: v.endScene ?? null, mascot: v.mascot ?? null });
       if (!result.alreadyRecorded) trackChemin('Seance Completed', { unit: v.unitTitle, answers: v.body.answers.length, slot: v.slot });
     },
     onError: (_e, _v, ctx) => rollback(qc, ctx?.snap),

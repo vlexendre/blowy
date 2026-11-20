@@ -108,7 +108,7 @@ villes : déjà en place) et le rapport détaillé, plus un gel par semaine.
 | Méthode | Route | Réponse |
 |---|---|---|
 | GET | `/v1/chemin` | `CheminMapZ` : titre, unités (titre, sous-titre, icône, état `done/current/locked`, étapes), étape courante, `today` (état `todo/done/bonus/all_done`, quota, phrase), série (`CheminStreakZ` : gels, paliers), « il te connaît », `plus` |
-| GET | `/v1/chemin/seance?formats=choice,slider` | `CheminSessionResponseZ` : `session` (id, créneau `daily/bonus`, étape, intro, 5 questions `{ id, format, text, review, options[{ id, label, icon, reaction{ text, animation } }], slider }`, transition, scène de fin) ou `null` avec `reason` (`quota_used`, `nothing_left`) et un message ; `quota` |
+| GET | `/v1/chemin/seance?formats=choice,slider` | `CheminSessionResponseZ` : `session` (id, créneau `daily/bonus`, étape, intro, 5 questions `{ id, format, text, review, options[{ id, label, icon, reaction{ text, animation } }], slider }`, transition, scène de fin) ou `null` avec `reason` (`quota_used`, `nothing_left`) et un message ; `quota` ; `mascot` (facultatif : minimoa animé de l'espèce, ou null ; docs/MOTION.md « Minimoa animé ») |
 | POST | `/v1/chemin/reponses` `{ sessionId, answers[{ questionId, optionId? , value? }] }` | `CheminResultZ` : `revelation`, `progress` (étape faite, unité faite, suivante), `streak`, `newItems`, `milestone`, `quota`, `knows`, `person` (`suggestion`, `title`, `line`, `together{ title, points }`, `opener{ text, questionId }`) ou `empty`. Idempotent : renvoyer la même séance rend le même résultat avec `alreadyRecorded: true`. Toutes les questions de la séance, une fois chacune, sinon `invalid` |
 | GET | `/v1/profil` | `ProfilZ` |
 | GET | `/admin/chemin` · `/admin/chemin/stats` | contenu complet (tous statuts, alertes) · séances du jour (nombre, personnes, bonus) |
@@ -173,6 +173,9 @@ Pour une app dont le build atteint `APP_IOS_CHEMIN_BUILD` : `GET /v1/rituals/tod
 |---|---|---|
 | `APP_IOS_CHEMIN_BUILD` | premier build iOS avec Ton chemin : défi du jour retiré, rappel du matin de la séance | `999999999` (inactif) |
 | `APP_ANDROID_CHEMIN_BUILD` | idem Android | `999999999` |
+| `MASKO_ENABLED` | minimoa animé (Masko) dans la séance : `0` coupe tout (image habituelle) | `1` |
+| `MASKO_APP_KEY` | clé d'application Masko (`masko_app_…`, publique ; jamais une clé de compte) | celle de Nino |
+| `MASKO_NINO_URL` · `MASKO_SUZIE_URL` · `MASKO_GASTON_URL` · `MASKO_PIA_URL` | adresse de livraison du personnage de l'espèce ; `off` : coupé | Nino : son canvas ; autres : aucun |
 
 À poser quand le build de Ton chemin part en vente (comme `APP_IOS_LATEST_BUILD`). Les routes `/v1/chemin*` et
 `/v1/profil` répondent à tout le monde, sans ce réglage.
@@ -196,6 +199,7 @@ Fait dans `apps/mobile` et `packages/ui` (détail par écran : docs/SCREENS.md) 
 | Écrans | accueil `app/(tabs)/pet.tsx`, `app/chemin/seance.tsx`, `app/chemin/fin.tsx`, `app/pet/serie.tsx`, Moi, Chats (« On t’a dit bonjour »), carte, inscription (`localisation.tsx`, `pret.tsx`, « Étape 1 ») |
 | Composants | `CheminPath`, `SessionBanner`, `SeanceBar`, `SeanceQuestion`, `AnswerSlider`, `StreakRise`, `RevelationCard`, `PersonOfDayCard`, `CheminEmptyCard`, `HelloCard`, `MinimoaTypeCard`, `KnowsPanel`, `PreviewPeople` ; épingles `MapSticker hot` |
 | Animations nommées | `packages/ui/src/motion/named.ts` (`namedMotion` : `hop`, `confetti`, `stars`… ; inconnu → repli neutre, texte seul) |
+| Minimoa animé (Masko) | `AnimatedMascot` ; séance : réfléchit à chaque question, rit ou applaudit à chaque réponse (`mascotMomentFor`, repli : rit) ; fin : applaudit. Réglé par l'API (`mascot`), Nino seul pour l'instant. Ajouter une espèce : docs/MOTION.md « Minimoa animé » |
 | Textes | `apps/mobile/src/locales/chemin.ts` (5 langues) |
 | Lien profond | `blowy://chemin` → `/pet?chemin=1` (accueil, puis la séance s'il y en a une) ; `/chemin` aussi |
 | Analytics (avec accord) | `Seance Started`, `Seance Completed`, `Person Of Day Shown`, `Hello Sent From Chemin` (`trackChemin`) |

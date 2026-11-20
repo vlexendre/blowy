@@ -30,13 +30,15 @@ import {
   nextStreakMilestone,
   streakWeek,
   weekStartOf,
+  type Species,
 } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import type { ClientAppInfo } from '../../../shared/client-app';
 import { DomainError } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
 import { seedOf } from '../../../shared/seed';
-import { CLOCK, ENCOUNTERS, IDS, PETS, PROFILES } from '../../../shared/tokens';
+import type { Env } from '../../../config/env';
+import { CLOCK, ENCOUNTERS, ENV, IDS, PETS, PROFILES } from '../../../shared/tokens';
 import type { EncountersRepository } from '../../encounters/ports';
 import { ListEncounters } from '../../encounters/application/list-encounters.usecase';
 import { toEncountersDto } from '../../encounters/interface/encounters.presenter';
@@ -83,6 +85,8 @@ interface Entered {
   now: Date;
   today: Day;
   minimoa: string;
+  /** Espèce du minimoa (null : pas encore de minimoa). */
+  species: Species | null;
 }
 
 /**
@@ -110,6 +114,7 @@ export class CheminService {
     @Inject(ACQUISITIONS) private readonly acquisitions: AcquisitionsRepository,
     @Inject(PLACES) private readonly places: PlacesRepository,
     @Inject(ListEncounters) private readonly listEncounters: ListEncounters,
+    @Inject(ENV) private readonly env: Env,
   ) {}
 
   // ── Entrée : avancement, bonus du jour, règles de la série ─────────────────
@@ -148,7 +153,7 @@ export class CheminService {
       state = { ...state, ...statePatch };
     }
     const pet = await this.pets.findByOwner(userId);
-    return { profile, progress, state, now, today, minimoa: pet?.name ?? notificationTexts.in(profile.locale).yourMinimoa };
+    return { profile, progress, state, now, today, minimoa: pet?.name ?? notificationTexts.in(profile.locale).yourMinimoa, species: pet?.species ?? null };
   }
 
   /** Une réponse à un bonjour reçu aujourd'hui (signe accepté) fait gagner la séance bonus. */
@@ -232,9 +237,11 @@ export class CheminService {
     const e = await this.enter(userId, client);
     const caps: ClientCapabilities = { build: client.build, formats };
     const [live, { quota, today }] = await Promise.all([this.content.live(), this.quota(userId, e, locale)]);
+    // Le minimoa animé de son espèce (réglage de l'API, docs/MOTION.md) ; aucun : l'image habituelle.
+    const mascot = e.species ? this.env.mascots[e.species] : null;
     const open = today.filter((s) => s.status === 'open').sort((a, b) => a.slot - b.slot)[0];
-    if (open) return { session: this.render(open, live, locale, caps, e.minimoa), quota, reason: null, message: null };
-    if (quota.nextSlot === null) return { session: null, quota, reason: 'quota_used', message: cheminText.in(locale).session.quotaUsed(e.minimoa) };
+    if (open) return { session: this.render(open, live, locale, caps, e.minimoa), quota, reason: null, message: null, mascot };
+    if (quota.nextSlot === null) return { session: null, quota, reason: 'quota_used', message: cheminText.in(locale).session.quotaUsed(e.minimoa), mascot };
     const [snapshot, answeredOn] = await Promise.all([this.vision.current(userId), this.answers.lastAnswered(userId)]);
     const pick = pickSession({
       catalogue: live.catalogue,
@@ -245,7 +252,7 @@ export class CheminService {
       userId,
       day: e.today,
     });
-    if (!pick) return { session: null, quota, reason: 'nothing_left', message: cheminText.in(locale).session.nothingLeft };
+    if (!pick) return { session: null, quota, reason: 'nothing_left', message: cheminText.in(locale).session.nothingLeft, mascot };
     const record = await this.sessions.insertIfAbsent({
       id: this.ids.uuid(),
       userId,
@@ -259,7 +266,7 @@ export class CheminService {
       createdAt: e.now.toISOString(),
       completedAt: null,
     });
-    return { session: this.render(record, live, locale, caps, e.minimoa), quota, reason: null, message: null };
+    return { session: this.render(record, live, locale, caps, e.minimoa), quota, reason: null, message: null, mascot };
   }
 
   private scene(scenes: readonly ContentScene[], kind: ContentScene['kind'], build: number | null, seed: string): { id: string; animation: string } {

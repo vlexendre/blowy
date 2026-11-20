@@ -31,6 +31,7 @@ export { needColor, NeedMeter, type NeedMeterProps } from './NeedMeter';
 export { SlotTabs, type SlotTabsProps } from './SlotTabs';
 export { LegalNote, type LegalNoteProps, type LegalSegment } from './LegalNote';
 export { CountTitle, type CountTitleProps } from './CountTitle';
+export { AnimatedMascot, type AnimatedMascotHandle, type AnimatedMascotProps } from './AnimatedMascot';
 export { HostBubble, type HostBubbleProps } from './HostBubble';
 export { HoldButton, type HoldButtonProps } from './HoldButton';
 export { ProgressLine, type ProgressLineProps } from './ProgressLine';

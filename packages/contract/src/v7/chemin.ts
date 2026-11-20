@@ -141,6 +141,22 @@ export const CheminSessionZ = z.object({
 });
 export type CheminSession = z.infer<typeof CheminSessionZ>;
 
+/**
+ * Minimoa animé (docs/MOTION.md, « Minimoa animé ») : le lecteur à utiliser pour l'espèce du minimoa de la personne,
+ * réglé par l'API (aucun personnage codé en dur dans l'app). `events` : noms des événements à déclencher une fois
+ * (`fire`) pour rire, réfléchir, applaudir ; le minimoa revient seul au repos. Un fournisseur inconnu d'une app
+ * ancienne : la lecture tolérante retire tout l'objet (image actuelle du minimoa).
+ */
+export const MascotZ = z.object({
+  provider: z.enum(['masko']),
+  /** Adresse de livraison du personnage (`https://api.masko.ai/v1/canvases/<id>/delivery`). */
+  url: z.string().url(),
+  /** Clé d'application publique (lecture des releases de ce personnage seulement) : pas un secret. */
+  appKey: z.string().min(1),
+  events: z.object({ happy: z.string().min(1), think: z.string().min(1), cheer: z.string().min(1) }),
+});
+export type Mascot = z.infer<typeof MascotZ>;
+
 /** `GET /v1/chemin/seance` : la séance à faire maintenant, ou pourquoi il n'y en a pas. */
 export const CheminSessionResponseZ = z.object({
   session: CheminSessionZ.nullable(),
@@ -148,6 +164,11 @@ export const CheminSessionResponseZ = z.object({
   /** quota_used : plus de séance aujourd'hui · nothing_left : rien à poser pour l'instant. */
   reason: z.enum(['quota_used', 'nothing_left']).nullable(),
   message: z.string().nullable(),
+  /**
+   * Le minimoa animé de la personne (null : pas de personnage animé pour son espèce, image habituelle). Facultatif :
+   * une API plus ancienne ne l'envoie pas.
+   */
+  mascot: MascotZ.nullable().optional(),
 });
 export type CheminSessionResponse = z.infer<typeof CheminSessionResponseZ>;
 
