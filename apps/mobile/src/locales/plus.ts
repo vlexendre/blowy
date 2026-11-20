@@ -19,7 +19,7 @@ export const plus = messages({
       rename: (pet: string) => `Renomme ${pet} quand tu veux.`,
       detailed_review: 'Ton bilan, en détail.',
       jokers: 'Plus de jokers pour ta série.',
-      encounters: 'Plus de rencontres, chaque jour.',
+      encounters: '10 personnes par jour, au lieu de 3.',
       far_away: 'Vois qui est au-delà de ta zone.',
       try_on: (item: string) => `${item} lui va bien.`,
       worn_by: (item: string) => `${item}, pour lui aussi.`,
@@ -83,7 +83,7 @@ export const plus = messages({
     /** Avantages en une phrase « Titre : explication » (la phrase de l'API reste celle du lecteur d'écran). */
     perkLines: (pet: string, premium: number) => ({
       map_everywhere: ['Toute la carte', 'et d’autres villes'],
-      more_encounters: ['Plus de rencontres', 'une de plus par jour'],
+      more_encounters: ['10 personnes par jour', 'au lieu de 3'],
       streak_jokers: ['3 jokers par semaine', 'pour sauver ta série'],
       more_habits: ['6 habitudes', 'au lieu de 2'],
       detailed_review: ['Bilan détaillé', '4 semaines, lien par lien'],
@@ -184,7 +184,7 @@ export const plus = messages({
     colon: (s: string) => `${s}:`,
     perkLines: (pet: string, premium: number) => ({
       map_everywhere: ['The whole map', 'and other cities too'],
-      more_encounters: ['More encounters', 'one extra every day'],
+      more_encounters: ['10 people a day', 'instead of 3'],
       streak_jokers: ['3 jokers a week', 'to save your streak'],
       more_habits: ['6 habits', 'instead of 2'],
       detailed_review: ['Detailed review', '4 weeks, link by link'],
@@ -278,7 +278,7 @@ export const plus = messages({
     colon: (s: string) => `${s}:`,
     perkLines: (pet: string, premium: number) => ({
       map_everywhere: ['Todo el mapa', 'y también otras ciudades'],
-      more_encounters: ['Más encuentros', 'uno más cada día'],
+      more_encounters: ['10 personas al día', 'en vez de 3'],
       streak_jokers: ['3 comodines por semana', 'salva tu racha'],
       more_habits: ['6 hábitos', 'en vez de 2'],
       detailed_review: ['Resumen detallado', 'vínculo a vínculo'],
@@ -372,7 +372,7 @@ export const plus = messages({
     colon: (s: string) => `${s}:`,
     perkLines: (pet: string, premium: number) => ({
       map_everywhere: ['O mapa inteiro', 'e outras cidades também'],
-      more_encounters: ['Mais encontros', 'um a mais por dia'],
+      more_encounters: ['10 pessoas por dia', 'em vez de 3'],
       streak_jokers: ['Coringas de sequência', '3 por semana'],
       more_habits: ['6 hábitos', 'em vez de 2'],
       detailed_review: ['Resumo detalhado', 'vínculo por vínculo'],
@@ -466,7 +466,7 @@ export const plus = messages({
     colon: (s: string) => `${s}:`,
     perkLines: (pet: string, premium: number) => ({
       map_everywhere: ['De hele kaart', 'ook in andere steden'],
-      more_encounters: ['Meer ontmoetingen', 'elke dag één extra'],
+      more_encounters: ['10 mensen per dag', 'in plaats van 3'],
       streak_jokers: ['3 jokers per week', 'red je reeks'],
       more_habits: ['6 gewoontes', 'in plaats van 2'],
       detailed_review: ['Uitgebreid overzicht', 'band voor band'],

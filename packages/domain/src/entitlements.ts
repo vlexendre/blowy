@@ -20,8 +20,10 @@ export interface Entitlements {
   freeRename: boolean;
   /** Bilan de la semaine détaillé (axes sur 4 semaines, audit de chaque lien). */
   detailedReview: boolean;
-  /** Rencontres supplémentaires par jour, ajoutées au quota qui dépend de la forme du minimoa (0 sans Minimoa+). */
+  /** Rencontres supplémentaires par jour, ajoutées au quota qui dépend de la forme du minimoa (0 sans Minimoa+). Ancien modèle. */
   encounterBonus: 0 | 1;
+  /** Personnes que le minimoa présente chaque jour (maquette V7 : 3, ou 10 avec Minimoa+), quelle que soit sa forme. */
+  presentationsPerDay: 3 | 10;
   /** Objets premium de la garde-robe. */
   premiumItems: boolean;
   /** Groupes à la fois, membre ou en formation (spéc §26). */
@@ -40,6 +42,7 @@ const FREE: Entitlements = Object.freeze({
   freeRename: false,
   detailedReview: false,
   encounterBonus: 0,
+  presentationsPerDay: 3,
   premiumItems: false,
   groups: 2,
   cheminFreezes: Object.freeze({ period: 'month', perPeriod: 1 }),
@@ -54,6 +57,7 @@ const PLUS: Entitlements = Object.freeze({
   freeRename: true,
   detailedReview: true,
   encounterBonus: 1,
+  presentationsPerDay: 10,
   premiumItems: true,
   groups: 10,
   cheminFreezes: Object.freeze({ period: 'week', perPeriod: 1 }),
@@ -66,7 +70,7 @@ export function entitlements(plus: boolean): Entitlements {
 }
 
 /** Ce que Minimoa+ ajoute, dans l'ordre où le paywall le présente (clés de texte dans `@blowy/content`). */
-export const PLUS_PERKS = ['map_everywhere', 'more_encounters', 'streak_jokers', 'more_habits', 'detailed_review', 'free_rename', 'premium_items'] as const;
+export const PLUS_PERKS = ['more_encounters', 'map_everywhere', 'streak_jokers', 'more_habits', 'detailed_review', 'free_rename', 'premium_items'] as const;
 export type PlusPerk = (typeof PLUS_PERKS)[number];
 
 /** Règles de la série pour une personne passée à Ton chemin (gels selon l'abonnement, paliers 7, 30, 100, 365). */

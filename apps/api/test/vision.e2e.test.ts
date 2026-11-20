@@ -232,7 +232,8 @@ describe('vision', () => {
     // Fin de l'abonnement : la ville choisie ne sert plus de centre.
     setPlus(ana.id, false);
     expect((await ana.api.me.get()).identity.location.chosenCityActive).toBe(false);
-    expect((await ana.api.encounters.list()).suggestions.map((s) => s.user.displayName)).toContain('Hugo');
+    // Trois présentations par jour en gratuit : on vérifie que Lyon n'en fournit plus.
+    expect((await ana.api.encounters.list()).suggestions.map((s) => s.user.displayName)).not.toContain('Dan');
     setPlus(ana.id, true);
     await ana.api.vision.clearCity();
     setPlus(ana.id, false);

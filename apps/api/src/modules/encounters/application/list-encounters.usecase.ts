@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { type VisionVia, visionIntroLine, wavedAtYouLine } from '@blowy/content';
-import { type FarSummary, type Shape, type WaveAllowance, ZONE_RADIUS_KM, encounterQuota, entitlements, farSummary, shapeOf } from '@blowy/domain';
+import { type FarSummary, type Shape, type WaveAllowance, ZONE_RADIUS_KM, entitlements, farSummary, shapeOf } from '@blowy/domain';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { seedOf } from '../../../shared/seed';
@@ -54,8 +54,8 @@ const FRIEND_OF_FRIEND_CAP = 100;
  * Rencontres : les coucous reçus, puis les personnes que le minimoa présente. Seules passent les personnes
  * compatibles (filtres durs de la vision et seuil de 70) : amis d'amis d'abord (où qu'ils soient), puis
  * celles de la zone de recherche, les plus compatibles d'abord. Sans position : seulement les amis d'amis.
- * Le plafond du jour dépend de la sociabilité seule (`encounterQuota`, plus le bonus de Minimoa+ : sortir, écrire,
- * répondre le font monter) ; jamais moins d'une par jour, même quand il boude (les soins ne bloquent pas les gens). Le
+ * Le plafond du jour est fixe (`entitlements().presentationsPerDay` : 3, ou 10 avec Minimoa+), quelle que soit la forme
+ * du minimoa (les soins ne bloquent pas les gens). Le
  * nombre réel dépend des personnes compatibles autour (et des amis d'amis). Les coucous reçus restent toujours visibles.
  */
 @Injectable()
@@ -114,7 +114,8 @@ export class ListEncounters {
     ]);
     const otherOf = (a: string, b: string): string => (a === userId ? b : a);
     const petShape = shapeOf(myPet.needs);
-    const quota = encounterQuota(myPet.needs) + entitlements(seeker.plus).encounterBonus;
+    // Le minimoa présente un nombre fixe de personnes par jour (3, ou 10 avec Minimoa+) : plus de quota lié à sa forme.
+    const quota = entitlements(seeker.plus).presentationsPerDay;
 
     const linked = new Set(myLinks.map((l) => otherOf(l.userA, l.userB)));
     const declined = new Set(involved.filter((e) => e.status === 'declined').map((e) => otherOf(e.fromUser, e.toUser)));

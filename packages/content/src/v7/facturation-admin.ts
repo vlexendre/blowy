@@ -23,7 +23,7 @@ interface WarningInput {
 const fr = {
   perks: {
     map_everywhere: 'Toute la carte, et changer de ville sans bouger',
-    more_encounters: 'Plus de rencontres chaque jour',
+    more_encounters: '10 personnes présentées par jour au lieu de 3',
     streak_jokers: '3 jokers de série par semaine',
     more_habits: 'Jusqu’à 6 habitudes',
     detailed_review: 'Le bilan détaillé du dimanche',
@@ -89,7 +89,7 @@ const fr = {
 const en: Translation<typeof fr> = {
   perks: {
     map_everywhere: 'The whole map, and change cities without moving',
-    more_encounters: 'More encounters every day',
+    more_encounters: '10 people introduced a day instead of 3',
     streak_jokers: '3 streak jokers a week',
     more_habits: 'Up to 6 habits',
     detailed_review: 'The detailed Sunday review',

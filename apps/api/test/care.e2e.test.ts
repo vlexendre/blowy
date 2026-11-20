@@ -218,7 +218,7 @@ describe('un pet qui boude ne sort plus', () => {
     expect((await dana.api.pet.get()).pet).toMatchObject({ wellbeing: 72, shape: 'en_forme' });
   });
 
-  it('le quota de suggestions dépend de la sociabilité seule, pas des soins', async () => {
+  it('trois présentations par jour, quelle que soit la forme du minimoa', async () => {
     const people: Person[] = [];
     for (let i = 0; i < 9; i++) {
       const p = world.client();
@@ -227,16 +227,15 @@ describe('un pet qui boude ne sort plus', () => {
     }
     const [first] = people;
     if (!first) throw new Error('personne');
-    expect((await first.api.encounters.list()).suggestions.length).toBeGreaterThan(6);
-    // 10 h plus tard : sociabilité 65, faim basse ; il est « bof » mais présente toujours autant.
+    expect((await first.api.encounters.list()).suggestions).toHaveLength(3);
+    // 10 h plus tard, il est « bof » : il présente toujours trois personnes.
     world.clock.advanceHours(10);
     const tired = await first.api.encounters.list();
     expect(tired.petShape).toBe('bof');
-    expect(tired.suggestions.length).toBeGreaterThan(6);
-    // Sans sortir pendant 2 jours : sociabilité basse, quota réduit, jamais nul.
+    expect(tired.suggestions).toHaveLength(3);
+    // Sans sortir pendant 2 jours : toujours trois (la forme ne bloque pas les gens).
     world.clock.advanceHours(40);
-    const low = await first.api.encounters.list();
-    expect(low.suggestions).toHaveLength(3);
+    expect((await first.api.encounters.list()).suggestions).toHaveLength(3);
   });
 
   it('un objet retiré du jeu (vieille tenue, vieille ligne pet_items) est ignoré à la lecture et retiré à la prochaine écriture', async () => {
