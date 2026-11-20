@@ -27,10 +27,10 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'Pas de swipe · pas de pub',
-      title: [{ text: 'DES GENS\nPRÈS DE CHEZ TOI.\n' }, { text: 'TON MINIMOA\nTE LES PRÉSENTE.', dim: true }],
+      title: [{ text: 'TON\nENTREMETTEUR\nSOCIAL.\n' }, { text: 'IL TE PRÉSENTE\nDES GENS COMME TOI.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'J’ai trouvé quelqu’un pour toi 👀' },
+        { from: 'pet', text: 'Laisse-moi apprendre à te connaître 👀' },
         { from: 'me', text: 'Présente-nous !' },
       ],
       create: 'Créer mon minimoa',
@@ -239,10 +239,10 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'No swiping · no ads',
-      title: [{ text: 'PEOPLE\nNEAR YOU.\n' }, { text: 'YOUR MINIMOA\nINTRODUCES THEM.', dim: true }],
+      title: [{ text: 'YOUR\nSOCIAL\nMATCHMAKER.\n' }, { text: 'IT INTRODUCES\nPEOPLE LIKE YOU.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'I found someone for you 👀' },
+        { from: 'pet', text: 'Let me get to know you 👀' },
         { from: 'me', text: 'Introduce us!' },
       ],
       create: 'Create my minimoa',
@@ -442,7 +442,7 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'Sin swipes · sin anuncios',
-      title: [{ text: 'GENTE\nCERCA DE TI.\n' }, { text: 'TU MINIMOA\nTE LA PRESENTA.', dim: true }],
+      title: [{ text: 'TU\nCELESTINO\nSOCIAL.\n' }, { text: 'TE PRESENTA\nGENTE COMO TÚ.', dim: true }],
       petName: 'Nino',
       chat: [
         { from: 'pet', text: 'Encontré a alguien para ti 👀' },
@@ -645,7 +645,7 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'Sem swipe · sem anúncios',
-      title: [{ text: 'GENTE\nPERTO DE VOCÊ.\n' }, { text: 'SEU MINIMOA\nTE APRESENTA.', dim: true }],
+      title: [{ text: 'SEU\nCUPIDO\nSOCIAL.\n' }, { text: 'ELE TE APRESENTA\nGENTE COMO VOCÊ.', dim: true }],
       petName: 'Nino',
       chat: [
         { from: 'pet', text: 'Achei alguém pra você 👀' },
@@ -848,7 +848,7 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'Geen swipen · geen reclame',
-      title: [{ text: 'MENSEN\nBIJ JOU IN DE BUURT.\n' }, { text: 'JE MINIMOA\nSTELT ZE VOOR.', dim: true }],
+      title: [{ text: 'JE SOCIALE\nKOPPELAAR.\n' }, { text: 'HIJ STELT JE VOOR\nAAN MENSEN ZOALS JIJ.', dim: true }],
       petName: 'Nino',
       chat: [
         { from: 'pet', text: 'Ik heb iemand voor je gevonden 👀' },

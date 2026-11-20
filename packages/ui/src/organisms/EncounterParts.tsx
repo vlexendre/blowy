@@ -94,7 +94,7 @@ export function EncounterHead({ person, name, nameStyle = 'display', badge, owne
           </Text>
         ) : null}
       </View>
-      {compatibility !== null ? <CompatPill value={uiStrings.percent(compatibility)} label={compatLabel} /> : null}
+      {compatibility !== null ? <CompatPill value={uiStrings.closeness(compatibility)} label={compatLabel} /> : null}
     </View>
   );
 }

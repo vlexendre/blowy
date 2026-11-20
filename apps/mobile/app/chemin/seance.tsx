@@ -169,7 +169,6 @@ export default function Seance() {
     setDraft(null);
   };
   const sliderValue = draft && 'value' in draft ? draft.value : null;
-  const kicker = session.kind === 'review' || !session.step ? t.reviewKicker : t.kicker(session.step.unitTitle);
   const sendFailed = answer.isError && !(answer.error instanceof ApiError && answer.error.code === 'not_found');
 
   return (
@@ -192,7 +191,6 @@ export default function Seance() {
         }
       >
         <SeanceQuestion
-          kicker={kicker}
           text={q.text}
           questionKey={q.id}
           pet={{ species: p.species, outfit: p.outfit, name: p.name, id: p.id }}

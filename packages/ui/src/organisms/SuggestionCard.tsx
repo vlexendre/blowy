@@ -52,10 +52,10 @@ export function SuggestionCard(props: SuggestionCardProps) {
 
   if (props.locked) {
     return (
-      <Card onPress={props.onLockedPress} accessibilityLabel={`${uiStrings.percent(compatibility)}, ${props.lockedCaption ?? ''}`} padding="none" style={[layout.fill, styles.locked]}>
+      <Card onPress={props.onLockedPress} accessibilityLabel={`${uiStrings.closeness(compatibility)}, ${props.lockedCaption ?? ''}`} padding="none" style={[layout.fill, styles.locked]}>
         <View style={[layout.row, styles.lockedRow]}>
           <Avatar size={40} pet={pet} hidden blurred />
-          <Title text={uiStrings.percent(compatibility)} size={28} style={layout.grow} />
+          <Title text={uiStrings.closeness(compatibility)} size={28} style={layout.grow} />
           <LinearGradient colors={[color.violet, color.coral]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.lock}>
             <Glyph name="lock" size={13} color={color.white} />
           </LinearGradient>

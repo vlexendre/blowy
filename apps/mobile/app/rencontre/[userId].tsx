@@ -80,7 +80,7 @@ export default function RencontreScreen() {
       onBack={back}
       backLabel={t.back}
       center={via ? <Chip label={via} tone="glass" size="sm" /> : undefined}
-      right={person && explanation ? <Chip label={ui.percent(compat)} tone="accent" size="sm" accessibilityLabel={t.compatA11y(compat)} /> : undefined}
+      right={person && explanation ? <Chip label={ui.closeness(compat)} tone="accent" size="sm" accessibilityLabel={ui.closeness(compat)} /> : undefined}
     />
   );
 
@@ -158,8 +158,8 @@ export default function RencontreScreen() {
           onBack={back}
           backLabel={t.back}
           via={via ? { label: via } : undefined}
-          compat={explanation ? ui.percent(compat) : undefined}
-          compatLabel={t.compatA11y(compat)}
+          compat={explanation ? ui.closeness(compat) : undefined}
+          compatLabel={ui.closeness(compat)}
           onMore={() => setSheet('menu')}
           moreLabel={t.more}
           me={myPet ? { pet: myPet, label: t.me(myPetName) } : undefined}

@@ -209,7 +209,7 @@ export default function CarteScreen() {
       motionKey={current.user.id}
       pet={current.user.pet}
       owner={t.owner(current.user.displayName)}
-      compat={ui.percent(current.compatibility)}
+      compat={ui.closeness(current.compatibility)}
       compatLabel={t.compat}
       why={
         <MatchWhy

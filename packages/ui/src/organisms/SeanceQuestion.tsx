@@ -23,7 +23,8 @@ export interface SeanceOption {
 
 export interface SeanceQuestionProps {
   /** Au-dessus (« Ton chemin · ta façon de vivre »). */
-  kicker: string;
+  /** Sur-titre facultatif (la maquette n'en met plus : la question suffit). */
+  kicker?: string | null;
   /** La question, dite par le minimoa dans sa bulle. */
   text: string;
   pet: { species: Species; outfit?: Outfit | null; name: string; id?: string };
@@ -62,9 +63,11 @@ export function SeanceQuestion({ kicker, text, pet, format, options, picked, onP
   const high = options[options.length - 1];
   return (
     <View style={styles.wrap}>
-      <Text variant="label" color={color.accent}>
-        {kicker}
-      </Text>
+      {kicker ? (
+        <Text variant="label" color={color.accent}>
+          {kicker}
+        </Text>
+      ) : null}
       <HostBubble species={pet.species} line={text} seed={pet.id} name={pet.name} reactKey={reactKey} reaction={reactWith ?? 'joy'} mood="neutre" note={note ?? undefined} mascot={mascot} mascotMoment={mascotMoment} mascotKey={mascotKey} />
       <Appear key={questionKey} replay={questionKey} delay={180} style={styles.answers}>
         {format === 'slider' && slider && low && high ? (
