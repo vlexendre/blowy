@@ -17,6 +17,8 @@ import { useDiscreet } from '@/features/map';
 import { useLivePet } from '@/features/pet';
 import { common } from '@/locales/common';
 import { moi } from '@/locales/moi';
+import { progression as lp } from '@/locales/progression';
+import { useProgression } from '@/features/progression';
 import { croissance } from '@/locales/croissance';
 import { useTrackShare } from '@/features/growth';
 import { knowsStep, profilGauges, useCheminMap, useProfil } from '@/features/chemin';
@@ -33,6 +35,7 @@ export default function Moi() {
   const track = useTrackShare();
   const { purchases } = usePorts();
   const discreet = useDiscreet();
+  const prog = useProgression();
   const subscription = useSubscription(!!me.data?.plus);
   // Les avantages viennent de la même source que la feuille Minimoa+ (jamais une autre liste ici).
   const perks = usePlusPerks(me.data?.pet.name ?? '');
@@ -181,6 +184,17 @@ export default function Moi() {
             onSwitchChange: (on: boolean) => discreet.mutate(on),
             disabled: discreet.isPending,
           },
+          ...(prog.data
+            ? [
+                {
+                  key: 'league',
+                  title: lp.rows.league,
+                  subtitle: lp.rows.leagueSub(prog.data.sparks, prog.data.league.located ? (prog.data.league.rows.find((r) => r.me)?.rank ?? null) : null),
+                  onPress: () => router.push('/moi/ligue'),
+                },
+                { key: 'trophies', title: lp.rows.trophies, subtitle: lp.rows.trophiesSub(prog.data.trophiesWon, prog.data.trophiesTotal), onPress: () => router.push('/moi/trophees') },
+              ]
+            : []),
           { key: 'ia', ...t.rows.ia, onPress: () => router.push('/moi/ia') },
           { key: 'settings', ...t.rows.settings, onPress: () => router.push('/moi/reglages') },
         ]}

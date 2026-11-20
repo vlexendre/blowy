@@ -69,6 +69,7 @@ export const keys = {
   cheminSession: ['chemin', 'seance'] as const,
   cheminResult: (sessionId: string) => ['chemin', 'result', sessionId] as const,
   profil: ['profil'] as const,
+  progression: ['progression'] as const,
 };
 
 /** Délai de regroupement des événements temps réel : un message déclenche deux événements (message et lien). */

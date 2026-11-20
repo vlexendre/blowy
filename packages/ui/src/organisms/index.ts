@@ -111,3 +111,5 @@ export { HelloCard, type HelloCardProps } from './HelloCard';
 export { type KnowsGauge, KnowsPanel, type KnowsPanelProps, MinimoaTypeCard, type MinimoaTypeCardProps } from './CheminProfile';
 export { type PreviewPerson, PreviewPeople, type PreviewPeopleProps } from './PreviewPeople';
 export { NOW_BAR_SPACE, NowBar, type NowBarProps } from './NowBar';
+export { LeagueRow, type LeagueRowProps } from './LeagueRow';
+export { TrophyCard, type TrophyCardProps } from './TrophyCard';
