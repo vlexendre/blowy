@@ -20,7 +20,8 @@ import {
   type CareProp,
   careProp,
   CheminPath,
-  HeroMeter,
+  NOW_BAR_SPACE,
+  NowBar,
   PeopleCard,
   PetHomeSkeleton,
   PetRefresh,
@@ -61,8 +62,6 @@ import { rituels as r } from '@/locales/rituels';
 
 /** Durée d'affichage d'une réplique après un soin (« miam. », « il n'a plus faim. »). */
 const SAID_MS = 3500;
-/** Sous ce seuil, la sociabilité est son besoin principal : il demande à sortir. */
-const OUT_AT = 40;
 
 /** Les 4 soins en rangée compacte (le câlin se fait aussi en touchant le minimoa). */
 const HOME_CARE: readonly CareAction[] = CARE_ACTIONS;
@@ -223,7 +222,6 @@ export default function PetHome() {
   const { pet: p } = pet.data;
   const d = today.data;
   const streak = d?.streak;
-  const sociability = d?.sociability ?? null;
   // Sa bulle : son besoin le plus urgent, sinon une phrase joyeuse.
   const urgent = urgentNeed(p.needs);
   const idleLine = urgent ? pickLine(t.speech[urgent], p.needs) : pickLine(t.happy, p.needs);
@@ -263,6 +261,17 @@ export default function PetHome() {
   const cm = chemin.data;
   const view = cm ? todayView(cm) : null;
   const openSeance = () => router.push('/chemin/seance');
+  // Un seul gros bouton, en bas : la chose à faire maintenant (un bonjour reçu, un message, la séance, sinon la journée faite).
+  const now =
+    people.kind === 'waved'
+      ? { label: a.now.waved(people.name), sub: a.now.wavedSub, variant: 'accent' as const, onPress: () => router.push('/(tabs)/rencontres') }
+      : people.kind === 'wrote'
+        ? { label: a.now.wrote(people.name), sub: people.preview ? a.wroteText(people.preview) : a.now.wroteSub, variant: 'accent' as const, onPress: () => router.push({ pathname: '/link/[id]', params: { id: people.linkId } }) }
+        : view && (view.kind === 'todo' || view.kind === 'bonus')
+          ? { label: a.now.seance, sub: a.now.seanceSub(view.questions), variant: 'accent' as const, onPress: openSeance }
+          : view
+            ? { label: a.now.done, sub: a.now.doneSub, variant: 'glass' as const, onPress: () => router.push('/(tabs)/rencontres') }
+            : null;
   const nodeLabel = (n: { kind: string; title: string; unitTitle: string }) =>
     n.kind === 'done' ? c.home.node.done(n.title) : n.kind === 'current' ? c.home.node.current(n.title) : n.kind === 'chest' ? c.home.node.chest(n.unitTitle) : n.kind === 'chestOpen' ? c.home.node.chestOpen(n.unitTitle) : c.home.node.locked(n.title);
 
@@ -270,7 +279,7 @@ export default function PetHome() {
     <ScreenMotion>
       <PetRefresh species={p.species} refreshing={refreshing} onRefresh={refresh}>
         {(scroll) => (
-          <TabTemplate gutter={14} top={6} {...scroll}>
+          <TabTemplate gutter={14} top={6} bottomExtra={now ? NOW_BAR_SPACE : 0} {...scroll}>
             <PetStage
               pet={p}
               title={p.name.toUpperCase()}
@@ -302,17 +311,7 @@ export default function PetHome() {
               petLabel={a.petA11yCuddle(p.name)}
               onPetPress={onPetPress}
               lure={lure}
-              meter={
-                sociability !== null ? (
-                  <HeroMeter
-                    label={r.meter.label}
-                    value={sociability}
-                    suffix={r.meter.suffix}
-                    lowAt={OUT_AT}
-                    accessibilityLabel={r.meter.a11y(sociability)}
-                  />
-                ) : null
-              }
+              meter={null}
             />
 
 
@@ -432,6 +431,7 @@ export default function PetHome() {
           </TabTemplate>
         )}
       </PetRefresh>
+      {now ? <NowBar label={now.label} sub={now.sub} variant={now.variant} onPress={now.onPress} /> : null}
     </ScreenMotion>
   );
 }
@@ -439,8 +439,8 @@ export default function PetHome() {
 type Href = Parameters<ReturnType<typeof useRouter>['push']>[0];
 
 /**
- * Sous le chemin, ce qui attend une réponse de toi : un bonjour reçu, un message d'un lien, ou la position à activer
- * (sans elle, pas de personne du jour). Les présentations passent désormais par la séance du jour (V1) ; le groupe,
+ * Sous le chemin, la position à activer (sans elle, personne à présenter). Un bonjour reçu ou un message passent par
+ * le bouton du bas (`NowBar`). Les présentations passent désormais par la séance du jour (V1) ; le groupe,
  * le test de vision et « Nino cherche encore » ne sont plus ici.
  */
 function PeopleNow({
@@ -461,28 +461,6 @@ function PeopleNow({
   open: (href: Href) => void;
 }) {
   switch (state.kind) {
-    case 'waved':
-      return (
-        <PeopleCard
-          kicker={a.kicker}
-          title={a.waved(state.name)}
-          text={state.more > 0 ? `${a.wavedText(state.pet.name)} ${a.wavedMore(state.more)}` : a.wavedText(state.pet.name)}
-          people={[state.pet]}
-          actionLabel={a.wavedAction}
-          onPress={() => open('/(tabs)/rencontres')}
-        />
-      );
-    case 'wrote':
-      return (
-        <PeopleCard
-          kicker={a.kicker}
-          title={a.wrote(state.name)}
-          text={state.preview ? a.wroteText(state.preview) : undefined}
-          people={[state.pet]}
-          actionLabel={a.wroteAction}
-          onPress={() => open({ pathname: '/link/[id]', params: { id: state.linkId } })}
-        />
-      );
     case 'location':
       return (
         <PeopleCard

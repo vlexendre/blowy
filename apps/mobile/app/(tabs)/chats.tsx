@@ -1,6 +1,6 @@
 /**
- * Onglet Chats (V6-Chats) : en tête, « On t'a dit bonjour » (les bonjours reçus en attente, « Vous deux » quand
- * l'explication est là, « Répondre »), puis les séries en jeu et les liens (vies, séries, niveaux). Les groupes sont
+ * Onglet Chats (V6-Chats) : seulement les conversations. Les bonjours reçus vivent dans Rencontres (un évènement,
+ * un seul endroit). En tête, les séries en jeu, puis les liens (vies, séries, niveaux). Les groupes sont
  * retirés de l'interface V1 (`GROUPS_IN_V1`) : le code reste, l'ancien serveur aussi.
  */
 import { color } from '@blowy/tokens';
@@ -12,7 +12,6 @@ import {
   EmptyState,
   GroupInviteRow,
   GroupRow,
-  HelloCard,
   IconButton,
   LinkRow,
   NudgeBanner,
@@ -36,11 +35,9 @@ import { usePet } from '@/features/pet';
 import { openPlus } from '@/features/plus';
 import { chats as t } from '@/locales/chats';
 import { groupes } from '@/locales/groupes';
-import { chemin } from '@/locales/chemin';
 import { rituels } from '@/locales/rituels';
 
 const g = groupes.list;
-const h = chemin.chats;
 
 export default function ChatsScreen() {
   const router = useRouter();
@@ -52,7 +49,6 @@ export default function ChatsScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const list = sortLinks(links.data ?? []);
-  const incoming = encounters.data?.incoming ?? [];
   // Séries en jeu où l'autre a déjà écrit aujourd'hui : c'est à toi (la plus longue d'abord).
   const waiting = streaksWaitingOnMe(list);
   const petName = pet.data?.pet.name ?? '';
@@ -77,9 +73,8 @@ export default function ChatsScreen() {
     setRefreshing(false);
   };
 
-  // Un seul bandeau à la fois : les signes reçus d'abord ; sinon les séries en jeu (la ligne garde son « À toi »).
-  const first = incoming[0];
-  const waitingFirst = first ? undefined : waiting[0];
+  // Les bonjours reçus se traitent dans Rencontres (un évènement, un seul endroit) : ici, les séries en jeu.
+  const waitingFirst = waiting[0];
 
   return (
     <ScreenMotion>
@@ -89,17 +84,6 @@ export default function ChatsScreen() {
       right={<IconButton glyph="plus" label={t.newChat} variant="accent" onPress={() => router.push('/rencontres')} />}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />}
     >
-      {first ? (
-        <HelloCard
-          kicker={h.helloKicker}
-          person={{ name: first.from.displayName, pet: first.from.pet, face: first.from.face, avatarUrl: first.from.avatarUrl }}
-          line={first.explanation ? h.together(first.explanation.common.slice(0, 2).map((x) => x.name).join(' · ')) : first.intro}
-          more={incoming.length > 1 ? h.more(incoming.length - 1) : null}
-          replyLabel={h.reply}
-          onReply={() => router.push(`/rencontre/${first.from.id}`)}
-        />
-      ) : null}
-
       {waitingFirst ? (
         <Appear once={`chats:turn:${waitingFirst.id}:${waitingFirst.today.day}`}>
         <NudgeBanner
@@ -150,7 +134,7 @@ export default function ChatsScreen() {
       ) : (
         <View style={styles.list}>
           {list.map((l, i) => (
-            <Appear key={l.id} once={`chats:${l.id}`} delay={(first || waitingFirst ? 140 : 0) + staggerDelay(i)}>
+            <Appear key={l.id} once={`chats:${l.id}`} delay={(waitingFirst ? 140 : 0) + staggerDelay(i)}>
             <LinkRow
               link={l}
               timeLabel={l.lastMessage ? timeLabel(l.lastMessage.at, now) : undefined}

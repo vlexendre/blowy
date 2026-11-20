@@ -30,6 +30,8 @@ export interface TabTemplateProps {
   /** Défilement (fonction ou gestionnaire Reanimated, ex. `PetRefresh`). */
   onScroll?: ScreenTemplateProps['onScroll'];
   scrollEventThrottle?: number;
+  /** Place en plus en bas (ex. `NOW_BAR_SPACE` quand une `NowBar` flotte au-dessus de la barre d'onglets). */
+  bottomExtra?: number;
 }
 
 /** Grand titre d'onglet (64 dans V6 ; 56 depuis la passe « densité »). */
@@ -55,13 +57,14 @@ export function TabTemplate({
   top = space.sm,
   onScroll,
   scrollEventThrottle,
+  bottomExtra = 0,
 }: TabTemplateProps) {
   const barSpace = useTabBarSpace();
   return (
     <ScreenTemplate
       scroll={scroll}
       edges={['top']}
-      bottomSpace={barSpace}
+      bottomSpace={barSpace + bottomExtra}
       compactTitle={title ? plain(title) : undefined}
       compactAfter={brand ? 104 : 80}
       refreshControl={refreshControl}

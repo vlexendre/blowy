@@ -6,6 +6,17 @@ import { messages, plural } from './runtime';
 
 export const accueil = messages({
   fr: {
+    /** La chose à faire maintenant, un seul bouton en bas (`NowBar`). */
+    now: {
+      waved: (name: string): string => `${name} t’a dit bonjour`,
+      wavedSub: 'Réponds-lui dans Rencontres',
+      wrote: (name: string): string => `${name} t’a écrit`,
+      wroteSub: 'Réponds-lui',
+      seance: 'Commencer la séance',
+      seanceSub: (n: number): string => `${n} questions · puis des personnes qui te ressemblent`,
+      done: 'Voir qui il t’a présenté',
+      doneSub: 'Prochaine séance demain',
+    },
     kicker: 'Aujourd’hui',
     /** Des personnes à présenter (suggestions pas encore saluées). */
     present: (pet: string, n: number): string => `${pet} a ${n} ${plural(n, { one: 'personne', other: 'personnes' })} à te présenter`,
@@ -74,6 +85,16 @@ export const accueil = messages({
     asleep: { line: 'Zzz… Je fais un petit somme. Réveille-moi !', wake: 'Le réveiller', wakeA11y: (pet: string): string => `Réveiller ${pet}` },
   },
   en: {
+    now: {
+      waved: (name: string): string => `${name} said hi`,
+      wavedSub: 'Reply in Meet',
+      wrote: (name: string): string => `${name} wrote to you`,
+      wroteSub: 'Reply',
+      seance: 'Start today’s session',
+      seanceSub: (n: number): string => `${n} questions · then people like you`,
+      done: 'See who it introduced',
+      doneSub: 'Next session tomorrow',
+    },
     kicker: 'Today',
     present: (pet: string, n: number): string => `${pet} has ${n} ${plural(n, { one: 'person', other: 'people' })} to introduce you to`,
     presentFriend: (mutual: string): string => `Including someone from ${mutual}’s circle. It tells you why; nothing happens without you.`,
@@ -123,6 +144,16 @@ export const accueil = messages({
     asleep: { line: 'Zzz… Just a little nap. Wake me up!', wake: 'Wake it up', wakeA11y: (pet: string): string => `Wake ${pet} up` },
   },
   es: {
+    now: {
+      waved: (name: string): string => `${name} te ha saludado`,
+      wavedSub: 'Respóndele en Encuentros',
+      wrote: (name: string): string => `${name} te ha escrito`,
+      wroteSub: 'Respóndele',
+      seance: 'Empezar la sesión',
+      seanceSub: (n: number): string => `${n} preguntas · luego personas como tú`,
+      done: 'Ver a quién te presentó',
+      doneSub: 'Próxima sesión mañana',
+    },
     kicker: 'Hoy',
     present: (pet: string, n: number): string => `${pet} tiene ${n} ${plural(n, { one: 'persona', other: 'personas' })} para presentarte`,
     presentFriend: (mutual: string): string => `Entre ellas, alguien del entorno de ${mutual}. Te dice por qué; nada pasa sin ti.`,
@@ -172,6 +203,16 @@ export const accueil = messages({
     asleep: { line: 'Zzz… Echo una siestecita. ¡Despiértame!', wake: 'Despertarlo', wakeA11y: (pet: string): string => `Despertar a ${pet}` },
   },
   pt: {
+    now: {
+      waved: (name: string): string => `${name} disse olá`,
+      wavedSub: 'Responde em Encontros',
+      wrote: (name: string): string => `${name} escreveu-te`,
+      wroteSub: 'Responde',
+      seance: 'Começar a sessão',
+      seanceSub: (n: number): string => `${n} perguntas · depois pessoas como tu`,
+      done: 'Ver quem te apresentou',
+      doneSub: 'Próxima sessão amanhã',
+    },
     kicker: 'Hoje',
     present: (pet: string, n: number): string => `${pet} tem ${n} ${plural(n, { one: 'pessoa', other: 'pessoas' })} para te apresentar`,
     presentFriend: (mutual: string): string => `Inclusive alguém do círculo de ${mutual}. Ele diz por quê; nada acontece sem você.`,
@@ -221,6 +262,16 @@ export const accueil = messages({
     asleep: { line: 'Zzz… Tirando um cochilo. Me acorda!', wake: 'Acordá-lo', wakeA11y: (pet: string): string => `Acordar ${pet}` },
   },
   nl: {
+    now: {
+      waved: (name: string): string => `${name} zei hallo`,
+      wavedSub: 'Antwoord bij Ontmoetingen',
+      wrote: (name: string): string => `${name} schreef je`,
+      wroteSub: 'Antwoord',
+      seance: 'Sessie starten',
+      seanceSub: (n: number): string => `${n} vragen · daarna mensen zoals jij`,
+      done: 'Zie wie hij voorstelde',
+      doneSub: 'Volgende sessie morgen',
+    },
     kicker: 'Vandaag',
     present: (pet: string, n: number): string => `${pet} heeft ${n} ${plural(n, { one: 'persoon', other: 'mensen' })} om je aan voor te stellen`,
     presentFriend: (mutual: string): string => `Onder wie iemand uit de kring van ${mutual}. Hij zegt waarom; niets gebeurt zonder jou.`,
