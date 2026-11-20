@@ -30,8 +30,9 @@ export const onboarding = messages({
       title: [{ text: 'TON\nENTREMETTEUR\nSOCIAL.\n' }, { text: 'IL TE PRÉSENTE\nDES GENS COMME TOI.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'Laisse-moi apprendre à te connaître 👀' },
-        { from: 'me', text: 'Présente-nous !' },
+        { from: 'pet', text: 'J’apprends à te connaître 👀' },
+        { from: 'me', text: 'Et après ?' },
+        { from: 'pet', text: 'Je te présente du monde. Et pourquoi pas plus…' },
       ],
       create: 'Créer mon minimoa',
       login: 'J’ai déjà un compte',
@@ -202,7 +203,7 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: 'TOUT EST PRÊT,\n' }, { text: `${up(name)} !`, dim: true }],
-      text: (pet: string) => `${pet} est arrivé. Il va te présenter des gens près de chez toi qui voient la vie comme toi.`,
+      text: (pet: string) => `${pet} est arrivé. Chaque jour, il apprend à te connaître, puis il te présente des gens près de chez toi qui te ressemblent. Des potes, et pourquoi pas plus.`,
       cta: 'On y va',
     },
     invite: {
@@ -242,8 +243,9 @@ export const onboarding = messages({
       title: [{ text: 'YOUR\nSOCIAL\nMATCHMAKER.\n' }, { text: 'IT INTRODUCES\nPEOPLE LIKE YOU.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'Let me get to know you 👀' },
-        { from: 'me', text: 'Introduce us!' },
+        { from: 'pet', text: 'I get to know you 👀' },
+        { from: 'me', text: 'And then?' },
+        { from: 'pet', text: 'I introduce you to people. Maybe more…' },
       ],
       create: 'Create my minimoa',
       login: 'I already have an account',
@@ -445,8 +447,9 @@ export const onboarding = messages({
       title: [{ text: 'TU\nCELESTINO\nSOCIAL.\n' }, { text: 'TE PRESENTA\nGENTE COMO TÚ.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'Encontré a alguien para ti 👀' },
-        { from: 'me', text: '¡Preséntanos!' },
+        { from: 'pet', text: 'Aprendo a conocerte 👀' },
+        { from: 'me', text: '¿Y después?' },
+        { from: 'pet', text: 'Te presento gente. Y quién sabe, algo más…' },
       ],
       create: 'Crear mi minimoa',
       login: 'Ya tengo una cuenta',
@@ -648,8 +651,9 @@ export const onboarding = messages({
       title: [{ text: 'SEU\nCUPIDO\nSOCIAL.\n' }, { text: 'ELE TE APRESENTA\nGENTE COMO VOCÊ.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'Achei alguém pra você 👀' },
-        { from: 'me', text: 'Me apresenta!' },
+        { from: 'pet', text: 'Eu aprendo a te conhecer 👀' },
+        { from: 'me', text: 'E depois?' },
+        { from: 'pet', text: 'Te apresento gente. E quem sabe, algo mais…' },
       ],
       create: 'Criar meu minimoa',
       login: 'Já tenho uma conta',
@@ -851,8 +855,9 @@ export const onboarding = messages({
       title: [{ text: 'JE SOCIALE\nKOPPELAAR.\n' }, { text: 'HIJ STELT JE VOOR\nAAN MENSEN ZOALS JIJ.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'Ik heb iemand voor je gevonden 👀' },
-        { from: 'me', text: 'Stel ons voor!' },
+        { from: 'pet', text: 'Ik leer je kennen 👀' },
+        { from: 'me', text: 'En dan?' },
+        { from: 'pet', text: 'Ik stel je voor aan mensen. En wie weet meer…' },
       ],
       create: 'Mijn minimoa maken',
       login: 'Ik heb al een account',

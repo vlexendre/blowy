@@ -7,9 +7,9 @@ import type { TitleLine } from '../landing';
 
 export const fr = {
   meta: {
-    title: 'Minimoa — L’app pour se faire des potes près de chez toi',
+    title: 'Minimoa — Ton entremetteur social, près de chez toi',
     description:
-      'L’app pour se faire des amis près de chez toi : ton minimoa te présente des gens qui voient la vie comme toi. Gratuit, zéro swipe, 18 ans et plus.',
+      'Ton minimoa apprend à te connaître, puis te présente des gens près de chez toi qui te ressemblent. Des potes, et pourquoi pas plus. Gratuit, zéro swipe, 18 ans et plus.',
     ogAlt: 'Nino croque une pomme, puis fait un check à Suzie, le minimoa de Léa, sous le titre « Prends soin de ton minimoa. Il te présente des potes. »',
   },
   dots: {
@@ -37,21 +37,21 @@ export const fr = {
     links: { pet: 'Son minimoa', habitudes: 'Habitudes', groupes: 'Groupes', rencontres: 'Rencontres', plus: 'Minimoa+' },
   },
   hero: {
-    title: [{ text: 'DES POTES' }, { text: 'PRÈS DE', dim: true }, { text: 'CHEZ TOI.', dim: true }] as TitleLine[],
-    lead: 'Tu prends soin de ton minimoa. Lui te présente des gens qui voient la vie comme toi.',
+    title: [{ text: 'TON' }, { text: 'ENTREMETTEUR', dim: true }, { text: 'SOCIAL.', dim: true }] as TitleLine[],
+    lead: 'Ton minimoa apprend à te connaître, et toi avec. Puis il te présente des gens près de chez toi qui te ressemblent. Des potes, et pourquoi pas plus.',
     primary: 'Quel minimoa es-tu ?',
     secondary: 'Ouvre ton quartier',
     b1: { who: 'Léa', text: 'On marche demain matin ?' },
     tag: 'Gratuit · zéro swipe · 18 ans et plus',
-    loop: { label: 'Minimoa en deux temps', care: 'Tu prends soin de lui', meet: 'Il te présente des gens' },
+    loop: { label: 'Minimoa en deux temps', care: 'Tu prends soin de lui', meet: 'Il te présente du monde' },
     careAlt: 'Nino, un minimoa vert à mèche orange, croque une pomme',
     meetAlt: 'Nino fait un check à Suzie, le minimoa de Léa',
   },
   how: {
     title: [{ text: 'COMMENT' }, { text: 'ÇA MARCHE.', dim: true }] as TitleLine[],
     steps: [
-      { title: 'Prends soin de ton minimoa', meta: 'chaque jour', text: 'Nourris-le, joue, sors : plus tu sors, plus il te présente de monde.' },
-      { title: 'Il te présente des gens près de chez toi', meta: 'et dit pourquoi', text: '3 points communs, 1 différence à explorer. Jamais un chiffre seul.' },
+      { title: 'Il apprend à te connaître', meta: 'chaque jour', text: 'Quelques questions par jour. En te présentant à lui, tu apprends aussi à te connaître.' },
+      { title: 'Il te présente des gens près de chez toi', meta: 'et dit pourquoi', text: 'Des personnes qui te ressemblent, avec vos points communs. Des potes, et pourquoi pas plus.' },
       { title: 'Vous vous écrivez, vous vous voyez', meta: 'rien sans ton accord', text: 'Tu salues, l’autre accepte. Personne ne t’écrit sans ton oui.' },
     ],
     cta: 'Quel minimoa es-tu ?',

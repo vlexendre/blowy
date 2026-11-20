@@ -33,8 +33,8 @@ export const en: LandingText = {
     links: { pet: 'Your minimoa', habitudes: 'Habits', groupes: 'Groups', rencontres: 'Meeting people', plus: 'Minimoa+' },
   },
   hero: {
-    title: [{ text: 'FRIENDS' }, { text: 'NEAR', dim: true }, { text: 'YOU.', dim: true }],
-    lead: 'You take care of your minimoa. It introduces you to people who see life the way you do.',
+    title: [{ text: 'YOUR' }, { text: 'SOCIAL', dim: true }, { text: 'MATCHMAKER.', dim: true }],
+    lead: 'Your minimoa gets to know you, and so do you. Then it introduces you to people nearby who are like you. Friends, and maybe more.',
     primary: 'Which minimoa are you?',
     secondary: 'Open your neighborhood',
     b1: { who: 'Léa', text: 'Walk tomorrow morning?' },
@@ -46,8 +46,8 @@ export const en: LandingText = {
   how: {
     title: [{ text: 'HOW' }, { text: 'IT WORKS.', dim: true }],
     steps: [
-      { title: 'Take care of your minimoa', meta: 'every day', text: 'Feed it, play, get out: the more you go out, the more people it introduces.' },
-      { title: 'It introduces you to people nearby', meta: 'and says why', text: '3 things in common, 1 difference to explore. Never just a number.' },
+      { title: 'It gets to know you', meta: 'every day', text: 'A few questions a day. Introducing yourself to it, you get to know yourself too.' },
+      { title: 'It introduces you to people nearby', meta: 'and says why', text: 'People who are like you, with what you have in common. Friends, and maybe more.' },
       { title: 'You chat, you meet up', meta: 'nothing without your OK', text: 'You wave, they accept. Nobody can write to you unless you say yes.' },
     ],
     cta: 'Which minimoa are you?',
