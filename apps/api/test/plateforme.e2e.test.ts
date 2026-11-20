@@ -4,7 +4,7 @@
  * invalides), minuteur (secret, idempotence) et adaptateurs réels contre des réponses HTTP enregistrées.
  */
 import type { ApiClient } from '@blowy/api-client';
-import { CHAT_AI_SYSTEM, chatConfidentialityText, notificationText } from '@blowy/content';
+import { CHAT_AI_SYSTEM, chatConfidentialityText, notificationText, surpriseOf } from '@blowy/content';
 import type { Message } from '@blowy/contract';
 import { DEFAULT_AI_PRICES, parseAiBudgets } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -255,6 +255,22 @@ describe('minimoas dans le chat', () => {
     expect(settings.consent.text).toBe(
       'Personne chez Minimoa ne lit tes conversations, sauf un message signalé et les quelques messages autour, pour la modération. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par Anthropic (États-Unis), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux.',
     );
+  });
+
+  it('sans IA : la remarque au rythme est une question surprise, et deux réponses pareilles font un point commun', async () => {
+    const { a, b, linkId } = await pair(world, ['Eva', 'Fred']);
+    await talk(a, b, linkId, 12);
+    const asked = petLines(await allMessages(a.api, linkId)).filter((m) => m.petRole === 'remark').at(-1);
+    const found = surpriseOf(asked?.body ?? '');
+    expect(found).not.toBeNull();
+    if (!found) return;
+    // Le lendemain (le plafond d'interventions du jour est atteint) : les deux répondent le premier choix.
+    world.clock.advanceDays(1);
+    await a.api.links.send(linkId, { body: `Je dirais ${found.question.a.words[0]} !` });
+    await b.api.links.send(linkId, { body: `${found.question.a.words[0]}, clairement` });
+    await background.settle();
+    const verdict = petLines(await allMessages(a.api, linkId)).at(-1);
+    expect(verdict?.body).toBe(found.lines.common(found.question.a.label, 1));
   });
 
   it('matrice d’accord : aucun, un seul → jamais de lecture ; les deux → une lecture par déclencheur, fenêtre anonymisée', async () => {

@@ -10,7 +10,8 @@
  */
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import { AI_PROCESSOR, type AiProcessor } from '../../../integrations/ai/ai-processor';
-import { CHAT_AI_SYSTEM, type ChatLineContext, chatAiPrompt, chatConfidentialityText, chatLines, type Locale } from '@blowy/content';
+import { CHAT_AI_SYSTEM, type ChatLineContext, chatAiPrompt, chatConfidentialityText, chatLines, commonCountOf, isSurpriseVerdict, type Locale, surpriseLines, surpriseOf } from '@blowy/content';
+import { classifyAnswer } from '@blowy/domain';
 import {
   AI_WINDOW_CHARS,
   AI_WINDOW_MESSAGES,
@@ -243,6 +244,12 @@ export class ChatMinimoas {
       }
       if (!followUp) {
         const voices = await this.voices(link);
+        // Question surprise en cours : quand les deux ont répondu, le minimoa dit si c'est un point commun.
+        const surprise = await this.surprise(draft, userId, text);
+        if (surprise.verdict && interventionsLeft(state, today) > 0) {
+          draft.pet(draft.otherOf(userId), surprise.verdict, 'event');
+          state = countIntervention(state, today);
+        }
         if (opts.firstToday && interventionsLeft(state, today) > 0) {
           draft.pet(userId, chatLines.firstOfDay(await this.ctx(draft, userId, voices, 'first')), 'remark');
           state = countIntervention(state, today);
@@ -257,12 +264,53 @@ export class ChatMinimoas {
           const speaker = draft.speaker('remark', String(state.messagesSinceRemark), link.lastMessageAt);
           state = { ...countIntervention(state, today), messagesSinceRemark: 0 };
           if (reading) followUp = () => this.aiRemark(link.id, speaker);
-          else draft.pet(speaker, chatLines.remark(await this.ctx(draft, speaker, voices, 'remark', link.lastMessageAt)), 'remark');
+          else if (!surprise.pending) {
+            // Sans IA : une question surprise à deux choix (choisie par un seed, jamais par un tirage).
+            const lines = surpriseLines.in(draft.localeOf(speaker));
+            const pick = lines.questions[draft.seed('surprise', link.lastMessageAt ?? '', String(surprise.asked)) % lines.questions.length];
+            if (pick) draft.pet(speaker, pick.text, 'remark');
+          } else draft.pet(speaker, chatLines.remark(await this.ctx(draft, speaker, voices, 'remark', link.lastMessageAt)), 'remark');
         }
       }
     }
     await this.states.save(link.id, state);
     return followUp;
+  }
+
+  /**
+   * Où en est la dernière question surprise du fil (fenêtre courte, `text` = le message en cours, pas encore écrit) :
+   * `pending` tant que les deux n'ont pas répondu ; `verdict` la ligne à dire quand les deux viennent de répondre et
+   * qu'aucune ligne n'a encore été dite. Le compte des points communs est relu dans les lignes déjà dites.
+   */
+  private async surprise(draft: LinkDraft, userId: string, text: string): Promise<{ pending: boolean; verdict: string | null; asked: number }> {
+    const recent = await this.messages.page(draft.link.id, null, 40);
+    const asked = recent.filter((m) => m.authorKind === 'pet' && m.body && surpriseOf(m.body)).length;
+    const qi = recent.findIndex((m) => m.authorKind === 'pet' && !!m.body && !!surpriseOf(m.body));
+    const found = qi >= 0 ? surpriseOf(recent[qi]?.body ?? '') : null;
+    if (!found) return { pending: false, verdict: null, asked };
+    const after = recent.slice(0, qi);
+    if (after.some((m) => m.authorKind === 'pet' && m.body && isSurpriseVerdict(m.body))) return { pending: false, verdict: null, asked };
+    // Première réponse de chacun après la question (du plus ancien au plus récent), le message en cours en dernier.
+    const answers = new Map<string, string>();
+    for (const m of [...after].reverse()) if (m.authorKind === 'user' && m.authorId && m.body && !answers.has(m.authorId)) answers.set(m.authorId, m.body);
+    const justAnswered = !answers.has(userId);
+    if (justAnswered) answers.set(userId, text);
+    const other = draft.otherOf(userId);
+    const mine = answers.get(userId);
+    const theirs = answers.get(other);
+    if (mine === undefined || theirs === undefined) return { pending: true, verdict: null, asked };
+    // Les deux avaient déjà répondu avant ce message : plus rien à dire sur cette question.
+    if (!justAnswered) return { pending: false, verdict: null, asked };
+    const { lines, question } = found;
+    const a = classifyAnswer(mine, question.a.words, question.b.words);
+    const b = classifyAnswer(theirs, question.a.words, question.b.words);
+    if (a === null || b === null) return { pending: false, verdict: null, asked };
+    const label = (c: 'a' | 'b') => question[c].label;
+    if (a === b) {
+      const before = recent.map((m) => (m.authorKind === 'pet' && m.body ? commonCountOf(m.body) : null)).find((n) => n !== null) ?? 0;
+      return { pending: false, verdict: lines.common(label(a), before + 1), asked };
+    }
+    return { pending: false, verdict: lines.different(label(b), label(a)), asked };
   }
 
   /** Lance la suite en arrière-plan (la réponse à la personne n'attend pas l'IA). */

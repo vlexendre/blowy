@@ -10,6 +10,7 @@ export * from './api-errors';
 export * from './v7/vision';
 export * from './v7/facturation-admin';
 export * from './v7/chat';
+export * from './v7/surprise';
 export * from './v7/notifications';
 export * from './v7/rituels';
 export * from './v7/audit';
