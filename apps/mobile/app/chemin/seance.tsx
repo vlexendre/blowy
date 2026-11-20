@@ -45,6 +45,7 @@ export default function Seance() {
   const [reactKey, setReactKey] = useState(0);
   const [reactWith, setReactWith] = useState<PetActorReaction | null>(null);
   const started = useRef<string | null>(null);
+  const startedAt = useRef<number>(Date.now());
   // Minimoa animé (réglé par l'API) : il réfléchit à chaque question, réagit à chaque réponse.
   const [mascotMoment, setMascotMoment] = useState<MascotMoment | null>(null);
   const [mascotKey, setMascotKey] = useState(0);
@@ -62,6 +63,7 @@ export default function Seance() {
   useEffect(() => {
     if (!session || started.current === session.id) return;
     started.current = session.id;
+    startedAt.current = Date.now();
     setProgress(startSeance(session));
     setDraft(null);
     if (!session.done) trackChemin('Seance Started', { unit: session.step?.unitTitle ?? null, slot: session.slot, review: session.kind === 'review' });
@@ -70,11 +72,12 @@ export default function Seance() {
   const send = (p: SeanceProgress) => {
     if (!session) return;
     answer.mutate(
-      { body: answersBody(session, p), slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation, mascot },
+      { body: answersBody(session, p), slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation, mascot, seconds: Math.round((Date.now() - startedAt.current) / 1000) },
       {
         onSuccess: (res) => {
           if (!res.alreadyRecorded && res.newItems.length > 0) useUnlocks.getState().push(res.newItems);
-          router.replace({ pathname: '/chemin/fin', params: { id: res.sessionId } });
+          // Séance tout juste finie : la célébration d'abord (puis la série si elle monte, puis la suite).
+          router.replace({ pathname: res.alreadyRecorded ? '/chemin/fin' : '/chemin/bravo', params: { id: res.sessionId } });
         },
       },
     );

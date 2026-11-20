@@ -93,7 +93,7 @@ export default function Fin() {
         <Stack top={8} gap={14}>
           <StreakRise
             count={s.current}
-            from={entry?.streakBefore ?? s.current}
+            from={s.current}
             unit={t.streakUnit(s.current)}
             accessibilityLabel={t.streakA11y(s.current)}
             celebrate={party}
