@@ -134,7 +134,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   name: DEV ? 'Minimoa Dev' : 'Minimoa',
   slug: 'blowy',
   owner: EXPO_OWNER,
-  version: '1.0.0',
+  version: '1.1.0',
   orientation: 'portrait',
   scheme: SCHEMES,
   userInterfaceStyle: 'dark',
