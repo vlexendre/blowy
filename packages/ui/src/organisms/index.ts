@@ -115,3 +115,4 @@ export { LeagueRow, type LeagueRowProps } from './LeagueRow';
 export { TrophyCard, type TrophyCardProps } from './TrophyCard';
 export { SessionCelebration, type CelebrationTile, type SessionCelebrationProps } from './SessionCelebration';
 export { STREAK_TIER_BACKGROUND, StreakTier, type StreakTierDay, type StreakTierProps } from './StreakTier';
+export { LeagueHeader, type LeagueHeaderProps } from './LeagueHeader';

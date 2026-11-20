@@ -26,6 +26,7 @@ describe('progression', () => {
     expect(after.sparks).toBe(5);
     expect(after.trophies.find((t) => t.family === 'bonjour')).toMatchObject({ won: 1, value: 1, next: 10 });
     expect(after.league.located).toBe(true);
+    expect(after.league).toMatchObject({ tier: 'plume', lastWeekSparks: 0, next: { tier: 'pompon', sparks: 60 } });
     const me = after.league.rows.find((r) => r.me);
     expect(me).toMatchObject({ rank: 1, sparks: 5, podium: true, displayName: '' });
     expect(after.league.rows.find((r) => r.userId === ben.id)).toMatchObject({ displayName: 'Ben', sparks: 0, podium: false });

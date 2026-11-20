@@ -6,8 +6,8 @@ export const PROGRESSION_READER = Symbol('PROGRESSION_READER');
 export interface ProgressionReader {
   /** Ce qu'une personne a fait depuis le début (sans la série, lue dans `ritual_states`). */
   lifetime(userId: string): Promise<Omit<LifetimeStats, 'bestStreak'>>;
-  /** Ce que chacune de ces personnes a fait depuis `since` (instant ISO). */
-  week(userIds: readonly string[], since: string): Promise<Map<string, WeekActivity>>;
+  /** Ce que chacune de ces personnes a fait de `since` (compris) à `until` (exclu, null : maintenant), instants ISO. */
+  week(userIds: readonly string[], since: string, until?: string | null): Promise<Map<string, WeekActivity>>;
   /** Personnes de la même zone que `userId` (sa zone de domicile), elle comprise, au plus `limit` ; vide quand elle n'a pas de position. */
   neighbours(userId: string, limit: number): Promise<string[]>;
 }

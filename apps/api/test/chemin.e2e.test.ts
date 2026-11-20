@@ -107,6 +107,11 @@ describe('Ton chemin', () => {
     expect((await apiError(b.api.chemin.answer(firstChoices(s)))).code).toBe('not_found');
 
     const r = await a.api.chemin.answer(firstChoices(s));
+    // Étincelles : 10 pour la séance, puis vitesse (horloge de test : réponse instantanée, donc trop vite) et cohérence.
+    expect(r.sparks?.done).toBe(10);
+    expect(r.sparks?.speed).toBe(0);
+    expect(r.sparks?.total).toBeGreaterThanOrEqual(10);
+    expect(r.sparks?.total).toBeLessThanOrEqual(25);
     expect(r.alreadyRecorded).toBe(false);
     expect(r.revelation).toMatchObject({ title: 'Ce que Nino a appris', axis: 'rythme' });
     // Rythme : −60, −60, +70 → entre les deux.

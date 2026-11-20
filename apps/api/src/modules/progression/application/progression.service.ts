@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Progression } from '@blowy/contract';
-import { LEAGUE_SIZE, NO_ACTIVITY, TROPHY_COUNT, dayOf, rankLeague, trophies, trophiesWon, weekEnd, weekStart, weeklySparks } from '@blowy/domain';
+import { LEAGUE_SIZE, NO_ACTIVITY, TROPHY_COUNT, addDays, dayOf, leagueTierOf, nextLeague, rankLeague, trophies, trophiesWon, weekEnd, weekStart, weeklySparks } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { CLOCK, PETS } from '../../../shared/tokens';
 import type { PetsRepository } from '../../pets/ports';
@@ -28,6 +28,7 @@ export class ProgressionService {
     const monday = weekStart(today);
     // Lundi 00:00 à Paris, à une heure près (UTC+1 ou +2) : on prend le plus tôt des deux.
     const since = new Date(`${monday}T00:00:00+02:00`).toISOString();
+    const lastMonday = new Date(`${addDays(monday, -7)}T00:00:00+02:00`).toISOString();
 
     const [life, state, near] = await Promise.all([this.reader.lifetime(userId), this.states.find(userId), this.reader.neighbours(userId, LEAGUE_SIZE)]);
     const streak = state?.streak ?? { current: 0, best: 0 };
@@ -37,7 +38,9 @@ export class ProgressionService {
     const others = await this.audience.visible(userId, near.filter((id) => id !== userId), 'map');
     const members = [userId, ...others.slice(0, LEAGUE_SIZE - 1).map((p) => p.id)];
     const names = new Map(others.map((p) => [p.id, p.displayName]));
-    const [activity, pets] = await Promise.all([this.reader.week(members, since), this.pets.findByOwners(members)]);
+    const [activity, pets, last] = await Promise.all([this.reader.week(members, since), this.pets.findByOwners(members), this.reader.week([userId], lastMonday, since)]);
+    const lastWeekSparks = weeklySparks(last.get(userId) ?? NO_ACTIVITY);
+    const tier = leagueTierOf(lastWeekSparks);
     const species = new Map(pets.map((p) => [p.ownerId, p.species]));
     const ranked = rankLeague(members.map((id) => ({ userId: id, sparks: weeklySparks(activity.get(id) ?? NO_ACTIVITY) })));
     const mine = ranked.find((r) => r.userId === userId);
@@ -51,6 +54,9 @@ export class ProgressionService {
       league: {
         endsOn: weekEnd(today),
         located,
+        tier,
+        lastWeekSparks,
+        next: nextLeague(tier),
         rows: ranked
           .filter((r) => species.has(r.userId))
           .map((r) => ({

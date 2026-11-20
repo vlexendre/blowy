@@ -1,6 +1,7 @@
 import { NO_ACTIVITY, type LifetimeStats, type WeekActivity } from '@blowy/domain';
 import type { MemoryDb } from '../../../persistence/memory-db';
 import type { ProgressionReader } from '../ports';
+import { sparksOf } from './sparks-of';
 
 export class MemoryProgressionReader implements ProgressionReader {
   constructor(private readonly db: MemoryDb) {}
@@ -18,12 +19,13 @@ export class MemoryProgressionReader implements ProgressionReader {
     };
   }
 
-  async week(userIds: readonly string[], since: string): Promise<Map<string, WeekActivity>> {
+  async week(userIds: readonly string[], since: string, until: string | null = null): Promise<Map<string, WeekActivity>> {
     const out = new Map(userIds.map((id) => [id, { ...NO_ACTIVITY }]));
-    for (const m of this.db.messages) if (m.authorKind === 'user' && m.authorId && m.createdAt >= since) { const a = out.get(m.authorId); if (a) a.messages++; }
-    for (const e of this.db.encounters.values()) if (e.createdAt >= since) { const a = out.get(e.fromUser); if (a) a.waves++; }
-    for (const s of this.db.cheminSessions.values()) if (s.completedAt && s.completedAt >= since) { const a = out.get(s.userId); if (a) a.sessions++; }
-    for (const l of this.db.links.values()) if (l.createdAt >= since) for (const id of [l.userA, l.userB]) { const a = out.get(id); if (a) a.links++; }
+    const inside = (at: string): boolean => at >= since && (until === null || at < until);
+    for (const m of this.db.messages) if (m.authorKind === 'user' && m.authorId && inside(m.createdAt)) { const a = out.get(m.authorId); if (a) a.messages++; }
+    for (const e of this.db.encounters.values()) if (inside(e.createdAt)) { const a = out.get(e.fromUser); if (a) a.waves++; }
+    for (const s of this.db.cheminSessions.values()) if (s.completedAt && inside(s.completedAt)) { const a = out.get(s.userId); if (a) { a.sessions++; a.sessionSparks += sparksOf(s.result); } }
+    for (const l of this.db.links.values()) if (inside(l.createdAt)) for (const id of [l.userA, l.userB]) { const a = out.get(id); if (a) a.links++; }
     return out;
   }
 

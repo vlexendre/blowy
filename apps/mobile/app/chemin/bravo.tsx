@@ -28,10 +28,15 @@ export default function Bravo() {
   if (!entry) return null;
   const answers = entry.answers;
   const seed = [...(id ?? '')].reduce((n, c) => n + c.charCodeAt(0), 0);
+  // Étincelles du serveur (vitesse et cohérence) ; une réponse d'un serveur plus ancien : 10, sans détail.
+  const sp = entry.result.sparks;
+  const seconds = sp?.seconds ?? entry.seconds;
   const tiles = [
-    { key: 'sparks', label: t.tiles.sparks, value: t.sparks(SPARKS.session), tone: 'accent' as const },
-    { key: 'streak', label: t.tiles.streak, value: String(entry.result.streak.current), tone: 'lime' as const },
-    ...(entry.seconds !== null ? [{ key: 'time', label: t.tiles.time, value: t.time(entry.seconds), tone: 'sky' as const }] : []),
+    { key: 'sparks', label: t.tiles.sparks, value: t.sparks(sp?.total ?? SPARKS.session), tone: 'accent' as const },
+    sp && sp.checked > 0
+      ? { key: 'coherence', label: t.tiles.coherence, value: t.coherence(sp.coherent, sp.checked), tone: 'lime' as const }
+      : { key: 'streak', label: t.tiles.streak, value: String(entry.result.streak.current), tone: 'lime' as const },
+    ...(seconds !== null ? [{ key: 'time', label: t.tiles.time, value: t.time(seconds), tone: 'sky' as const }] : []),
   ];
   return (
     <ScreenMotion>

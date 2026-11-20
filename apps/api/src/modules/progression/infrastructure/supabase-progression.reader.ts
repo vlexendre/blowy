@@ -2,9 +2,12 @@ import { NO_ACTIVITY, type LifetimeStats, type WeekActivity } from '@blowy/domai
 import type { Db } from '../../../persistence/database.types';
 import { check } from '../../../persistence/supabase';
 import type { ProgressionReader } from '../ports';
+import { sparksOf } from './sparks-of';
 
 /** Au plus autant de lignes lues par compteur de la semaine (une ligue = 20 personnes). */
 const WEEK_ROWS = 20_000;
+/** Borne haute quand il n'y en a pas. */
+const FAR = '9999-12-31T00:00:00Z';
 
 export class SupabaseProgressionReader implements ProgressionReader {
   constructor(private readonly client: Db) {}
@@ -30,16 +33,16 @@ export class SupabaseProgressionReader implements ProgressionReader {
     return { waves: waves.count ?? 0, messages: messages.count ?? 0, links: others.length, sessions: progress.data?.sessions_done ?? 0, places };
   }
 
-  async week(userIds: readonly string[], since: string): Promise<Map<string, WeekActivity>> {
+  async week(userIds: readonly string[], since: string, until: string | null = null): Promise<Map<string, WeekActivity>> {
     const out = new Map(userIds.map((id) => [id, { ...NO_ACTIVITY }]));
     if (userIds.length === 0) return out;
     const ids = [...userIds];
     const list = ids.join(',');
     const [msgs, waves, sessions, links] = await Promise.all([
-      this.client.from('messages').select('author_id').eq('author_kind', 'user').in('author_id', ids).gte('created_at', since).limit(WEEK_ROWS),
-      this.client.from('encounters').select('from_user').in('from_user', ids).gte('created_at', since).limit(WEEK_ROWS),
-      this.client.from('chemin_sessions').select('user_id').in('user_id', ids).gte('completed_at', since).limit(WEEK_ROWS),
-      this.client.from('links').select('user_a, user_b').or(`user_a.in.(${list}),user_b.in.(${list})`).gte('created_at', since).limit(WEEK_ROWS),
+      this.client.from('messages').select('author_id').eq('author_kind', 'user').in('author_id', ids).gte('created_at', since).lt('created_at', until ?? FAR).limit(WEEK_ROWS),
+      this.client.from('encounters').select('from_user').in('from_user', ids).gte('created_at', since).lt('created_at', until ?? FAR).limit(WEEK_ROWS),
+      this.client.from('chemin_sessions').select('user_id, result').in('user_id', ids).gte('completed_at', since).lt('completed_at', until ?? FAR).limit(WEEK_ROWS),
+      this.client.from('links').select('user_a, user_b').or(`user_a.in.(${list}),user_b.in.(${list})`).gte('created_at', since).lt('created_at', until ?? FAR).limit(WEEK_ROWS),
     ]);
     check(msgs.error, 'ligue : messages');
     check(waves.error, 'ligue : bonjours');
@@ -47,7 +50,7 @@ export class SupabaseProgressionReader implements ProgressionReader {
     check(links.error, 'ligue : liens');
     for (const r of msgs.data ?? []) { const a = r.author_id ? out.get(r.author_id) : undefined; if (a) a.messages++; }
     for (const r of waves.data ?? []) { const a = out.get(r.from_user); if (a) a.waves++; }
-    for (const r of sessions.data ?? []) { const a = out.get(r.user_id); if (a) a.sessions++; }
+    for (const r of sessions.data ?? []) { const a = out.get(r.user_id); if (a) { a.sessions++; a.sessionSparks += sparksOf(r.result); } }
     for (const r of links.data ?? []) for (const id of [r.user_a, r.user_b]) { const a = out.get(id); if (a) a.links++; }
     return out;
   }

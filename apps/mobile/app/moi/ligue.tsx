@@ -1,5 +1,5 @@
 /** Ligue de la semaine (maquette V7 « Ligue ») : tes voisins classés par étincelles, remise à zéro chaque lundi. */
-import { Appear, Banner, LeagueRow, Skeleton, SettingsTemplate, Text, staggerDelay } from '@blowy/ui';
+import { Appear, Banner, LeagueHeader, LeagueRow, ListRow, SettingsSection, Skeleton, SettingsTemplate, Text, staggerDelay } from '@blowy/ui';
 
 import { ScreenMotion } from '@/core';
 import { useProgression } from '@/features/progression';
@@ -22,6 +22,13 @@ export default function Ligue() {
           <Skeleton height={240} radius="lg" />
         ) : (
           <>
+            <LeagueHeader
+              tier={league.tier}
+              title={t.tierTitle(t.tiers[league.tier])}
+              goal={league.next ? t.goal(Math.max(0, league.next.sparks - (q.data?.sparks ?? 0)), t.tiers[league.next.tier]) : t.top}
+              progress={league.next ? Math.min(1, (q.data?.sparks ?? 0) / league.next.sparks) : 1}
+              tierLabels={t.tiers}
+            />
             <Text variant="small" muted>
               {t.endsOn(formatDate(`${league.endsOn}T12:00:00`, { weekday: 'long', day: 'numeric', month: 'long' }))}
             </Text>
@@ -34,6 +41,14 @@ export default function Ligue() {
               );
             })}
             {!league.located ? <Banner tone="info" text={t.alone} /> : null}
+            <SettingsSection title={t.howTitle}>
+              {t.how.map((h, i) => (
+                <ListRow key={h.key} title={h.title} subtitle={h.text} right={<Text variant="bodyHeavy">{h.value}</Text>} divider={i < t.how.length - 1} />
+              ))}
+            </SettingsSection>
+            <Text variant="small" muted>
+              {t.howNote}
+            </Text>
           </>
         )}
       </SettingsTemplate>

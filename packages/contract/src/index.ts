@@ -9,6 +9,7 @@ import { PetRoleZ } from './v7/plateforme';
 import { OnboardHabitZ, SharedHabitsZ } from './v7/rituels';
 import { AttributionZ } from './v7/croissance';
 import { SeasonalCollectionZ } from './v7/billing';
+import { SessionSparksZ } from './v7/progression';
 import { CheminEmptyZ, CheminKnowsZ, CheminProgressZ, CheminQuotaZ, CheminRevelationZ, CheminStreakZ } from './v7/chemin';
 
 export const API_PREFIX = '/v1';
@@ -347,6 +348,8 @@ export const CheminResultZ = z.object({
   person: CheminPersonZ.nullable(),
   /** Personne à présenter : pourquoi, honnêtement (null si `person`). */
   empty: CheminEmptyZ.nullable(),
+  /** Étincelles de la séance (vitesse et cohérence ; règles : `sessionSparks` du domaine). Absent des séances d'avant. */
+  sparks: SessionSparksZ.optional(),
 });
 export type CheminResult = z.infer<typeof CheminResultZ>;
 

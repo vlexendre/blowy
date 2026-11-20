@@ -23,6 +23,7 @@ import {
   pickPersonOfDay,
   pickSession,
   revelationOf,
+  sessionSparks,
   streakRulesOf,
   streakReward,
   streakAtRisk,
@@ -351,6 +352,14 @@ export class CheminService {
       if (again?.result) return { ...(again.result as CheminResult), alreadyRecorded: true };
       throw new DomainError('conflict');
     }
+    // Étincelles : vitesse (mesurée ici, de l'ouverture de la séance à l'envoi) et cohérence avec ce que tu as déjà dit
+    // (ta réponse précédente à la même question, sinon ce que ton minimoa sait de l'axe), lues avant d'enregistrer.
+    const [before, previous] = await Promise.all([this.vision.current(userId), this.answers.latestFor([userId], wanted)]);
+    const prevSignal = new Map(previous.map((r) => [r.questionId, r.signal]));
+    const sparks = sessionSparks(
+      session.map((s) => ({ value: s.signal, previous: prevSignal.get(s.question.id) ?? null, axis: before.testDone || before.profile[s.question.axis].confidence > 0 ? before.profile[s.question.axis] : null })),
+      (e.now.getTime() - new Date(record.createdAt).getTime()) / 1000,
+    );
     const rows: CheminAnswerRecord[] = session.map((s) => ({
       userId,
       sessionId: record.id,
@@ -405,6 +414,7 @@ export class CheminService {
       knows: this.knows(snapshot.profile, locale),
       person,
       empty,
+      sparks,
     };
     await this.sessions.saveResult(record.id, result);
     return result;

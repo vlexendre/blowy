@@ -12,23 +12,25 @@ const dayOfWeek = (d: Day): number => new Date(`${d}T12:00:00Z`).getUTCDay();
 
 // ── Étincelles ──────────────────────────────────────────────────────────────
 
-/** Ce que rapporte chaque geste. Écrire rapporte peu, et au plus `MESSAGE_SPARKS_CAP` par semaine (pas de spam). */
+/** Ce que rapporte chaque geste (une séance : voir `sessionSparks`, de 10 à 25). Écrire rapporte peu, et au plus `MESSAGE_SPARKS_CAP` par semaine (pas de spam). */
 export const SPARKS = { session: 10, message: 1, wave: 5, link: 20 } as const;
 export const MESSAGE_SPARKS_CAP = 100;
 
 /** Ce qu'une personne a fait pendant la semaine. */
 export interface WeekActivity {
   sessions: number;
+  /** Étincelles des séances (vitesse et cohérence comprises) ; une ancienne séance sans compte vaut `SPARKS.session`. */
+  sessionSparks: number;
   messages: number;
   waves: number;
   links: number;
 }
 
-export const NO_ACTIVITY: WeekActivity = { sessions: 0, messages: 0, waves: 0, links: 0 };
+export const NO_ACTIVITY: WeekActivity = { sessions: 0, sessionSparks: 0, messages: 0, waves: 0, links: 0 };
 
 /** Étincelles de la semaine. */
 export function weeklySparks(a: WeekActivity): number {
-  return a.sessions * SPARKS.session + Math.min(a.messages * SPARKS.message, MESSAGE_SPARKS_CAP) + a.waves * SPARKS.wave + a.links * SPARKS.link;
+  return a.sessionSparks + Math.min(a.messages * SPARKS.message, MESSAGE_SPARKS_CAP) + a.waves * SPARKS.wave + a.links * SPARKS.link;
 }
 
 /** Lundi de la semaine de `day` (la ligue se remet à zéro chaque lundi). */
@@ -38,6 +40,99 @@ export function weekStart(day: Day): Day {
 
 /** Dernier jour de la ligue en cours (dimanche). */
 export const weekEnd = (day: Day): Day => addDays(weekStart(day), 6);
+
+// ── Étincelles d'une séance : vitesse et cohérence ─────────────────────────
+
+/**
+ * Une séance terminée rapporte au plus 25 étincelles :
+ * - 10 pour l'avoir faite ;
+ * - jusqu'à 5 pour la vitesse (temps moyen par réponse, mesuré par le serveur : de l'ouverture de la séance à
+ *   l'envoi). Trop vite (moins de 2 s par réponse en moyenne : on ne lit pas), rien ;
+ * - jusqu'à 10 pour la cohérence : 2 par réponse qui rejoint ce que tu as déjà dit (ta réponse précédente à la même
+ *   question, sinon ce que ton minimoa sait déjà de toi sur cet axe, quand il en est assez sûr). Une réponse sans
+ *   rien à quoi la comparer (tu découvres un sujet) rapporte 1.
+ * La vitesse seule ne paie pas beaucoup : répondre vite et au hasard fait perdre la cohérence.
+ */
+export const SESSION_SPARKS = { done: 10, speedMax: 5, perCoherent: 2, perNew: 1, max: 25 } as const;
+/** Paliers de vitesse : secondes par réponse en moyenne → étincelles. */
+export const SPEED_TIERS: readonly { maxSecondsPerAnswer: number; sparks: number }[] = [
+  { maxSecondsPerAnswer: 9, sparks: 5 },
+  { maxSecondsPerAnswer: 18, sparks: 3 },
+  { maxSecondsPerAnswer: 36, sparks: 1 },
+];
+export const TOO_FAST_SECONDS_PER_ANSWER = 2;
+/** Une réponse rejoint la précédente à la même question si l'écart sur l'axe (−100 à 100) est au plus de 40. */
+export const COHERENT_SPAN_SAME_QUESTION = 40;
+/** …ou ce que le minimoa sait de l'axe (confiance d'au moins 30) si l'écart est au plus de 60. */
+export const COHERENT_SPAN_AXIS = 60;
+export const COHERENT_MIN_CONFIDENCE = 30;
+
+export interface SparkAnswer {
+  /** Valeur de la réponse sur l'axe (−100 à 100, sens appliqué). */
+  value: number;
+  /** Ta réponse précédente à la même question (même échelle), ou null. */
+  previous: number | null;
+  /** Ce que le minimoa savait de cet axe avant la séance. */
+  axis: { value: number; confidence: number } | null;
+}
+
+export interface SessionSparks {
+  total: number;
+  done: number;
+  speed: number;
+  coherence: number;
+  /** Réponses comparées (à une réponse précédente ou à l'axe connu). */
+  checked: number;
+  /** Parmi elles, celles qui rejoignent ce que tu as déjà dit. */
+  coherent: number;
+  seconds: number;
+}
+
+export function speedSparks(seconds: number, answers: number): number {
+  if (answers <= 0) return 0;
+  const per = Math.max(0, seconds) / answers;
+  if (per < TOO_FAST_SECONDS_PER_ANSWER) return 0;
+  return SPEED_TIERS.find((t) => per <= t.maxSecondsPerAnswer)?.sparks ?? 0;
+}
+
+export function isCoherent(a: SparkAnswer): boolean | null {
+  if (a.previous !== null) return Math.abs(a.value - a.previous) <= COHERENT_SPAN_SAME_QUESTION;
+  if (a.axis && a.axis.confidence >= COHERENT_MIN_CONFIDENCE) return Math.abs(a.value - a.axis.value) <= COHERENT_SPAN_AXIS;
+  return null;
+}
+
+export function sessionSparks(answers: readonly SparkAnswer[], seconds: number): SessionSparks {
+  const verdicts = answers.map(isCoherent);
+  const checked = verdicts.filter((v) => v !== null).length;
+  const coherent = verdicts.filter((v) => v === true).length;
+  const fresh = verdicts.filter((v) => v === null).length;
+  const coherence = Math.min(10, coherent * SESSION_SPARKS.perCoherent + fresh * SESSION_SPARKS.perNew);
+  const speed = speedSparks(seconds, answers.length);
+  const total = Math.min(SESSION_SPARKS.max, SESSION_SPARKS.done + speed + coherence);
+  return { total, done: SESSION_SPARKS.done, speed, coherence, checked, coherent, seconds: Math.max(0, Math.round(seconds)) };
+}
+
+// ── Paliers de ligue ────────────────────────────────────────────────────────
+
+/**
+ * Cinq ligues, de Plume à Étoile. Ta ligue de la semaine dépend des étincelles gagnées la semaine d'avant : rien à
+ * garder en mémoire, et chacun sait ce qu'il faut pour monter (le seuil suivant).
+ */
+export const LEAGUE_TIERS = ['plume', 'pompon', 'houppette', 'couronne', 'etoile'] as const;
+export type LeagueTier = (typeof LEAGUE_TIERS)[number];
+export const LEAGUE_TIER_MIN: Record<LeagueTier, number> = { plume: 0, pompon: 60, houppette: 150, couronne: 280, etoile: 450 };
+
+export function leagueTierOf(lastWeekSparks: number): LeagueTier {
+  let tier: LeagueTier = 'plume';
+  for (const t of LEAGUE_TIERS) if (lastWeekSparks >= LEAGUE_TIER_MIN[t]) tier = t;
+  return tier;
+}
+
+/** La ligue suivante et le seuil à atteindre cette semaine pour y être la semaine prochaine (null : déjà Étoile). */
+export function nextLeague(tier: LeagueTier): { tier: LeagueTier; sparks: number } | null {
+  const next = LEAGUE_TIERS[LEAGUE_TIERS.indexOf(tier) + 1];
+  return next ? { tier: next, sparks: LEAGUE_TIER_MIN[next] } : null;
+}
 
 // ── Ligue ───────────────────────────────────────────────────────────────────
 

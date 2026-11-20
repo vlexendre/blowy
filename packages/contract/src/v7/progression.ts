@@ -2,10 +2,18 @@
  * Contrat « progression » (maquette V7) : étincelles de la semaine, ligue entre voisins, 18 trophées.
  * Les règles sont dans `@blowy/domain` (`progression.ts`).
  */
-import { SPECIES, TROPHY_FAMILIES } from '@blowy/domain';
+import { LEAGUE_TIERS, SPECIES, TROPHY_FAMILIES } from '@blowy/domain';
 import { z } from 'zod';
 
 const API = '/v1';
+
+const n = z.number().int().min(0);
+
+/** Étincelles d'une séance : 10 pour l'avoir faite, jusqu'à 5 pour la vitesse, jusqu'à 10 pour la cohérence. */
+export const SessionSparksZ = z.object({ total: n, done: n, speed: n, coherence: n, checked: n, coherent: n, seconds: n });
+export type SessionSparksDto = z.infer<typeof SessionSparksZ>;
+
+export const LeagueTierZ = z.enum(LEAGUE_TIERS);
 
 export const TrophyFamilyZ = z.enum(TROPHY_FAMILIES);
 
@@ -43,6 +51,11 @@ export const ProgressionZ = z.object({
     endsOn: z.string(),
     /** Sans position : pas de voisins, la ligue n'a que toi. */
     located: z.boolean(),
+    /** Ta ligue cette semaine (décidée par les étincelles de la semaine d'avant). */
+    tier: LeagueTierZ,
+    lastWeekSparks: n,
+    /** La ligue suivante et les étincelles à gagner cette semaine pour y monter (null : déjà Étoile). */
+    next: z.object({ tier: LeagueTierZ, sparks: n }).nullable(),
     rows: z.array(LeagueRowZ),
   }),
 });
