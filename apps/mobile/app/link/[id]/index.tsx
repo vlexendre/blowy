@@ -70,6 +70,8 @@ import { chat as chatText, ghost as ghostText, link as t, memories as memText, m
  */
 /** Messages échangés (les deux personnes, sans les minimoas) avant de proposer l'accord de lecture par l'IA. */
 const CONSENT_AFTER_MESSAGES = 6;
+/** Maquette V7 : la feuille d’accord ne s’ouvre plus d’elle-même dans le chat (l’accord reste dans Options). */
+const SHOW_CONSENT_SHEET: boolean = false;
 
 type Tab = 'chat' | 'lien';
 const TABS = [
@@ -163,9 +165,9 @@ export default function LinkScreen() {
 
   const mm = minimoas.data;
   const muted = mm?.muted ?? false;
-  // Pas à la première ouverture : d'abord se parler. L'accord est proposé après quelques messages échangés (sans
-  // réponse, les minimoas parlent sans lire : `consent.mine` null), et reste dans Options à tout moment.
-  const askConsent = !!mm && mm.consent.mine === null && !consentLater && exchanged >= CONSENT_AFTER_MESSAGES;
+  // Maquette V7 : plus de demande d'accord dans le chat (trop de friction ; se parler suffit). Sans réponse, les
+  // minimoas parlent sans lire (`consent.mine` null) ; l'accord reste dans Options à tout moment.
+  const askConsent = SHOW_CONSENT_SHEET && !!mm && mm.consent.mine === null && !consentLater && exchanged >= CONSENT_AFTER_MESSAGES;
   const toggleMuted = () =>
     updateMinimoas.mutate(
       { muted: !muted },
