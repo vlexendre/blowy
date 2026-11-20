@@ -112,9 +112,14 @@ else
   URL_IMAGE="$(treg host "$TRAVAIL/depart.png" | tail -n 1)"
   [[ "$URL_IMAGE" == https://* ]] || { echo "treg host n'a pas rendu d'URL : $URL_IMAGE" >&2; exit 1; }
   note "Image hébergée : $URL_IMAGE"
+  # Seedance a tendance à « gonfler » le personnage en mouvement (ventre +10 à
+  # +30 %) : caméra verrouillée et consigne de silhouette ajoutée à chaque prompt.
+  # (last_frame_image n'est pas accepté par Seedance lite : erreur flf2v.)
   node -e '
     const [image, prompt, duration, resolution] = process.argv.slice(1);
-    process.stdout.write(JSON.stringify({ input: { image, prompt, duration: Number(duration), resolution, aspect_ratio: "1:1" } }));
+    const garde = " Its body keeps exactly the same size, shape and proportions as in the first frame the whole time: it never gets bigger, wider, fatter or rounder, no squash and stretch, no zoom.";
+    const input = { image, prompt: prompt + garde, duration: Number(duration), resolution, aspect_ratio: "1:1", camera_fixed: true };
+    process.stdout.write(JSON.stringify({ input }));
   ' "$URL_IMAGE" "$PROMPT" "$DUREE" "$RESOLUTION" > "$TRAVAIL/corps.json"
   note "Prompt : $PROMPT"
   SOLDE_AVANT="$(treg balance 2>/dev/null | sed -n 's/.*(\([0-9]*\) micro-USD).*/\1/p' | head -n 1)"

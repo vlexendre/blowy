@@ -16,11 +16,11 @@ Pillow, la CLI `treg` connectée (`treg balance`). Aucune clé dans le script.
 ```bash
 # Réaction (joue une fois)
 tools/mascottes/animer.sh --espece nino --pose neutre --nom rire \
-  --prompt "The fluffy lime-green creature bursts into a happy laugh: it squashes down then bounces up, eyes squeeze shut, little hands go to its belly, then it settles back to its starting pose. Static camera, locked-off shot, the creature stays centered with its feet on the ground, the plain solid blue background never changes, no other objects."
+  --prompt "The fluffy lime-green creature bursts into a happy laugh: it gives a small hop, eyes squeeze shut, little hands go to its belly, then it settles back to its starting pose. Static camera, locked-off shot, the creature stays centered with its feet on the ground, the plain solid blue background never changes, no other objects."
 
 # Boucle de repos (raccord fin → début par fondu)
 tools/mascottes/animer.sh --espece nino --pose neutre --nom repos --boucle \
-  --prompt "The fluffy lime-green creature stands still and breathes gently: its round body slowly swells and settles once or twice, its tuft of orange hair sways softly, it blinks once, its smile stays the same. Subtle idle animation, it ends exactly in its starting pose. Static camera, locked-off shot, the creature stays centered with its feet on the ground, the plain solid blue background never changes, no other objects."
+  --prompt "The fluffy lime-green creature stands still and breathes very gently, its tuft of orange hair sways softly, it blinks once, its smile stays the same. Subtle idle animation, it ends exactly in its starting pose. Static camera, locked-off shot, the creature stays centered with its feet on the ground, the plain solid blue background never changes, no other objects."
 
 # Régler le détourage sans repayer : repartir de la vidéo déjà générée
 tools/mascottes/animer.sh --espece nino --pose neutre --nom rire \
