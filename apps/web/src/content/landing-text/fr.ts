@@ -9,7 +9,7 @@ export const fr = {
   meta: {
     title: 'Minimoa — Ton entremetteur social, près de chez toi',
     description:
-      'Ton minimoa apprend à te connaître, puis te présente des gens près de chez toi qui te ressemblent. Des potes, et pourquoi pas plus. Gratuit, zéro swipe, 18 ans et plus.',
+      'Ton minimoa apprend à te connaître, puis te présente des gens près de chez toi qui te ressemblent. Des potes, et pourquoi pas plus. Gratuit, zéro swipe.',
     ogAlt: 'Nino croque une pomme, puis fait un check à Suzie, le minimoa de Léa, sous le titre « Prends soin de ton minimoa. Il te présente des potes. »',
   },
   dots: {
