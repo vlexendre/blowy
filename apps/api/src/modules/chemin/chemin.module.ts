@@ -5,6 +5,7 @@ import { RituelsModule } from '../rituels/rituels.module';
 import { CheminAdmin } from './application/chemin-admin';
 import { CheminContentService } from './application/chemin-content';
 import { CheminDailyPush } from './application/chemin-push';
+import { CheminSeedOnBoot } from './application/chemin-seed-on-boot';
 import { CheminService } from './application/chemin.service';
 import { ProfilService } from './application/profil.service';
 import { CheminAdminController } from './interface/chemin-admin.controller';
@@ -18,7 +19,7 @@ import { CheminController } from './interface/chemin.controller';
 @Module({
   imports: [RituelsModule, EncountersModule],
   controllers: [CheminController, CheminAdminController],
-  providers: [CheminContentService, CheminService, ProfilService, CheminAdmin, CheminDailyPush, { provide: DAILY_PUSH_SOURCE, useExisting: CheminDailyPush }],
+  providers: [CheminSeedOnBoot, CheminContentService, CheminService, ProfilService, CheminAdmin, CheminDailyPush, { provide: DAILY_PUSH_SOURCE, useExisting: CheminDailyPush }],
   exports: [CheminService],
 })
 export class CheminModule {}
