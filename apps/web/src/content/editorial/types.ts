@@ -97,6 +97,7 @@ export const GUIDE_SLUGS = [
   'rencontrer-des-gens-seul',
   'associations-activites-rencontrer-du-monde',
   'application-pour-se-faire-des-amis',
+  'rencontrer-des-gens-pres-de-chez-soi',
 ] as const;
 export type GuideSlug = (typeof GUIDE_SLUGS)[number];
 

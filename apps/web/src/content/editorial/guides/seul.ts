@@ -99,7 +99,7 @@ export const seul: GuidePage = {
           ordered: true,
           list: [
             '**Lundi** : écris à une personne perdue de vue. Un simple « J’ai pensé à toi, tu deviens quoi ? » suffit.',
-            '**Mardi** : repère deux activités régulières près de chez toi (club, cours, association) et note leurs horaires.',
+            '**Mardi** : repère deux activités régulières près de chez toi (club, cours, association) et note leurs horaires. Pour savoir où chercher, vois [comment rencontrer des gens dans ton quartier](/guides/rencontrer-des-gens-pres-de-chez-soi/).',
             '**Mercredi** : dis bonjour à un voisin ou à un commerçant, et échange quelques phrases.',
             '**Jeudi** : inscris-toi à une séance d’essai ou à une mission de bénévolat.',
             '**Vendredi** : sors une heure dans un lieu animé, même sans objectif : un marché du soir, une médiathèque, un café.',

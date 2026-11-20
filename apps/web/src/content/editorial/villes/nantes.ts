@@ -55,7 +55,7 @@ export const nantes: CityPage = {
   minimoa: {
     title: 'Ce que Minimoa apporte à Nantes',
     blocks: [
-      'Dans une ville qui accueille autant de monde, le difficile est de trouver **les bonnes personnes**, près de chez toi. C’est le travail de ton minimoa : il te présente des gens de ton coin dont la vision de la vie va avec la tienne, et il t’explique ce que vous partagez.',
+      'Dans une ville qui accueille autant de monde, le difficile est de trouver **les bonnes personnes**, près de chez toi. C’est le travail de ton minimoa : il te présente des gens de ton coin dont la vision de la vie va avec la tienne, et il t’explique ce que vous partagez. Pour les pistes hors écran, vois aussi [comment rencontrer des gens autour de chez toi](/guides/rencontrer-des-gens-pres-de-chez-soi/).',
       'Tu restes maître de tout : tu salues si tu veux, l’autre accepte s’il veut. Ensuite, vous pouvez vous fixer une habitude commune (une sortie vélo le long de l’Erdre, un marché le samedi) et la tenir à plusieurs. Ton minimoa, lui, adore quand tu sors : plus tu vois du monde, plus il t’en présente.',
       'L’app est gratuite et sans pub, ta position n’est jamais montrée en direct, et elle est réservée aux 18 ans et plus.',
     ],

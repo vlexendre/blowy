@@ -46,7 +46,7 @@ export const application: GuidePage = {
         `**Timeleft** te fait passer un test de personnalité, puis t’attribue une table avec cinq personnes choisies pour vous correspondre ([Timeleft](${S.timeleftHow.url})). Les dîners ont lieu le mercredi, en groupes de 4 à 6, et le repas se paie sur place, en plus de l’appli ([fiche App Store](${S.timeleftStore.url})).`,
         '**Pour qui** : les gens qui aiment être pris en charge et n’ont pas envie d’organiser. **La limite** : chaque dîner te fait rencontrer des inconnus différents. C’est à toi de reprendre contact avec la personne qui t’a plu, sinon tu recommences à zéro la semaine suivante.',
         { h3: 'Les applis de quartier et de voisinage' },
-        'Ici, le critère de départ est la proximité : te mettre en lien avec des gens qui vivent à quelques rues. C’est moins spectaculaire qu’une soirée, mais c’est la condition la plus simple pour se revoir sans effort : on se recroise à la boulangerie, on improvise un café un mardi soir.',
+        'Ici, le critère de départ est la proximité : te mettre en lien avec des gens qui vivent à quelques rues. C’est moins spectaculaire qu’une soirée, mais c’est la condition la plus simple pour se revoir sans effort : on se recroise à la boulangerie, on improvise un café un mardi soir. Les applis ne sont d’ailleurs qu’une piste parmi d’autres pour [se faire des amis près de chez soi](/guides/rencontrer-des-gens-pres-de-chez-soi/).',
         '**Pour qui** : tout le monde, et surtout les personnes qui viennent d’emménager ou qui ont peu de temps. **La limite** : tant que peu de voisins sont inscrits, il ne se passe pas grand-chose. Ces applis grandissent rue par rue.',
       ],
     },

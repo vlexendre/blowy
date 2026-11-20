@@ -22,7 +22,7 @@ export const nouvelleVille: GuidePage = {
       title: 'Ce qui se passe quand on arrive quelque part',
       blocks: [
         'Un déménagement coupe d’un coup ce qui faisait ta vie sociale sans que tu y penses : les amis à dix minutes, les habitués du café, la famille pas loin. Dans la nouvelle ville, tu repars de zéro, et ce n’est pas une impression : ton réseau local est vraiment vide.',
-        `Ce sentiment est d’ailleurs plus fréquent en ville. D’après la Fondation de France, 28 % des habitants des villes de plus de 100 000 habitants disent se sentir seuls, contre 21 % en milieu rural ([Solitudes 2025](${S.fdf2025.url})). La même étude rappelle que les voisins (54 %) sont, juste après les amis (58 %), le réseau de sociabilité le plus mobilisé, devant la famille. Autrement dit : ton quartier compte énormément.`,
+        `Ce sentiment est d’ailleurs plus fréquent en ville. D’après la Fondation de France, 28 % des habitants des villes de plus de 100 000 habitants disent se sentir seuls, contre 21 % en milieu rural ([Solitudes 2025](${S.fdf2025.url})). La même étude rappelle que les voisins (54 %) sont, juste après les amis (58 %), le réseau de sociabilité le plus mobilisé, devant la famille. Autrement dit : ton quartier compte énormément, et [rencontrer tes voisins et les gens du coin](/guides/rencontrer-des-gens-pres-de-chez-soi/) est un excellent point de départ.`,
         'La bonne nouvelle, c’est que les premiers mois sont une fenêtre. Tu n’as pas encore d’habitudes, tu es curieux de tout, et tu as une excellente raison d’aborder les gens : « Je viens d’arriver, tu me conseilles quoi ? ».',
       ],
     },

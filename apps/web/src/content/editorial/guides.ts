@@ -6,6 +6,7 @@ import { nouvelleVille } from './guides/nouvelle-ville';
 import { seul } from './guides/seul';
 import { associations } from './guides/associations';
 import { application } from './guides/application';
+import { presDeChezSoi } from './guides/pres-de-chez-soi';
 
 export const GUIDES: Record<GuideSlug, GuidePage> = {
   'se-faire-des-amis-adulte': adulte,
@@ -14,6 +15,7 @@ export const GUIDES: Record<GuideSlug, GuidePage> = {
   'rencontrer-des-gens-seul': seul,
   'associations-activites-rencontrer-du-monde': associations,
   'application-pour-se-faire-des-amis': application,
+  'rencontrer-des-gens-pres-de-chez-soi': presDeChezSoi,
 };
 export const GUIDE_LIST: readonly GuidePage[] = GUIDE_SLUGS.map((s) => GUIDES[s]);
 export const guidePath = (slug: GuideSlug): string => `/guides/${slug}/`;

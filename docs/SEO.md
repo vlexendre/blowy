@@ -83,6 +83,11 @@ SEO quand `treg` est disponible.
   se faire des amis », intention « liste » de la première page : comparaison honnête des familles d'applis) ; maillage
   contextuel (chaque ville et chaque guide cité dans le texte d'au moins 3 autres pages, ancres variées, contrôle ajouté à
   `scripts/editorial-check.mts`) ; un seul `h1` sur /quiz/ et /quartier/ (les états cachés passent en `h2`).
+- 20 novembre 2026 : guide `/guides/rencontrer-des-gens-pres-de-chez-soi/` (requête « rencontrer des gens près de chez soi »,
+  390/mois, et variantes « autour de moi », « ses voisins ») : immeuble, lieux du quartier, bénévolat, outils locaux, passer
+  du bonjour au café ; cité dans le texte des guides « seul », « application », « nouvelle ville » et de la page Nantes.
+  Santé : 92 URLs en 200, aucune erreur ; Lighthouse mobile / 95-100-100, Lyon 99-100-100. Positions non relevées (`treg`
+  absent de l'environnement de la routine).
 
 ## 6. Blog d'actualité et GEO
 
