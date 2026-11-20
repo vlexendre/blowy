@@ -37,6 +37,7 @@ import { Audience } from './modules/safety/application/audience';
 import { retentionProviders } from './modules/retention/infrastructure/providers';
 import { groupsRepositories } from './modules/groups/infrastructure/providers';
 import { fideliteProviders } from './modules/fidelite/infrastructure/providers';
+import { progressionProviders } from './modules/progression/infrastructure/providers';
 import { growthProviders } from './modules/growth/infrastructure/providers';
 import { quartierRepositories } from './modules/quartiers/infrastructure/providers';
 import { MemoryDb } from './persistence/memory-db';
@@ -95,6 +96,8 @@ export class CoreModule {
       ...retentionProviders(env.adapters),
       ...groupsRepositories(env.adapters),
       ...fideliteProviders(env.adapters),
+      // Progression : étincelles, ligue, trophées (lecture des compteurs existants).
+      ...progressionProviders(env.adapters),
       // Croissance : source d'arrivée, étapes de l'entonnoir, compteurs (docs/VIRALITE.md).
       ...growthProviders(env.adapters),
       // Quiz et quartiers (docs/VIRALITE.md).

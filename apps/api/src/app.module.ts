@@ -18,6 +18,7 @@ import { CheminModule } from './modules/chemin/chemin.module';
 import { AiConsentsModule } from './modules/ai-consents/ai-consents.module';
 import { VisionModule } from './modules/vision/vision.module';
 import { WordsModule } from './modules/words/words.module';
+import { ProgressionModule } from './modules/progression/progression.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { RetentionModule } from './modules/retention/retention.module';
@@ -49,6 +50,7 @@ export class AppModule {
         EncountersModule,
         InvitesModule,
         WordsModule,
+        ProgressionModule,
         SafetyModule,
         VisionModule,
         RituelsModule,

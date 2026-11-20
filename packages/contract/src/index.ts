@@ -560,3 +560,4 @@ export * from './v7/croissance';
 export * from './v7/quiz';
 export * from './v7/app';
 export * from './v7/chemin';
+export * from './v7/progression';

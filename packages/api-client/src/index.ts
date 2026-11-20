@@ -7,6 +7,8 @@ import {
   // Ton chemin
   type CheminAnswersBody,
   CheminMapZ,
+  ProgressionZ,
+  progressionRoutes,
   CheminResultZ,
   CheminSessionResponseZ,
   ProfilZ,
@@ -344,6 +346,8 @@ export function createApiClient(opts: ApiClientOptions) {
      * Ton chemin (docs/CHEMIN.md) : la carte, la séance du jour (5 questions), les réponses (idempotent par séance :
      * révélation, avancement, série, personne du jour), et « ce que Nino sait de toi ».
      */
+    /** Étincelles, ligue de la semaine entre voisins, trophées (maquette V7). */
+    progression: () => call('GET', progressionRoutes.progression(), ProgressionZ),
     chemin: {
       map: () => call('GET', cheminRoutes.chemin(), CheminMapZ),
       /** `formats` : ce que l'app sait afficher (`['choice', 'slider']`) ; sans : le build décide. */
