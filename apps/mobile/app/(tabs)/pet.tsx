@@ -120,6 +120,7 @@ export default function PetHome() {
   const scrolledTo = useRef(false);
   const blockTop = useRef(0);
   const pathTop = useRef(0);
+  const fixedHeight = useRef(0);
   const location = useLocation(me.data);
   const push = usePushPermission();
   const [locationDenied, setLocationDenied] = useState(false);
@@ -357,71 +358,75 @@ export default function PetHome() {
             top={6}
             {...scroll}
             scrollRef={scrollRef}
-          >
-            <PetStage
-              pet={p}
-              title={p.name.toUpperCase()}
-              shape={p.shape}
-              shapeLabel={shapeLabel[p.shape]?.title}
-              onShapePress={
-                sulking
-                  ? () => {
-                      play('no');
-                      say(t.sulkWhy);
-                    }
-                  : undefined
-              }
-              shapeA11y={sulking ? t.sulkA11y : undefined}
-              // Plus de bulle dans la carte : ses émotions (visage, humeur) suffisent.
-              sleep={{
-                after: sleep.sleepAfter,
-                speech: '',
-                wakeLabel: a.asleep.wake,
-                wakeA11y: a.asleep.wakeA11y(p.name),
-              }}
-              action={{
-                label: t.wardrobe,
-                onPress: () => router.push('/pet/garde-robe'),
-                accessibilityLabel: fresh.length
-                  ? `${t.wardrobeA11y}, ${t.newCount(fresh.length)}`
-                  : t.wardrobeA11y,
-                badge: fresh.length ? String(fresh.length) : undefined,
-              }}
-              reaction={reaction}
-              reactionKey={reactionKey}
-              reactionItem={reactionItem}
-              mood={homeRest({ form: p.form, needs: p.needs, sulking, neglected }) ?? formBodyPose(p.form)}
-              habitat={roomy ? { photo: lastPhoto, night: sleep.night } : null}
-              petLabel={a.petA11yCuddle(p.name)}
-              onPetPress={onPetPress}
-              lure={lure}
-              meter={null}
-              height={256}
-              petSize={214}
-              care={
-                <CareBar
-                  compact
-                  actions={HOME_CARE}
-                  labels={careLabel}
-                  available={careAvailable(p.needs)}
-                  hot={careHot(p.needs)}
-                  size={44}
-                  busy={null}
-                  onCare={onCare}
+            // La carte du minimoa reste en haut ; le chemin défile dessous.
+            fixed={
+              <View onLayout={(e) => (fixedHeight.current = e.nativeEvent.layout.height)}>
+                <PetStage
+                  pet={p}
+                  title={p.name.toUpperCase()}
+                  shape={p.shape}
+                  shapeLabel={shapeLabel[p.shape]?.title}
+                  onShapePress={
+                    sulking
+                      ? () => {
+                          play('no');
+                          say(t.sulkWhy);
+                        }
+                      : undefined
+                  }
+                  shapeA11y={sulking ? t.sulkA11y : undefined}
+                  // Plus de bulle dans la carte : ses émotions (visage, humeur) suffisent.
+                  sleep={{
+                    after: sleep.sleepAfter,
+                    speech: '',
+                    wakeLabel: a.asleep.wake,
+                    wakeA11y: a.asleep.wakeA11y(p.name),
+                  }}
+                  action={{
+                    label: t.wardrobe,
+                    onPress: () => router.push('/pet/garde-robe'),
+                    accessibilityLabel: fresh.length
+                      ? `${t.wardrobeA11y}, ${t.newCount(fresh.length)}`
+                      : t.wardrobeA11y,
+                    badge: fresh.length ? String(fresh.length) : undefined,
+                  }}
+                  reaction={reaction}
+                  reactionKey={reactionKey}
+                  reactionItem={reactionItem}
+                  mood={homeRest({ form: p.form, needs: p.needs, sulking, neglected }) ?? formBodyPose(p.form)}
+                  habitat={roomy ? { photo: lastPhoto, night: sleep.night } : null}
+                  petLabel={a.petA11yCuddle(p.name)}
+                  onPetPress={onPetPress}
                   lure={lure}
-                  carry={{
-                    feed: careProp('feed', careTurn),
-                    play: careProp('play', careTurn),
-                    nap: careProp('nap', careTurn),
-                  }}
-                  onRefused={(x) => {
-                    play('no');
-                    say(careLabel[x]?.refused ?? '');
-                  }}
+                  meter={null}
+                  height={256}
+                  petSize={214}
+                  care={
+                    <CareBar
+                      compact
+                      actions={HOME_CARE}
+                      labels={careLabel}
+                      available={careAvailable(p.needs)}
+                      hot={careHot(p.needs)}
+                      size={44}
+                      busy={null}
+                      onCare={onCare}
+                      lure={lure}
+                      carry={{
+                        feed: careProp('feed', careTurn),
+                        play: careProp('play', careTurn),
+                        nap: careProp('nap', careTurn),
+                      }}
+                      onRefused={(x) => {
+                        play('no');
+                        say(careLabel[x]?.refused ?? '');
+                      }}
+                    />
+                  }
                 />
-              }
-            />
-
+              </View>
+            }
+          >
             {/* Ton chemin : la séance du jour, le chemin, la série. */}
             {view && cm ? (
               <View onLayout={(e) => (blockTop.current = e.nativeEvent.layout.y)}>
@@ -472,7 +477,7 @@ export default function PetHome() {
                   />
                   <View onLayout={(e) => (pathTop.current = blockTop.current + e.nativeEvent.layout.y)}>
                     <CheminPath
-                      nodes={chaptersBottomUp(cm, Math.max(420, winHeight - 150)).map((n) =>
+                      nodes={chaptersBottomUp(cm, Math.max(360, winHeight - 450)).map((n) =>
                         n.kind === 'gap'
                           ? { key: n.key, kind: n.kind, height: n.height, accessibilityLabel: '' }
                           : n.kind === 'unit'
@@ -515,7 +520,7 @@ export default function PetHome() {
                         if (scrolledTo.current) return;
                         scrolledTo.current = true;
                         setTimeout(
-                          () => scrollRef.current?.scrollTo({ y: Math.max(0, pathTop.current + y - winHeight / 2), animated: false }),
+                          () => scrollRef.current?.scrollTo({ y: Math.max(0, pathTop.current + y - (winHeight - fixedHeight.current - 90) / 2), animated: false }),
                           150,
                         );
                       }}

@@ -34,6 +34,8 @@ export interface TabTemplateProps {
   scrollRef?: ScreenTemplateProps['scrollRef'];
   /** Place en plus en bas (ex. `NOW_BAR_SPACE` quand une `NowBar` flotte au-dessus de la barre d'onglets). */
   bottomExtra?: number;
+  /** Reste en haut pendant que le contenu défile dessous (accueil : la carte du minimoa au-dessus du chemin). */
+  fixed?: ReactNode;
 }
 
 /** Grand titre d'onglet (64 dans V6 ; 56 depuis la passe « densité »). */
@@ -61,6 +63,7 @@ export function TabTemplate({
   scrollEventThrottle,
   scrollRef,
   bottomExtra = 0,
+  fixed,
 }: TabTemplateProps) {
   const barSpace = useTabBarSpace();
   return (
@@ -75,6 +78,8 @@ export function TabTemplate({
       scrollEventThrottle={scrollEventThrottle}
       scrollRef={scrollRef}
       contentStyle={gutter !== undefined ? { paddingHorizontal: gutter } : undefined}
+      header={fixed}
+      headerStyle={fixed ? [styles.fixed, gutter !== undefined ? { paddingHorizontal: gutter } : null] : undefined}
     >
       {brand || title || right ? (
         <View style={[layout.row, styles.head]}>
@@ -110,4 +115,5 @@ const styles = StyleSheet.create({
   brand: { letterSpacing: -0.36, lineHeight: 24 },
   title: { marginTop: space.xs },
   right: { marginBottom: space.sm },
+  fixed: { paddingTop: 6, paddingBottom: space.xs },
 });
