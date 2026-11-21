@@ -1,3 +1,4 @@
+import { View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 
 import { useInk } from '../lib/ink';
@@ -86,8 +87,10 @@ export function CareIcon({ name, size = 28, color }: CareIconProps) {
       break;
   }
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false} importantForAccessibility="no-hide-descendants">
-      {body}
-    </Svg>
+    <View accessible={false} importantForAccessibility="no-hide-descendants" style={{ width: size, height: size }}>
+      <Svg width={size} height={size} viewBox="0 0 24 24">
+        {body}
+      </Svg>
+    </View>
   );
 }

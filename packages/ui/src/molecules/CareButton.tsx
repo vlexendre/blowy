@@ -48,6 +48,8 @@ export interface CareButtonProps {
    * les gestes se lisent d'un seul bloc. `accessibilityLabel` : « faim, 35 sur 100 », ajouté au libellé lu.
    */
   level?: CareLevel;
+  /** Disque seul, sans libellé visible (la pastille des soins dans la carte du minimoa) ; le libellé reste lu. */
+  hideLabel?: boolean;
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -71,6 +73,7 @@ export function CareButton({
   label,
   icon,
   carry,
+  hideLabel = false,
   onPress,
   hot,
   refused,
@@ -247,9 +250,11 @@ export function CareButton({
           </InkProvider>
         </Animated.View>
       </Pulse>
-      <Text variant="bodyHeavy" size={13} center numberOfLines={1} color={color.white}>
-        {label}
-      </Text>
+      {hideLabel ? null : (
+        <Text variant="bodyHeavy" size={13} center numberOfLines={1} color={color.white}>
+          {label}
+        </Text>
+      )}
       {level ? (
         <View style={styles.level} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
           <ProgressBar value={level.value / 100} height={5} color={level.value < (level.lowAt ?? 40) ? color.danger : color.accent} />

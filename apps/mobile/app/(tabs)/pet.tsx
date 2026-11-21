@@ -3,14 +3,20 @@
  * sociabilité, garde-robe ; jamais endormi le premier jour (`usePetSleep`), bulle de nuit. Dessous, **Ton chemin** :
  * le bandeau de la séance du jour (thème de l'unité, « 5 questions · 2 min », « À la fin : ta personne du jour »),
  * puis le chemin sinueux (étapes faites, celle du jour avec « Commencer », coffre, verrouillées) et la série en puce
- * (→ `/pet/serie`). Les 4 soins en rangée compacte. Puis, s'il y a lieu, un bonjour reçu, un message, la position à
+ * (→ `/pet/serie`). Les 4 soins en pastille dans la carte du minimoa (en bas à gauche). Puis, s'il y a lieu, un bonjour reçu, un message, la position à
  * activer. États du jour : séance à faire, bonus, faite (revoir sa personne du jour, « Demain, une nouvelle séance »),
  * tout fait. Plus de question de sortie, de tuiles défi / habitudes, de jauges ni de défi en plein écran (V1 :
  * les écrans restent, joignables par leurs liens). `blowy://chemin` ouvre l'accueil sur la séance (`?chemin=1`).
  */
 import { ApiError } from '@blowy/api-client';
 import { careLabel, shapeLabel } from '@/locales/content';
-import { CARE_ACTIONS, type CareAction, STREAK_MILESTONES, WELCOME_BACK_AFTER_DAYS, urgentNeed } from '@blowy/domain';
+import {
+  CARE_ACTIONS,
+  type CareAction,
+  STREAK_MILESTONES,
+  WELCOME_BACK_AFTER_DAYS,
+  urgentNeed,
+} from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Appear,
@@ -46,14 +52,33 @@ import { openLegal, useMe } from '@/features/me';
 import { usePushIntroOnce, usePushPermission } from '@/features/notifications';
 import { type PeopleToday, usePeopleToday } from '@/features/people';
 import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
-import { careAvailable, careHot, homeEntrance, homeRest, pickLine, useCare, useHomeVisit, useLivePet, usePetSleep, useUnlocks, useWardrobe } from '@/features/pet';
+import {
+  careAvailable,
+  careHot,
+  homeEntrance,
+  homeRest,
+  pickLine,
+  useCare,
+  useHomeVisit,
+  useLivePet,
+  usePetSleep,
+  useUnlocks,
+  useWardrobe,
+} from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { WelcomeBack } from '@/features/pet/WelcomeBack';
 import { FirstWeekMoment, StreakMoment, useShareMomentPending } from '@/features/moments';
 import { usePlusMoment } from '@/features/plus';
 import { maybeAskForReview, useReviewMemory } from '@/features/review';
 import { usePrivateMemories, useRitualsToday, useStreakParty } from '@/features/rituals';
-import { hasSessionToDo, pathWindow, todayView, useCheminMap, useCheminResults } from '@/features/chemin';
+import {
+  hasSessionToDo,
+  pathWindow,
+  stepOf,
+  todayView,
+  useCheminMap,
+  useCheminResults,
+} from '@/features/chemin';
 import { accueil as a } from '@/locales/accueil';
 import { home as t } from '@/locales/pet';
 import { carte } from '@/locales/rencontres';
@@ -63,7 +88,7 @@ import { rituels as r } from '@/locales/rituels';
 /** Durée d'affichage d'une réplique après un soin (« miam. », « il n'a plus faim. »). */
 const SAID_MS = 3500;
 
-/** Les 4 soins en rangée compacte (le câlin se fait aussi en touchant le minimoa). */
+/** Les 4 soins, en pastille dans la carte (le câlin se fait aussi en touchant le minimoa). */
 const HOME_CARE: readonly CareAction[] = CARE_ACTIONS;
 
 export default function PetHome() {
@@ -76,7 +101,8 @@ export default function PetHome() {
   const push = usePushPermission();
   const [locationDenied, setLocationDenied] = useState(false);
   // Refusée maintenant, ou déjà refusée pour de bon (iOS ne redemande plus : il faut passer par les Réglages).
-  const locationRefused = locationDenied || (location.permission?.status === 'denied' && !location.permission.canAskAgain);
+  const locationRefused =
+    locationDenied || (location.permission?.status === 'denied' && !location.permission.canAskAgain);
   const people = usePeopleToday(me.data, { locationRefused });
   const [areaSheet, setAreaSheet] = useState(false);
   const care = useCare();
@@ -130,7 +156,12 @@ export default function PetHome() {
     entered.current = true;
     const now = Date.now();
     const visit = useHomeVisit.getState();
-    const { moment, neglected: away3 } = homeEntrance({ last: visit.last, now, night: sleep.night && !sleep.firstDay, sulking: shape === 'boude' });
+    const { moment, neglected: away3 } = homeEntrance({
+      last: visit.last,
+      now,
+      night: sleep.night && !sleep.firstDay,
+      sulking: shape === 'boude',
+    });
     if (visit.last !== null && now - visit.last >= WELCOME_BACK_AFTER_DAYS * 86_400_000) setWelcomeBack(true);
     visit.mark(now);
     if (away3) setNeglected(true);
@@ -182,13 +213,24 @@ export default function PetHome() {
   // cours : ni fête, ni défi du jour qui va monter, ni retour après une longue absence). La demande de position passe
   // d'abord ; si elle reste sans réponse, les notifications se proposent quand même à partir de la 2e session.
   const sessions = useReviewMemory((s) => s.sessions);
-  const peopleSettled = people.kind !== 'loading' && people.kind !== 'vision' && (people.kind !== 'location' || sessions >= 2);
-  usePushIntroOnce(push.permission, focused && !!pet.data && !!today.data && !busyCelebrating && !welcomeBack && peopleSettled);
+  const peopleSettled =
+    people.kind !== 'loading' && people.kind !== 'vision' && (people.kind !== 'location' || sessions >= 2);
+  usePushIntroOnce(
+    push.permission,
+    focused && !!pet.data && !!today.data && !busyCelebrating && !welcomeBack && peopleSettled,
+  );
   // Moment clé (premier lien, 7 jours de série) : Minimoa+ proposé une fois, quand tout est calme et après les cartes à
   // partager et la demande des notifications ; le serveur décide et plafonne (docs/DESIR.md).
   const sharePending = useShareMomentPending(today.data?.streak.current, pet.data?.pet.bornAt);
   usePlusMoment(
-    focused && !!pet.data && !!today.data && !busyCelebrating && !welcomeBack && peopleSettled && !sharePending && push.permission !== 'undetermined',
+    focused &&
+      !!pet.data &&
+      !!today.data &&
+      !busyCelebrating &&
+      !welcomeBack &&
+      peopleSettled &&
+      !sharePending &&
+      push.permission !== 'undetermined',
     me.data?.plus,
   );
 
@@ -203,7 +245,9 @@ export default function PetHome() {
     await Promise.all([pet.refetch(), wardrobe.refetch(), today.refetch(), chemin.refetch()]);
     setRefreshing(false);
   };
-  const refreshControl = <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />;
+  const refreshControl = (
+    <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />
+  );
 
   if (!pet.data) {
     return (
@@ -212,7 +256,13 @@ export default function PetHome() {
           {pet.isPending ? (
             <PetHomeSkeleton />
           ) : (
-            <Banner tone="error" title={t.loadError} text={pet.error?.message ?? ''} actionLabel={t.retry} onAction={() => void pet.refetch()} />
+            <Banner
+              tone="error"
+              title={t.loadError}
+              text={pet.error?.message ?? ''}
+              actionLabel={t.retry}
+              onAction={() => void pet.refetch()}
+            />
           )}
         </TabTemplate>
       </ScreenMotion>
@@ -227,8 +277,7 @@ export default function PetHome() {
   const idleLine = urgent ? pickLine(t.speech[urgent], p.needs) : pickLine(t.happy, p.needs);
   const sulking = p.shape === 'boude';
   // Il boude : c'est sa bulle qui le dit (plus de carte d'alerte). La nuit, il propose de voir qui est près de chez toi.
-  const nightNudge = !said && !sulking && sleep.night;
-  const speech = said?.text ?? (sulking ? t.sulkSpeech : nightNudge ? a.night.line : idleLine);
+  const speech = said?.text ?? (sulking ? t.sulkSpeech : idleLine);
 
   // Optimiste : il croque, joue ou dort à l'appui (jauges déjà à jour) ; un refus du serveur le fait revenir.
   const onCare = (action: CareAction) => {
@@ -260,20 +309,42 @@ export default function PetHome() {
   };
   const cm = chemin.data;
   const view = cm ? todayView(cm) : null;
+  const step = cm ? stepOf(cm) : { step: 0, steps: 0 };
   const openSeance = () => router.push('/chemin/seance');
   // Un seul gros bouton, en bas : la chose à faire maintenant (un bonjour reçu, un message, la séance, sinon la journée faite).
   const now =
     people.kind === 'waved'
-      ? { label: a.now.waved(people.name), sub: a.now.wavedSub, variant: 'accent' as const, onPress: () => router.push('/(tabs)/rencontres') }
+      ? {
+          label: a.now.waved(people.name),
+          sub: a.now.wavedSub,
+          variant: 'accent' as const,
+          onPress: () => router.push('/(tabs)/rencontres'),
+        }
       : people.kind === 'wrote'
-        ? { label: a.now.wrote(people.name), sub: people.preview ? a.wroteText(people.preview) : a.now.wroteSub, variant: 'accent' as const, onPress: () => router.push({ pathname: '/link/[id]', params: { id: people.linkId } }) }
+        ? {
+            label: a.now.wrote(people.name),
+            sub: people.preview ? a.wroteText(people.preview) : a.now.wroteSub,
+            variant: 'accent' as const,
+            onPress: () => router.push({ pathname: '/link/[id]', params: { id: people.linkId } }),
+          }
         : view && (view.kind === 'todo' || view.kind === 'bonus')
-          ? { label: a.now.seance, sub: a.now.seanceSub(view.questions), variant: 'accent' as const, onPress: openSeance }
-          : view
-            ? { label: a.now.done, sub: a.now.doneSub, variant: 'glass' as const, onPress: () => router.push('/(tabs)/rencontres') }
-            : null;
+          ? {
+              label: a.now.seance,
+              sub: a.now.seanceSub(view.questions),
+              variant: 'accent' as const,
+              onPress: openSeance,
+            }
+          : null;
   const nodeLabel = (n: { kind: string; title: string; unitTitle: string }) =>
-    n.kind === 'done' ? c.home.node.done(n.title) : n.kind === 'current' ? c.home.node.current(n.title) : n.kind === 'chest' ? c.home.node.chest(n.unitTitle) : n.kind === 'chestOpen' ? c.home.node.chestOpen(n.unitTitle) : c.home.node.locked(n.title);
+    n.kind === 'done'
+      ? c.home.node.done(n.title)
+      : n.kind === 'current'
+        ? c.home.node.current(n.title)
+        : n.kind === 'chest'
+          ? c.home.node.chest(n.unitTitle)
+          : n.kind === 'chestOpen'
+            ? c.home.node.chestOpen(n.unitTitle)
+            : c.home.node.locked(n.title);
 
   return (
     <ScreenMotion>
@@ -295,12 +366,18 @@ export default function PetHome() {
               }
               shapeA11y={sulking ? t.sulkA11y : undefined}
               speech={speech}
-              speechAction={nightNudge ? { label: a.night.action, accessibilityLabel: a.night.actionA11y, onPress: () => router.push('/(tabs)/rencontres') } : null}
-              sleep={{ after: sleep.sleepAfter, speech: a.asleep.line, wakeLabel: a.asleep.wake, wakeA11y: a.asleep.wakeA11y(p.name) }}
+              sleep={{
+                after: sleep.sleepAfter,
+                speech: a.asleep.line,
+                wakeLabel: a.asleep.wake,
+                wakeA11y: a.asleep.wakeA11y(p.name),
+              }}
               action={{
                 label: t.wardrobe,
                 onPress: () => router.push('/pet/garde-robe'),
-                accessibilityLabel: fresh.length ? `${t.wardrobeA11y}, ${t.newCount(fresh.length)}` : t.wardrobeA11y,
+                accessibilityLabel: fresh.length
+                  ? `${t.wardrobeA11y}, ${t.newCount(fresh.length)}`
+                  : t.wardrobeA11y,
                 badge: fresh.length ? String(fresh.length) : undefined,
               }}
               reaction={reaction}
@@ -312,60 +389,103 @@ export default function PetHome() {
               onPetPress={onPetPress}
               lure={lure}
               meter={null}
+              height={256}
+              petSize={214}
+              care={
+                <CareBar
+                  compact
+                  actions={HOME_CARE}
+                  labels={careLabel}
+                  available={careAvailable(p.needs)}
+                  hot={careHot(p.needs)}
+                  size={44}
+                  busy={null}
+                  onCare={onCare}
+                  lure={lure}
+                  carry={{
+                    feed: careProp('feed', careTurn),
+                    play: careProp('play', careTurn),
+                    nap: careProp('nap', careTurn),
+                  }}
+                  onRefused={(x) => {
+                    play('no');
+                    say(careLabel[x]?.refused ?? '');
+                  }}
+                />
+              }
             />
-
 
             {/* Ton chemin : la séance du jour, le chemin, la série. */}
             {view && cm ? (
               <Appear once="home:chemin" delay={60}>
                 <SessionBanner
                   tone={view.kind === 'todo' || view.kind === 'bonus' ? 'unit' : 'calm'}
-                  kicker={view.kind === 'todo' ? c.home.kicker(view.questions) : view.kind === 'bonus' ? c.home.bonusKicker(view.questions) : view.kind === 'done' ? c.home.doneKicker : c.home.restKicker}
-                  title={view.kind === 'todo' || view.kind === 'bonus' ? view.unitTitle : view.kind === 'done' ? c.home.doneTitle : c.home.restTitle}
-                  note={view.kind === 'todo' || view.kind === 'bonus' ? c.home.note : c.home.doneNote}
-                  onPress={view.kind === 'todo' || view.kind === 'bonus' ? openSeance : lastResult ? () => router.push({ pathname: '/chemin/fin', params: { id: lastResult } }) : undefined}
-                  accessibilityLabel={view.kind === 'todo' || view.kind === 'bonus' ? c.home.startA11y(view.unitTitle) : undefined}
+                  kicker={
+                    view.kind === 'todo'
+                      ? c.home.path(step.step, step.steps)
+                      : view.kind === 'bonus'
+                        ? c.home.bonusKicker(view.questions)
+                        : view.kind === 'done'
+                          ? c.home.doneKicker
+                          : c.home.restKicker
+                  }
+                  title={
+                    view.kind === 'todo' || view.kind === 'bonus'
+                      ? view.unitTitle
+                      : view.kind === 'done'
+                        ? c.home.doneTitle
+                        : c.home.restTitle
+                  }
+                  note={view.kind === 'todo' ? null : view.kind === 'bonus' ? c.home.note : c.home.doneNote}
+                  progress={view.kind === 'todo' && step.steps > 0 ? step.step / step.steps : null}
+                  onPress={
+                    view.kind === 'todo' || view.kind === 'bonus'
+                      ? openSeance
+                      : lastResult
+                        ? () => router.push({ pathname: '/chemin/fin', params: { id: lastResult } })
+                        : undefined
+                  }
+                  accessibilityLabel={
+                    view.kind === 'todo' || view.kind === 'bonus'
+                      ? c.home.startA11y(view.unitTitle)
+                      : undefined
+                  }
                   footer={
-                    view.kind === 'done' && lastResult ? (
-                      <Button label={c.home.doneAction} variant="glass" size="sm" onPress={() => router.push({ pathname: '/chemin/fin', params: { id: lastResult } })} />
-                    ) : view.kind === 'done' && view.hint ? (
+                    view.kind === 'done' && !lastResult && view.hint ? (
                       <Banner tone="info" text={view.hint} />
                     ) : undefined
                   }
                 />
                 <CheminPath
-                  nodes={pathWindow(cm).map((n) => ({ key: n.key, kind: n.kind, accessibilityLabel: nodeLabel(n) }))}
+                  nodes={pathWindow(cm).map((n) => ({
+                    key: n.key,
+                    kind: n.kind,
+                    accessibilityLabel: nodeLabel(n),
+                  }))}
                   startLabel={view.kind === 'todo' || view.kind === 'bonus' ? c.home.start : null}
                   onStart={view.kind === 'todo' || view.kind === 'bonus' ? openSeance : undefined}
                   pet={{ species: p.species, outfit: p.outfit, id: p.id }}
-                  streak={{ label: c.home.streak(cm.streak.current), accessibilityLabel: c.home.streakA11y(cm.streak.current), onPress: () => router.push('/pet/serie') }}
+                  streak={{
+                    label: c.home.streak(cm.streak.current),
+                    accessibilityLabel: c.home.streakA11y(cm.streak.current),
+                    onPress: () => router.push('/pet/serie'),
+                  }}
                 />
               </Appear>
             ) : chemin.isPending ? (
               <Skeleton height={220} radius="lg" />
             ) : chemin.isError ? (
-              <Banner tone="info" text={c.home.loadError} actionLabel={c.home.retry} onAction={() => void chemin.refetch()} />
+              <Banner
+                tone="info"
+                text={c.home.loadError}
+                actionLabel={c.home.retry}
+                onAction={() => void chemin.refetch()}
+              />
             ) : null}
 
-            {/* Les 4 soins en rangée compacte (sans jauges) ; le câlin, c'est aussi toucher le minimoa. */}
-            <Appear once="home:care" delay={60}>
-              <CareBar
-                actions={HOME_CARE}
-                labels={careLabel}
-                available={careAvailable(p.needs)}
-                hot={careHot(p.needs)}
-                size={46}
-                busy={null}
-                onCare={onCare}
-                lure={lure}
-                carry={{ feed: careProp('feed', careTurn), play: careProp('play', careTurn), nap: careProp('nap', careTurn) }}
-                onRefused={(x) => {
-                  play('no');
-                  say(careLabel[x]?.refused ?? '');
-                }}
-              />
-            </Appear>
-            {careError ? <Banner tone="error" text={errorText(care.error, t.careError)} onClose={() => care.reset()} /> : null}
+            {careError ? (
+              <Banner tone="error" text={errorText(care.error, t.careError)} onClose={() => care.reset()} />
+            ) : null}
 
             {/* Ce qui attend une réponse de toi (un bonjour, un message), ou la position à activer. */}
             <Appear once="home:people" delay={120}>
@@ -417,7 +537,8 @@ export default function PetHome() {
                 tapLabel={r.celebrate.tap}
                 onClose={() => {
                   // Palier de série (7, 30, 100 jours…) fêté : un bon moment pour une note, juste après la fête.
-                  if ((STREAK_MILESTONES as readonly number[]).includes(party.streak)) maybeAskForReview('streak_milestone', 900);
+                  if ((STREAK_MILESTONES as readonly number[]).includes(party.streak))
+                    maybeAskForReview('streak_milestone', 900);
                   clearParty();
                 }}
               />
@@ -427,7 +548,9 @@ export default function PetHome() {
             {/* Palier 7 / 30 / 100 jours : une carte à partager, une fois, après la fête (docs/VIRALITE.md). */}
             {!party && !welcomeBack ? <StreakMoment streak={streak?.current} /> : null}
             {/* J7 : une semaine avec lui, une carte à partager (une fois ; pas le jour d'un palier de série). */}
-            {!party && !welcomeBack && (streak?.current ?? 0) < 7 ? <FirstWeekMoment bornAt={p.bornAt} /> : null}
+            {!party && !welcomeBack && (streak?.current ?? 0) < 7 ? (
+              <FirstWeekMoment bornAt={p.bornAt} />
+            ) : null}
           </TabTemplate>
         )}
       </PetRefresh>
@@ -470,7 +593,11 @@ function PeopleNow({
           actionLabel={locationDenied ? a.locationSettings : a.locationAction}
           loading={locating}
           onPress={onLocate}
-          footer={locationDenied ? <Button label={carte.area.choose} variant="glass" size="sm" onPress={onChooseCity} block /> : undefined}
+          footer={
+            locationDenied ? (
+              <Button label={carte.area.choose} variant="glass" size="sm" onPress={onChooseCity} block />
+            ) : undefined
+          }
         />
       );
     default:

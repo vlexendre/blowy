@@ -108,6 +108,8 @@ export interface PetStageProps {
   crest?: ReactNode;
   /** Jauge vedette en bas à gauche du panneau (la sociabilité : `HeroMeter`). La bulle remonte un peu. */
   meter?: ReactNode;
+  /** En bas à gauche de la carte : la pastille des soins (`CareBar compact`, V6-GAccueil). */
+  care?: ReactNode;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -149,6 +151,7 @@ export function PetStage({
   lure,
   crest,
   meter,
+  care,
   style,
 }: PetStageProps) {
   const reduced = useReducedMotion();
@@ -241,7 +244,7 @@ export function PetStage({
         ) : null}
       </View>
       {said || button ? (
-        <View style={[styles.speech, meter ? styles.speechHigh : null]} pointerEvents="box-none">
+        <View style={[styles.speech, meter || care ? styles.speechHigh : null]} pointerEvents="box-none">
           {said ? (
             <View pointerEvents="none">
               <SpeechBubble text={said} tone="dark" tail="left" typing />
@@ -262,6 +265,7 @@ export function PetStage({
         </View>
       ) : null}
       {meter ? <View style={styles.meter}>{meter}</View> : null}
+      {care ? <View style={styles.care}>{care}</View> : null}
     </Panel>
   );
 }
@@ -333,6 +337,7 @@ const styles = StyleSheet.create({
   // V6-GAccueil : jauge dans un verre sombre, à 14 du bas et 16 du bord gauche.
   meter: { position: 'absolute', left: 16, bottom: 14, width: 168, zIndex: 2 },
   // `.sq` : à 6 du bord droit, 6 sous le bas du panneau.
+  care: { position: 'absolute', left: 12, bottom: 12, zIndex: 3 },
   pet: { position: 'absolute', right: 6, bottom: -6 },
   sulk: SULK_STYLE,
 });

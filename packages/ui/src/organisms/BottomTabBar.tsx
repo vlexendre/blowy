@@ -4,7 +4,14 @@ import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'ex
 import { Image } from 'expo-image';
 import { useEffect, useRef, useState } from 'react';
 import { type LayoutChangeEvent, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type PetPose, petImage, RENDER_RATIO } from '../assets/pets';
@@ -71,16 +78,27 @@ function TabPeek({
     if (!show) return;
     p.value = 0;
     // Monte vite en dépassant un peu (ressort), reste un instant, replonge.
-    p.value = withSequence(withSpring(1, { ...springs.pop, damping: 11 }), withDelay(450, withTiming(0, { duration: 170, easing: ease.in })));
+    p.value = withSequence(
+      withSpring(1, { ...springs.pop, damping: 11 }),
+      withDelay(450, withTiming(0, { duration: 170, easing: ease.in })),
+    );
   }, [show, p]);
   // Haut du dessin à 17 % du buste ; on en montre la moitié (jusqu'aux yeux).
-  const style = useAnimatedStyle(() => ({ transform: [{ translateY: h * (1 - p.value * 0.5) - h * 0.17 * p.value }, { rotate: `${(1 - p.value) * 12}deg` }] }));
+  const style = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: h * (1 - p.value * 0.5) - h * 0.17 * p.value },
+      { rotate: `${(1 - p.value) * 12}deg` },
+    ],
+  }));
   return (
     <View
       pointerEvents="none"
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={[styles.peekClip, { left: offset + index * step + step / 2 - PEEK / 2, height: h * 0.56, top: -h * 0.56 + 1 }]}
+      style={[
+        styles.peekClip,
+        { left: offset + index * step + step / 2 - PEEK / 2, height: h * 0.56, top: -h * 0.56 + 1 },
+      ]}
     >
       <Animated.View style={[{ width: PEEK, height: h, top: -h * 0.44 }, style]}>
         <Image source={petImage(species, mood)} contentFit="contain" style={StyleSheet.absoluteFill} />
@@ -116,7 +134,9 @@ export function BottomTabBar<K extends string>({
   floating = true,
   peek,
   accessibilityLabel,
-  style, iconOnly = false }: BottomTabBarProps<K>) {
+  style,
+  iconOnly = false,
+}: BottomTabBarProps<K>) {
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
   const bottom = Math.max(insets.bottom, space.lg);
@@ -133,25 +153,55 @@ export function BottomTabBar<K extends string>({
   const last = useRef(activeKey);
   useEffect(() => {
     // Rare : le budget décide (hasard déterministe, pause de 3 min, rien au lancement) ; jamais sous une feuille.
-    if (last.current !== activeKey && peek && !reduced && !isOverlayOpen() && claimTabPeek(peek.seed ?? peek.species)) setPeekAt((p) => ({ key: p.key + 1, index }));
+    if (
+      last.current !== activeKey &&
+      peek &&
+      !reduced &&
+      !isOverlayOpen() &&
+      claimTabPeek(peek.seed ?? peek.species)
+    )
+      setPeekAt((p) => ({ key: p.key + 1, index }));
     last.current = activeKey;
   }, [activeKey, peek, reduced, index]);
   const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
   return (
-    <View pointerEvents="box-none" style={[floating ? styles.floating : null, { paddingBottom: bottom }, styles.outer, style]}>
+    <View
+      pointerEvents="box-none"
+      style={[floating ? styles.floating : null, { paddingBottom: bottom }, styles.outer, style]}
+    >
       {peek && peekAt.key > 0 && width > 0 ? (
-        <TabPeek species={peek.species} mood={peek.mood} index={peekAt.index} step={seg + GAP} offset={28 + 1 + PAD} show={peekAt.key} />
+        <TabPeek
+          species={peek.species}
+          mood={peek.mood}
+          index={peekAt.index}
+          step={seg + GAP}
+          offset={28 + 1 + PAD}
+          show={peekAt.key}
+        />
       ) : null}
-      <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel} onLayout={onLayout} style={[styles.bar, LIQUID_GLASS && styles.barLiquid]}>
+      <View
+        accessibilityRole="tablist"
+        accessibilityLabel={accessibilityLabel}
+        onLayout={onLayout}
+        style={[styles.bar, LIQUID_GLASS && styles.barLiquid]}
+      >
         {LIQUID_GLASS ? (
-          <GlassView pointerEvents="none" glassEffectStyle="regular" colorScheme="dark" tintColor={alpha(color.card, 0.35)} style={styles.glass} />
+          <GlassView
+            pointerEvents="none"
+            glassEffectStyle="regular"
+            colorScheme="dark"
+            tintColor={alpha(color.card, 0.35)}
+            style={styles.glass}
+          />
         ) : (
           <View pointerEvents="none" style={styles.glass}>
             <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
             <View style={[StyleSheet.absoluteFill, styles.tint]} />
           </View>
         )}
-        {width > 0 ? <Animated.View pointerEvents="none" style={[styles.pill, { width: seg }, pill]} /> : null}
+        {width > 0 ? (
+          <Animated.View pointerEvents="none" style={[styles.pill, { width: seg }, pill]} />
+        ) : null}
         {items.map((it, i) => (
           <TabBarItem
             key={it.key}
@@ -172,11 +222,26 @@ export function BottomTabBar<K extends string>({
 }
 
 const styles = StyleSheet.create({
-  glass: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: BAR_HEIGHT / 2, overflow: 'hidden' },
+  glass: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: BAR_HEIGHT / 2,
+    overflow: 'hidden',
+  },
   tint: { backgroundColor: alpha(color.card, 0.62) },
   floating: { position: 'absolute', left: 0, right: 0, bottom: 0 },
   outer: { paddingHorizontal: 28 },
-  pill: { position: 'absolute', top: PAD, left: PAD, height: ITEM_HEIGHT, borderRadius: radius.lg, backgroundColor: color.accent },
+  pill: {
+    position: 'absolute',
+    top: PAD,
+    left: PAD,
+    height: ITEM_HEIGHT,
+    borderRadius: radius.lg,
+    backgroundColor: color.accent,
+  },
   peekClip: { position: 'absolute', width: PEEK, overflow: 'hidden' },
   bar: {
     flexDirection: 'row',

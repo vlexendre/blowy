@@ -1,4 +1,5 @@
-import type { EncounterHistoryItem, MatchExplanation } from '@blowy/contract';
+import type { EncounterHistoryItem } from '@blowy/contract';
+import { entitlements } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Banner,
@@ -6,15 +7,16 @@ import {
   EmptyState,
   EncounterHistory,
   type EncounterHistoryEntry,
-  EncountersHero,
+  EncounterMore,
+  EncounterNext,
+  EncounterRow,
+  EncounterSection,
+  EncountersHeader,
+  EncounterWaiting,
   FarAwayCard,
   FanIn,
-  IncomingCard,
-  MapPlusStrip,
-  MatchWhy,
   QuartierCard,
   Skeleton,
-  SuggestionCard,
   TabTemplate,
   usePetBump,
 } from '@blowy/ui';
@@ -33,13 +35,13 @@ import {
   useWave,
   useWaveBlock,
   VISION_TEST_ROUTE,
-  whyA11y,
 } from '@/features/encounters';
+import { hasSessionToDo, useCheminMap } from '@/features/chemin';
 import { useShareQuartier } from '@/features/growth';
 import { errorText, timeLabel } from '@/features/links';
 import { AreaSheet, useFreshPosition } from '@/features/map';
 import { useMe } from '@/features/me';
-import { openPlus, usePlusPerks } from '@/features/plus';
+import { openPlus } from '@/features/plus';
 import { usePet, usePetSleep } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
 import { quartier as quartierText } from '@/locales/quartier';
@@ -48,24 +50,27 @@ import { carte as carteText, rencontres as t } from '@/locales/rencontres';
 /** Silhouettes du « vu de loin » : un décor, jamais les formes des vraies personnes. */
 const FAR_SPECIES = ['suzie', 'gaston', 'pia', 'nino'] as const;
 
-/** Pourquoi, en une ligne (les phrases et les repères sont sur l'écran de la rencontre). */
-const why = (e: MatchExplanation) => (
-  <MatchWhy commonTitle={e.commonTitle} common={e.common.map((c) => c.name)} exploreTitle={e.exploreTitle} explore={e.explore.name} accessibilityLabel={whyA11y(e, t.whyJoin)} />
-);
-
 /** Une ligne de l'historique : qui, dans quel sens, quand ; une rencontre acceptée ouvre son lien. */
-const historyEntry = (item: EncounterHistoryItem, openLink: (linkId: string) => void): EncounterHistoryEntry => {
+const historyEntry = (
+  item: EncounterHistoryItem,
+  openLink: (linkId: string) => void,
+): EncounterHistoryEntry => {
   const when = timeLabel(item.at);
   const { linkId } = item;
   return {
     key: item.id,
     person: item.person,
     title: item.person.displayName,
-    detail: item.direction === 'received' ? t.history.received(item.person.pet.name, when) : t.history.sent(item.person.pet.name, when),
+    detail:
+      item.direction === 'received'
+        ? t.history.received(item.person.pet.name, when)
+        : t.history.sent(item.person.pet.name, when),
     statusLabel: t.history.outcome[item.outcome],
     tone: item.outcome,
     onPress: linkId ? () => openLink(linkId) : undefined,
-    accessibilityLabel: linkId ? `${t.history.openA11y(item.person.displayName)}, ${t.history.outcome[item.outcome]}, ${when}` : undefined,
+    accessibilityLabel: linkId
+      ? `${t.history.openA11y(item.person.displayName)}, ${t.history.outcome[item.outcome]}, ${when}`
+      : undefined,
   };
 };
 
@@ -74,7 +79,7 @@ export default function RencontresScreen() {
   const encounters = useLiveEncounters();
   const pet = usePet();
   const me = useMe();
-  const morePerk = usePlusPerks(me.data?.pet.name ?? '').find((p) => p.key === 'more_encounters');
+  const chemin = useCheminMap();
   const location = useFreshPosition(me.data);
   const wave = useWave();
   const accept = useAcceptEncounter();
@@ -134,183 +139,204 @@ export default function RencontresScreen() {
             : t.noLocation.text(petName)
       }
       actionLabel={denied || location.result === 'denied' ? t.noLocation.chooseCity : t.noLocation.action}
-      onAction={denied || location.result === 'denied' ? () => setAreaSheet(true) : () => void location.enable()}
+      onAction={
+        denied || location.result === 'denied' ? () => setAreaSheet(true) : () => void location.enable()
+      }
       actionBelow
     />
   );
 
   return (
     <ScreenMotion>
-    <TabTemplate
-      gutter={12}
-      gap={10}
-      top={6}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />}
-    >
-      <EncountersHero
-        kicker={t.kicker}
-        title={t.title(petName, encounters.data ? incoming.length + suggestions.length : null)}
-        text={t.text}
-        species={myPet?.species}
-        action={{
-          label: t.map,
-          plus: t.plus,
-          onPress: () => router.push('/carte'),
-          accessibilityLabel: t.mapA11y,
-        }}
-      />
-
-      {encounters.isError && !encounters.data ? (
-        <Banner
-          tone="error"
-          title={t.loadError}
-          text={encounters.error.message}
-          actionLabel={t.retry}
-          onAction={() => void encounters.refetch()}
+      <TabTemplate
+        gutter={12}
+        gap={10}
+        top={6}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />}
+      >
+        <EncountersHeader
+          title={t.screen.title}
+          actionLabel={t.map}
+          actionA11y={t.mapA11y}
+          onAction={() => router.navigate('/(tabs)/carte')}
         />
-      ) : null}
-      {/* Bouder ou être à plat ne bloque personne (le serveur présente et laisse saluer) : on le dit, les soins pour l'humeur. */}
-      {shape === 'bof' || sulking ? (
-        <Banner tone="info" title={sulking ? t.waveSulk(petName) : t.bofTitle(petName)} text={t.moodText} actionLabel={t.sulkAction} onAction={toPet} />
-      ) : null}
-      {actionError ? (
-        <Banner
-          tone="error"
-          text={errorText(actionError, t.actionError)}
-          onClose={() => {
-            wave.reset();
-            accept.reset();
-            decline.reset();
-          }}
+
+        {encounters.isError && !encounters.data ? (
+          <Banner
+            tone="error"
+            title={t.loadError}
+            text={encounters.error.message}
+            actionLabel={t.retry}
+            onAction={() => void encounters.refetch()}
+          />
+        ) : null}
+        {/* Bouder ou être à plat ne bloque personne (le serveur présente et laisse saluer) : on le dit, les soins pour l'humeur. */}
+        {shape === 'bof' || sulking ? (
+          <Banner
+            tone="info"
+            title={sulking ? t.waveSulk(petName) : t.bofTitle(petName)}
+            text={t.moodText}
+            actionLabel={t.sulkAction}
+            onAction={toPet}
+          />
+        ) : null}
+        {actionError ? (
+          <Banner
+            tone="error"
+            text={errorText(actionError, t.actionError)}
+            onClose={() => {
+              wave.reset();
+              accept.reset();
+              decline.reset();
+            }}
+          />
+        ) : null}
+
+        {encounters.isPending ? (
+          <>
+            <Skeleton height={260} radius="lg" />
+            <Skeleton height={260} radius="lg" />
+          </>
+        ) : null}
+
+        {incoming.length > 0 ? <EncounterSection title={t.screen.waiting(incoming.length)} /> : null}
+        {incoming.map((i, n) => (
+          <FanIn key={i.id} index={n} once={`rencontres:in:${i.id}`} delay={120}>
+            <EncounterWaiting
+              person={i.from}
+              title={t.screen.waitingTitle(i.from.displayName)}
+              sub={t.screen.waitingSub(i.from.pet.name, petName, timeLabel(i.at))}
+              reason={i.explanation?.common[0]?.text ?? null}
+              declineLabel={t.decline}
+              acceptLabel={t.screen.reply}
+              openLabel={t.open}
+              onOpen={() => router.push(`/rencontre/${i.from.id}`)}
+              accepting={accept.isPending && accept.variables === i.id}
+              declining={decline.isPending && decline.variables === i.id}
+              onAccept={() =>
+                accept.mutate(i.id, {
+                  onSuccess: (link) => {
+                    // Les deux minimoas se courent dessus au-dessus de l'écran pendant que le lien s'ouvre.
+                    if (myPet) bump({ left: myPet.species, right: i.from.pet.species });
+                    router.push(`/link/${link.id}`);
+                  },
+                })
+              }
+              onDecline={() => decline.mutate(i.id)}
+            />
+          </FanIn>
+        ))}
+
+        {waveBlock && suggestions.some((s) => !s.waved) ? <Banner tone="info" text={waveBlock} /> : null}
+
+        {suggestions.length > 0 ? <EncounterSection title={t.screen.today(suggestions.length)} /> : null}
+        {suggestions.map((s, n) => (
+          <FanIn key={s.user.id} index={incoming.length + n} once={`rencontres:s:${s.user.id}`} delay={120}>
+            <EncounterRow
+              person={s.user}
+              reason={s.explanation.common[0]?.text ?? s.intro}
+              badge={s.via === 'new' && !s.waved ? t.badgeNew : undefined}
+              status={s.waved ? t.waved : undefined}
+              accessibilityLabel={`${t.open}, ${s.user.displayName}`}
+              onPress={() => router.push(`/rencontre/${s.user.id}`)}
+            />
+          </FanIn>
+        ))}
+        {encounters.data && m && !m.plus && !noVision && !encounters.data.far && suggestions.length > 0 ? (
+          <EncounterMore
+            pets={FAR_SPECIES.slice(0, 2).map((species) => ({ name: '', species }))}
+            title={t.screen.moreTitle}
+            text={t.screen.moreText(entitlements(true).presentationsPerDay)}
+            onPress={() => openPlus('encounters')}
+          />
+        ) : null}
+
+        {/* Personne : on dit pourquoi, et ce qui aide (test de vision, localisation, inviter). */}
+        {encounters.data && noVision ? (
+          <EmptyState
+            peek
+            seed={myPet?.id}
+            species={myPet?.species ?? 'nino'}
+            mood="surpris"
+            title={t.noVision.title}
+            text={t.noVision.text(petName)}
+            actionLabel={t.noVision.action}
+            onAction={() => router.push(VISION_TEST_ROUTE)}
+          />
+        ) : null}
+        {empty && !noVision && zone ? (
+          <QuartierCard
+            kicker={quartierText.card.kicker}
+            title={zone.open ? quartierText.card.openTitle(zone.label) : quartierText.card.title(zone.label)}
+            counter={
+              zone.open
+                ? quartierText.card.openCounter(zone.count)
+                : quartierText.card.counter(zone.count, zone.threshold, zone.label)
+            }
+            progress={zone.open ? 1 : zone.count / Math.max(1, zone.threshold)}
+            text={zone.open ? quartierText.card.openText(petName) : quartierText.card.text(petName)}
+            actionLabel={quartier.copied ? quartierText.card.copied : quartierText.card.action}
+            onAction={() => void quartier.share()}
+            species={myPet?.species ?? 'nino'}
+          />
+        ) : null}
+        {empty && !noVision && !zone ? (
+          <EmptyState
+            peek
+            seed={myPet?.id}
+            species={myPet?.species ?? 'nino'}
+            mood={firstDay ? 'neutre' : 'dodo'}
+            title={t.emptyTitle}
+            text={t.emptyText(petName)}
+            actionLabel={invite.copied ? chatsText.copied : t.emptyAction}
+            onAction={() => void invite.share()}
+          />
+        ) : null}
+        {encounters.data && !noVision && noPlace ? placeBanner : null}
+        {encounters.data && !noVision && noPlace && !(denied || location.result === 'denied') ? (
+          <Button
+            label={carteText.area.choose}
+            variant="glass"
+            size="sm"
+            onPress={() => setAreaSheet(true)}
+          />
+        ) : null}
+
+        {/* Vu de loin : de vraies personnes compatibles hors de ta zone, comptées par le serveur (docs/DESIR.md). */}
+        {encounters.data?.far && m && !m.plus ? (
+          <FarAwayCard
+            kicker={t.far.kicker}
+            title={encounters.data.far.label}
+            text={t.far.text(petName)}
+            ctaLabel={t.far.cta}
+            onPress={() => openPlus('far_away')}
+            species={FAR_SPECIES}
+            count={encounters.data.far.count}
+          />
+        ) : null}
+        <EncounterHistory
+          title={t.history.title}
+          entries={history.items.map((item) =>
+            historyEntry(item, (linkId) => router.push(`/link/${linkId}`)),
+          )}
+          moreLabel={t.history.more}
+          onMore={history.hasNextPage ? () => void history.fetchNextPage() : undefined}
+          loadingMore={history.isFetchingNextPage}
         />
-      ) : null}
 
-
-      {encounters.isPending ? (
-        <>
-          <Skeleton height={260} radius="lg" />
-          <Skeleton height={260} radius="lg" />
-        </>
-      ) : null}
-
-      {incoming.map((i, n) => (
-        <FanIn key={i.id} index={n} once={`rencontres:in:${i.id}`} delay={120}>
-        <IncomingCard
-          incoming={i}
-          title={t.incomingCard(i.from.displayName)}
-          ownerLabel={t.incomingOwner(i.from.pet.name, i.from.displayName)}
-          compatLabel={t.compat}
-          // Sans explication (visions pas assez connues) : jamais de pourcentage seul.
-          hideCompat={!i.explanation}
-          why={i.explanation ? why(i.explanation) : undefined}
-          acceptLabel={t.accept}
-          declineLabel={t.decline}
-          openLabel={t.open}
-          onOpen={() => router.push(`/rencontre/${i.from.id}`)}
-          accepting={accept.isPending && accept.variables === i.id}
-          declining={decline.isPending && decline.variables === i.id}
-          onAccept={() =>
-            accept.mutate(i.id, {
-              onSuccess: (link) => {
-                // Les deux pets se courent dessus au-dessus de l'écran pendant que le lien s'ouvre.
-                if (myPet) bump({ left: myPet.species, right: i.from.pet.species });
-                router.push(`/link/${link.id}`);
-              },
-            })
-          }
-          onDecline={() => decline.mutate(i.id)}
-        />
-        </FanIn>
-      ))}
-
-      {waveBlock && suggestions.some((s) => !s.waved) ? <Banner tone="info" text={waveBlock} /> : null}
-
-      {suggestions.map((s, n) => (
-        <FanIn key={s.user.id} index={incoming.length + n} once={`rencontres:s:${s.user.id}`} delay={120}>
-        <SuggestionCard
-          suggestion={s}
-          ownerLabel={t.owner(s.user.displayName)}
-          badgeLabel={s.via === 'new' ? t.badgeNew : undefined}
-          compatLabel={t.compat}
-          why={why(s.explanation)}
-          waveLabel={t.wave(s.user.pet.name)}
-          wavedLabel={t.waved}
-          onWave={() => wave.mutate(s.user.id)}
-          waving={wave.isPending && wave.variables === s.user.id}
-          waveDisabled={!!waveBlock}
-          openLabel={t.open}
-          onOpen={() => router.push(`/rencontre/${s.user.id}`)}
-        />
-        </FanIn>
-      ))}
-
-      {/* Personne : on dit pourquoi, et ce qui aide (test de vision, localisation, inviter). */}
-      {encounters.data && noVision ? (
-        <EmptyState
-          peek
-          seed={myPet?.id}
-          species={myPet?.species ?? 'nino'}
-          mood="surpris"
-          title={t.noVision.title}
-          text={t.noVision.text(petName)}
-          actionLabel={t.noVision.action}
-          onAction={() => router.push(VISION_TEST_ROUTE)}
-        />
-      ) : null}
-      {empty && !noVision && zone ? (
-        <QuartierCard
-          kicker={quartierText.card.kicker}
-          title={zone.open ? quartierText.card.openTitle(zone.label) : quartierText.card.title(zone.label)}
-          counter={zone.open ? quartierText.card.openCounter(zone.count) : quartierText.card.counter(zone.count, zone.threshold, zone.label)}
-          progress={zone.open ? 1 : zone.count / Math.max(1, zone.threshold)}
-          text={zone.open ? quartierText.card.openText(petName) : quartierText.card.text(petName)}
-          actionLabel={quartier.copied ? quartierText.card.copied : quartierText.card.action}
-          onAction={() => void quartier.share()}
-          species={myPet?.species ?? 'nino'}
-        />
-      ) : null}
-      {empty && !noVision && !zone ? (
-        <EmptyState
-          peek
-          seed={myPet?.id}
-          species={myPet?.species ?? 'nino'}
-          mood={firstDay ? 'neutre' : 'dodo'}
-          title={t.emptyTitle}
-          text={t.emptyText(petName)}
-          actionLabel={invite.copied ? chatsText.copied : t.emptyAction}
-          onAction={() => void invite.share()}
-        />
-      ) : null}
-      {encounters.data && !noVision && noPlace ? placeBanner : null}
-      {encounters.data && !noVision && noPlace && !(denied || location.result === 'denied') ? (
-        <Button label={carteText.area.choose} variant="glass" size="sm" onPress={() => setAreaSheet(true)} />
-      ) : null}
-
-      {/* Vu de loin : de vraies personnes compatibles hors de ta zone, comptées par le serveur (docs/DESIR.md). */}
-      {encounters.data?.far && m && !m.plus ? (
-        <FarAwayCard
-          kicker={t.far.kicker}
-          title={encounters.data.far.label}
-          text={t.far.text(petName)}
-          ctaLabel={t.far.cta}
-          onPress={() => openPlus('far_away')}
-          species={FAR_SPECIES}
-          count={encounters.data.far.count}
-        />
-      ) : null}
-      {encounters.data && m && !m.plus && !noVision && !encounters.data.far ? (
-        <MapPlusStrip title={t.morePlus.title} text={morePerk?.label ?? morePerk?.short[0] ?? ''} ctaLabel={t.morePlus.cta} onPress={() => openPlus('encounters')} />
-      ) : null}
-
-      <EncounterHistory
-        title={t.history.title}
-        entries={history.items.map((item) => historyEntry(item, (linkId) => router.push(`/link/${linkId}`)))}
-        moreLabel={t.history.more}
-        onMore={history.hasNextPage ? () => void history.fetchNextPage() : undefined}
-        loadingMore={history.isFetchingNextPage}
-      />
-    </TabTemplate>
-    <AreaSheet visible={areaSheet} onClose={() => setAreaSheet(false)} />
+        {/* Demain, quelqu'un d'autre : la séance du jour aide le minimoa à mieux chercher. */}
+        {myPet && chemin.data && !noVision ? (
+          <EncounterNext
+            pet={myPet}
+            title={t.screen.nextTitle}
+            text={hasSessionToDo(chemin.data) ? t.screen.nextTodo(petName) : t.screen.nextDone(petName)}
+            onPress={() =>
+              hasSessionToDo(chemin.data) ? router.push('/chemin/seance') : router.navigate('/(tabs)/pet')
+            }
+          />
+        ) : null}
+      </TabTemplate>
+      <AreaSheet visible={areaSheet} onClose={() => setAreaSheet(false)} />
     </ScreenMotion>
   );
 }

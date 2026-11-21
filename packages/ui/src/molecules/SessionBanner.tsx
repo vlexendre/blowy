@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { layout } from '../lib/styles';
-import { color, extra, radius, space } from '../theme';
+import { alpha, color, extra, radius, space } from '../theme';
 
 export interface SessionBannerProps {
   /** Petite ligne en capitales (« Séance du jour · 5 questions · 2 min »). */
@@ -13,6 +13,8 @@ export interface SessionBannerProps {
   title: string;
   /** À droite (« À la fin : ta personne du jour »). */
   note?: string | null;
+  /** Avancement sur le chemin (0 à 1) : une barre à droite du titre, à la place de la note. */
+  progress?: number | null;
   /** `unit` : violet en relief (la séance attend) · `calm` : carte sombre (séance faite, rien à faire). */
   tone?: 'unit' | 'calm';
   /** Sous le titre : une action ou une ligne de plus (« Demain, une nouvelle séance »). */
@@ -25,7 +27,7 @@ export interface SessionBannerProps {
  * Le bandeau de la séance du jour, sous la carte du minimoa (V6-GAccueil) : le thème de l'unité en grand, ce que
  * dure la séance, ce qu'il y a au bout. Violet « en relief » (tranche plus foncée dessous) tant que la séance attend.
  */
-export function SessionBanner({ kicker, title, note, tone = 'unit', footer, onPress, accessibilityLabel }: SessionBannerProps) {
+export function SessionBanner({ kicker, title, note, progress, tone = 'unit', footer, onPress, accessibilityLabel }: SessionBannerProps) {
   const unit = tone === 'unit';
   const ink = unit ? extra.relief.unitInk : color.mute;
   const body = (
@@ -37,7 +39,11 @@ export function SessionBanner({ kicker, title, note, tone = 'unit', footer, onPr
         <Text variant="h2" size={26} color={color.white} style={layout.shrink}>
           {title}
         </Text>
-        {note ? (
+        {progress != null ? (
+          <View style={styles.track} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            <View style={[styles.fill, { width: `${Math.round(Math.max(0.04, Math.min(1, progress)) * 100)}%` }]} />
+          </View>
+        ) : note ? (
           <Text variant="bodyHeavy" size={13} color={ink} style={styles.note}>
             {note}
           </Text>
@@ -60,4 +66,7 @@ const styles = StyleSheet.create({
   calm: { backgroundColor: color.panel, borderWidth: 1, borderColor: extra.relief.path },
   row: { gap: space.md, alignItems: 'center' },
   note: { maxWidth: 120, textAlign: 'right' },
+  // `.bar` 116 × 8, piste blanche à 22 %, remplissage jaune.
+  track: { width: 116, height: 8, borderRadius: radius.pill, backgroundColor: alpha(color.white, 0.22), overflow: 'hidden' },
+  fill: { height: '100%', borderRadius: radius.pill, backgroundColor: color.accent },
 });

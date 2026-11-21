@@ -5,10 +5,26 @@
  * Le profil détaillé est réservé à Minimoa+ (`detailLocked`).
  */
 import { color, space } from '@blowy/tokens';
-import { Appear, Banner, KnowsPanel, MinimoaTypeCard, NoteCard, PlusBanner, ProfileHero, SettingsSection, Skeleton, Stagger, StatLine, TabTemplate, WordsShareCard } from '@blowy/ui';
+import {
+  Appear,
+  Banner,
+  EncountersHeader,
+  IconButton,
+  KnowsPanel,
+  MinimoaTypeCard,
+  NoteCard,
+  PlusBanner,
+  SettingsSection,
+  Skeleton,
+  Stagger,
+  StatLine,
+  TabTemplate,
+  WordsShareCard,
+} from '@blowy/ui';
 import { router } from 'expo-router';
 import { RefreshControl, View } from 'react-native';
 
+import { tabs } from '@/locales/chats';
 import { ScreenMotion, usePorts, wordsUrl } from '@/core';
 import { useLinks } from '@/features/links';
 import { displayUrl, useCopyShare, useMe } from '@/features/me';
@@ -60,19 +76,25 @@ export default function Moi() {
   if (!me.data) {
     return (
       <ScreenMotion>
-      <TabTemplate gutter={12} gap={8} top={6}>
-        {me.isError ? (
-          <Appear key="error">
-            <Banner tone="error" title={common.errorTitle} text={t.errorText} actionLabel={common.retry} onAction={() => void me.refetch()} />
-          </Appear>
-        ) : (
-          <View style={{ gap: space.md }} accessibilityLabel={common.loading}>
-            <Skeleton height={100} radius="lg" />
-            <Skeleton height={124} radius="lg" />
-            <Skeleton height={56} radius="lg" />
-          </View>
-        )}
-      </TabTemplate>
+        <TabTemplate gutter={12} gap={8} top={6}>
+          {me.isError ? (
+            <Appear key="error">
+              <Banner
+                tone="error"
+                title={common.errorTitle}
+                text={t.errorText}
+                actionLabel={common.retry}
+                onAction={() => void me.refetch()}
+              />
+            </Appear>
+          ) : (
+            <View style={{ gap: space.md }} accessibilityLabel={common.loading}>
+              <Skeleton height={100} radius="lg" />
+              <Skeleton height={124} radius="lg" />
+              <Skeleton height={56} radius="lg" />
+            </View>
+          )}
+        </TabTemplate>
       </ScreenMotion>
     );
   }
@@ -96,112 +118,145 @@ export default function Moi() {
   // Les blocs arrivent en cascade à la première visite seulement (l'onglet reste monté) ; les chiffres défilent.
   return (
     <ScreenMotion>
-    <TabTemplate refreshControl={refresh} gutter={12} gap={8} top={6}>
-      <Stagger onceKey="moi" step={55}>
-      <ProfileHero
-        key="hero"
-        title={t.title(m.displayName, petName)}
-        caption={t.together(days)}
-        // Ta photo est toujours nette pour toi ; le flou pour les autres s'explique sur Mon compte, à côté de la photo.
-        photoUri={m.avatarUrl}
-        pet={m.pet}
-        accessibilityLabel={t.heroLabel(m.displayName, petName)}
-        onPress={() => router.push('/moi/compte')}
-      />
+      <TabTemplate refreshControl={refresh} gutter={12} gap={8} top={6}>
+        <Stagger onceKey="moi" step={55}>
+          <EncountersHeader
+            key="hero"
+            title={tabs.moi}
+            right={
+              <IconButton
+                label={t.rows.settings.title}
+                glyph="gear"
+                onPress={() => router.push('/moi/reglages')}
+              />
+            }
+          />
 
-      {pr ? <MinimoaTypeCard key="type" kicker={c.typeKicker} name={pr.type?.name ?? null} line={pr.type?.line ?? pr.typeHint ?? ''} species={m.pet.species} /> : null}
+          {pr ? (
+            <MinimoaTypeCard
+              key="type"
+              kicker={c.typeKicker}
+              name={pr.type?.name ?? null}
+              line={pr.type?.line ?? pr.typeHint ?? ''}
+              species={m.pet.species}
+            />
+          ) : null}
 
-      <StatLine key="stats" items={stats} />
+          <StatLine key="stats" items={stats} />
 
-      {pr ? (
-        <KnowsPanel
-          key="knows"
-          title={pr.title}
-          level={c.knowsLevel(pr.knows.label, knowsStep(pr.knows.level))}
-          gauges={profilGauges(pr).map((g) => ({
-            key: g.axis,
-            name: g.name,
-            low: g.lowLabel,
-            high: g.highLabel,
-            value: g.value,
-            confidence: g.confidence,
-            foggy: g.foggy,
-            label: g.foggy ? c.foggy(g.name) : g.name,
-            accessibilityLabel: g.foggy ? c.gaugeFoggyA11y(g.name) : c.gaugeA11y(g.name, g.line),
-          }))}
-          more={{
-            title: c.path,
-            text: path.data ? c.pathText(path.data.stepsDone, path.data.stepsTotal) : (pr.typeHint ?? ''),
-            onPress: () => router.navigate('/(tabs)/pet'),
-          }}
-        />
-      ) : profil.isPending ? (
-        <Skeleton key="knows" height={220} radius="lg" />
-      ) : null}
+          {pr ? (
+            <KnowsPanel
+              key="knows"
+              title={pr.title}
+              level={c.knowsLevel(pr.knows.label, knowsStep(pr.knows.level))}
+              gauges={profilGauges(pr).map((g) => ({
+                key: g.axis,
+                name: g.name,
+                low: g.lowLabel,
+                high: g.highLabel,
+                value: g.value,
+                confidence: g.confidence,
+                foggy: g.foggy,
+                label: g.foggy ? c.foggy(g.name) : g.name,
+                accessibilityLabel: g.foggy ? c.gaugeFoggyA11y(g.name) : c.gaugeA11y(g.name, g.line),
+              }))}
+              more={{
+                title: c.path,
+                text: path.data ? c.pathText(path.data.stepsDone, path.data.stepsTotal) : (pr.typeHint ?? ''),
+                onPress: () => router.navigate('/(tabs)/pet'),
+              }}
+            />
+          ) : profil.isPending ? (
+            <Skeleton key="knows" height={220} radius="lg" />
+          ) : null}
 
-      {pr?.detail ? <NoteCard key="detail" kicker={pr.detail.title} text={pr.detail.lines.join('\n')} /> : null}
+          {pr?.detail ? (
+            <NoteCard key="detail" kicker={pr.detail.title} text={pr.detail.lines.join('\n')} />
+          ) : null}
 
-      <WordsShareCard
-        key="words"
-        title={t.wordsTitle}
-        badge={wordsCount > 0 ? t.wordsCount(wordsCount) : t.wordsBadge}
-        badgeOn={wordsCount > 0}
-        text={t.wordsLead(petName)}
-        // Des mots sont arrivés : ton résultat et la carte à partager en story (dès 3 votes).
-        moreLabel={wordsCount > 0 ? croissance.words.more : undefined}
-        onMore={() => router.push('/mots')}
-        shareLabel={t.wordsShareCta}
-        onShare={() => {
-          track('words');
-          void words.share(t.wordsMessage(wordsLink), wordsLink);
-        }}
-        copyLabel={`${t.copy} ${displayUrl(wordsLink)}`}
-        copiedLabel={t.copied}
-        copied={words.copied}
-        onCopy={() => void words.copy(wordsLink)}
-      />
+          <WordsShareCard
+            key="words"
+            title={t.wordsTitle}
+            badge={wordsCount > 0 ? t.wordsCount(wordsCount) : t.wordsBadge}
+            badgeOn={wordsCount > 0}
+            text={t.wordsLead(petName)}
+            // Des mots sont arrivés : ton résultat et la carte à partager en story (dès 3 votes).
+            moreLabel={wordsCount > 0 ? croissance.words.more : undefined}
+            onMore={() => router.push('/mots')}
+            shareLabel={t.wordsShareCta}
+            onShare={() => {
+              track('words');
+              void words.share(t.wordsMessage(wordsLink), wordsLink);
+            }}
+            copyLabel={`${t.copy} ${displayUrl(wordsLink)}`}
+            copiedLabel={t.copied}
+            copied={words.copied}
+            onCopy={() => void words.copy(wordsLink)}
+          />
 
-      <PlusBanner
-        key="plus"
-        // Pas de prix ici : le montant facturé se lit sur la feuille Minimoa+ (règle Apple 3.1.2, spéc §13).
-        title={t.plusTitle}
-        // Membre : l'état de l'abonnement (essai jusqu'au…, se renouvelle le…) tel que l'API le formule ; sinon deux avantages.
-        // Les gens d'abord (V1) : qui t'a dit bonjour, plus de présentations, d'autres villes, le profil détaillé.
-        text={member && subscription.data ? subscription.data.summary : pr?.detailLocked ? c.plusPeople : plusPerksLine(perks, 2)}
-        ctaLabel={member ? undefined : purchases.available ? t.plusCta : t.plusSoonCta}
-        onPress={() => openPlus('generic')}
-      />
+          <PlusBanner
+            key="plus"
+            // Pas de prix ici : le montant facturé se lit sur la feuille Minimoa+ (règle Apple 3.1.2, spéc §13).
+            title={t.plusTitle}
+            // Membre : l'état de l'abonnement (essai jusqu'au…, se renouvelle le…) tel que l'API le formule ; sinon deux avantages.
+            // Les gens d'abord (V1) : qui t'a dit bonjour, plus de présentations, d'autres villes, le profil détaillé.
+            text={
+              member && subscription.data
+                ? subscription.data.summary
+                : pr?.detailLocked
+                  ? c.plusPeople
+                  : plusPerksLine(perks, 2)
+            }
+            ctaLabel={member ? undefined : purchases.available ? t.plusCta : t.plusSoonCta}
+            onPress={() => openPlus('generic')}
+          />
 
-      <SettingsSection
-        key="rows"
-        variant="plain"
-        rows={[
-          {
-            key: 'discreet',
-            title: t.rows.discreet.title,
-            subtitle: t.rows.discreet.subtitle(m.identity.discreet),
-            switchValue: m.identity.discreet,
-            onSwitchChange: (on: boolean) => discreet.mutate(on),
-            disabled: discreet.isPending,
-          },
-          ...(prog.data
-            ? [
-                {
-                  key: 'league',
-                  title: lp.rows.league,
-                  subtitle: lp.rows.leagueSub(prog.data.sparks, prog.data.league.located ? (prog.data.league.rows.find((r) => r.me)?.rank ?? null) : null),
-                  onPress: () => router.push('/moi/ligue'),
-                },
-                { key: 'trophies', title: lp.rows.trophies, subtitle: lp.rows.trophiesSub(prog.data.trophiesWon, prog.data.trophiesTotal), onPress: () => router.push('/moi/trophees') },
-              ]
-            : []),
-          { key: 'ia', ...t.rows.ia, onPress: () => router.push('/moi/ia') },
-          { key: 'settings', ...t.rows.settings, onPress: () => router.push('/moi/reglages') },
-        ]}
-      />
-      </Stagger>
-      {discreet.isError ? <Banner tone="error" text={t.discreetError} onClose={() => discreet.reset()} closeLabel={common.close} /> : null}
-    </TabTemplate>
+          <SettingsSection
+            key="rows"
+            variant="plain"
+            rows={[
+              ...(prog.data
+                ? [
+                    {
+                      key: 'league',
+                      title: lp.rows.league,
+                      subtitle: lp.rows.leagueSub(
+                        prog.data.sparks,
+                        prog.data.league.located
+                          ? (prog.data.league.rows.find((r) => r.me)?.rank ?? null)
+                          : null,
+                      ),
+                      onPress: () => router.push('/moi/ligue'),
+                    },
+                    {
+                      key: 'trophies',
+                      title: lp.rows.trophies,
+                      subtitle: lp.rows.trophiesSub(prog.data.trophiesWon, prog.data.trophiesTotal),
+                      onPress: () => router.push('/moi/trophees'),
+                    },
+                  ]
+                : []),
+              {
+                key: 'discreet',
+                title: t.rows.discreet.title,
+                subtitle: t.rows.discreet.subtitle(m.identity.discreet),
+                switchValue: m.identity.discreet,
+                onSwitchChange: (on: boolean) => discreet.mutate(on),
+                disabled: discreet.isPending,
+              },
+              { key: 'ia', ...t.rows.ia, onPress: () => router.push('/moi/ia') },
+            ]}
+          />
+        </Stagger>
+        {discreet.isError ? (
+          <Banner
+            tone="error"
+            text={t.discreetError}
+            onClose={() => discreet.reset()}
+            closeLabel={common.close}
+          />
+        ) : null}
+      </TabTemplate>
     </ScreenMotion>
   );
 }

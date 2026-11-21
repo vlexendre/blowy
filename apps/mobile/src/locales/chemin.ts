@@ -13,6 +13,7 @@ export const chemin = messages({
     home: {
       kicker: (n: number): string => `Séance du jour · ${n} questions · 2 min`,
       bonusKicker: (n: number): string => `Séance bonus · ${n} questions · 2 min`,
+      path: (i: number, n: number): string => `Ton chemin · étape ${i} sur ${n}`,
       note: 'À la fin : ta personne du jour',
       start: 'Commencer',
       startA11y: (unit: string): string => `Commencer la séance du jour : ${unit}`,
@@ -154,6 +155,7 @@ export const chemin = messages({
     home: {
       kicker: (n: number): string => `Today’s session · ${n} questions · 2 min`,
       bonusKicker: (n: number): string => `Bonus session · ${n} questions · 2 min`,
+      path: (i: number, n: number): string => `Your path · step ${i} of ${n}`,
       note: 'At the end: your person of the day',
       start: 'Start',
       startA11y: (unit: string): string => `Start today’s session: ${unit}`,
@@ -295,6 +297,7 @@ export const chemin = messages({
     home: {
       kicker: (n: number): string => `Sesión del día · ${n} preguntas · 2 min`,
       bonusKicker: (n: number): string => `Sesión extra · ${n} preguntas · 2 min`,
+      path: (i: number, n: number): string => `Tu camino · paso ${i} de ${n}`,
       note: 'Al final: tu persona del día',
       start: 'Empezar',
       startA11y: (unit: string): string => `Empezar la sesión del día: ${unit}`,
@@ -436,6 +439,7 @@ export const chemin = messages({
     home: {
       kicker: (n: number): string => `Sessão do dia · ${n} perguntas · 2 min`,
       bonusKicker: (n: number): string => `Sessão bônus · ${n} perguntas · 2 min`,
+      path: (i: number, n: number): string => `Seu caminho · etapa ${i} de ${n}`,
       note: 'No final: sua pessoa do dia',
       start: 'Começar',
       startA11y: (unit: string): string => `Começar a sessão do dia: ${unit}`,
@@ -577,6 +581,7 @@ export const chemin = messages({
     home: {
       kicker: (n: number): string => `Sessie van vandaag · ${n} vragen · 2 min`,
       bonusKicker: (n: number): string => `Bonussessie · ${n} vragen · 2 min`,
+      path: (i: number, n: number): string => `Je pad · stap ${i} van ${n}`,
       note: 'Aan het eind: je persoon van de dag',
       start: 'Beginnen',
       startA11y: (unit: string): string => `De sessie van vandaag beginnen: ${unit}`,

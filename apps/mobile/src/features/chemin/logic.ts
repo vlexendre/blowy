@@ -59,6 +59,14 @@ export type TodayView =
 
 export const SESSION_SIZE = 5;
 
+/** L'étape du jour sur tout le chemin (« étape 4 sur 12 ») : rang 1-based, sinon le nombre d'étapes faites. */
+export function stepOf(map: Pick<CheminMap, 'units' | 'currentStepId'>): { step: number; steps: number } {
+  const all = map.units.flatMap((u) => u.steps);
+  const at = map.currentStepId ? all.findIndex((s) => s.id === map.currentStepId) : -1;
+  const done = all.filter((s) => s.state === 'done').length;
+  return { step: at >= 0 ? at + 1 : Math.max(1, done), steps: all.length };
+}
+
 /** Le titre de l'unité en cours (celle de l'étape du jour), sinon la dernière commencée. */
 export function currentUnitTitle(map: Pick<CheminMap, 'units' | 'currentStepId' | 'title'>): string {
   const unit = map.units.find((u) => u.steps.some((s) => s.id === map.currentStepId)) ?? map.units.find((u) => u.state === 'current') ?? map.units[map.units.length - 1];

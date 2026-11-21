@@ -7,7 +7,7 @@ import { type CareProp, propImage } from '../assets/misc';
 import { CareIcon } from '../atoms/CareIcon';
 import { type CareLevel, CareButton } from '../molecules/CareButton';
 import type { PetLure } from '../motion/pets/lure';
-import { color, radius, size as sizes, veil } from '../theme';
+import { alpha, color, radius, size as sizes, veil } from '../theme';
 
 export interface CareBarProps {
   /** Libellés des gestes (`careLabel` de @blowy/content accepté tel quel). */
@@ -36,13 +36,15 @@ export interface CareBarProps {
   icons?: Partial<Record<CareAction, ReactNode>>;
   /** Ce que chaque soin porte quand on le glisse jusqu'au pet (`careProp` : pomme, cookie, balle, coussin…). */
   carry?: Partial<Record<CareAction, CareProp | null>>;
+  /** Pastille sombre de disques sans libellé, posée dans la carte du minimoa (V6-GAccueil `.cr2`). */
+  compact?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
 /** Les quatre soins (nourrir, jouer, sieste, câlin) dans une carte, en disques ronds (V6-Accueil). */
-export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure, levels, size = 56, actions = CARE_ACTIONS, icons, carry, style }: CareBarProps) {
+export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure, levels, size = 56, actions = CARE_ACTIONS, icons, carry, compact = false, style }: CareBarProps) {
   return (
-    <View style={[styles.card, style]}>
+    <View style={[compact ? styles.pill : styles.card, style]}>
       {actions.map((a) => (
         <CareButton
           key={a}
@@ -59,6 +61,8 @@ export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure,
           disabled={!!busy && busy !== a}
           onPress={() => onCare(a)}
           lure={lure}
+          hideLabel={compact}
+          style={compact ? { flex: 0, minWidth: size } : undefined}
         />
       ))}
     </View>
@@ -66,6 +70,8 @@ export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure,
 }
 
 const styles = StyleSheet.create({
+  // `.cr2` : disques 44 dans une pastille sombre (#14101F à 82 %), écart 6, marge 6.
+  pill: { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 6, borderRadius: radius.pill, backgroundColor: alpha(color.dark, 0.82) },
   // `.card.row`, à l'échelle de densité, aérée en hauteur : padding 16 4, rayon des cartes.
   card: {
     flexDirection: 'row',

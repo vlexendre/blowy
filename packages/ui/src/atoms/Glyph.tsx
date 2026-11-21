@@ -30,6 +30,7 @@ export const GLYPHS = [
   'more',
   'copy',
   'pin',
+  'gear',
 ] as const;
 export type GlyphName = (typeof GLYPHS)[number];
 
@@ -214,6 +215,14 @@ function draw(name: GlyphName, s: number, c: string, sw: number, filled: boolean
         <Svg width={s} height={s} viewBox="0 0 24 24">
           <Path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" stroke={c} strokeWidth={2.2} fill={filled ? c : 'none'} strokeLinejoin="round" />
           <Path d="M12 7.6a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8z" stroke={filled ? 'none' : c} strokeWidth={2.2} fill={filled ? 'white' : 'none'} />
+        </Svg>
+      );
+    case 'gear':
+      // Réglages (en-tête de Moi).
+      return (
+        <Svg width={s} height={s} viewBox="0 0 24 24">
+          <Path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" stroke={c} strokeWidth={2} fill="none" />
+          <Path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2" stroke={c} strokeWidth={2} strokeLinecap="round" />
         </Svg>
       );
     case 'heart':

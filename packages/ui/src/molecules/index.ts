@@ -1,5 +1,6 @@
 export { AvatarPair, type AvatarPairProps } from './AvatarPair';
 export { Banner, type BannerProps, type BannerTone } from './Banner';
+export { ButtonRow } from './ButtonRow';
 export { ChoiceCard, type ChoiceCardProps } from './ChoiceCard';
 export { DayChip, type DayChipProps } from './DayChip';
 export { DotNote, type DotNoteProps } from './DotNote';

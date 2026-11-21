@@ -68,8 +68,9 @@ export default function TabsLayout() {
         }}
       >
         <Tabs.Screen name="pet" options={{ title: tabs.pet }} />
-        <Tabs.Screen name="chats" options={{ title: tabs.chats }} />
+        <Tabs.Screen name="carte" options={{ title: tabs.carte }} />
         <Tabs.Screen name="rencontres" options={{ title: tabs.rencontres }} />
+        <Tabs.Screen name="chats" options={{ title: tabs.chats }} />
         <Tabs.Screen name="moi" options={{ title: tabs.moi }} />
       </Tabs>
       {/* Retour dans l'app : le salut est joué par le minimoa de l'accueil lui-même (`useHelloWave`), rien par-dessus le contenu. */}

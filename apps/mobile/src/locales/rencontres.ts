@@ -5,6 +5,19 @@ import { messages } from './runtime';
 export const rencontres = messages({
   fr: {
     kicker: 'Aujourd’hui',
+    screen: {
+      title: 'Rencontres',
+      waiting: (n: number): string => (n > 1 ? `Ils t’attendent · ${n}` : `Il t’attend · ${n}`),
+      waitingTitle: (name: string): string => `${name} t’a dit bonjour`,
+      waitingSub: (theirPet: string, myPet: string, when: string): string => `${theirPet}, son minimoa, est venu voir ${myPet} · ${when}`,
+      reply: 'Répondre',
+      today: (n: number): string => `Présentés aujourd’hui · ${n}`,
+      moreTitle: 'Envie de plus de monde ?',
+      moreText: (n: number): string => `Jusqu’à ${n} par jour avec Minimoa+`,
+      nextTitle: 'Demain, quelqu’un d’autre',
+      nextTodo: (pet: string): string => `Fais ta séance du jour : ${pet} cherche mieux quand il te connaît.`,
+      nextDone: (pet: string): string => `Ta séance est faite : ${pet} te présente quelqu’un demain.`,
+    },
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: `${pet.toUpperCase()} A TROUVÉ\n` },
       { text: n === null ? '…' : n === 0 ? 'PERSONNE.' : `${n} ${n > 1 ? 'PERSONNES' : 'PERSONNE'}.`, dim: true },
@@ -83,6 +96,19 @@ export const rencontres = messages({
   },
   en: {
     kicker: 'Today',
+    screen: {
+      title: 'Meet',
+      waiting: (n: number): string => `Waiting for you · ${n}`,
+      waitingTitle: (name: string): string => `${name} said hi`,
+      waitingSub: (theirPet: string, myPet: string, when: string): string => `${theirPet}, their minimoa, came to see ${myPet} · ${when}`,
+      reply: 'Reply',
+      today: (n: number): string => `Introduced today · ${n}`,
+      moreTitle: 'Want to meet more people?',
+      moreText: (n: number): string => `Up to ${n} a day with Minimoa+`,
+      nextTitle: 'Tomorrow, someone new',
+      nextTodo: (pet: string): string => `Do today’s session: ${pet} finds better matches when it knows you.`,
+      nextDone: (pet: string): string => `Session done: ${pet} introduces someone tomorrow.`,
+    },
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: `${pet.toUpperCase()} FOUND\n` },
       { text: n === null ? '…' : n === 0 ? 'NO ONE.' : `${n} ${n === 1 ? 'PERSON' : 'PEOPLE'}.`, dim: true },
@@ -151,6 +177,19 @@ export const rencontres = messages({
   },
   es: {
     kicker: 'Hoy',
+    screen: {
+      title: 'Encuentros',
+      waiting: (n: number): string => `Te esperan · ${n}`,
+      waitingTitle: (name: string): string => `${name} te ha saludado`,
+      waitingSub: (theirPet: string, myPet: string, when: string): string => `${theirPet}, su minimoa, vino a ver a ${myPet} · ${when}`,
+      reply: 'Responder',
+      today: (n: number): string => `Presentados hoy · ${n}`,
+      moreTitle: '¿Quieres conocer a más gente?',
+      moreText: (n: number): string => `Hasta ${n} al día con Minimoa+`,
+      nextTitle: 'Mañana, alguien más',
+      nextTodo: (pet: string): string => `Haz la sesión del día: ${pet} busca mejor cuando te conoce.`,
+      nextDone: (pet: string): string => `Sesión hecha: ${pet} te presenta a alguien mañana.`,
+    },
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: n === 0 ? `${pet.toUpperCase()} NO ENCONTRÓ\n` : `${pet.toUpperCase()} ENCONTRÓ\n` },
       { text: n === null ? '…' : n === 0 ? 'A NADIE.' : `A ${n} ${n === 1 ? 'PERSONA' : 'PERSONAS'}.`, dim: true },
@@ -219,6 +258,19 @@ export const rencontres = messages({
   },
   pt: {
     kicker: 'Hoje',
+    screen: {
+      title: 'Encontros',
+      waiting: (n: number): string => `Esperando por você · ${n}`,
+      waitingTitle: (name: string): string => `${name} disse oi`,
+      waitingSub: (theirPet: string, myPet: string, when: string): string => `${theirPet}, o minimoa dele, veio ver ${myPet} · ${when}`,
+      reply: 'Responder',
+      today: (n: number): string => `Apresentados hoje · ${n}`,
+      moreTitle: 'Quer conhecer mais gente?',
+      moreText: (n: number): string => `Até ${n} por dia com Minimoa+`,
+      nextTitle: 'Amanhã, outra pessoa',
+      nextTodo: (pet: string): string => `Faça a sessão do dia: ${pet} procura melhor quando te conhece.`,
+      nextDone: (pet: string): string => `Sessão feita: ${pet} te apresenta alguém amanhã.`,
+    },
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: n === 0 ? `${pet.toUpperCase()} NÃO ACHOU\n` : `${pet.toUpperCase()} ACHOU\n` },
       { text: n === null ? '…' : n === 0 ? 'NINGUÉM.' : `${n} ${n === 1 ? 'PESSOA' : 'PESSOAS'}.`, dim: true },
@@ -287,6 +339,19 @@ export const rencontres = messages({
   },
   nl: {
     kicker: 'Vandaag',
+    screen: {
+      title: 'Ontmoetingen',
+      waiting: (n: number): string => `Wacht op je · ${n}`,
+      waitingTitle: (name: string): string => `${name} zei hallo`,
+      waitingSub: (theirPet: string, myPet: string, when: string): string => `${theirPet}, hun minimoa, kwam bij ${myPet} langs · ${when}`,
+      reply: 'Antwoorden',
+      today: (n: number): string => `Vandaag voorgesteld · ${n}`,
+      moreTitle: 'Zin in meer mensen?',
+      moreText: (n: number): string => `Tot ${n} per dag met Minimoa+`,
+      nextTitle: 'Morgen, iemand anders',
+      nextTodo: (pet: string): string => `Doe je sessie van vandaag: ${pet} zoekt beter als hij je kent.`,
+      nextDone: (pet: string): string => `Sessie gedaan: ${pet} stelt je morgen iemand voor.`,
+    },
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: `${pet.toUpperCase()} VOND\n` },
       { text: n === null ? '…' : n === 0 ? 'NIEMAND.' : `${n} ${n === 1 ? 'PERSOON' : 'MENSEN'}.`, dim: true },
@@ -358,6 +423,10 @@ export const rencontres = messages({
 export const rencontre = messages({
   fr: {
     back: 'Retour',
+    presentedBy: (pet: string): string => `Présentée par ${pet}`,
+    shareTitle: 'Ce que vous partagez',
+    differTitle: 'Là où vous différez',
+    sayHi: 'Dire bonjour',
     me: (pet: string): string => `${pet} · toi`,
     them: (pet: string, name: string): string => `${pet} · ${name}`,
     saysTitle: (pet: string): string => `Ce que ${pet} en dit`,
@@ -385,6 +454,10 @@ export const rencontre = messages({
   },
   en: {
     back: 'Back',
+    presentedBy: (pet: string): string => `Introduced by ${pet}`,
+    shareTitle: 'What you share',
+    differTitle: 'Where you differ',
+    sayHi: 'Say hi',
     me: (pet: string): string => `${pet} · you`,
     them: (pet: string, name: string): string => `${pet} · ${name}`,
     saysTitle: (pet: string): string => `What ${pet} says`,
@@ -410,6 +483,10 @@ export const rencontre = messages({
   },
   es: {
     back: 'Atrás',
+    presentedBy: (pet: string): string => `Presentada por ${pet}`,
+    shareTitle: 'Lo que compartís',
+    differTitle: 'En lo que diferís',
+    sayHi: 'Saludar',
     me: (pet: string): string => `${pet} · tú`,
     them: (pet: string, name: string): string => `${pet} · ${name}`,
     saysTitle: (pet: string): string => `Lo que dice ${pet}`,
@@ -435,6 +512,10 @@ export const rencontre = messages({
   },
   pt: {
     back: 'Voltar',
+    presentedBy: (pet: string): string => `Apresentada por ${pet}`,
+    shareTitle: 'O que vocês compartilham',
+    differTitle: 'Onde vocês diferem',
+    sayHi: 'Dizer oi',
     me: (pet: string): string => `${pet} · você`,
     them: (pet: string, name: string): string => `${pet} · ${name}`,
     saysTitle: (pet: string): string => `O que ${pet} diz`,
@@ -460,6 +541,10 @@ export const rencontre = messages({
   },
   nl: {
     back: 'Terug',
+    presentedBy: (pet: string): string => `Voorgesteld door ${pet}`,
+    shareTitle: 'Wat jullie delen',
+    differTitle: 'Waar jullie verschillen',
+    sayHi: 'Hallo zeggen',
     me: (pet: string): string => `${pet} · jij`,
     them: (pet: string, name: string): string => `${pet} · ${name}`,
     saysTitle: (pet: string): string => `Wat ${pet} ervan zegt`,
