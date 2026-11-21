@@ -41,7 +41,7 @@ import {
 } from '@blowy/ui';
 import { useFocusEffect, useIsFocused, useLocalSearchParams, useRouter } from 'expo-router';
 import { type ComponentRef, useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, RefreshControl, type ScrollView, useWindowDimensions, View } from 'react-native';
+import { LayoutAnimation, Platform, RefreshControl, type ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { errorText, useLinks } from '@/features/links';
@@ -121,6 +121,7 @@ export default function PetHome() {
   const blockTop = useRef(0);
   const pathTop = useRef(0);
   const fixedHeight = useRef(0);
+  const [compact, setCompact] = useState(false);
   const location = useLocation(me.data);
   const push = usePushPermission();
   const [locationDenied, setLocationDenied] = useState(false);
@@ -351,7 +352,16 @@ export default function PetHome() {
 
   return (
     <ScreenMotion>
-      <PetRefresh species={p.species} refreshing={refreshing} onRefresh={refresh}>
+      <PetRefresh
+        species={p.species}
+        refreshing={refreshing}
+        onRefresh={refresh}
+        onCollapse={(on) => {
+          // En descendant, la carte du minimoa rapetisse ; en remontant (ou tirée vers le bas), elle regrandit.
+          LayoutAnimation.configureNext(LayoutAnimation.create(220, 'easeInEaseOut', 'scaleXY'));
+          setCompact(on);
+        }}
+      >
         {(scroll) => (
           <TabTemplate
             gutter={14}
@@ -394,13 +404,13 @@ export default function PetHome() {
                   reactionKey={reactionKey}
                   reactionItem={reactionItem}
                   mood={homeRest({ form: p.form, needs: p.needs, sulking, neglected }) ?? formBodyPose(p.form)}
-                  habitat={roomy ? { photo: lastPhoto, night: sleep.night } : null}
+                  habitat={roomy && !compact ? { photo: lastPhoto, night: sleep.night } : null}
                   petLabel={a.petA11yCuddle(p.name)}
                   onPetPress={onPetPress}
                   lure={lure}
                   meter={null}
-                  height={256}
-                  petSize={214}
+                  height={compact ? 136 : 256}
+                  petSize={compact ? 108 : 214}
                   care={
                     <CareBar
                       compact
@@ -520,7 +530,7 @@ export default function PetHome() {
                         if (scrolledTo.current) return;
                         scrolledTo.current = true;
                         setTimeout(
-                          () => scrollRef.current?.scrollTo({ y: Math.max(0, pathTop.current + y - (winHeight - fixedHeight.current - 90) / 2), animated: false }),
+                          () => scrollRef.current?.scrollTo({ y: Math.max(0, pathTop.current + y - fixedHeight.current - (winHeight - fixedHeight.current - 90) / 2), animated: false }),
                           150,
                         );
                       }}

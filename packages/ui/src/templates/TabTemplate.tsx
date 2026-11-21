@@ -1,7 +1,8 @@
-import type { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode, useState } from 'react';
 import type { ScreenTemplateProps } from './ScreenTemplate';
 import type { RefreshControlProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
@@ -34,7 +35,10 @@ export interface TabTemplateProps {
   scrollRef?: ScreenTemplateProps['scrollRef'];
   /** Place en plus en bas (ex. `NOW_BAR_SPACE` quand une `NowBar` flotte au-dessus de la barre d'onglets). */
   bottomExtra?: number;
-  /** Reste en haut pendant que le contenu défile dessous (accueil : la carte du minimoa au-dessus du chemin). */
+  /**
+   * Reste en haut, par-dessus le contenu qui défile dessous (accueil : la carte du minimoa au-dessus du chemin). Il peut
+   * rapetisser : le contenu garde la place de sa plus grande taille, rien ne saute.
+   */
   fixed?: ReactNode;
 }
 
@@ -66,7 +70,11 @@ export function TabTemplate({
   fixed,
 }: TabTemplateProps) {
   const barSpace = useTabBarSpace();
+  const insets = useSafeAreaInsets();
+  // Place réservée en haut du contenu : la plus grande hauteur mesurée de `fixed`.
+  const [fixedSpace, setFixedSpace] = useState(0);
   return (
+    <View style={layout.fill}>
     <ScreenTemplate
       scroll={scroll}
       edges={['top']}
@@ -78,8 +86,6 @@ export function TabTemplate({
       scrollEventThrottle={scrollEventThrottle}
       scrollRef={scrollRef}
       contentStyle={gutter !== undefined ? { paddingHorizontal: gutter } : undefined}
-      header={fixed}
-      headerStyle={fixed ? [styles.fixed, gutter !== undefined ? { paddingHorizontal: gutter } : null] : undefined}
     >
       {brand || title || right ? (
         <View style={[layout.row, styles.head]}>
@@ -104,8 +110,20 @@ export function TabTemplate({
           {right ? <View style={styles.right}>{right}</View> : null}
         </View>
       ) : null}
-      <View style={{ gap, paddingTop: top }}>{children}</View>
+      <View style={{ gap, paddingTop: top + fixedSpace }}>{children}</View>
     </ScreenTemplate>
+    {fixed ? (
+      <View
+        style={[styles.fixed, { paddingTop: insets.top + 6, paddingHorizontal: gutter ?? space.lg }]}
+        onLayout={(e) => {
+          const h = e.nativeEvent.layout.height - insets.top;
+          setFixedSpace((s) => (h > s ? h : s));
+        }}
+      >
+        {fixed}
+      </View>
+    ) : null}
+    </View>
   );
 }
 
@@ -115,5 +133,5 @@ const styles = StyleSheet.create({
   brand: { letterSpacing: -0.36, lineHeight: 24 },
   title: { marginTop: space.xs },
   right: { marginBottom: space.sm },
-  fixed: { paddingTop: 6, paddingBottom: space.xs },
+  fixed: { position: 'absolute', top: 0, left: 0, right: 0, paddingBottom: space.sm, backgroundColor: color.night },
 });
