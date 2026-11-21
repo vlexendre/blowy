@@ -33,7 +33,7 @@ export function MinimoaTypeCard({ kicker, name, line, species }: MinimoaTypeCard
             {name}
           </Text>
         ) : null}
-        <Text variant="bodyBold" size={14} color={color.dark}>
+        <Text variant="bodyBold" size={14} color={color.dark} numberOfLines={2}>
           {line}
         </Text>
       </View>
@@ -83,14 +83,12 @@ export function KnowsPanel({ title, level, gauges, more }: KnowsPanelProps) {
       </View>
       {gauges.map((g) => (
         <View key={g.key} accessible accessibilityLabel={g.accessibilityLabel} style={[styles.gauge, g.foggy ? styles.fog : null]}>
+          {/* Une ligne par axe : les deux pôles aux bouts, la jauge dessous ; le nom de l'axe est lu, pas affiché. */}
           <View style={layout.rowBetween}>
-            <Text size={13} muted style={styles.pole}>
+            <Text size={13} muted numberOfLines={1} style={styles.pole}>
               {g.low}
             </Text>
-            <Text variant="bodyHeavy" size={13} center style={layout.shrink}>
-              {g.label}
-            </Text>
-            <Text size={13} muted style={[styles.pole, styles.right]}>
+            <Text size={13} muted numberOfLines={1} style={[styles.pole, styles.right]}>
               {g.high}
             </Text>
           </View>
@@ -119,9 +117,9 @@ const styles = StyleSheet.create({
   typeText: { maxWidth: '66%', gap: space.xs },
   typePet: { position: 'absolute', right: -4, bottom: -10 },
   card: { borderRadius: radius.card, backgroundColor: color.panel, borderWidth: 1, borderColor: veil.line, padding: space.lg, gap: space.md + 2 },
-  gauge: { gap: space.sm },
+  gauge: { gap: space.xs + 2 },
   fog: { opacity: 0.55 },
-  pole: { width: '28%' },
+  pole: { width: '48%' },
   right: { textAlign: 'right' },
   more: { gap: space.md, paddingTop: space.md, borderTopWidth: 1, borderTopColor: veil.line },
 });

@@ -65,7 +65,8 @@ export function Text({ variant = 'body', color: tint, dim, muted, center, size, 
   // Un morceau imbriqué ne reçoit pas le recadrage iOS (marges et marge intérieure de `fitLineHeight`) : seul le
   // parent a un cadre. Les espaces normales avant « ? ! : ; » deviennent insécables (voir `lib/runs`).
   const text = (
-    <RNText {...rest} style={nested ? inline(composed) : [composed, fitLineHeight(composed, { lines: rest.numberOfLines })]}>
+    // Grandit avec la taille de texte du système, mais au plus de 30 % : au-delà, les écrans denses débordent.
+    <RNText maxFontSizeMultiplier={1.3} {...rest} style={nested ? inline(composed) : [composed, fitLineHeight(composed, { lines: rest.numberOfLines })]}>
       {frenchChildren(children)}
     </RNText>
   );

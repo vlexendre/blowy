@@ -12,7 +12,6 @@ import {
   IconButton,
   KnowsPanel,
   MinimoaTypeCard,
-  NoteCard,
   PlusBanner,
   SettingsSection,
   Skeleton,
@@ -168,10 +167,6 @@ export default function Moi() {
             />
           ) : profil.isPending ? (
             <Skeleton key="knows" height={220} radius="lg" />
-          ) : null}
-
-          {pr?.detail ? (
-            <NoteCard key="detail" kicker={pr.detail.title} text={pr.detail.lines.join('\n')} />
           ) : null}
 
           <WordsShareCard

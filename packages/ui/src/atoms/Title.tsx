@@ -72,6 +72,7 @@ export function Title({ text, variant = 'h1', size, color, center, numberOfLines
   const composed = [type[variant], styles.base, { color: ink }, metrics, center && styles.center, style];
   return (
     <RNText
+      maxFontSizeMultiplier={1.2}
       accessibilityRole="header"
       accessibilityLabel={accessibilityLabel ?? segments.map((s) => s.text).join('')}
       numberOfLines={numberOfLines}
