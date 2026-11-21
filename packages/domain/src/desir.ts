@@ -37,9 +37,12 @@ export const PLUS_TRIGGERS = [
   'moment_first_link',
   'moment_streak_7',
   'moment_second_day',
+  // Séance du jour faite : avec Minimoa+, enchaîner les étapes.
+  'chemin_more',
 ] as const;
 export type PlusTrigger = (typeof PLUS_TRIGGERS)[number];
-export const isPlusTrigger = (v: unknown): v is PlusTrigger => typeof v === 'string' && (PLUS_TRIGGERS as readonly string[]).includes(v);
+export const isPlusTrigger = (v: unknown): v is PlusTrigger =>
+  typeof v === 'string' && (PLUS_TRIGGERS as readonly string[]).includes(v);
 
 // ── Vu de loin ──────────────────────────────────────────────────────────────
 
@@ -58,7 +61,11 @@ export interface FarSummary {
 /** Résumé honnête d'une liste de compatibilités (déjà filtrées par l'Audience et les règles des rencontres). */
 export function farSummary(scores: readonly number[]): FarSummary {
   if (scores.length === 0) return { count: 0, strong: 0, best: null };
-  return { count: scores.length, strong: scores.filter((s) => s >= STRONG_MATCH).length, best: Math.max(...scores) };
+  return {
+    count: scores.length,
+    strong: scores.filter((s) => s >= STRONG_MATCH).length,
+    best: Math.max(...scores),
+  };
 }
 
 // ── Collections saisonnières ────────────────────────────────────────────────
@@ -80,15 +87,23 @@ export interface SeasonalCollection {
  * fausse). Après `until`, ses objets ne sont plus donnés ; ceux qui les ont eus (Minimoa+ pendant la collection) les
  * gardent, portables tant que Minimoa+ est actif, comme tous les objets premium.
  */
-export const COLLECTIONS: readonly SeasonalCollection[] = [{ id: 'hiver_2026', items: WINTER_ITEM_IDS, from: '2026-11-01', until: '2027-01-31' }];
+export const COLLECTIONS: readonly SeasonalCollection[] = [
+  { id: 'hiver_2026', items: WINTER_ITEM_IDS, from: '2026-11-01', until: '2027-01-31' },
+];
 
-const COLLECTION_OF = new Map<string, SeasonalCollection>(COLLECTIONS.flatMap((c) => c.items.map((id) => [id, c] as const)));
-export const collectionOfItem = (itemId: string): SeasonalCollection | null => COLLECTION_OF.get(itemId) ?? null;
-export const collectionOpen = (c: SeasonalCollection, today: Day): boolean => today >= c.from && today <= c.until;
+const COLLECTION_OF = new Map<string, SeasonalCollection>(
+  COLLECTIONS.flatMap((c) => c.items.map((id) => [id, c] as const)),
+);
+export const collectionOfItem = (itemId: string): SeasonalCollection | null =>
+  COLLECTION_OF.get(itemId) ?? null;
+export const collectionOpen = (c: SeasonalCollection, today: Day): boolean =>
+  today >= c.from && today <= c.until;
 
 /** La collection en cours (la plus proche de sa fin s'il y en a deux) et les jours qui restent, fin comprise. */
 export function currentCollection(today: Day): { collection: SeasonalCollection; daysLeft: number } | null {
-  const open = COLLECTIONS.filter((c) => collectionOpen(c, today)).sort((a, b) => a.until.localeCompare(b.until))[0];
+  const open = COLLECTIONS.filter((c) => collectionOpen(c, today)).sort((a, b) =>
+    a.until.localeCompare(b.until),
+  )[0];
   return open ? { collection: open, daysLeft: daysBetween(today, open.until) + 1 } : null;
 }
 
@@ -104,12 +119,15 @@ export function itemAvailable(itemId: string, today: Day, kept: ReadonlySet<stri
 /** Objets à garder maintenant pour une personne avec Minimoa+ : ceux des collections en cours qu'elle n'a pas encore. */
 export function collectionItemsToKeep(plus: boolean, today: Day, kept: ReadonlySet<string>): string[] {
   if (!plus) return [];
-  return COLLECTIONS.filter((c) => collectionOpen(c, today)).flatMap((c) => c.items.filter((id) => !kept.has(id)));
+  return COLLECTIONS.filter((c) => collectionOpen(c, today)).flatMap((c) =>
+    c.items.filter((id) => !kept.has(id)),
+  );
 }
 
 /** Tenue sans les objets d'une collection finie qui n'ont pas été gardés. Même objet rendu si rien ne change. */
 export function withoutUnavailable(outfit: Outfit, today: Day, kept: ReadonlySet<string>): Outfit {
-  if (ITEM_SLOTS.every((slot) => !outfit[slot] || itemAvailable(outfit[slot] as string, today, kept))) return outfit;
+  if (ITEM_SLOTS.every((slot) => !outfit[slot] || itemAvailable(outfit[slot] as string, today, kept)))
+    return outfit;
   const out: Outfit = {};
   for (const slot of ITEM_SLOTS) {
     const id = outfit[slot];
@@ -127,7 +145,8 @@ export function withoutUnavailable(outfit: Outfit, today: Day, kept: ReadonlySet
  */
 export const PLUS_MOMENTS = ['first_link', 'streak_7', 'second_day'] as const;
 export type PlusMoment = (typeof PLUS_MOMENTS)[number];
-export const isPlusMoment = (v: unknown): v is PlusMoment => typeof v === 'string' && (PLUS_MOMENTS as readonly string[]).includes(v);
+export const isPlusMoment = (v: unknown): v is PlusMoment =>
+  typeof v === 'string' && (PLUS_MOMENTS as readonly string[]).includes(v);
 /**
  * Moments que connaît une app qui ne dit rien (versions d'avant `second_day`) : un moment inconnu ferait échouer la
  * lecture de sa réponse. L'app dit les moments qu'elle sait ouvrir (`PlusMomentBody.accepts`).
@@ -186,9 +205,16 @@ export function plusMomentDue(f: PlusMomentFacts): PlusMoment | null {
   const accepts = f.accepts ?? LEGACY_PLUS_MOMENTS;
   const last = lastStrong(f.keys);
   if (last && daysBetween(last, f.today) < STRONG_GAP_DAYS) return null;
-  const fresh = (d: Day | null): boolean => d !== null && daysBetween(d, f.today) >= 0 && daysBetween(d, f.today) <= MOMENT_FRESH_DAYS;
+  const fresh = (d: Day | null): boolean =>
+    d !== null && daysBetween(d, f.today) >= 0 && daysBetween(d, f.today) <= MOMENT_FRESH_DAYS;
   // Première rencontre réussie : le tout premier lien, tout récent.
-  if (accepts.includes('first_link') && !f.keys.has(plusMomentKey('first_link')) && f.links === 1 && fresh(f.firstLinkOn)) return 'first_link';
+  if (
+    accepts.includes('first_link') &&
+    !f.keys.has(plusMomentKey('first_link')) &&
+    f.links === 1 &&
+    fresh(f.firstLinkOn)
+  )
+    return 'first_link';
   // Une semaine de défis d'affilée (la série est encore vivante).
   if (
     accepts.includes('streak_7') &&
@@ -200,10 +226,15 @@ export function plusMomentDue(f: PlusMomentFacts): PlusMoment | null {
     return 'streak_7';
   // Deuxième jour avec son minimoa (la feuille n'est plus proposée à l'inscription) : une fois, du jour 2 au jour 4.
   const age = daysBetween(f.createdOn, f.today);
-  if (accepts.includes('second_day') && !f.keys.has(plusMomentKey('second_day')) && age >= SECOND_DAY && age <= SECOND_DAY + MOMENT_FRESH_DAYS) return 'second_day';
+  if (
+    accepts.includes('second_day') &&
+    !f.keys.has(plusMomentKey('second_day')) &&
+    age >= SECOND_DAY &&
+    age <= SECOND_DAY + MOMENT_FRESH_DAYS
+  )
+    return 'second_day';
   return null;
 }
-
 
 // ── Mesure ──────────────────────────────────────────────────────────────────
 
@@ -228,6 +259,10 @@ export function plusTriggerReport(counters: readonly CounterRow[]): PlusTriggerR
     by.set(c.source, row);
   }
   return [...by.entries()]
-    .map(([trigger, r]) => ({ trigger: trigger || 'unknown', ...r, rate: r.opens > 0 ? (r.trials + r.paid) / r.opens : null }))
+    .map(([trigger, r]) => ({
+      trigger: trigger || 'unknown',
+      ...r,
+      rate: r.opens > 0 ? (r.trials + r.paid) / r.opens : null,
+    }))
     .sort((a, b) => b.opens - a.opens || a.trigger.localeCompare(b.trigger));
 }

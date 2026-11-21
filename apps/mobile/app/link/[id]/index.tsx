@@ -482,6 +482,8 @@ const HERO_GRADIENT = {
 function SouvenirsBody({ link }: { link: Link }) {
   const memories = useMemories(link.id);
   const stats = memories.data?.stats;
+  // Vos habitudes en commun (série, régularité, moments), quand les deux ont choisi de les montrer.
+  const shared = sharedHabitsView(link.sharedHabits, link.other.displayName);
   return (
     <View style={styles.body}>
       <MemoryRecap
@@ -495,6 +497,7 @@ function SouvenirsBody({ link }: { link: Link }) {
         }
         pets={[link.myPet, link.other.pet]}
       />
+      {shared ? <SharedHabitsCard {...shared} /> : null}
       <Milestones link={link} />
     </View>
   );

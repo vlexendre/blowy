@@ -1,3 +1,4 @@
+import type { LeagueStanding } from '../modules/progression/ports';
 /**
  * Base en mémoire partagée par les dépôts « memory » : mêmes tables que la migration Supabase,
  * y compris les suppressions en cascade (suppression de compte).
@@ -12,15 +13,38 @@ import type { AuditRecord, DailyStatsRow, SuspensionRecord } from '../modules/ad
 import type { ModerationActionKind } from '@blowy/contract';
 import type { MatchCacheEntry, PlaceRecord, VisionSnapshot } from '../modules/vision/ports';
 import type { VisionSignal } from '@blowy/domain';
-import type { DailyChallengeRecord, HabitCheckRecord, HabitRecord, RitualPhotoRecord, RitualStateRecord, WeeklyReviewRecord } from '../modules/rituels/ports';
+import type {
+  DailyChallengeRecord,
+  HabitCheckRecord,
+  HabitRecord,
+  RitualPhotoRecord,
+  RitualStateRecord,
+  WeeklyReviewRecord,
+} from '../modules/rituels/ports';
 import type { ChatPetState, ChatReadingDefault } from '@blowy/domain';
 import type { AiUsageRecord } from '../integrations/ai/usage-store';
 import type { ChatLinkSettingRecord } from '../modules/links/minimoas/ports';
-import type { GroupDayRecord, GroupMemberRecord, GroupMessageRecord, GroupRecord, TogetherProposalRecord } from '../modules/groups/ports';
+import type {
+  GroupDayRecord,
+  GroupMemberRecord,
+  GroupMessageRecord,
+  GroupRecord,
+  TogetherProposalRecord,
+} from '../modules/groups/ports';
 import type { AcquisitionRecord, CreatorRecord, GrowthEventRecord } from '../modules/growth/ports';
 import type { FounderRecord, QuizRecord, SignupRecord, ZoneRecord } from '../modules/quartiers/ports';
-import type { CheminAnswerRecord, CheminContent, CheminProgressRecord, CheminSessionRecord } from '../modules/chemin/ports';
-import type { LiveActivityTokenRecord, NotificationLogRecord, NotificationSettingsRecord, PushDeviceRecord } from '../modules/notifications/ports';
+import type {
+  CheminAnswerRecord,
+  CheminContent,
+  CheminProgressRecord,
+  CheminSessionRecord,
+} from '../modules/chemin/ports';
+import type {
+  LiveActivityTokenRecord,
+  NotificationLogRecord,
+  NotificationSettingsRecord,
+  PushDeviceRecord,
+} from '../modules/notifications/ports';
 
 export interface WordVoteRow {
   targetUser: string;
@@ -91,7 +115,10 @@ export class MemoryDb {
   /** clé token */
   readonly pushDevices = new Map<string, PushDeviceRecord>();
   /** Jetons APNs des activités en direct, clé token. */
-  readonly liveActivityTokens = new Map<string, { record: LiveActivityTokenRecord; disabledAt: string | null }>();
+  readonly liveActivityTokens = new Map<
+    string,
+    { record: LiveActivityTokenRecord; disabledAt: string | null }
+  >();
   readonly notificationSettings = new Map<string, NotificationSettingsRecord>();
   readonly notificationLog: NotificationLogRecord[] = [];
   /** clé ticket → jeton et date */
@@ -103,7 +130,10 @@ export class MemoryDb {
   readonly subscriptions = new Map<string, SubscriptionRecord>();
   readonly storeNotifications = new Map<string, StoreNotificationRecord>();
   /** Administration : traitement des signalements (clé : identifiant du signalement = rang dans `reports` + 1). */
-  readonly reportReviews = new Map<string, { handledAt: string; handledBy: string; resolution: ModerationActionKind }>();
+  readonly reportReviews = new Map<
+    string,
+    { handledAt: string; handledBy: string; resolution: ModerationActionKind }
+  >();
   readonly suspensions = new Map<string, SuspensionRecord>();
   readonly auditLog: AuditRecord[] = [];
   /** Jours d'activité, clé `${day}:${userId}`. */
@@ -144,6 +174,7 @@ export class MemoryDb {
   /** Ton chemin (docs/CHEMIN.md) : contenu (semé au premier accès par l'adaptateur mémoire), avancement, séances, réponses. */
   cheminContent: CheminContent | null = null;
   readonly cheminProgress = new Map<string, CheminProgressRecord>();
+  readonly leagueStandings = new Map<string, LeagueStanding>();
   readonly cheminSessions = new Map<string, CheminSessionRecord>();
   readonly cheminAnswers: CheminAnswerRecord[] = [];
 
@@ -158,7 +189,8 @@ export class MemoryDb {
     this.deletedUsers.add(userId);
     this.authEmails.delete(userId);
     // Les personnes fictives d'un compte de revue partent avec lui (`profiles.review_world`, on delete cascade).
-    for (const p of [...this.profiles.values()]) if (p.reviewWorld === userId && p.id !== userId) this.deleteProfile(p.id);
+    for (const p of [...this.profiles.values()])
+      if (p.reviewWorld === userId && p.id !== userId) this.deleteProfile(p.id);
     this.deleteProfile(userId);
   }
 
@@ -172,7 +204,9 @@ export class MemoryDb {
     removeWhere(this.petItems, (i) => petIds.has(i.petId));
     removeWhere(this.wordVotes, (v) => v.targetUser === userId);
 
-    const linkIds = new Set([...this.links.values()].filter((l) => l.userA === userId || l.userB === userId).map((l) => l.id));
+    const linkIds = new Set(
+      [...this.links.values()].filter((l) => l.userA === userId || l.userB === userId).map((l) => l.id),
+    );
     for (const id of linkIds) {
       this.links.delete(id);
       this.linkWriteReminders.delete(id);
@@ -186,6 +220,7 @@ export class MemoryDb {
     removeWhere(this.dailyPhotos, (p) => p.userId === userId || linkIds.has(p.linkId));
     this.ritualStates.delete(userId);
     this.cheminProgress.delete(userId);
+    this.leagueStandings.delete(userId);
     for (const [id, c] of this.cheminSessions) if (c.userId === userId) this.cheminSessions.delete(id);
     removeWhere(this.cheminAnswers, (a) => a.userId === userId);
     removeWhere(this.dailyChallenges, (c) => c.userId === userId);
@@ -197,30 +232,43 @@ export class MemoryDb {
     removeWhere(this.visionSignals, (s) => s.userId === userId);
     this.visionProfiles.delete(userId);
     this.matchCache.delete(userId);
-    for (const key of [...this.aiUserCalls.keys()]) if (key.startsWith(`${userId}|`)) this.aiUserCalls.delete(key);
-    for (const [key, c] of this.chatLinkSettings) if (c.userId === userId || linkIds.has(c.linkId)) this.chatLinkSettings.delete(key);
+    for (const key of [...this.aiUserCalls.keys()])
+      if (key.startsWith(`${userId}|`)) this.aiUserCalls.delete(key);
+    for (const [key, c] of this.chatLinkSettings)
+      if (c.userId === userId || linkIds.has(c.linkId)) this.chatLinkSettings.delete(key);
     this.chatReadingDefaults.delete(userId);
     this.aiProofsConsents.delete(userId);
     this.appleTokens.delete(userId);
     for (const id of linkIds) this.chatPetStates.delete(id);
     removeWhere(this.messages, (m) => m.visibleTo === userId);
     for (const [token, d] of this.pushDevices) if (d.userId === userId) this.pushDevices.delete(token);
-    for (const [token, t] of this.liveActivityTokens) if (t.record.userId === userId || (t.record.linkId !== null && linkIds.has(t.record.linkId))) this.liveActivityTokens.delete(token);
+    for (const [token, t] of this.liveActivityTokens)
+      if (t.record.userId === userId || (t.record.linkId !== null && linkIds.has(t.record.linkId)))
+        this.liveActivityTokens.delete(token);
     this.notificationSettings.delete(userId);
-    removeWhere(this.notificationLog, (l) => l.userId === userId || (l.linkId !== null && linkIds.has(l.linkId)));
+    removeWhere(
+      this.notificationLog,
+      (l) => l.userId === userId || (l.linkId !== null && linkIds.has(l.linkId)),
+    );
 
-    for (const [id, e] of this.encounters) if (e.fromUser === userId || e.toUser === userId) this.encounters.delete(id);
-    for (const key of [...this.encounterProposals.keys()]) if (key.endsWith(`:${userId}`)) this.encounterProposals.delete(key);
-    for (const [key, b] of this.blocks) if (b.blocker === userId || b.blocked === userId) this.blocks.delete(key);
+    for (const [id, e] of this.encounters)
+      if (e.fromUser === userId || e.toUser === userId) this.encounters.delete(id);
+    for (const key of [...this.encounterProposals.keys()])
+      if (key.endsWith(`:${userId}`)) this.encounterProposals.delete(key);
+    for (const [key, b] of this.blocks)
+      if (b.blocker === userId || b.blocked === userId) this.blocks.delete(key);
     for (const [key, m] of this.groupMembers) {
       if (m.userId === userId) this.groupMembers.delete(key);
       else if (m.invitedBy === userId) m.invitedBy = null;
     }
     for (const g of this.groups.values()) if (g.createdBy === userId) g.createdBy = null;
     for (const m of this.groupMessages) if (m.authorId === userId) m.authorId = null;
-    for (const [key, p] of this.togetherProposals) if (p.userId === userId) this.togetherProposals.delete(key);
-    for (const key of [...this.habitJokers.keys()]) if (key.startsWith(`${userId}:`)) this.habitJokers.delete(key);
-    for (const key of [...this.lifecycleMessages.keys()]) if (key.startsWith(`${userId}|`)) this.lifecycleMessages.delete(key);
+    for (const [key, p] of this.togetherProposals)
+      if (p.userId === userId) this.togetherProposals.delete(key);
+    for (const key of [...this.habitJokers.keys()])
+      if (key.startsWith(`${userId}:`)) this.habitJokers.delete(key);
+    for (const key of [...this.lifecycleMessages.keys()])
+      if (key.startsWith(`${userId}|`)) this.lifecycleMessages.delete(key);
     this.acquisitions.delete(userId);
     for (const a of this.acquisitions.values()) if (a.referredBy === userId) a.referredBy = null;
     for (const e of this.growthEvents) if (e.userId === userId) e.userId = null;

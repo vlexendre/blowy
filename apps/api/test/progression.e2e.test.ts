@@ -31,4 +31,28 @@ describe('progression', () => {
     expect(me).toMatchObject({ rank: 1, sparks: 5, podium: true, displayName: '' });
     expect(after.league.rows.find((r) => r.userId === ben.id)).toMatchObject({ displayName: 'Ben', sparks: 0, podium: false });
   });
+
+  it('ligue façon Duolingo : zones, puis montée en fin de semaine pour le premier', async () => {
+    const cleo = world.client();
+    const dan = world.client();
+    await cleo.api.me.onboard(onboardBody({ displayName: 'Cléo' }));
+    const eve = world.client();
+    await dan.api.me.onboard(onboardBody({ displayName: 'Dan' }));
+    await eve.api.me.onboard(onboardBody({ displayName: 'Ève' }));
+    await cleo.api.encounters.wave(dan.id);
+    await cleo.api.encounters.wave(eve.id);
+    const now = await cleo.api.progression();
+    expect(now.league.zones?.promote).toBeGreaterThan(0);
+    expect(now.league.toPromote).toBe(0);
+    expect(now.league.result).toBeNull();
+    // Lundi suivant : la semaine finie se solde à la première lecture.
+    world.clock.advanceDays(8);
+    const next = await cleo.api.progression();
+    expect(next.league.tier).toBe('pompon');
+    expect(next.league.result).toMatchObject({ outcome: 'up', from: 'plume', to: 'pompon' });
+    // Rien fait de la semaine : la ligue redescend.
+    world.clock.advanceDays(14);
+    const later = await cleo.api.progression();
+    expect(later.league).toMatchObject({ tier: 'plume', result: { outcome: 'down', from: 'pompon' } });
+  });
 });

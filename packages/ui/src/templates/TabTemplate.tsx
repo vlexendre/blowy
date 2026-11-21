@@ -30,6 +30,8 @@ export interface TabTemplateProps {
   /** Défilement (fonction ou gestionnaire Reanimated, ex. `PetRefresh`). */
   onScroll?: ScreenTemplateProps['onScroll'];
   scrollEventThrottle?: number;
+  /** Pour faire défiler l'onglet (le chemin descend jusqu'à l'étape du jour). */
+  scrollRef?: ScreenTemplateProps['scrollRef'];
   /** Place en plus en bas (ex. `NOW_BAR_SPACE` quand une `NowBar` flotte au-dessus de la barre d'onglets). */
   bottomExtra?: number;
 }
@@ -57,6 +59,7 @@ export function TabTemplate({
   top = space.sm,
   onScroll,
   scrollEventThrottle,
+  scrollRef,
   bottomExtra = 0,
 }: TabTemplateProps) {
   const barSpace = useTabBarSpace();
@@ -70,6 +73,7 @@ export function TabTemplate({
       refreshControl={refreshControl}
       onScroll={onScroll}
       scrollEventThrottle={scrollEventThrottle}
+      scrollRef={scrollRef}
       contentStyle={gutter !== undefined ? { paddingHorizontal: gutter } : undefined}
     >
       {brand || title || right ? (
@@ -83,7 +87,14 @@ export function TabTemplate({
                 </Text>
               </Text>
             ) : null}
-            {title ? <Title text={title} size={TAB_TITLE} numberOfLines={1} style={brand ? styles.title : undefined} /> : null}
+            {title ? (
+              <Title
+                text={title}
+                size={TAB_TITLE}
+                numberOfLines={1}
+                style={brand ? styles.title : undefined}
+              />
+            ) : null}
           </View>
           {right ? <View style={styles.right}>{right}</View> : null}
         </View>

@@ -9,6 +9,7 @@ import {
   answersAgree,
   cheminMap,
   cheminQuota,
+  PLUS_SESSIONS_LEFT,
   cheminStreakRules,
   completeStreakDay,
   deliverableAnimation,
@@ -25,7 +26,13 @@ import {
   streakReward,
 } from './index';
 
-const opt = (id: string, weight: number, tag: string | null = null) => ({ id, icon: '•', weight, tag, reaction: { animation: 'rire', minBuild: 50 } });
+const opt = (id: string, weight: number, tag: string | null = null) => ({
+  id,
+  icon: '•',
+  weight,
+  tag,
+  reaction: { animation: 'rire', minBuild: 50 },
+});
 const q = (id: string, over: Partial<CheminQuestion> = {}): CheminQuestion => ({
   id,
   format: 'choice',
@@ -43,7 +50,13 @@ const unit = (id: string, position: number, steps: [string, string[]][]): Chemin
   icon: '★',
   minBuild: 0,
   status: 'live',
-  steps: steps.map(([sid, qids], i) => ({ id: sid, unitId: id, position: i, questionIds: qids, status: 'live' })),
+  steps: steps.map(([sid, qids], i) => ({
+    id: sid,
+    unitId: id,
+    position: i,
+    questionIds: qids,
+    status: 'live',
+  })),
 });
 
 const questions = [
@@ -54,7 +67,13 @@ const questions = [
   q('draft', { status: 'draft' }),
 ];
 const catalogue = liveCatalogue(
-  [unit('vision', 0, [['v1', ['t1', 't2', 't3', 't4', 't5']]]), unit('energie', 1, [['e1', ['a1', 'a2', 'a3', 'a4', 'a5']], ['e2', ['b1', 'b2', 'slide', 'rank', 'draft']]])],
+  [
+    unit('vision', 0, [['v1', ['t1', 't2', 't3', 't4', 't5']]]),
+    unit('energie', 1, [
+      ['e1', ['a1', 'a2', 'a3', 'a4', 'a5']],
+      ['e2', ['b1', 'b2', 'slide', 'rank', 'draft']],
+    ]),
+  ],
   questions,
 );
 const client = { build: 60, formats: null };
@@ -69,7 +88,9 @@ describe('Ton chemin : catalogue et formats', () => {
     const rank = catalogue.questions.get('rank')!;
     expect(deliverableFormat(rank, client)).toBe('choice');
     expect(deliverableFormat(rank, { build: 120, formats: null })).toBe('ranking');
-    expect(deliverableFormat(catalogue.questions.get('slide')!, { build: 60, formats: ['choice'] })).toBeNull();
+    expect(
+      deliverableFormat(catalogue.questions.get('slide')!, { build: 60, formats: ['choice'] }),
+    ).toBeNull();
     expect(deliverableAnimation(rank.options[0]!, { build: 10, formats: null })).toBeNull();
     expect(deliverableAnimation(rank.options[0]!, client)).toBe('rire');
   });
@@ -80,7 +101,13 @@ describe('Ton chemin : catalogue et formats', () => {
     expect(answerValue(catalogue.questions.get('slide')!, { optionId: null, value: 100 })).toBe(-100);
     expect(answerValue(catalogue.questions.get('slide')!, { optionId: null, value: 50 })).toBe(0);
     expect(answerValue(catalogue.questions.get('slide')!, { optionId: null, value: 140 })).toBeNull();
-    expect(answersAgree(catalogue.questions.get('slide')!, { optionId: null, value: 30 }, { optionId: null, value: 45 })).toBe(true);
+    expect(
+      answersAgree(
+        catalogue.questions.get('slide')!,
+        { optionId: null, value: 30 },
+        { optionId: null, value: 45 },
+      ),
+    ).toBe(true);
   });
 });
 
@@ -98,7 +125,15 @@ describe('Ton chemin : carte et séance', () => {
       ['a2', '2026-11-03'],
       ['t1', '2026-11-02'],
     ]);
-    const s = pickSession({ catalogue, progress, client, answeredOn, vision: EMPTY_VISION, userId: 'u', day: '2026-11-20' })!;
+    const s = pickSession({
+      catalogue,
+      progress,
+      client,
+      answeredOn,
+      vision: EMPTY_VISION,
+      userId: 'u',
+      day: '2026-11-20',
+    })!;
     expect(s.kind).toBe('step');
     expect(s.stepId).toBe('e2');
     expect(s.questions.map((x) => x.questionId)).toEqual(['b1', 'b2', 'slide', 'rank', 'a1']);
@@ -107,22 +142,64 @@ describe('Ton chemin : carte et séance', () => {
   });
   it('tout fait : une séance de révision ; rien répondu : rien', () => {
     const progress = { completedSteps: new Set(['v1', 'e1', 'e2']), testDone: false };
-    expect(pickSession({ catalogue, progress, client, answeredOn: new Map(), vision: EMPTY_VISION, userId: 'u', day: '2026-11-20' })).toBeNull();
+    expect(
+      pickSession({
+        catalogue,
+        progress,
+        client,
+        answeredOn: new Map(),
+        vision: EMPTY_VISION,
+        userId: 'u',
+        day: '2026-11-20',
+      }),
+    ).toBeNull();
     const answeredOn = new Map(['a1', 'a2', 'a3', 'a4', 'a5', 'b1'].map((id) => [id, '2026-11-10']));
-    const s = pickSession({ catalogue, progress, client, answeredOn, vision: EMPTY_VISION, userId: 'u', day: '2026-11-20' })!;
+    const s = pickSession({
+      catalogue,
+      progress,
+      client,
+      answeredOn,
+      vision: EMPTY_VISION,
+      userId: 'u',
+      day: '2026-11-20',
+    })!;
     expect(s.kind).toBe('review');
     expect(s.questions).toHaveLength(5);
     // Même personne, même jour : même séance.
-    expect(pickSession({ catalogue, progress, client, answeredOn, vision: EMPTY_VISION, userId: 'u', day: '2026-11-20' })).toEqual(s);
+    expect(
+      pickSession({
+        catalogue,
+        progress,
+        client,
+        answeredOn,
+        vision: EMPTY_VISION,
+        userId: 'u',
+        day: '2026-11-20',
+      }),
+    ).toEqual(s);
   });
 });
 
 describe('Ton chemin : quota, révélation, profil', () => {
-  it('une séance par jour, plus un bonus gagné', () => {
-    expect(cheminQuota({ doneToday: 0, bonusReason: null })).toMatchObject({ left: 1, nextSlot: 0 });
+  it('une séance par jour sans Minimoa+, sans bonus ni cumul ; autant qu’on veut avec', () => {
+    expect(cheminQuota({ doneToday: 0, bonusReason: null })).toMatchObject({
+      left: 1,
+      nextSlot: 0,
+      unlimited: false,
+    });
     expect(cheminQuota({ doneToday: 1, bonusReason: null })).toMatchObject({ left: 0, nextSlot: null });
-    expect(cheminQuota({ doneToday: 1, bonusReason: 'wave_answered' })).toMatchObject({ bonus: 1, left: 1, nextSlot: 1 });
-    expect(cheminQuota({ doneToday: 5, bonusReason: 'invite_signup' })).toMatchObject({ used: 2, left: 0 });
+    expect(cheminQuota({ doneToday: 1, bonusReason: 'wave_answered' })).toMatchObject({
+      bonus: 0,
+      left: 0,
+      nextSlot: null,
+    });
+    expect(cheminQuota({ doneToday: 5, bonusReason: null, plus: true })).toMatchObject({
+      used: 5,
+      left: PLUS_SESSIONS_LEFT,
+      nextSlot: 1,
+      unlimited: true,
+    });
+    expect(cheminQuota({ doneToday: 0, bonusReason: null, plus: true })).toMatchObject({ nextSlot: 0 });
   });
   it('révèle l’axe qui penche le plus aujourd’hui', () => {
     expect(revelationOf([])).toBeNull();
@@ -145,28 +222,47 @@ describe('Ton chemin : quota, révélation, profil', () => {
     expect(minimoaTypeOf(vision(-50, 40, 30))).toBe('phare');
     expect(minimoaTypeOf(vision(60, -40, -30))).toBe('fanfare');
     expect(knowsLevelOf(EMPTY_VISION).level).toBe('little');
-    expect(knowsLevelOf({ ...vision(0, 0, 0, 80), foyer: { value: 0, confidence: 80 }, ancrage: { value: 0, confidence: 80 } }).level).toBe('very_well');
+    expect(
+      knowsLevelOf({
+        ...vision(0, 0, 0, 80),
+        foyer: { value: 0, confidence: 80 },
+        ancrage: { value: 0, confidence: 80 },
+      }).level,
+    ).toBe('very_well');
   });
 });
 
 describe('Ton chemin : personne du jour', () => {
-  const session = ['a1', 'a2', 'a3'].map((id) => ({ question: catalogue.questions.get(id)!, answer: { optionId: 'a', value: null } }));
+  const session = ['a1', 'a2', 'a3'].map((id) => ({
+    question: catalogue.questions.get(id)!,
+    answer: { optionId: 'a', value: null },
+  }));
   it('préfère le plus de réponses en commun, puis la compatibilité', () => {
     const p = pickPersonOfDay(session, [
       { id: 'x', compatibility: 95, answers: new Map([['a1', { optionId: 'b', value: null }]]) },
-      { id: 'y', compatibility: 75, answers: new Map(['a1', 'a2'].map((id) => [id, { optionId: 'a', value: null }])) },
+      {
+        id: 'y',
+        compatibility: 75,
+        answers: new Map(['a1', 'a2'].map((id) => [id, { optionId: 'a', value: null }])),
+      },
       { id: 'z', compatibility: 80, answers: new Map() },
     ])!;
     expect(p).toMatchObject({ id: 'y', agree: ['a1', 'a2'], tags: ['calme'], openerQuestionId: 'a1' });
     expect(pickPersonOfDay(session, [])).toBeNull();
-    expect(pickPersonOfDay(session, [{ id: 'z', compatibility: 80, answers: new Map() }])?.openerQuestionId).toBe('a1');
+    expect(
+      pickPersonOfDay(session, [{ id: 'z', compatibility: 80, answers: new Map() }])?.openerQuestionId,
+    ).toBe('a1');
   });
 });
 
 describe('Série de Ton chemin', () => {
   it('un gel par mois en gratuit, un par semaine avec Minimoa+', () => {
     const free = cheminStreakRules(false);
-    let s = completeStreakDay({ current: 0, best: 0, lastDoneOn: null, jokerDays: [] }, '2026-11-02', free).state;
+    let s = completeStreakDay(
+      { current: 0, best: 0, lastDoneOn: null, jokerDays: [] },
+      '2026-11-02',
+      free,
+    ).state;
     s = completeStreakDay(s, '2026-11-04', free).state; // 3 nov. gelé
     expect(s.current).toBe(2);
     expect(jokersLeft(s, '2026-11-20', free)).toBe(0);

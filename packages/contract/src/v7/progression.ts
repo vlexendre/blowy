@@ -10,7 +10,15 @@ const API = '/v1';
 const n = z.number().int().min(0);
 
 /** Étincelles d'une séance : 10 pour l'avoir faite, jusqu'à 5 pour la vitesse, jusqu'à 10 pour la cohérence. */
-export const SessionSparksZ = z.object({ total: n, done: n, speed: n, coherence: n, checked: n, coherent: n, seconds: n });
+export const SessionSparksZ = z.object({
+  total: n,
+  done: n,
+  speed: n,
+  coherence: n,
+  checked: n,
+  coherent: n,
+  seconds: n,
+});
 export type SessionSparksDto = z.infer<typeof SessionSparksZ>;
 
 export const LeagueTierZ = z.enum(LEAGUE_TIERS);
@@ -57,6 +65,18 @@ export const ProgressionZ = z.object({
     /** La ligue suivante et les étincelles à gagner cette semaine pour y monter (null : déjà Étoile). */
     next: z.object({ tier: LeagueTierZ, sparks: n }).nullable(),
     rows: z.array(LeagueRowZ),
+    /**
+     * Façon Duolingo (absent d'une API plus ancienne) : les `promote` premiers montent, les `demote` derniers
+     * descendent à la fin de la semaine ; `size` : la taille du groupe.
+     */
+    zones: z.object({ promote: n, demote: n, size: n }).optional(),
+    /** Résultat de la semaine d'avant, montré au début de celle-ci (null : rien à montrer). */
+    result: z
+      .object({ outcome: z.enum(['up', 'stay', 'down']), from: LeagueTierZ, to: LeagueTierZ, rank: n })
+      .nullable()
+      .optional(),
+    /** Étincelles qui manquent pour entrer dans la zone de montée (0 : tu y es ; null : pas de montée possible). */
+    toPromote: n.nullable().optional(),
   }),
 });
 export type Progression = z.infer<typeof ProgressionZ>;

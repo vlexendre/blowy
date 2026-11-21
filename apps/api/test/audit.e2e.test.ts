@@ -96,7 +96,7 @@ describe('audit App Store — côté serveur', () => {
       const active = links.find((l) => l.lives !== 2);
       const page = await reviewer.api.links.messages(active?.id ?? '');
       const roles = new Set(page.messages.map((m) => m.petRole).filter(Boolean));
-      for (const role of ['icebreaker', 'nudge', 'remark', 'guard']) expect(roles.has(role as never), role).toBe(true);
+      for (const role of ['icebreaker', 'nudge', 'guard']) expect(roles.has(role as never), role).toBe(true);
       const minimoas = await reviewer.api.minimoas.get(active?.id ?? '');
       expect(minimoas.consent.theirs).toBe('agreed');
       // Carte : épingles dans la zone et un compteur « plus loin ».

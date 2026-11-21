@@ -73,9 +73,10 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     expect((await alice.api.pet.get()).pet.gauges.social).toBe(46);
   });
 
-  it('échange des messages : auteurs relatifs, non-lus, répliques des pets', async () => {
+  it('échange des messages : auteurs relatifs, non-lus, plus de remarques des pets', async () => {
     const action = await alice.api.links.send(link.id, { body: 'salut bob', tone: 'sweet' });
-    expect(action.messages.map((m) => m.author)).toEqual(['me', 'my_pet', 'other_pet']);
+    // Plus de remarques des minimoas (21 nov. 2026) : le message seul.
+    expect(action.messages.map((m) => m.author)).toEqual(['me']);
 
     const bobView = await bob.api.links.get(link.id);
     const seenByBob = (await bob.api.links.messages(link.id)).messages;
@@ -83,12 +84,11 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     expect(bobView.lastMessage?.preview).toBeTruthy();
     const page = await bob.api.links.messages(link.id);
     const authors = page.messages.map((m) => m.author);
-    expect(authors.slice(-3)).toEqual(['other', 'other_pet', 'my_pet']);
+    expect(authors.at(-1)).toBe('other');
     await bob.api.links.read(link.id);
     expect((await bob.api.links.get(link.id)).unread).toBe(0);
 
     const reply = await bob.api.links.send(link.id, { body: 'hello', tone: 'tease' });
-    // Plus de réplique aujourd'hui : brise-glace, premier message du jour et mot doux font déjà 3 interventions.
     expect(reply.messages.map((m) => m.author)).toEqual(['me']);
     expect((await alice.api.pet.get()).events.some((e) => e.kind === 'sweet_word')).toBe(true);
   });

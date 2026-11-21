@@ -30,7 +30,12 @@ export const NO_ACTIVITY: WeekActivity = { sessions: 0, sessionSparks: 0, messag
 
 /** Étincelles de la semaine. */
 export function weeklySparks(a: WeekActivity): number {
-  return a.sessionSparks + Math.min(a.messages * SPARKS.message, MESSAGE_SPARKS_CAP) + a.waves * SPARKS.wave + a.links * SPARKS.link;
+  return (
+    a.sessionSparks +
+    Math.min(a.messages * SPARKS.message, MESSAGE_SPARKS_CAP) +
+    a.waves * SPARKS.wave +
+    a.links * SPARKS.link
+  );
 }
 
 /** Lundi de la semaine de `day` (la ligue se remet à zéro chaque lundi). */
@@ -97,7 +102,8 @@ export function speedSparks(seconds: number, answers: number): number {
 
 export function isCoherent(a: SparkAnswer): boolean | null {
   if (a.previous !== null) return Math.abs(a.value - a.previous) <= COHERENT_SPAN_SAME_QUESTION;
-  if (a.axis && a.axis.confidence >= COHERENT_MIN_CONFIDENCE) return Math.abs(a.value - a.axis.value) <= COHERENT_SPAN_AXIS;
+  if (a.axis && a.axis.confidence >= COHERENT_MIN_CONFIDENCE)
+    return Math.abs(a.value - a.axis.value) <= COHERENT_SPAN_AXIS;
   return null;
 }
 
@@ -109,7 +115,15 @@ export function sessionSparks(answers: readonly SparkAnswer[], seconds: number):
   const coherence = Math.min(10, coherent * SESSION_SPARKS.perCoherent + fresh * SESSION_SPARKS.perNew);
   const speed = speedSparks(seconds, answers.length);
   const total = Math.min(SESSION_SPARKS.max, SESSION_SPARKS.done + speed + coherence);
-  return { total, done: SESSION_SPARKS.done, speed, coherence, checked, coherent, seconds: Math.max(0, Math.round(seconds)) };
+  return {
+    total,
+    done: SESSION_SPARKS.done,
+    speed,
+    coherence,
+    checked,
+    coherent,
+    seconds: Math.max(0, Math.round(seconds)),
+  };
 }
 
 // ── Paliers de ligue ────────────────────────────────────────────────────────
@@ -120,7 +134,13 @@ export function sessionSparks(answers: readonly SparkAnswer[], seconds: number):
  */
 export const LEAGUE_TIERS = ['plume', 'pompon', 'houppette', 'couronne', 'etoile'] as const;
 export type LeagueTier = (typeof LEAGUE_TIERS)[number];
-export const LEAGUE_TIER_MIN: Record<LeagueTier, number> = { plume: 0, pompon: 60, houppette: 150, couronne: 280, etoile: 450 };
+export const LEAGUE_TIER_MIN: Record<LeagueTier, number> = {
+  plume: 0,
+  pompon: 60,
+  houppette: 150,
+  couronne: 280,
+  etoile: 450,
+};
 
 export function leagueTierOf(lastWeekSparks: number): LeagueTier {
   let tier: LeagueTier = 'plume';
@@ -136,8 +156,8 @@ export function nextLeague(tier: LeagueTier): { tier: LeagueTier; sparks: number
 
 // ── Ligue ───────────────────────────────────────────────────────────────────
 
-/** Taille d'une ligue (les voisins les plus proches de la même zone). */
-export const LEAGUE_SIZE = 20;
+/** Taille d'une ligue, comme Duolingo : 30 personnes (les voisins de la même ligue d'abord). */
+export const LEAGUE_SIZE = 30;
 /** Les premiers de la semaine sont mis en avant (zone verte de la maquette). */
 export const LEAGUE_PODIUM = 3;
 
@@ -150,10 +170,61 @@ export interface LeagueEntry {
  * Classement : étincelles décroissantes, puis identifiant (ordre stable). Une personne à 0 reste dans la liste (c'est
  * la semaine qui commence), mais n'est jamais sur le podium.
  */
-export function rankLeague<T extends LeagueEntry>(entries: readonly T[]): (T & { rank: number; podium: boolean })[] {
+export function rankLeague<T extends LeagueEntry>(
+  entries: readonly T[],
+): (T & { rank: number; podium: boolean })[] {
   return [...entries]
     .sort((a, b) => b.sparks - a.sparks || (a.userId < b.userId ? -1 : a.userId > b.userId ? 1 : 0))
     .map((e, i) => ({ ...e, rank: i + 1, podium: i < LEAGUE_PODIUM && e.sparks > 0 }));
+}
+
+// ── Montée et descente (façon Duolingo) ─────────────────────────────────────
+
+/**
+ * Zones d'une ligue pleine (30) : les premiers montent, les derniers descendent, les autres restent. Comme Duolingo,
+ * plus on monte, plus la zone de montée est étroite ; la première ligue ne fait pas descendre, la dernière ne fait
+ * pas monter.
+ */
+export const LEAGUE_ZONES: Record<LeagueTier, { promote: number; demote: number }> = {
+  plume: { promote: 10, demote: 0 },
+  pompon: { promote: 7, demote: 5 },
+  houppette: { promote: 5, demote: 5 },
+  couronne: { promote: 5, demote: 5 },
+  etoile: { promote: 0, demote: 5 },
+};
+
+/** Zones à la taille réelle du groupe (au prorata de 30) ; pas de descente sous 10 personnes. */
+export function leagueZones(tier: LeagueTier, size: number): { promote: number; demote: number } {
+  const z = LEAGUE_ZONES[tier];
+  if (size <= 1) return { promote: z.promote > 0 ? 1 : 0, demote: 0 };
+  const promote = z.promote > 0 ? Math.max(1, Math.round((z.promote * size) / LEAGUE_SIZE)) : 0;
+  const demote = z.demote > 0 && size >= 10 ? Math.max(1, Math.round((z.demote * size) / LEAGUE_SIZE)) : 0;
+  return {
+    promote: Math.min(promote, size - 1 || 1),
+    demote: Math.min(demote, Math.max(0, size - promote - 1)),
+  };
+}
+
+export type LeagueOutcome = 'up' | 'stay' | 'down';
+
+/**
+ * Fin de semaine : monte qui finit dans la zone de montée avec au moins une étincelle ; descend qui finit dans la zone
+ * de descente, ou n'a rien gagné de la semaine (hors première ligue). Renvoie le résultat et la ligue de la semaine d'après.
+ */
+export function settleLeague(
+  tier: LeagueTier,
+  rank: number,
+  size: number,
+  sparks: number,
+): { outcome: LeagueOutcome; tier: LeagueTier } {
+  const z = leagueZones(tier, size);
+  const i = LEAGUE_TIERS.indexOf(tier);
+  const up = LEAGUE_TIERS[i + 1];
+  const down = LEAGUE_TIERS[i - 1];
+  if (up && sparks > 0 && rank <= z.promote) return { outcome: 'up', tier: up };
+  if (down && (sparks === 0 || (z.demote > 0 && rank > size - z.demote)))
+    return { outcome: 'down', tier: down };
+  return { outcome: 'stay', tier };
 }
 
 // ── Trophées ────────────────────────────────────────────────────────────────
@@ -174,13 +245,23 @@ export interface LifetimeStats {
   places: number;
 }
 
-export const TROPHY_FAMILIES = ['bonjour', 'serie', 'bavard', 'communs', 'introspection', 'explorateur'] as const;
+export const TROPHY_FAMILIES = [
+  'bonjour',
+  'serie',
+  'bavard',
+  'communs',
+  'introspection',
+  'explorateur',
+] as const;
 export type TrophyFamily = (typeof TROPHY_FAMILIES)[number];
 export const TROPHY_TIERS = ['bronze', 'argent', 'or'] as const;
 export type TrophyTier = (typeof TROPHY_TIERS)[number];
 
 /** Le compteur de chaque famille et ses trois seuils (bronze, argent, or). */
-export const TROPHY_RULES: Record<TrophyFamily, { stat: keyof LifetimeStats; goals: readonly [number, number, number] }> = {
+export const TROPHY_RULES: Record<
+  TrophyFamily,
+  { stat: keyof LifetimeStats; goals: readonly [number, number, number] }
+> = {
   bonjour: { stat: 'waves', goals: [1, 10, 50] },
   serie: { stat: 'bestStreak', goals: [3, 7, 30] },
   bavard: { stat: 'messages', goals: [100, 500, 2000] },

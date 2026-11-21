@@ -27,13 +27,18 @@ export const plus = messages({
       moment_first_link: 'Premier lien. Et la suite ?',
       moment_streak_7: '7 jours d’affilée. Bien joué.',
       moment_second_day: (pet: string) => `Deux jours avec ${pet}. Voilà ce que Minimoa+ ajoute.`,
+      chemin_more: (pet: string) => `Autant d’étapes que tu veux, chaque jour, avec ${pet}.`,
     },
     plan: { yearly: 'Annuel', monthly: 'Mensuel', weekly: 'Hebdomadaire' },
     lead: {
       trial: (plan: string, days: number) => `${plan} · ${days} jours gratuits, puis`,
     },
     /** Montant facturé à partir du prix du magasin (« 59,99 € »). */
-    price: { year: (p: string) => `${p} par an`, month: (p: string) => `${p} par mois`, week: (p: string) => `${p} par semaine` },
+    price: {
+      year: (p: string) => `${p} par an`,
+      month: (p: string) => `${p} par mois`,
+      week: (p: string) => `${p} par semaine`,
+    },
     perMonth: (p: string) => `soit ${p} par mois`,
     badge: (percent: number) => `Économise ${percent} %`,
     offersLabel: 'Choisis ton abonnement',
@@ -44,10 +49,12 @@ export const plus = messages({
       retry: 'Réessayer',
     },
     status: {
-      pending: 'Achat en attente de validation (contrôle parental ou paiement à confirmer). Minimoa+ s’ouvrira tout seul.',
+      pending:
+        'Achat en attente de validation (contrôle parental ou paiement à confirmer). Minimoa+ s’ouvrira tout seul.',
       welcome: (pet: string) => `Bienvenue dans Minimoa+. ${pet} a déjà sorti ses objets premium.`,
       failed: 'L’achat n’a pas abouti. Rien n’a été facturé. Réessaie dans un instant.',
-      activation: 'Ton achat est passé chez Apple, mais on n’a pas pu l’activer. Touche « Restaurer mes achats » dans un instant.',
+      activation:
+        'Ton achat est passé chez Apple, mais on n’a pas pu l’activer. Touche « Restaurer mes achats » dans un instant.',
       restored: 'Achats restaurés : Minimoa+ est ouvert.',
       restoreNone: 'Aucun abonnement à restaurer sur ce compte Apple.',
       restoreError: 'La restauration n’a pas abouti. Réessaie.',
@@ -70,7 +77,8 @@ export const plus = messages({
     ctaNote: {
       trial: (days: number, price: string, date: string) =>
         `Premier paiement le ${date}. Renouvellement automatique, annulable à tout moment dans Réglages › ton nom › Abonnements.`,
-      plain: (price: string) => `${price}, renouvellement automatique. Annulable à tout moment dans Réglages › ton nom › Abonnements.`,
+      plain: (price: string) =>
+        `${price}, renouvellement automatique. Annulable à tout moment dans Réglages › ton nom › Abonnements.`,
     },
     /** Cartes des offres : la durée, la période sous le montant, l'équivalent mensuel en petit. */
     planCard: { yearly: '1 an', monthly: '1 mois', weekly: '1 semaine' },
@@ -138,12 +146,17 @@ export const plus = messages({
       moment_first_link: 'First link. What’s next?',
       moment_streak_7: '7 days in a row. Nice one.',
       moment_second_day: (pet: string) => `Two days with ${pet}. Here’s what Minimoa+ adds.`,
+      chemin_more: (pet: string) => `As many steps as you like, every day, with ${pet}.`,
     },
     plan: { yearly: 'Yearly', monthly: 'Monthly', weekly: 'Weekly' },
     lead: {
       trial: (plan: string, days: number) => `${plan} · ${days} days free, then`,
     },
-    price: { year: (p: string) => `${p} per year`, month: (p: string) => `${p} per month`, week: (p: string) => `${p} per week` },
+    price: {
+      year: (p: string) => `${p} per year`,
+      month: (p: string) => `${p} per month`,
+      week: (p: string) => `${p} per week`,
+    },
     perMonth: (p: string) => `that’s ${p} a month`,
     badge: (percent: number) => `Save ${percent}%`,
     offersLabel: 'Choose your subscription',
@@ -154,10 +167,12 @@ export const plus = messages({
       retry: 'Try again',
     },
     status: {
-      pending: 'Purchase awaiting approval (parental control or payment to confirm). Minimoa+ will unlock on its own.',
+      pending:
+        'Purchase awaiting approval (parental control or payment to confirm). Minimoa+ will unlock on its own.',
       welcome: (pet: string) => `Welcome to Minimoa+. ${pet} has already got the premium items out.`,
       failed: 'The purchase didn’t go through. Nothing was charged. Try again in a moment.',
-      activation: 'Your purchase went through with Apple, but we couldn’t activate it. Tap “Restore purchases” in a moment.',
+      activation:
+        'Your purchase went through with Apple, but we couldn’t activate it. Tap “Restore purchases” in a moment.',
       restored: 'Purchases restored: Minimoa+ is unlocked.',
       restoreNone: 'No subscription to restore on this Apple Account.',
       restoreError: 'Restoring didn’t go through. Try again.',
@@ -175,7 +190,8 @@ export const plus = messages({
     ctaNote: {
       trial: (days: number, price: string, date: string) =>
         `First payment on ${date}. Renews automatically; cancel anytime in Settings › your name › Subscriptions.`,
-      plain: (price: string) => `${price}, renews automatically. Cancel anytime in Settings › your name › Subscriptions.`,
+      plain: (price: string) =>
+        `${price}, renews automatically. Cancel anytime in Settings › your name › Subscriptions.`,
     },
     planCard: { yearly: '1 year', monthly: '1 month', weekly: '1 week' },
     period: { year: 'per year', month: 'per month', week: 'per week' },
@@ -209,7 +225,11 @@ export const plus = messages({
       free_rename: [`Rename ${pet}`],
       premium_items: ['Premium items'],
     }),
-    timeline: ['all of Minimoa+ unlocked', 'reminder before the trial ends', 'first payment, unless you cancel'],
+    timeline: [
+      'all of Minimoa+ unlocked',
+      'reminder before the trial ends',
+      'first payment, unless you cancel',
+    ],
     morePerks: (n: number) => `And ${n} more`,
   },
   es: {
@@ -232,12 +252,17 @@ export const plus = messages({
       moment_first_link: 'Primer vínculo. ¿Y ahora?',
       moment_streak_7: '7 días seguidos. ¡Bien hecho!',
       moment_second_day: (pet: string) => `Dos días con ${pet}. Esto es lo que añade Minimoa+.`,
+      chemin_more: (pet: string) => `Todos los pasos que quieras, cada día, con ${pet}.`,
     },
     plan: { yearly: 'Anual', monthly: 'Mensual', weekly: 'Semanal' },
     lead: {
       trial: (plan: string, days: number) => `${plan} · ${days} días gratis, luego`,
     },
-    price: { year: (p: string) => `${p} al año`, month: (p: string) => `${p} al mes`, week: (p: string) => `${p} a la semana` },
+    price: {
+      year: (p: string) => `${p} al año`,
+      month: (p: string) => `${p} al mes`,
+      week: (p: string) => `${p} a la semana`,
+    },
     perMonth: (p: string) => `o sea, ${p} al mes`,
     badge: (percent: number) => `Ahorra ${percent} %`,
     offersLabel: 'Elige tu suscripción',
@@ -248,10 +273,12 @@ export const plus = messages({
       retry: 'Reintentar',
     },
     status: {
-      pending: 'Compra pendiente de aprobación (control parental o pago por confirmar). Minimoa+ se activará solo.',
+      pending:
+        'Compra pendiente de aprobación (control parental o pago por confirmar). Minimoa+ se activará solo.',
       welcome: (pet: string) => `Te damos la bienvenida a Minimoa+. ${pet} ya ha sacado sus objetos premium.`,
       failed: 'La compra no se ha completado. No se ha cobrado nada. Inténtalo de nuevo en un momento.',
-      activation: 'Tu compra se ha hecho en Apple, pero no hemos podido activarla. Toca «Restaurar compras» en un momento.',
+      activation:
+        'Tu compra se ha hecho en Apple, pero no hemos podido activarla. Toca «Restaurar compras» en un momento.',
       restored: 'Compras restauradas: Minimoa+ está activo.',
       restoreNone: 'No hay ninguna suscripción que restaurar en esta cuenta de Apple.',
       restoreError: 'No se pudo restaurar. Inténtalo de nuevo.',
@@ -269,7 +296,8 @@ export const plus = messages({
     ctaNote: {
       trial: (days: number, price: string, date: string) =>
         `Primer pago el ${date}. Renovación automática; cancela cuando quieras en Ajustes › tu nombre › Suscripciones.`,
-      plain: (price: string) => `${price}, renovación automática. Cancela cuando quieras en Ajustes › tu nombre › Suscripciones.`,
+      plain: (price: string) =>
+        `${price}, renovación automática. Cancela cuando quieras en Ajustes › tu nombre › Suscripciones.`,
     },
     planCard: { yearly: '1 año', monthly: '1 mes', weekly: '1 semana' },
     period: { year: 'al año', month: 'al mes', week: 'a la semana' },
@@ -303,7 +331,11 @@ export const plus = messages({
       free_rename: [`Renombrar a ${pet}`],
       premium_items: ['Objetos premium'],
     }),
-    timeline: ['todo Minimoa+ disponible', 'aviso antes de que acabe la prueba', 'primer pago, salvo si cancelas'],
+    timeline: [
+      'todo Minimoa+ disponible',
+      'aviso antes de que acabe la prueba',
+      'primer pago, salvo si cancelas',
+    ],
     morePerks: (n: number) => `Y ${n} más`,
   },
   pt: {
@@ -326,12 +358,17 @@ export const plus = messages({
       moment_first_link: 'Primeiro vínculo. E agora?',
       moment_streak_7: '7 dias seguidos. Mandou bem.',
       moment_second_day: (pet: string) => `Dois dias com ${pet}. Veja o que o Minimoa+ acrescenta.`,
+      chemin_more: (pet: string) => `Quantas etapas quiser, todo dia, com ${pet}.`,
     },
     plan: { yearly: 'Anual', monthly: 'Mensal', weekly: 'Semanal' },
     lead: {
       trial: (plan: string, days: number) => `${plan} · ${days} dias grátis, depois`,
     },
-    price: { year: (p: string) => `${p} por ano`, month: (p: string) => `${p} por mês`, week: (p: string) => `${p} por semana` },
+    price: {
+      year: (p: string) => `${p} por ano`,
+      month: (p: string) => `${p} por mês`,
+      week: (p: string) => `${p} por semana`,
+    },
     perMonth: (p: string) => `ou seja, ${p} por mês`,
     badge: (percent: number) => `Economize ${percent}%`,
     offersLabel: 'Escolha sua assinatura',
@@ -342,10 +379,12 @@ export const plus = messages({
       retry: 'Tentar de novo',
     },
     status: {
-      pending: 'Compra aguardando aprovação (controle parental ou pagamento a confirmar). O Minimoa+ vai ser liberado sozinho.',
+      pending:
+        'Compra aguardando aprovação (controle parental ou pagamento a confirmar). O Minimoa+ vai ser liberado sozinho.',
       welcome: (pet: string) => `Boas-vindas ao Minimoa+. ${pet} já tirou os itens premium do armário.`,
       failed: 'A compra não foi concluída. Nada foi cobrado. Tente de novo daqui a pouco.',
-      activation: 'Sua compra foi feita na Apple, mas não conseguimos ativá-la. Toque em “Restaurar compras” daqui a pouco.',
+      activation:
+        'Sua compra foi feita na Apple, mas não conseguimos ativá-la. Toque em “Restaurar compras” daqui a pouco.',
       restored: 'Compras restauradas: o Minimoa+ está liberado.',
       restoreNone: 'Nenhuma assinatura para restaurar nesta conta Apple.',
       restoreError: 'Não foi possível restaurar. Tente de novo.',
@@ -363,7 +402,8 @@ export const plus = messages({
     ctaNote: {
       trial: (days: number, price: string, date: string) =>
         `Primeira cobrança em ${date}. Renovação automática; cancele quando quiser em Ajustes › seu nome › Assinaturas.`,
-      plain: (price: string) => `${price}, renovação automática. Cancele quando quiser em Ajustes › seu nome › Assinaturas.`,
+      plain: (price: string) =>
+        `${price}, renovação automática. Cancele quando quiser em Ajustes › seu nome › Assinaturas.`,
     },
     planCard: { yearly: '1 ano', monthly: '1 mês', weekly: '1 semana' },
     period: { year: 'por ano', month: 'por mês', week: 'por semana' },
@@ -397,7 +437,11 @@ export const plus = messages({
       free_rename: [`Renomear ${pet}`],
       premium_items: ['Itens premium'],
     }),
-    timeline: ['todo o Minimoa+ liberado', 'lembrete antes do fim do teste', '1ª cobrança, a menos que cancele'],
+    timeline: [
+      'todo o Minimoa+ liberado',
+      'lembrete antes do fim do teste',
+      '1ª cobrança, a menos que cancele',
+    ],
     morePerks: (n: number) => `E mais ${n}`,
   },
   nl: {
@@ -420,12 +464,17 @@ export const plus = messages({
       moment_first_link: 'Eerste band. En nu?',
       moment_streak_7: '7 dagen op rij. Goed zo.',
       moment_second_day: (pet: string) => `Twee dagen met ${pet}. Dit voegt Minimoa+ toe.`,
+      chemin_more: (pet: string) => `Zoveel stappen als je wilt, elke dag, met ${pet}.`,
     },
     plan: { yearly: 'Jaarlijks', monthly: 'Maandelijks', weekly: 'Wekelijks' },
     lead: {
       trial: (plan: string, days: number) => `${plan} · ${days} dagen gratis, daarna`,
     },
-    price: { year: (p: string) => `${p} per jaar`, month: (p: string) => `${p} per maand`, week: (p: string) => `${p} per week` },
+    price: {
+      year: (p: string) => `${p} per jaar`,
+      month: (p: string) => `${p} per maand`,
+      week: (p: string) => `${p} per week`,
+    },
     perMonth: (p: string) => `dat is ${p} per maand`,
     badge: (percent: number) => `Bespaar ${percent}%`,
     offersLabel: 'Kies je abonnement',
@@ -436,10 +485,12 @@ export const plus = messages({
       retry: 'Opnieuw proberen',
     },
     status: {
-      pending: 'Aankoop wacht op goedkeuring (ouderlijk toezicht of betaling nog te bevestigen). Minimoa+ gaat vanzelf open.',
+      pending:
+        'Aankoop wacht op goedkeuring (ouderlijk toezicht of betaling nog te bevestigen). Minimoa+ gaat vanzelf open.',
       welcome: (pet: string) => `Welkom bij Minimoa+. ${pet} heeft de premium items al tevoorschijn gehaald.`,
       failed: 'De aankoop is niet gelukt. Er is niets in rekening gebracht. Probeer het zo opnieuw.',
-      activation: 'Je aankoop is bij Apple gelukt, maar we konden hem niet activeren. Tik zo op “Aankopen herstellen”.',
+      activation:
+        'Je aankoop is bij Apple gelukt, maar we konden hem niet activeren. Tik zo op “Aankopen herstellen”.',
       restored: 'Aankopen hersteld: Minimoa+ staat open.',
       restoreNone: 'Geen abonnement om te herstellen op dit Apple-account.',
       restoreError: 'Herstellen is niet gelukt. Probeer het opnieuw.',
@@ -457,7 +508,8 @@ export const plus = messages({
     ctaNote: {
       trial: (days: number, price: string, date: string) =>
         `Eerste betaling op ${date}. Wordt automatisch verlengd; altijd opzegbaar via Instellingen › je naam › Abonnementen.`,
-      plain: (price: string) => `${price}, wordt automatisch verlengd. Altijd opzegbaar via Instellingen › je naam › Abonnementen.`,
+      plain: (price: string) =>
+        `${price}, wordt automatisch verlengd. Altijd opzegbaar via Instellingen › je naam › Abonnementen.`,
     },
     planCard: { yearly: '1 jaar', monthly: '1 maand', weekly: '1 week' },
     period: { year: 'per jaar', month: 'per maand', week: 'per week' },
@@ -491,7 +543,11 @@ export const plus = messages({
       free_rename: [`${pet} hernoemen`],
       premium_items: ['Premium-items'],
     }),
-    timeline: ['alles van Minimoa+ open', 'herinnering voor het einde van de proef', 'eerste betaling, tenzij je opzegt'],
+    timeline: [
+      'alles van Minimoa+ open',
+      'herinnering voor het einde van de proef',
+      'eerste betaling, tenzij je opzegt',
+    ],
     morePerks: (n: number) => `En nog ${n}`,
   },
 });

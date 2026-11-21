@@ -17,7 +17,7 @@ export const progression = messages({
     league: {
       title: 'Ligue',
       intro:
-        'Tes voisins, cette semaine. La séance, un bonjour, un message : chaque geste donne des étincelles.',
+        'Tes voisins, cette semaine. Les premiers montent de ligue dimanche soir, les derniers redescendent. La séance, un bonjour, un message : chaque geste donne des étincelles.',
       endsOn: (date: string) => `Fin de la semaine : ${date}`,
       you: 'Toi',
       sparks: (n: number) => `${n}`,
@@ -37,6 +37,19 @@ export const progression = messages({
           ? `Encore ${left} ${plural(left, { one: 'étincelle', other: 'étincelles' })} cette semaine pour passer en ${next}`
           : `${next} la semaine prochaine, bravo !`,
       top: 'Tu es au sommet. Garde ta place la semaine prochaine.',
+      goalZone: (left: number, next: string) =>
+        left > 0
+          ? `Encore ${left} ${plural(left, { one: 'étincelle', other: 'étincelles' })} pour entrer dans la zone de montée vers ${next}`
+          : `Tu es dans la zone de montée : garde ta place jusqu’à dimanche pour passer en ${next} !`,
+      zoneUp: (next: string) => `Zone de montée vers ${next}`,
+      zoneDown: (prev: string) => `Zone de descente vers ${prev}`,
+      resultUp: (tier: string) => `Bravo ! Tu montes en Ligue ${tier}.`,
+      resultDown: (tier: string) => `Tu redescends en Ligue ${tier}. Remonte dès cette semaine !`,
+      resultStay: (tier: string, rank: number) =>
+        `${rank}${rank === 1 ? 'er' : 'e'} la semaine dernière : tu restes en Ligue ${tier}.`,
+      pill: (tier: string, rank: number) => `${tier} · ${rank}${rank === 1 ? 'er' : 'e'}`,
+      pillA11y: (tier: string, rank: number) =>
+        `Ligue ${tier}, ${rank}${rank === 1 ? 'er' : 'e'} cette semaine. Voir le classement`,
       howTitle: 'Gagner des étincelles',
       how: [
         {

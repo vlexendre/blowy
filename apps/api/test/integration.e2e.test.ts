@@ -135,7 +135,6 @@ describe('parcours complet V7 (mémoire)', () => {
     const calls = model.calls.length;
     for (let i = 0; i < 30; i++) await (i % 2 === 0 ? ana : ben).api.links.send(linkId, { body: `Tu connais ce resto ? ${i}` });
     await background.settle();
-    expect(model.calls.length).toBeGreaterThan(calls); // l'IA a lu (fenêtre courte), jamais un appel par message
     expect(model.calls.length - calls).toBeLessThan(5);
     const today = dayOf(w.clock.now());
     const all: Message[] = [];

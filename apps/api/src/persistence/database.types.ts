@@ -106,8 +106,14 @@ export type Database = {
         | 'renamed_at'
         | 'created_at'
       >;
-      pet_items: Table<{ pet_id: string; item_id: string; source: string; acquired_at: string }, 'acquired_at'>;
-      pet_events: Table<{ id: number; pet_id: string; kind: string; delta: Json; created_at: string }, 'id' | 'delta' | 'created_at'>;
+      pet_items: Table<
+        { pet_id: string; item_id: string; source: string; acquired_at: string },
+        'acquired_at'
+      >;
+      pet_events: Table<
+        { id: number; pet_id: string; kind: string; delta: Json; created_at: string },
+        'id' | 'delta' | 'created_at'
+      >;
       links: Table<
         {
           id: string;
@@ -176,10 +182,21 @@ export type Database = {
         'id' | 'created_at'
       >;
       encounters: Table<
-        { id: string; from_user: string; to_user: string; status: string; intro: string | null; created_at: string; status_at: string },
+        {
+          id: string;
+          from_user: string;
+          to_user: string;
+          status: string;
+          intro: string | null;
+          created_at: string;
+          status_at: string;
+        },
         'id' | 'status' | 'intro' | 'created_at' | 'status_at'
       >;
-      word_votes: Table<{ id: number; target_user: string; words: string[]; voter_hash: string; created_at: string }, 'id' | 'created_at'>;
+      word_votes: Table<
+        { id: number; target_user: string; words: string[]; voter_hash: string; created_at: string },
+        'id' | 'created_at'
+      >;
       blocks: Table<{ blocker: string; blocked: string; created_at: string }, 'created_at'>;
       reports: Table<
         {
@@ -248,11 +265,29 @@ export type Database = {
           manual_label: string | null;
           manual_set_on: string | null;
         },
-        'last_away_at' | 'candidate_lat' | 'candidate_lng' | 'candidate_since' | 'city_label' | 'city_lat' | 'city_lng' | 'source' | 'manual_label' | 'manual_set_on'
+        | 'last_away_at'
+        | 'candidate_lat'
+        | 'candidate_lng'
+        | 'candidate_since'
+        | 'city_label'
+        | 'city_lat'
+        | 'city_lng'
+        | 'source'
+        | 'manual_label'
+        | 'manual_set_on'
       >;
-      vision_signals: Table<{ id: number; user_id: string; axis: string; value: number; source: string; at: string }, 'id'>;
-      vision_profiles: Table<{ user_id: string; axes: Json; test_done: boolean; computed_at: string }, 'test_done' | 'computed_at'>;
-      match_cache: Table<{ user_id: string; day: string; center_key: string; entries: Json; computed_at: string }, 'computed_at'>;
+      vision_signals: Table<
+        { id: number; user_id: string; axis: string; value: number; source: string; at: string },
+        'id'
+      >;
+      vision_profiles: Table<
+        { user_id: string; axes: Json; test_done: boolean; computed_at: string },
+        'test_done' | 'computed_at'
+      >;
+      match_cache: Table<
+        { user_id: string; day: string; center_key: string; entries: Json; computed_at: string },
+        'computed_at'
+      >;
       // ── Facturation et administration (migration 20261115160000_facturation_admin) ──
       subscriptions: Table<
         {
@@ -276,7 +311,16 @@ export type Database = {
           trial_reminder_for: string | null;
           created_at: string;
         },
-        'user_id' | 'expires_at' | 'grace_until' | 'trial_ends_at' | 'trial_used' | 'auto_renew' | 'revoked_at' | 'environment' | 'trial_reminder_for' | 'created_at'
+        | 'user_id'
+        | 'expires_at'
+        | 'grace_until'
+        | 'trial_ends_at'
+        | 'trial_used'
+        | 'auto_renew'
+        | 'revoked_at'
+        | 'environment'
+        | 'trial_reminder_for'
+        | 'created_at'
       >;
       store_notifications: Table<
         {
@@ -293,7 +337,10 @@ export type Database = {
         },
         'subtype' | 'original_transaction_id' | 'environment' | 'received_at' | 'processed_at' | 'outcome'
       >;
-      account_suspensions: Table<{ user_id: string; since: string; until: string | null; reason: string; by_email: string }, 'since' | 'until'>;
+      account_suspensions: Table<
+        { user_id: string; since: string; until: string | null; reason: string; by_email: string },
+        'since' | 'until'
+      >;
       admin_audit_log: Table<
         {
           id: number;
@@ -343,11 +390,26 @@ export type Database = {
           cache_read_tokens: number;
           cost_micros: number;
         },
-        'calls' | 'declined' | 'errors' | 'input_tokens' | 'output_tokens' | 'cache_write_tokens' | 'cache_read_tokens' | 'cost_micros'
+        | 'calls'
+        | 'declined'
+        | 'errors'
+        | 'input_tokens'
+        | 'output_tokens'
+        | 'cache_write_tokens'
+        | 'cache_read_tokens'
+        | 'cost_micros'
       >;
       ai_user_calls: Table<{ user_id: string; day: string; feature: string; calls: number }, 'calls'>;
       chat_link_settings: Table<
-        { link_id: string; user_id: string; consent: boolean | null; consent_at: string | null; muted: boolean; by_default: boolean; updated_at: string },
+        {
+          link_id: string;
+          user_id: string;
+          consent: boolean | null;
+          consent_at: string | null;
+          muted: boolean;
+          by_default: boolean;
+          updated_at: string;
+        },
         'consent' | 'consent_at' | 'muted' | 'by_default' | 'updated_at'
       >;
       chat_pet_state: Table<
@@ -362,15 +424,43 @@ export type Database = {
           last_guard_at: string | null;
           updated_at: string;
         },
-        'day' | 'interventions' | 'messages_since_remark' | 'icebreaker_done' | 'last_user_at' | 'last_nudge_for' | 'last_guard_at' | 'updated_at'
+        | 'day'
+        | 'interventions'
+        | 'messages_since_remark'
+        | 'icebreaker_done'
+        | 'last_user_at'
+        | 'last_nudge_for'
+        | 'last_guard_at'
+        | 'updated_at'
       >;
       push_devices: Table<
-        { token: string; user_id: string; platform: string; kind: string; created_at: string; last_seen_at: string; disabled_at: string | null },
+        {
+          token: string;
+          user_id: string;
+          platform: string;
+          kind: string;
+          created_at: string;
+          last_seen_at: string;
+          disabled_at: string | null;
+        },
         'kind' | 'created_at' | 'last_seen_at' | 'disabled_at'
       >;
       notification_settings: Table<
-        { user_id: string; time_zone: string; morning_hour: number; disabled_kinds: string[]; next_morning_at: string | null; updated_at: string; marketing_opt_in_at: string | null },
-        'time_zone' | 'morning_hour' | 'disabled_kinds' | 'next_morning_at' | 'updated_at' | 'marketing_opt_in_at'
+        {
+          user_id: string;
+          time_zone: string;
+          morning_hour: number;
+          disabled_kinds: string[];
+          next_morning_at: string | null;
+          updated_at: string;
+          marketing_opt_in_at: string | null;
+        },
+        | 'time_zone'
+        | 'morning_hour'
+        | 'disabled_kinds'
+        | 'next_morning_at'
+        | 'updated_at'
+        | 'marketing_opt_in_at'
       >;
       notification_log: Table<
         {
@@ -390,20 +480,58 @@ export type Database = {
       /** Migration 20261117140000_hebdo_fidelisation : messages de fidélisation déjà partis (une ligne par personne et clé). */
       lifecycle_messages: Table<{ user_id: string; key: string; sent_at: string }, 'sent_at'>;
       /** Croissance (20261118100000, docs/VIRALITE.md). */
-      creators: Table<{ code: string; name: string; active: boolean; created_at: string; updated_at: string }, 'active' | 'created_at' | 'updated_at'>;
+      creators: Table<
+        { code: string; name: string; active: boolean; created_at: string; updated_at: string },
+        'active' | 'created_at' | 'updated_at'
+      >;
       acquisitions: Table<
-        { user_id: string; source: string; ref: string | null; referred_by: string | null; cohort_on: string; created_at: string },
+        {
+          user_id: string;
+          source: string;
+          ref: string | null;
+          referred_by: string | null;
+          cohort_on: string;
+          created_at: string;
+        },
         'ref' | 'referred_by' | 'created_at'
       >;
-      growth_events: Table<{ id: number; user_id: string | null; kind: string; source: string; cohort_on: string; created_at: string }, 'id' | 'user_id' | 'created_at'>;
-      growth_counters: Table<{ day: string; metric: string; source: string; ref: string; count: number }, 'source' | 'ref' | 'count'>;
+      growth_events: Table<
+        {
+          id: number;
+          user_id: string | null;
+          kind: string;
+          source: string;
+          cohort_on: string;
+          created_at: string;
+        },
+        'id' | 'user_id' | 'created_at'
+      >;
+      growth_counters: Table<
+        { day: string; metric: string; source: string; ref: string; count: number },
+        'source' | 'ref' | 'count'
+      >;
       /** Quiz et quartiers (20261118120000, docs/VIRALITE.md). */
       quiz_results: Table<
-        { code: string; species: string; trait: string; second_trait: string | null; gauges: Json; ref: string | null; locale: string; created_at: string },
+        {
+          code: string;
+          species: string;
+          trait: string;
+          second_trait: string | null;
+          gauges: Json;
+          ref: string | null;
+          locale: string;
+          created_at: string;
+        },
         'second_trait' | 'ref' | 'locale' | 'created_at'
       >;
-      quartier_settings: Table<{ id: boolean; threshold: number; updated_at: string }, 'id' | 'threshold' | 'updated_at'>;
-      quartiers: Table<{ zone: string; opened_at: string | null; opened_by: string | null; created_at: string }, 'opened_at' | 'opened_by' | 'created_at'>;
+      quartier_settings: Table<
+        { id: boolean; threshold: number; updated_at: string },
+        'id' | 'threshold' | 'updated_at'
+      >;
+      quartiers: Table<
+        { zone: string; opened_at: string | null; opened_by: string | null; created_at: string },
+        'opened_at' | 'opened_by' | 'created_at'
+      >;
       quartier_signups: Table<
         {
           id: string;
@@ -421,10 +549,26 @@ export type Database = {
           user_id: string | null;
           created_at: string;
         },
-        'id' | 'email' | 'locale' | 'token' | 'invited_by_user' | 'invited_by_signup' | 'confirmed_at' | 'unsubscribed_at' | 'open_mail_sent_at' | 'user_id' | 'created_at'
+        | 'id'
+        | 'email'
+        | 'locale'
+        | 'token'
+        | 'invited_by_user'
+        | 'invited_by_signup'
+        | 'confirmed_at'
+        | 'unsubscribed_at'
+        | 'open_mail_sent_at'
+        | 'user_id'
+        | 'created_at'
       >;
-      quartier_founders: Table<{ zone: string; rank: number; user_id: string | null; signup_id: string | null; created_at: string }, 'user_id' | 'signup_id' | 'created_at'>;
-      tick_runs: Table<{ job: string; slot: string; started_at: string; finished_at: string | null; done: number | null }, 'started_at' | 'finished_at' | 'done'>;
+      quartier_founders: Table<
+        { zone: string; rank: number; user_id: string | null; signup_id: string | null; created_at: string },
+        'user_id' | 'signup_id' | 'created_at'
+      >;
+      tick_runs: Table<
+        { job: string; slot: string; started_at: string; finished_at: string | null; done: number | null },
+        'started_at' | 'finished_at' | 'done'
+      >;
       ritual_states: Table<
         {
           user_id: string;
@@ -460,7 +604,17 @@ export type Database = {
         | 'updated_at'
       >;
       ritual_photos: Table<
-        { id: string; user_id: string; source: string; day: string; path: string; caption: string; keep: boolean; created_at: string; deleted_at: string | null },
+        {
+          id: string;
+          user_id: string;
+          source: string;
+          day: string;
+          path: string;
+          caption: string;
+          keep: boolean;
+          created_at: string;
+          deleted_at: string | null;
+        },
         'caption' | 'keep' | 'created_at' | 'deleted_at'
       >;
       daily_challenges: Table<
@@ -481,11 +635,29 @@ export type Database = {
         'axis' | 'status' | 'answer' | 'photo_id' | 'seen_at' | 'accepted_at' | 'done_at' | 'created_at'
       >;
       habits: Table<
-        { id: string; user_id: string; habit_id: string; rhythm: string; proof_hour: number; asked_on: string | null; created_at: string; archived_at: string | null },
+        {
+          id: string;
+          user_id: string;
+          habit_id: string;
+          rhythm: string;
+          proof_hour: number;
+          asked_on: string | null;
+          created_at: string;
+          archived_at: string | null;
+        },
         'asked_on' | 'created_at' | 'archived_at'
       >;
       habit_checks: Table<
-        { id: string; habit_ref: string; user_id: string; day: string; verdict: string; line: string; photo_id: string | null; created_at: string },
+        {
+          id: string;
+          habit_ref: string;
+          user_id: string;
+          day: string;
+          verdict: string;
+          line: string;
+          photo_id: string | null;
+          created_at: string;
+        },
         'photo_id' | 'created_at'
       >;
       weekly_reviews: Table<
@@ -508,7 +680,10 @@ export type Database = {
         },
         'did' | 'link_lines' | 'coached' | 'detailed' | 'vision' | 'read_at' | 'created_at' | 'axis_moves'
       >;
-      apple_tokens: Table<{ user_id: string; refresh_token: string; client_id: string; created_at: string; updated_at: string }, 'created_at' | 'updated_at'>;
+      apple_tokens: Table<
+        { user_id: string; refresh_token: string; client_id: string; created_at: string; updated_at: string },
+        'created_at' | 'updated_at'
+      >;
       // ── Habitudes partagées et groupes (migration 20261117120000_groupes) ──
       habit_jokers: Table<{ user_id: string; day: string; created_at: string }, 'created_at'>;
       groups: Table<
@@ -579,20 +754,53 @@ export type Database = {
         'id' | 'author_id' | 'body' | 'event' | 'event_vars' | 'created_at'
       >;
       group_days: Table<
-        { group_id: string; day: string; outcome: 'kept' | 'missed' | 'skipped'; members: Json; lives_after: number; streak_after: number; created_at: string },
+        {
+          group_id: string;
+          day: string;
+          outcome: 'kept' | 'missed' | 'skipped';
+          members: Json;
+          lives_after: number;
+          streak_after: number;
+          created_at: string;
+        },
         'members' | 'created_at'
       >;
       together_proposals: Table<
-        { id: string; user_id: string; habit_id: string; status: 'waiting' | 'matched' | 'withdrawn'; group_id: string | null; created_at: string; updated_at: string },
+        {
+          id: string;
+          user_id: string;
+          habit_id: string;
+          status: 'waiting' | 'matched' | 'withdrawn';
+          group_id: string | null;
+          created_at: string;
+          updated_at: string;
+        },
         'id' | 'status' | 'group_id' | 'created_at' | 'updated_at'
       >;
       /** Migration 20261121100000_chemin : Ton chemin (docs/CHEMIN.md). */
       chemin_units: Table<
-        { id: string; position: number; icon: string; min_build: number; status: 'draft' | 'reviewed' | 'live'; texts: Json; created_at: string; updated_at: string },
+        {
+          id: string;
+          position: number;
+          icon: string;
+          min_build: number;
+          status: 'draft' | 'reviewed' | 'live';
+          texts: Json;
+          created_at: string;
+          updated_at: string;
+        },
         'position' | 'icon' | 'min_build' | 'status' | 'texts' | 'created_at' | 'updated_at'
       >;
       chemin_steps: Table<
-        { id: string; unit_id: string; position: number; status: 'draft' | 'reviewed' | 'live'; texts: Json; created_at: string; updated_at: string },
+        {
+          id: string;
+          unit_id: string;
+          position: number;
+          status: 'draft' | 'reviewed' | 'live';
+          texts: Json;
+          created_at: string;
+          updated_at: string;
+        },
         'position' | 'status' | 'texts' | 'created_at' | 'updated_at'
       >;
       chemin_questions: Table<
@@ -612,11 +820,40 @@ export type Database = {
           created_at: string;
           updated_at: string;
         },
-        'step_id' | 'position' | 'direction' | 'min_build' | 'legacy_test_id' | 'status' | 'texts' | 'options' | 'updated_by' | 'created_at' | 'updated_at'
+        | 'step_id'
+        | 'position'
+        | 'direction'
+        | 'min_build'
+        | 'legacy_test_id'
+        | 'status'
+        | 'texts'
+        | 'options'
+        | 'updated_by'
+        | 'created_at'
+        | 'updated_at'
       >;
       chemin_scenes: Table<
-        { id: string; kind: 'transition' | 'end'; animation: string; min_build: number; status: 'draft' | 'reviewed' | 'live'; created_at: string },
+        {
+          id: string;
+          kind: 'transition' | 'end';
+          animation: string;
+          min_build: number;
+          status: 'draft' | 'reviewed' | 'live';
+          created_at: string;
+        },
         'min_build' | 'status' | 'created_at'
+      >;
+      league_standings: Table<
+        {
+          user_id: string;
+          tier: 'plume' | 'pompon' | 'houppette' | 'couronne' | 'etoile';
+          week: string;
+          result: 'up' | 'stay' | 'down' | null;
+          result_rank: number | null;
+          result_from: 'plume' | 'pompon' | 'houppette' | 'couronne' | 'etoile' | null;
+          updated_at: string;
+        },
+        'tier' | 'result' | 'result_rank' | 'result_from' | 'updated_at'
       >;
       chemin_progress: Table<
         {
@@ -681,12 +918,24 @@ export type Database = {
       admin_daily_metrics: { Args: { p_day: string }; Returns: Json };
       /** Socle des chiffres du jour (20261115160000), appelé par `admin_daily_metrics` (20261115190000, + liens écrits à deux). */
       admin_daily_metrics_base: { Args: { p_day: string }; Returns: Json };
-      ai_take_user_call: { Args: { p_user: string; p_day: string; p_feature: string; p_max: number }; Returns: boolean };
+      ai_take_user_call: {
+        Args: { p_user: string; p_day: string; p_feature: string; p_max: number };
+        Returns: boolean;
+      };
       ritual_add_habits_kept: { Args: { p_user: string; p_n: number }; Returns: number };
-      encounter_proposals_record: { Args: { p_day: string; p_user: string; p_proposed: number; p_score_sum: number }; Returns: undefined };
+      encounter_proposals_record: {
+        Args: { p_day: string; p_user: string; p_proposed: number; p_score_sum: number };
+        Returns: undefined;
+      };
       encounter_proposals_summary: { Args: { p_day: string }; Returns: Json };
-      growth_bump: { Args: { p_day: string; p_metric: string; p_source: string; p_ref: string }; Returns: undefined };
-      places_in_cells: { Args: { p_cells: string[]; p_limit: number; p_exclude: string }; Returns: Database['public']['Tables']['profile_places']['Row'][] };
+      growth_bump: {
+        Args: { p_day: string; p_metric: string; p_source: string; p_ref: string };
+        Returns: undefined;
+      };
+      places_in_cells: {
+        Args: { p_cells: string[]; p_limit: number; p_exclude: string };
+        Returns: Database['public']['Tables']['profile_places']['Row'][];
+      };
       ai_record_usage: {
         Args: {
           p_day: string;

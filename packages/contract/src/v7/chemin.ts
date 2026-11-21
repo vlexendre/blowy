@@ -41,8 +41,10 @@ export const CheminQuotaZ = z.object({
   left: count,
   /** Prochaine séance : 0 (du jour), 1 (bonus) ; null : plus rien aujourd'hui. */
   nextSlot: z.union([z.literal(0), z.literal(1)]).nullable(),
-  /** Comment gagner le bonus (null s'il est déjà gagné). */
+  /** Comment gagner le bonus (null s'il est déjà gagné). Toujours null depuis le 21 nov. 2026. */
   bonusHint: z.string().nullable(),
+  /** Minimoa+ : autant de séances qu'on veut dans la journée (absent d'une API plus ancienne). */
+  unlimited: z.boolean().optional(),
 });
 export type CheminQuota = z.infer<typeof CheminQuotaZ>;
 
@@ -64,7 +66,11 @@ export const CheminStreakZ = z.object({
 export type CheminStreak = z.infer<typeof CheminStreakZ>;
 
 /** « Il te connaît : un peu / bien / très bien » (confiance moyenne des 5 axes). */
-export const CheminKnowsZ = z.object({ level: KnowsLevelZ, label: z.string(), percent: z.number().int().min(0).max(100) });
+export const CheminKnowsZ = z.object({
+  level: KnowsLevelZ,
+  label: z.string(),
+  percent: z.number().int().min(0).max(100),
+});
 export type CheminKnows = z.infer<typeof CheminKnowsZ>;
 
 // ── Carte ────────────────────────────────────────────────────────────────────
@@ -105,7 +111,12 @@ export type CheminSessionQuery = z.infer<typeof CheminSessionQuery>;
 
 /** Réaction du minimoa à une réponse. `animation` : null si l'app ne la connaît pas (texte seul). */
 export const CheminReactionZ = z.object({ text: z.string(), animation: z.string().nullable() });
-export const CheminOptionZ = z.object({ id: z.string(), label: z.string(), icon: z.string(), reaction: CheminReactionZ });
+export const CheminOptionZ = z.object({
+  id: z.string(),
+  label: z.string(),
+  icon: z.string(),
+  reaction: CheminReactionZ,
+});
 export const CheminQuestionZ = z.object({
   id: z.string(),
   /** Format servi à cette app (repli éventuel déjà appliqué). */
@@ -117,7 +128,12 @@ export const CheminQuestionZ = z.object({
   options: z.array(CheminOptionZ).min(2).max(6),
   /** Curseur seulement : position de départ et réaction selon où il s'arrête. */
   slider: z
-    .object({ min: z.literal(0), max: z.literal(100), start: z.number().int().min(0).max(100), reactions: z.object({ low: CheminReactionZ, mid: CheminReactionZ, high: CheminReactionZ }) })
+    .object({
+      min: z.literal(0),
+      max: z.literal(100),
+      start: z.number().int().min(0).max(100),
+      reactions: z.object({ low: CheminReactionZ, mid: CheminReactionZ, high: CheminReactionZ }),
+    })
     .nullable(),
 });
 export type CheminQuestion = z.infer<typeof CheminQuestionZ>;
@@ -179,11 +195,18 @@ export const CheminAnswerZ = z.object({
   value: z.number().int().min(0).max(100).optional(),
 });
 /** Toutes les réponses d'une séance, en une fois. Idempotent par séance : renvoyer donne le même résultat. */
-export const CheminAnswersBody = z.object({ sessionId: z.string().uuid(), answers: z.array(CheminAnswerZ).min(1).max(10) });
+export const CheminAnswersBody = z.object({
+  sessionId: z.string().uuid(),
+  answers: z.array(CheminAnswerZ).min(1).max(10),
+});
 export type CheminAnswersBody = z.infer<typeof CheminAnswersBody>;
 
 /** Révélation de fin de séance : une phrase sur toi, tirée des réponses du jour. */
-export const CheminRevelationZ = z.object({ title: z.string(), text: z.string(), axis: z.enum(VISION_AXES).nullable() });
+export const CheminRevelationZ = z.object({
+  title: z.string(),
+  text: z.string(),
+  axis: z.enum(VISION_AXES).nullable(),
+});
 
 export const CheminProgressZ = z.object({
   stepId: z.string().nullable(),

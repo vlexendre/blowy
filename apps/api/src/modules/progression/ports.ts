@@ -1,5 +1,5 @@
 /** Progression (maquette V7) : lecture des compteurs déjà en base (rien n'est stocké en plus). */
-import type { LifetimeStats, WeekActivity } from '@blowy/domain';
+import type { Day, LeagueOutcome, LeagueTier, LifetimeStats, WeekActivity } from '@blowy/domain';
 
 export const PROGRESSION_READER = Symbol('PROGRESSION_READER');
 
@@ -10,4 +10,23 @@ export interface ProgressionReader {
   week(userIds: readonly string[], since: string, until?: string | null): Promise<Map<string, WeekActivity>>;
   /** Personnes de la même zone que `userId` (sa zone de domicile), elle comprise, au plus `limit` ; vide quand elle n'a pas de position. */
   neighbours(userId: string, limit: number): Promise<string[]>;
+}
+
+export const LEAGUE_STANDINGS = Symbol('LEAGUE_STANDINGS');
+
+/** La ligue d'une personne, gardée d'une semaine à l'autre (table `league_standings`). */
+export interface LeagueStanding {
+  userId: string;
+  tier: LeagueTier;
+  /** Lundi de la semaine où cette ligue s'applique. */
+  week: Day;
+  /** Résultat de la semaine d'avant (montré au début de celle-ci). */
+  result: LeagueOutcome | null;
+  resultRank: number | null;
+  resultFrom: LeagueTier | null;
+}
+
+export interface LeagueStandingsRepository {
+  find(userIds: readonly string[]): Promise<Map<string, LeagueStanding>>;
+  save(standing: LeagueStanding): Promise<void>;
 }

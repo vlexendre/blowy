@@ -10,7 +10,18 @@
  */
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import { AI_PROCESSOR, type AiProcessor } from '../../../integrations/ai/ai-processor';
-import { CHAT_AI_SYSTEM, type ChatLineContext, chatAiPrompt, chatConfidentialityText, chatLines, commonCountOf, isSurpriseVerdict, type Locale, surpriseLines, surpriseOf } from '@blowy/content';
+import {
+  CHAT_AI_SYSTEM,
+  type ChatLineContext,
+  chatAiPrompt,
+  chatConfidentialityText,
+  chatLines,
+  commonCountOf,
+  isSurpriseVerdict,
+  type Locale,
+  surpriseLines,
+  surpriseOf,
+} from '@blowy/content';
 import { classifyAnswer } from '@blowy/domain';
 import {
   AI_WINDOW_CHARS,
@@ -61,7 +72,13 @@ import { VISION_READER, type VisionReader } from '../../vision/tokens';
 import { LinkSession } from '../application/link-session';
 import type { LinkDraft } from '../application/link-draft';
 import type { LinkRecord, LinksRepository, MessageRecord, MessagesRepository } from '../ports';
-import { CHAT_PET_STATE, CHAT_SETTINGS, type ChatLinkSettingRecord, type ChatPetStateRepository, type ChatSettingsRepository } from './ports';
+import {
+  CHAT_PET_STATE,
+  CHAT_SETTINGS,
+  type ChatLinkSettingRecord,
+  type ChatPetStateRepository,
+  type ChatSettingsRepository,
+} from './ports';
 
 /** Réglages d'un lien vus par une personne (forme du contrat `LinkMinimoasZ`). */
 export interface LinkMinimoasView {
@@ -108,16 +125,33 @@ export class ChatMinimoas {
   // ── Réglages ─────────────────────────────────────────────────────────────
 
   async view(link: LinkRecord, viewerId: string): Promise<LinkMinimoasView> {
-    const [rows, state, lang] = await Promise.all([this.settingsOf(link.id), this.states.get(link.id), this.langOf(viewerId)]);
+    const [rows, state, lang] = await Promise.all([
+      this.settingsOf(link.id),
+      this.states.get(link.id),
+      this.langOf(viewerId),
+    ]);
     return this.toView(link, viewerId, rows, state, lang);
   }
 
-  async update(linkId: string, userId: string, patch: { consent?: boolean; muted?: boolean }): Promise<LinkMinimoasView> {
+  async update(
+    linkId: string,
+    userId: string,
+    patch: { consent?: boolean; muted?: boolean },
+  ): Promise<LinkMinimoasView> {
     const link = await this.links.findById(linkId);
-    if (!link || (link.userA !== userId && link.userB !== userId)) throw new DomainError('not_found', errorText('linkNotFound'));
+    if (!link || (link.userA !== userId && link.userB !== userId))
+      throw new DomainError('not_found', errorText('linkNotFound'));
     const now = this.clock.now().toISOString();
     const rows = await this.settings.forLink(linkId);
-    const mine = rows.find((r) => r.userId === userId) ?? { linkId, userId, consent: null, consentAt: null, muted: false, byDefault: false, updatedAt: now };
+    const mine = rows.find((r) => r.userId === userId) ?? {
+      linkId,
+      userId,
+      consent: null,
+      consentAt: null,
+      muted: false,
+      byDefault: false,
+      updatedAt: now,
+    };
     const next: ChatLinkSettingRecord = {
       ...mine,
       // Une réponse donnée dans ce chat remplace l'accord venu du réglage par défaut.
@@ -135,17 +169,30 @@ export class ChatMinimoas {
     userId: string,
     cursor: string | null,
     limit: number,
-  ): Promise<{ items: LinkMinimoasView[]; nextCursor: string | null; text: string; readingDefault: ChatReadingDefault }> {
+  ): Promise<{
+    items: LinkMinimoasView[];
+    nextCursor: string | null;
+    text: string;
+    readingDefault: ChatReadingDefault;
+  }> {
     const page = await this.links.pageForUser(userId, cursor, limit + 1);
     const shown = page.slice(0, limit);
-    const [lang, readingDefault] = await Promise.all([this.langOf(userId), this.settings.readingDefault(userId)]);
+    const [lang, readingDefault] = await Promise.all([
+      this.langOf(userId),
+      this.settings.readingDefault(userId),
+    ]);
     const items = await Promise.all(
       shown.map(async (link) => {
         const [rows, state] = await Promise.all([this.settingsOf(link.id), this.states.get(link.id)]);
         return this.toView(link, userId, rows, state, lang);
       }),
     );
-    return { items, nextCursor: page.length > limit ? (shown.at(-1)?.id ?? null) : null, text: chatConfidentialityText(lang, this.processor ?? undefined), readingDefault };
+    return {
+      items,
+      nextCursor: page.length > limit ? (shown.at(-1)?.id ?? null) : null,
+      text: chatConfidentialityText(lang, this.processor ?? undefined),
+      readingDefault,
+    };
   }
 
   /** Réglage par défaut des nouveaux liens. Les liens existants ne changent pas (voir `setAll`). */
@@ -160,13 +207,26 @@ export class ChatMinimoas {
    */
   async setAll(userId: string, consent: boolean): Promise<number> {
     const links = (await this.links.listForUsers([userId])).filter((l) => l.status !== 'archived');
-    const rows = new Map((await this.settings.forUserLinks(userId, links.map((l) => l.id))).map((r) => [r.linkId, r]));
+    const rows = new Map(
+      (
+        await this.settings.forUserLinks(
+          userId,
+          links.map((l) => l.id),
+        )
+      ).map((r) => [r.linkId, r]),
+    );
     const now = this.clock.now().toISOString();
     const changed: ChatLinkSettingRecord[] = [];
     for (const link of links) {
       const row = rows.get(link.id);
       if (row && row.consent === consent && !row.byDefault) continue;
-      changed.push({ ...(row ?? { linkId: link.id, userId, muted: false }), consent, consentAt: now, byDefault: false, updatedAt: now });
+      changed.push({
+        ...(row ?? { linkId: link.id, userId, muted: false }),
+        consent,
+        consentAt: now,
+        byDefault: false,
+        updatedAt: now,
+      });
     }
     await this.settings.upsertMany(changed);
     await Promise.all(changed.map((r) => this.cache.delete(this.settingsKey(r.linkId))));
@@ -182,7 +242,16 @@ export class ChatMinimoas {
     const records: ChatLinkSettingRecord[] = [];
     for (const userId of [link.userA, link.userB]) {
       const consent = consentFromDefault(await this.settings.readingDefault(userId));
-      if (consent !== null) records.push({ linkId: link.id, userId, consent, consentAt: now, muted: false, byDefault: true, updatedAt: now });
+      if (consent !== null)
+        records.push({
+          linkId: link.id,
+          userId,
+          consent,
+          consentAt: now,
+          muted: false,
+          byDefault: true,
+          updatedAt: now,
+        });
     }
     if (records.length === 0) return;
     await this.settings.upsertMany(records);
@@ -198,8 +267,16 @@ export class ChatMinimoas {
     if (state.icebreakerDone || interventionsLeft(state, draft.today) === 0) return;
     const speaker = draft.speaker('icebreaker');
     const [axis, lang] = await Promise.all([this.sharedAxis(link.userA, link.userB), this.langOf(speaker)]);
-    draft.pet(speaker, chatLines.icebreaker(lang, axis, draft.pair(speaker).other, draft.seed('icebreaker')), 'icebreaker');
-    await this.states.save(link.id, { ...countIntervention(state, draft.today), icebreakerDone: true, lastUserAt: state.lastUserAt ?? link.createdAt });
+    draft.pet(
+      speaker,
+      chatLines.icebreaker(lang, axis, draft.pair(speaker).other, draft.seed('icebreaker')),
+      'icebreaker',
+    );
+    await this.states.save(link.id, {
+      ...countIntervention(state, draft.today),
+      icebreakerDone: true,
+      lastUserAt: state.lastUserAt ?? link.createdAt,
+    });
   }
 
   // ── Après un message ─────────────────────────────────────────────────────
@@ -208,12 +285,21 @@ export class ChatMinimoas {
    * Ajoute au brouillon les lignes de règle (premier message du jour, réaction au ton choisi, remarque au rythme)
    * et rend la suite à lancer après l'écriture (garde-fou ou remarque par l'IA), ou null.
    */
-  async onUserMessage(draft: LinkDraft, userId: string, text: string, opts: { firstToday: boolean; tone?: 'sweet' | 'tease' }): Promise<FollowUp | null> {
+  async onUserMessage(
+    draft: LinkDraft,
+    userId: string,
+    text: string,
+    opts: { firstToday: boolean; tone?: 'sweet' | 'tease' },
+  ): Promise<FollowUp | null> {
     const link = draft.link;
     const today = draft.today;
     const now = this.clock.now();
     const [rows, stored] = await Promise.all([this.settingsOf(link.id), this.states.get(link.id)]);
-    let state: ChatPetState = { ...stored, messagesSinceRemark: stored.messagesSinceRemark + 1, lastUserAt: now.toISOString() };
+    let state: ChatPetState = {
+      ...stored,
+      messagesSinceRemark: stored.messagesSinceRemark + 1,
+      lastUserAt: now.toISOString(),
+    };
     const muted = rows.some((r) => r.muted);
     const reading = this.reading(link, rows);
     let followUp: FollowUp | null = null;
@@ -237,9 +323,16 @@ export class ChatMinimoas {
       // serveur). Au plus un par 24 h et par lien, dans le plafond des interventions ; si l'IA a déjà été appelée
       // ci-dessus pour un garde-fou, c'est elle qui parle.
       const filtered = decideModeration('message', classifyText(text, draft.localeOf(userId)));
-      const guardRested = state.lastGuardAt === null || now.getTime() - new Date(state.lastGuardAt).getTime() >= GUARD_COOLDOWN_HOURS * 3_600_000;
+      const guardRested =
+        state.lastGuardAt === null ||
+        now.getTime() - new Date(state.lastGuardAt).getTime() >= GUARD_COOLDOWN_HOURS * 3_600_000;
       if (!followUp && filtered.outcome === 'flag' && guardRested && interventionsLeft(state, today) > 0) {
-        draft.pet(userId, chatLines.guard(await this.ctx(draft, userId, await this.voices(link), 'guard-filter')), 'guard', userId);
+        draft.pet(
+          userId,
+          chatLines.guard(await this.ctx(draft, userId, await this.voices(link), 'guard-filter')),
+          'guard',
+          userId,
+        );
         state = { ...countIntervention(state, today), lastGuardAt: now.toISOString() };
       }
       if (!followUp) {
@@ -250,26 +343,21 @@ export class ChatMinimoas {
           draft.pet(draft.otherOf(userId), surprise.verdict, 'event');
           state = countIntervention(state, today);
         }
-        if (opts.firstToday && interventionsLeft(state, today) > 0) {
-          draft.pet(userId, chatLines.firstOfDay(await this.ctx(draft, userId, voices, 'first')), 'remark');
-          state = countIntervention(state, today);
-        }
-        const other = draft.otherOf(userId);
-        if (opts.tone && interventionsLeft(state, today) > 0) {
-          const c = await this.ctx(draft, other, voices, opts.tone, String(state.messagesSinceRemark));
-          draft.pet(other, opts.tone === 'sweet' ? chatLines.sweet(c) : chatLines.tease(c), 'remark');
-          state = countIntervention(state, today);
-        }
+        // Plus de remarques ni de piques des minimoas (21 nov. 2026) : leurs émotions suffisent, seules les questions surprise restent.
+        void opts.firstToday;
         if (remarkDue({ state, today, muted })) {
           const speaker = draft.speaker('remark', String(state.messagesSinceRemark), link.lastMessageAt);
           state = { ...countIntervention(state, today), messagesSinceRemark: 0 };
-          if (reading) followUp = () => this.aiRemark(link.id, speaker);
-          else if (!surprise.pending) {
+          if (!surprise.pending) {
             // Sans IA : une question surprise à deux choix (choisie par un seed, jamais par un tirage).
             const lines = surpriseLines.in(draft.localeOf(speaker));
-            const pick = lines.questions[draft.seed('surprise', link.lastMessageAt ?? '', String(surprise.asked)) % lines.questions.length];
+            const pick =
+              lines.questions[
+                draft.seed('surprise', link.lastMessageAt ?? '', String(surprise.asked)) %
+                  lines.questions.length
+              ];
             if (pick) draft.pet(speaker, pick.text, 'remark');
-          } else draft.pet(speaker, chatLines.remark(await this.ctx(draft, speaker, voices, 'remark', link.lastMessageAt)), 'remark');
+          }
         }
       }
     }
@@ -282,17 +370,24 @@ export class ChatMinimoas {
    * `pending` tant que les deux n'ont pas répondu ; `verdict` la ligne à dire quand les deux viennent de répondre et
    * qu'aucune ligne n'a encore été dite. Le compte des points communs est relu dans les lignes déjà dites.
    */
-  private async surprise(draft: LinkDraft, userId: string, text: string): Promise<{ pending: boolean; verdict: string | null; asked: number }> {
+  private async surprise(
+    draft: LinkDraft,
+    userId: string,
+    text: string,
+  ): Promise<{ pending: boolean; verdict: string | null; asked: number }> {
     const recent = await this.messages.page(draft.link.id, null, 40);
     const asked = recent.filter((m) => m.authorKind === 'pet' && m.body && surpriseOf(m.body)).length;
     const qi = recent.findIndex((m) => m.authorKind === 'pet' && !!m.body && !!surpriseOf(m.body));
     const found = qi >= 0 ? surpriseOf(recent[qi]?.body ?? '') : null;
     if (!found) return { pending: false, verdict: null, asked };
     const after = recent.slice(0, qi);
-    if (after.some((m) => m.authorKind === 'pet' && m.body && isSurpriseVerdict(m.body))) return { pending: false, verdict: null, asked };
+    if (after.some((m) => m.authorKind === 'pet' && m.body && isSurpriseVerdict(m.body)))
+      return { pending: false, verdict: null, asked };
     // Première réponse de chacun après la question (du plus ancien au plus récent), le message en cours en dernier.
     const answers = new Map<string, string>();
-    for (const m of [...after].reverse()) if (m.authorKind === 'user' && m.authorId && m.body && !answers.has(m.authorId)) answers.set(m.authorId, m.body);
+    for (const m of [...after].reverse())
+      if (m.authorKind === 'user' && m.authorId && m.body && !answers.has(m.authorId))
+        answers.set(m.authorId, m.body);
     const justAnswered = !answers.has(userId);
     if (justAnswered) answers.set(userId, text);
     const other = draft.otherOf(userId);
@@ -307,7 +402,10 @@ export class ChatMinimoas {
     if (a === null || b === null) return { pending: false, verdict: null, asked };
     const label = (c: 'a' | 'b') => question[c].label;
     if (a === b) {
-      const before = recent.map((m) => (m.authorKind === 'pet' && m.body ? commonCountOf(m.body) : null)).find((n) => n !== null) ?? 0;
+      const before =
+        recent
+          .map((m) => (m.authorKind === 'pet' && m.body ? commonCountOf(m.body) : null))
+          .find((n) => n !== null) ?? 0;
       return { pending: false, verdict: lines.common(label(a), before + 1), asked };
     }
     return { pending: false, verdict: lines.different(label(b), label(a)), asked };
@@ -397,7 +495,13 @@ export class ChatMinimoas {
           ageDays: daysBetween(dayOf(new Date(link.createdAt)), today),
         });
         const otherName = names.get(otherId) ?? '';
-        return { linkId: link.id, otherName, key: health.key, score: health.score, line: chatLines.health(lang, health.key, otherName) };
+        return {
+          linkId: link.id,
+          otherName,
+          key: health.key,
+          score: health.score,
+          line: chatLines.health(lang, health.key, otherName),
+        };
       }),
     );
   }
@@ -410,7 +514,10 @@ export class ChatMinimoas {
     const ai = await this.askModel(link, speaker, 'remarque');
     let line: string | null = null;
     if (ai.kind === 'line') line = ai.line;
-    else if (ai.kind === 'declined') line = chatLines.remark(await this.ctxFor(link, speaker, await this.voices(link), 'remark', link.lastMessageAt));
+    else if (ai.kind === 'declined')
+      line = chatLines.remark(
+        await this.ctxFor(link, speaker, await this.voices(link), 'remark', link.lastMessageAt),
+      );
     if (line) await this.session.addPetLine(link.id, speaker, line, 'remark');
   }
 
@@ -421,7 +528,10 @@ export class ChatMinimoas {
     let line: string | null = null;
     if (ai.kind === 'line') line = ai.line;
     // « rien » : le modèle juge que le ton ne monte pas vraiment ; l'heuristique s'était trompée.
-    else if (ai.kind === 'declined') line = chatLines.guard(await this.ctxFor(link, userId, await this.voices(link), 'guard', link.lastMessageAt));
+    else if (ai.kind === 'declined')
+      line = chatLines.guard(
+        await this.ctxFor(link, userId, await this.voices(link), 'guard', link.lastMessageAt),
+      );
     if (line) await this.session.addPetLine(link.id, userId, line, 'guard', userId);
   }
 
@@ -435,13 +545,25 @@ export class ChatMinimoas {
   ): Promise<{ kind: 'line'; line: string } | { kind: 'nothing' } | { kind: 'declined' }> {
     const recent = await this.messages.recentUserTexts(link.id, AI_WINDOW_MESSAGES);
     if (recent.length === 0) return { kind: 'declined' };
-    const window = [...recent].reverse().map((m: MessageRecord) => ({ who: m.authorId === link.userA ? ('A' as const) : ('B' as const), text: (m.body ?? '').slice(0, AI_WINDOW_CHARS) }));
+    const window = [...recent]
+      .reverse()
+      .map((m: MessageRecord) => ({
+        who: m.authorId === link.userA ? ('A' as const) : ('B' as const),
+        text: (m.body ?? '').slice(0, AI_WINDOW_CHARS),
+      }));
     const [voices, lang] = await Promise.all([this.voices(link), this.langOf(speaker)]);
     const result = await this.ai.complete({
       feature,
       userId: speaker,
       system: CHAT_AI_SYSTEM,
-      prompt: chatAiPrompt({ role, lang, voice: voices.get(speaker) ?? 'pose', owner: speaker === link.userA ? 'A' : 'B', window, silenceDays: silence }),
+      prompt: chatAiPrompt({
+        role,
+        lang,
+        voice: voices.get(speaker) ?? 'pose',
+        owner: speaker === link.userA ? 'A' : 'B',
+        window,
+        silenceDays: silence,
+      }),
       maxTokens: AI_MAX_TOKENS,
       tier: 'small',
       locale: lang,
@@ -453,14 +575,26 @@ export class ChatMinimoas {
 
   // ── Outils ───────────────────────────────────────────────────────────────
 
-  private toView(link: LinkRecord, viewerId: string, rows: readonly ChatLinkSettingRecord[], state: ChatPetState, lang: Locale): LinkMinimoasView {
+  private toView(
+    link: LinkRecord,
+    viewerId: string,
+    rows: readonly ChatLinkSettingRecord[],
+    state: ChatPetState,
+    lang: Locale,
+  ): LinkMinimoasView {
     const mine = rows.find((r) => r.userId === viewerId);
     const other = link.userA === viewerId ? link.userB : link.userA;
     // Refus et question pas encore vue se disent pareil (« pas encore activé de son côté ») : aucune pression.
     const theirs = theirConsentOf(rows.find((r) => r.userId === other)?.consent ?? null);
     return {
       linkId: link.id,
-      consent: { mine: mine?.consent ?? null, reading: this.reading(link, rows), text: chatConfidentialityText(lang, this.processor ?? undefined), theirs, byDefault: mine?.byDefault ?? false },
+      consent: {
+        mine: mine?.consent ?? null,
+        reading: this.reading(link, rows),
+        text: chatConfidentialityText(lang, this.processor ?? undefined),
+        theirs,
+        byDefault: mine?.byDefault ?? false,
+      },
       muted: mine?.muted ?? false,
       interventionsToday: interventionsToday(state, dayOf(this.clock.now())),
       maxPerDay: CHAT_MAX_INTERVENTIONS_PER_DAY,
@@ -489,18 +623,39 @@ export class ChatMinimoas {
   private async voices(link: LinkRecord): Promise<Map<string, MinimoaVoice>> {
     const pets = await this.pets.findByOwners([link.userA, link.userB]);
     const out = new Map<string, MinimoaVoice>();
-    for (const owner of [link.userA, link.userB]) out.set(owner, minimoaVoiceOf(pets.find((p) => p.ownerId === owner)?.gauges ?? ZERO_GAUGES));
+    for (const owner of [link.userA, link.userB])
+      out.set(owner, minimoaVoiceOf(pets.find((p) => p.ownerId === owner)?.gauges ?? ZERO_GAUGES));
     return out;
   }
 
-  private async ctx(draft: LinkDraft, speaker: string, voices: Map<string, MinimoaVoice>, ...seed: string[]): Promise<ChatLineContext> {
-    return { lang: await this.langOf(speaker), voice: voices.get(speaker) ?? 'pose', seed: draft.seed(...seed), other: draft.pair(speaker).other };
+  private async ctx(
+    draft: LinkDraft,
+    speaker: string,
+    voices: Map<string, MinimoaVoice>,
+    ...seed: string[]
+  ): Promise<ChatLineContext> {
+    return {
+      lang: await this.langOf(speaker),
+      voice: voices.get(speaker) ?? 'pose',
+      seed: draft.seed(...seed),
+      other: draft.pair(speaker).other,
+    };
   }
 
-  private async ctxFor(link: LinkRecord, speaker: string, voices: Map<string, MinimoaVoice>, ...seed: string[]): Promise<ChatLineContext> {
+  private async ctxFor(
+    link: LinkRecord,
+    speaker: string,
+    voices: Map<string, MinimoaVoice>,
+    ...seed: string[]
+  ): Promise<ChatLineContext> {
     const otherOwner = speaker === link.userA ? link.userB : link.userA;
     const [lang, pet] = await Promise.all([this.langOf(speaker), this.pets.findByOwner(otherOwner)]);
-    return { lang, voice: voices.get(speaker) ?? 'pose', seed: seedOf(link.id, ...seed), other: pet?.name ?? '' };
+    return {
+      lang,
+      voice: voices.get(speaker) ?? 'pose',
+      seed: seedOf(link.id, ...seed),
+      other: pet?.name ?? '',
+    };
   }
 
   /** Premier point commun de vision de la paire (via le lecteur public du chantier « vision »), ou null. */
@@ -515,4 +670,3 @@ export class ChatMinimoas {
     }
   }
 }
-

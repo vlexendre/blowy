@@ -7,13 +7,62 @@
 import type { CheminMap, CheminQuestion, LatLng, Profil } from '@blowy/contract';
 
 // ── Accueil : la portion du chemin montrée ────────────────────────────────────
-export type PathNodeKind = 'done' | 'current' | 'chest' | 'chestOpen' | 'locked';
+export type PathNodeKind = 'done' | 'current' | 'chest' | 'chestOpen' | 'locked' | 'unit';
 export interface PathNode {
   key: string;
   kind: PathNodeKind;
-  /** Titre de l'étape (ou de l'unité pour un coffre). */
+  /** Titre de l'étape (ou de l'unité pour un coffre ou un bandeau). */
   title: string;
   unitTitle: string;
+  /** Bandeau d'univers : son rang (1-based), étapes faites et total. */
+  unitIndex?: number;
+  done?: number;
+  total?: number;
+}
+
+/**
+ * Tout le chemin, de la première case à la dernière (façon Duolingo) : un bandeau par univers (à partir du deuxième,
+ * le premier est le bandeau du haut), ses étapes, son coffre. L'écran défile jusqu'à l'étape du jour.
+ */
+export function pathAll(map: Pick<CheminMap, 'units' | 'currentStepId'>): PathNode[] {
+  const all: PathNode[] = [];
+  map.units.forEach((u, i) => {
+    if (i > 0)
+      all.push({
+        key: `${u.id}:unit`,
+        kind: 'unit',
+        title: u.title,
+        unitTitle: u.title,
+        unitIndex: i + 1,
+        done: u.done,
+        total: u.total,
+      });
+    for (const s of u.steps) {
+      const kind: PathNodeKind =
+        s.id === map.currentStepId
+          ? 'current'
+          : s.state === 'done'
+            ? 'done'
+            : s.state === 'current'
+              ? 'current'
+              : 'locked';
+      all.push({ key: `${u.id}:${s.id}`, kind, title: s.title, unitTitle: u.title });
+    }
+    if (u.steps.length > 0)
+      all.push({
+        key: `${u.id}:chest`,
+        kind: u.state === 'done' ? 'chestOpen' : 'chest',
+        title: u.title,
+        unitTitle: u.title,
+      });
+  });
+  let seen = false;
+  for (const n of all) {
+    if (n.kind !== 'current') continue;
+    if (seen) n.kind = 'locked';
+    seen = true;
+  }
+  return all;
 }
 
 /** Étapes faites gardées avant celle du jour, et étapes montrées en tout. */
@@ -28,10 +77,23 @@ export function pathWindow(map: Pick<CheminMap, 'units' | 'currentStepId'>): Pat
   const all: PathNode[] = [];
   for (const u of map.units) {
     for (const s of u.steps) {
-      const kind: PathNodeKind = s.id === map.currentStepId ? 'current' : s.state === 'done' ? 'done' : s.state === 'current' ? 'current' : 'locked';
+      const kind: PathNodeKind =
+        s.id === map.currentStepId
+          ? 'current'
+          : s.state === 'done'
+            ? 'done'
+            : s.state === 'current'
+              ? 'current'
+              : 'locked';
       all.push({ key: `${u.id}:${s.id}`, kind, title: s.title, unitTitle: u.title });
     }
-    if (u.steps.length > 0) all.push({ key: `${u.id}:chest`, kind: u.state === 'done' ? 'chestOpen' : 'chest', title: u.title, unitTitle: u.title });
+    if (u.steps.length > 0)
+      all.push({
+        key: `${u.id}:chest`,
+        kind: u.state === 'done' ? 'chestOpen' : 'chest',
+        title: u.title,
+        unitTitle: u.title,
+      });
   }
   // Une seule étape « du jour » : la première rencontrée (le serveur n'en donne qu'une).
   let seen = false;
@@ -69,7 +131,10 @@ export function stepOf(map: Pick<CheminMap, 'units' | 'currentStepId'>): { step:
 
 /** Le titre de l'unité en cours (celle de l'étape du jour), sinon la dernière commencée. */
 export function currentUnitTitle(map: Pick<CheminMap, 'units' | 'currentStepId' | 'title'>): string {
-  const unit = map.units.find((u) => u.steps.some((s) => s.id === map.currentStepId)) ?? map.units.find((u) => u.state === 'current') ?? map.units[map.units.length - 1];
+  const unit =
+    map.units.find((u) => u.steps.some((s) => s.id === map.currentStepId)) ??
+    map.units.find((u) => u.state === 'current') ??
+    map.units[map.units.length - 1];
   return unit?.title ?? map.title;
 }
 
@@ -88,7 +153,8 @@ export function todayView(map: Pick<CheminMap, 'units' | 'currentStepId' | 'titl
 }
 
 /** Une séance à faire maintenant (du jour ou bonus). */
-export const hasSessionToDo = (map: Pick<CheminMap, 'today'> | undefined): boolean => map?.today.state === 'todo' || map?.today.state === 'bonus';
+export const hasSessionToDo = (map: Pick<CheminMap, 'today'> | undefined): boolean =>
+  map?.today.state === 'todo' || map?.today.state === 'bonus';
 
 // ── Séance : l'ordre des questions, « Passer cette question » ─────────────────
 export type AnswerPick = { optionId: string } | { value: number };
@@ -101,10 +167,15 @@ export interface SeanceProgress {
   skipped: string[];
 }
 
-export const startSeance = (session: { questions: readonly { id: string }[] }): SeanceProgress => ({ queue: session.questions.map((q) => q.id), answers: {}, skipped: [] });
+export const startSeance = (session: { questions: readonly { id: string }[] }): SeanceProgress => ({
+  queue: session.questions.map((q) => q.id),
+  answers: {},
+  skipped: [],
+});
 
 /** La question en cours : la première de la file sans réponse. */
-export const currentQuestionId = (p: SeanceProgress): string | null => p.queue.find((id) => !(id in p.answers)) ?? null;
+export const currentQuestionId = (p: SeanceProgress): string | null =>
+  p.queue.find((id) => !(id in p.answers)) ?? null;
 
 /** Réponses données (pour la barre « 2/5 »). */
 export const answeredCount = (p: SeanceProgress): number => Object.keys(p.answers).length;
@@ -118,21 +189,38 @@ export const canSkip = (p: SeanceProgress): boolean => p.queue.filter((id) => !(
 export function skipQuestion(p: SeanceProgress): SeanceProgress {
   const id = currentQuestionId(p);
   if (!id || !canSkip(p)) return p;
-  return { ...p, queue: [...p.queue.filter((x) => x !== id), id], skipped: p.skipped.includes(id) ? p.skipped : [...p.skipped, id] };
+  return {
+    ...p,
+    queue: [...p.queue.filter((x) => x !== id), id],
+    skipped: p.skipped.includes(id) ? p.skipped : [...p.skipped, id],
+  };
 }
 
-export const answerQuestion = (p: SeanceProgress, questionId: string, pick: AnswerPick): SeanceProgress => ({ ...p, answers: { ...p.answers, [questionId]: pick } });
+export const answerQuestion = (p: SeanceProgress, questionId: string, pick: AnswerPick): SeanceProgress => ({
+  ...p,
+  answers: { ...p.answers, [questionId]: pick },
+});
 
 export const seanceDone = (p: SeanceProgress): boolean => currentQuestionId(p) === null;
 
 /** Le corps de `POST /v1/chemin/reponses` : toutes les questions, une fois chacune, dans l'ordre de la séance. */
-export function answersBody(session: { id: string; questions: readonly { id: string }[] }, p: SeanceProgress) {
+export function answersBody(
+  session: { id: string; questions: readonly { id: string }[] },
+  p: SeanceProgress,
+) {
   return {
     sessionId: session.id,
     answers: session.questions.flatMap((q) => {
       const a = p.answers[q.id];
       if (!a) return [];
-      return [{ questionId: q.id, ...('optionId' in a ? { optionId: a.optionId } : { value: Math.max(0, Math.min(100, Math.round(a.value))) }) }];
+      return [
+        {
+          questionId: q.id,
+          ...('optionId' in a
+            ? { optionId: a.optionId }
+            : { value: Math.max(0, Math.min(100, Math.round(a.value))) }),
+        },
+      ];
     }),
   };
 }
@@ -144,7 +232,10 @@ export interface Reaction {
 }
 
 /** La réaction du minimoa à une réponse : celle de l'option, ou (curseur) celle du bout ou du milieu. */
-export function reactionFor(q: Pick<CheminQuestion, 'options' | 'slider'>, pick: AnswerPick | undefined): Reaction | null {
+export function reactionFor(
+  q: Pick<CheminQuestion, 'options' | 'slider'>,
+  pick: AnswerPick | undefined,
+): Reaction | null {
   if (!pick) return null;
   if ('optionId' in pick) return q.options.find((o) => o.id === pick.optionId)?.reaction ?? null;
   const r = q.slider?.reactions;
@@ -164,7 +255,9 @@ export function distanceBand(from: LatLng, to: LatLng): DistanceBand {
   const rad = (d: number) => (d * Math.PI) / 180;
   const dLat = rad(to.latitude - from.latitude);
   const dLng = rad(to.longitude - from.longitude);
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(rad(from.latitude)) * Math.cos(rad(to.latitude)) * Math.sin(dLng / 2) ** 2;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(rad(from.latitude)) * Math.cos(rad(to.latitude)) * Math.sin(dLng / 2) ** 2;
   const km = 2 * r * Math.asin(Math.min(1, Math.sqrt(a)));
   return km <= 1.5 ? 'neighborhood' : km <= 5 ? 'near' : 'around';
 }
@@ -173,9 +266,12 @@ export function distanceBand(from: LatLng, to: LatLng): DistanceBand {
 /** En dessous, une jauge est « encore floue » (grisée). */
 export const FOGGY_BELOW = 25;
 
-export const knowsStep = (level: Profil['knows']['level']): 1 | 2 | 3 => (level === 'little' ? 1 : level === 'well' ? 2 : 3);
+export const knowsStep = (level: Profil['knows']['level']): 1 | 2 | 3 =>
+  level === 'little' ? 1 : level === 'well' ? 2 : 3;
 
 /** Les jauges de « Ce que Nino sait de toi », les plus sûres d'abord, les floues à la fin. */
 export function profilGauges(p: Pick<Profil, 'gauges'>) {
-  return [...p.gauges].map((g) => ({ ...g, foggy: g.confidence < FOGGY_BELOW })).sort((a, b) => Number(a.foggy) - Number(b.foggy));
+  return [...p.gauges]
+    .map((g) => ({ ...g, foggy: g.confidence < FOGGY_BELOW }))
+    .sort((a, b) => Number(a.foggy) - Number(b.foggy));
 }

@@ -151,7 +151,7 @@ describe('Ton chemin', () => {
     expect(r.empty).toMatchObject({ reason: 'first_here', title: 'Tu es parmi les premiers ici' });
   });
 
-  it('une séance bonus se gagne en répondant à un bonjour', async () => {
+  it('une séance par jour sans Minimoa+, même en répondant à un bonjour (plus de bonus, rien ne se cumule)', async () => {
     const c = await person('Cyprien');
     const d = await person('Daphné');
     const s = (await c.api.chemin.session()).session!;
@@ -161,12 +161,11 @@ describe('Ton chemin', () => {
     await d.api.encounters.wave(c.id);
     const incoming = (await c.api.encounters.list()).incoming.find((i) => i.from.id === d.id)!;
     await c.api.encounters.accept(incoming.id);
-    const bonus = await c.api.chemin.session();
-    expect(bonus.quota).toMatchObject({ bonus: 1, bonusReason: 'wave_answered', left: 1, nextSlot: 1, bonusHint: null });
-    expect(bonus.session).toMatchObject({ slot: 'bonus', intro: 'Séance bonus ! Merci d’avoir fait venir du monde.' });
-    await c.api.chemin.answer(firstChoices(bonus.session!));
+    const after = await c.api.chemin.session();
+    expect(after.quota).toMatchObject({ bonus: 0, bonusReason: null, left: 0, nextSlot: null, bonusHint: null, unlimited: false });
+    expect(after.reason).toBe('quota_used');
     const map = await c.api.chemin.map();
-    expect(map.today).toMatchObject({ state: 'all_done', quota: { used: 2, left: 0 } });
+    expect(map.today).toMatchObject({ state: 'done', quota: { used: 1, left: 0 } });
     expect(map.streak.current).toBe(1);
   });
 

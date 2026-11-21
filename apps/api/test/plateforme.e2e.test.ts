@@ -277,43 +277,21 @@ describe('minimoas dans le chat', () => {
     const { a, b, linkId } = await pair(world, ['Chloé', 'Dan']);
     const before = model.calls.length;
 
-    // Aucun accord : 12 messages → premier du jour + remarque au rythme, sans appel au modèle.
+    // Plus de remarques des minimoas (21 nov. 2026) : 12 messages → seulement des questions surprise, sans appel au modèle.
     await talk(a, b, linkId, 12);
     expect(model.calls.length).toBe(before);
-    // Les annonces de jeu (`event` : niveau passé grâce au premier jour à deux) ne sont pas des interventions.
     const interventions = (messages: readonly Message[]) => petLines(messages).filter((m) => m.petRole !== 'event');
-    const roles = interventions(await allMessages(a.api, linkId)).map((m) => m.petRole);
-    expect(roles).toEqual(['icebreaker', 'remark', 'remark']);
-    expect((await a.api.minimoas.get(linkId)).interventionsToday).toBe(3);
+    const shown = interventions(await allMessages(a.api, linkId));
+    expect(shown[0]?.petRole).toBe('icebreaker');
+    for (const m of shown.slice(1)) expect(surpriseOf(m.body ?? '')).not.toBeNull();
 
-    // Un seul accord : toujours rien de lu.
+    // Les deux d'accord : le modèle ne lit plus pour écrire des remarques (seuls les garde-fous le font).
     await a.api.minimoas.update(linkId, { consent: true });
-    expect((await a.api.minimoas.get(linkId)).consent).toMatchObject({ mine: true, reading: false });
-    world.clock.advanceDays(1);
-    await talk(a, b, linkId, 12);
-    expect(model.calls.length).toBe(before);
-
-    // Les deux : la remarque passe par le modèle, une seule fois pour 12 messages.
     await b.api.minimoas.update(linkId, { consent: true });
     expect((await b.api.minimoas.get(linkId)).consent).toMatchObject({ mine: true, reading: true });
     world.clock.advanceDays(1);
     await talk(a, b, linkId, 12, (i) => `on parle du resto ${i}, Chloé`);
-    expect(model.calls.length).toBe(before + 1);
-    const call = model.calls.at(-1);
-    expect(call?.system).toBe(CHAT_AI_SYSTEM);
-    expect(call?.prompt).toMatch(/Rôle\s: remarque/);
-    expect(call?.prompt).toMatch(/^[AB]\s: /m);
-    expect(call?.model).toBe('claude-haiku-5-5');
-    expect(call?.prompt.split('\n').filter((l) => /^[AB]\s: /.test(l))).toHaveLength(8);
-    expect(call?.prompt).not.toContain('Dan');
-    const last = interventions(await allMessages(a.api, linkId)).at(-1);
-    expect(last).toMatchObject({ petRole: 'remark', body: 'Vous êtes d’accord sur plus de choses que vous ne croyez.' });
-
-    // Retrait d'un accord : plus de lecture.
-    await a.api.minimoas.update(linkId, { consent: false });
-    world.clock.advanceDays(1);
-    await talk(a, b, linkId, 12);
-    expect(model.calls.length).toBe(before + 1);
+    expect(model.calls.length).toBe(before);
   });
 
   it('au plus 3 interventions par jour et par lien, quel que soit le nombre de messages', async () => {

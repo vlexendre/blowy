@@ -1,3 +1,4 @@
+import { surpriseOf } from '@blowy/content';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Link, Message } from '@blowy/contract';
 import {
@@ -158,6 +159,8 @@ export class LinkPresenter {
     return Promise.all(
       records
         .filter((m) => !m.visibleTo || m.visibleTo === viewerId)
+        // Plus de remarques des minimoas dans le fil (21 nov. 2026) : seules leurs questions surprise restent.
+        .filter((m) => !(m.authorKind === 'pet' && m.petRole === 'remark' && !(m.body && surpriseOf(m.body))))
         .map(async (m): Promise<Message> => {
           const mine = m.authorId === viewerId;
           const day = m.mediaPath ? dayOfPath.get(m.mediaPath) : undefined;

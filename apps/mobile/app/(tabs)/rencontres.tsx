@@ -170,15 +170,6 @@ export default function RencontresScreen() {
             onAction={() => void encounters.refetch()}
           />
         ) : null}
-        {/* Bouder ou être à plat ne bloque personne (le serveur présente et laisse saluer) : on le dit, les soins pour l'humeur. */}
-        {shape === 'bof' || sulking ? (
-          <Banner
-            tone="info"
-            title={sulking ? t.waveSulk(petName) : t.bofTitle(petName)}
-            actionLabel={t.sulkAction}
-            onAction={toPet}
-          />
-        ) : null}
         {actionError ? (
           <Banner
             tone="error"

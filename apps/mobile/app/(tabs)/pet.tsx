@@ -42,8 +42,8 @@ import {
   usePetLure,
 } from '@blowy/ui';
 import { useFocusEffect, useIsFocused, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, RefreshControl, useWindowDimensions } from 'react-native';
+import { type ComponentRef, useCallback, useEffect, useRef, useState } from 'react';
+import { Platform, RefreshControl, type ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { errorText, useLinks } from '@/features/links';
@@ -68,18 +68,20 @@ import {
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { WelcomeBack } from '@/features/pet/WelcomeBack';
 import { FirstWeekMoment, StreakMoment, useShareMomentPending } from '@/features/moments';
-import { usePlusMoment } from '@/features/plus';
+import { openPlus, usePlusMoment } from '@/features/plus';
 import { maybeAskForReview, useReviewMemory } from '@/features/review';
 import { usePrivateMemories, useRitualsToday, useStreakParty } from '@/features/rituals';
 import {
   hasSessionToDo,
-  pathWindow,
+  pathAll,
   stepOf,
   todayView,
   useCheminMap,
   useCheminResults,
 } from '@/features/chemin';
+import { useProgression } from '@/features/progression';
 import { accueil as a } from '@/locales/accueil';
+import { progression as lp } from '@/locales/progression';
 import { home as t } from '@/locales/pet';
 import { carte } from '@/locales/rencontres';
 import { chemin as c } from '@/locales/chemin';
@@ -97,6 +99,15 @@ export default function PetHome() {
   const wardrobe = useWardrobe();
   const today = useRitualsToday();
   const me = useMe();
+  // La ligue en puce sur le chemin (façon Duolingo) : ton rang de la semaine, toujours sous les yeux.
+  const prog = useProgression();
+  const lg = prog.data?.league;
+  const myRank = lg?.rows.find((r) => r.me)?.rank ?? null;
+  // Le chemin entier défile : une fois par ouverture, l'écran descend jusqu'à l'étape du jour.
+  const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
+  const scrolledTo = useRef(false);
+  const blockTop = useRef(0);
+  const pathTop = useRef(0);
   const location = useLocation(me.data);
   const push = usePushPermission();
   const [locationDenied, setLocationDenied] = useState(false);
@@ -350,7 +361,13 @@ export default function PetHome() {
     <ScreenMotion>
       <PetRefresh species={p.species} refreshing={refreshing} onRefresh={refresh}>
         {(scroll) => (
-          <TabTemplate gutter={14} top={6} bottomExtra={now ? NOW_BAR_SPACE : 0} {...scroll}>
+          <TabTemplate
+            gutter={14}
+            top={6}
+            bottomExtra={now ? NOW_BAR_SPACE : 0}
+            {...scroll}
+            scrollRef={scrollRef}
+          >
             <PetStage
               pet={p}
               title={p.name.toUpperCase()}
@@ -365,10 +382,10 @@ export default function PetHome() {
                   : undefined
               }
               shapeA11y={sulking ? t.sulkA11y : undefined}
-              speech={speech}
+              // Plus de bulle dans la carte : ses émotions (visage, humeur) suffisent.
               sleep={{
                 after: sleep.sleepAfter,
-                speech: a.asleep.line,
+                speech: '',
                 wakeLabel: a.asleep.wake,
                 wakeA11y: a.asleep.wakeA11y(p.name),
               }}
@@ -417,61 +434,98 @@ export default function PetHome() {
 
             {/* Ton chemin : la séance du jour, le chemin, la série. */}
             {view && cm ? (
-              <Appear once="home:chemin" delay={60}>
-                <SessionBanner
-                  tone={view.kind === 'todo' || view.kind === 'bonus' ? 'unit' : 'calm'}
-                  kicker={
-                    view.kind === 'todo'
-                      ? c.home.path(step.step, step.steps)
-                      : view.kind === 'bonus'
-                        ? c.home.bonusKicker(view.questions)
+              <View onLayout={(e) => (blockTop.current = e.nativeEvent.layout.y)}>
+                <Appear once="home:chemin" delay={60}>
+                  <SessionBanner
+                    tone={view.kind === 'todo' || view.kind === 'bonus' ? 'unit' : 'calm'}
+                    kicker={
+                      view.kind === 'todo'
+                        ? c.home.path(step.step, step.steps)
+                        : view.kind === 'bonus'
+                          ? c.home.bonusKicker(view.questions)
+                          : view.kind === 'done'
+                            ? c.home.doneKicker
+                            : c.home.restKicker
+                    }
+                    title={
+                      view.kind === 'todo' || view.kind === 'bonus'
+                        ? view.unitTitle
                         : view.kind === 'done'
-                          ? c.home.doneKicker
-                          : c.home.restKicker
-                  }
-                  title={
-                    view.kind === 'todo' || view.kind === 'bonus'
-                      ? view.unitTitle
-                      : view.kind === 'done'
-                        ? c.home.doneTitle
-                        : c.home.restTitle
-                  }
-                  note={view.kind === 'todo' ? null : view.kind === 'bonus' ? c.home.note : c.home.doneNote}
-                  progress={view.kind === 'todo' && step.steps > 0 ? step.step / step.steps : null}
-                  onPress={
-                    view.kind === 'todo' || view.kind === 'bonus'
-                      ? openSeance
-                      : lastResult
-                        ? () => router.push({ pathname: '/chemin/fin', params: { id: lastResult } })
+                          ? c.home.doneTitle
+                          : c.home.restTitle
+                    }
+                    note={view.kind === 'todo' ? null : view.kind === 'bonus' ? c.home.note : c.home.doneNote}
+                    progress={view.kind === 'todo' && step.steps > 0 ? step.step / step.steps : null}
+                    onPress={
+                      view.kind === 'todo' || view.kind === 'bonus'
+                        ? openSeance
+                        : lastResult
+                          ? () => router.push({ pathname: '/chemin/fin', params: { id: lastResult } })
+                          : undefined
+                    }
+                    accessibilityLabel={
+                      view.kind === 'todo' || view.kind === 'bonus'
+                        ? c.home.startA11y(view.unitTitle)
                         : undefined
-                  }
-                  accessibilityLabel={
-                    view.kind === 'todo' || view.kind === 'bonus'
-                      ? c.home.startA11y(view.unitTitle)
-                      : undefined
-                  }
-                  footer={
-                    view.kind === 'done' && !lastResult && view.hint ? (
-                      <Banner tone="info" text={view.hint} />
-                    ) : undefined
-                  }
-                />
-                <CheminPath
-                  nodes={pathWindow(cm).map((n) => ({
-                    key: n.key,
-                    kind: n.kind,
-                    accessibilityLabel: nodeLabel(n),
-                  }))}
-                  startLabel={view.kind === 'todo' || view.kind === 'bonus' ? c.home.start : null}
-                  onStart={view.kind === 'todo' || view.kind === 'bonus' ? openSeance : undefined}
-                  pet={{ species: p.species, outfit: p.outfit, id: p.id }}
-                  streak={{
-                    label: c.home.streak(cm.streak.current),
-                    accessibilityLabel: c.home.streakA11y(cm.streak.current),
-                    onPress: () => router.push('/pet/serie'),
-                  }}
-                />
-              </Appear>
+                    }
+                    footer={
+                      view.kind === 'done' && !me.data?.plus ? (
+                        <Button
+                          label={c.home.morePlus}
+                          variant="glass"
+                          size="md"
+                          icon="plus"
+                          onPress={() => openPlus('chemin_more')}
+                        />
+                      ) : undefined
+                    }
+                  />
+                  <View onLayout={(e) => (pathTop.current = blockTop.current + e.nativeEvent.layout.y)}>
+                    <CheminPath
+                      nodes={pathAll(cm).map((n) =>
+                        n.kind === 'unit'
+                          ? {
+                              key: n.key,
+                              kind: n.kind,
+                              index: (n.unitIndex ?? 1) - 1,
+                              subtitle: c.home.unitKicker(n.unitIndex ?? 1, n.done ?? 0, n.total ?? 0),
+                              title: n.title,
+                              accessibilityLabel: `${c.home.unitKicker(n.unitIndex ?? 1, n.done ?? 0, n.total ?? 0)}, ${n.title}`,
+                            }
+                          : { key: n.key, kind: n.kind, accessibilityLabel: nodeLabel(n) },
+                      )}
+                      onCurrentY={(y) => {
+                        // Une seule fois par ouverture : l'écran descend jusqu'à l'étape du jour si elle est loin.
+                        if (scrolledTo.current || y < 260) return;
+                        scrolledTo.current = true;
+                        setTimeout(
+                          () => scrollRef.current?.scrollTo({ y: pathTop.current + y - 240, animated: true }),
+                          350,
+                        );
+                      }}
+                      startLabel={view.kind === 'todo' || view.kind === 'bonus' ? c.home.start : null}
+                      onStart={view.kind === 'todo' || view.kind === 'bonus' ? openSeance : undefined}
+                      pet={{ species: p.species, outfit: p.outfit, id: p.id }}
+                      league={
+                        lg && myRank
+                          ? {
+                              tier: lg.tier,
+                              label: lp.league.pill(lp.league.tiers[lg.tier], myRank),
+                              accessibilityLabel: lp.league.pillA11y(lp.league.tiers[lg.tier], myRank),
+                              up: lg.toPromote === 0,
+                              onPress: () => router.push('/moi/ligue'),
+                            }
+                          : null
+                      }
+                      streak={{
+                        label: c.home.streak(cm.streak.current),
+                        accessibilityLabel: c.home.streakA11y(cm.streak.current),
+                        onPress: () => router.push('/pet/serie'),
+                      }}
+                    />
+                  </View>
+                </Appear>
+              </View>
             ) : chemin.isPending ? (
               <Skeleton height={220} radius="lg" />
             ) : chemin.isError ? (

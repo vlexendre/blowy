@@ -12,7 +12,7 @@ export const chemin = messages({
   fr: {
     home: {
       kicker: (n: number): string => `Séance du jour · ${n} questions · 2 min`,
-      bonusKicker: (n: number): string => `Séance bonus · ${n} questions · 2 min`,
+      bonusKicker: (n: number): string => `Étape suivante · ${n} questions · Minimoa+`,
       path: (i: number, n: number): string => `Ton chemin · étape ${i} sur ${n}`,
       note: 'À la fin : ta personne du jour',
       start: 'Commencer',
@@ -20,6 +20,8 @@ export const chemin = messages({
       doneKicker: 'Séance du jour faite',
       doneTitle: 'Ta personne du jour',
       doneNote: 'Demain, une nouvelle séance',
+      morePlus: 'Enchaîner les étapes avec Minimoa+',
+      unitKicker: (i: number, done: number, total: number): string => `Univers ${i} · ${done} sur ${total}`,
       doneAction: 'Revoir ta personne du jour',
       restKicker: 'C’est tout pour aujourd’hui',
       restTitle: 'À demain',
@@ -163,7 +165,7 @@ export const chemin = messages({
   en: {
     home: {
       kicker: (n: number): string => `Today’s session · ${n} questions · 2 min`,
-      bonusKicker: (n: number): string => `Bonus session · ${n} questions · 2 min`,
+      bonusKicker: (n: number): string => `Next step · ${n} questions · Minimoa+`,
       path: (i: number, n: number): string => `Your path · step ${i} of ${n}`,
       note: 'At the end: your person of the day',
       start: 'Start',
@@ -171,6 +173,8 @@ export const chemin = messages({
       doneKicker: 'Today’s session done',
       doneTitle: 'Your person of the day',
       doneNote: 'Tomorrow, a new session',
+      morePlus: 'Keep going with Minimoa+',
+      unitKicker: (i: number, done: number, total: number): string => `World ${i} · ${done} of ${total}`,
       doneAction: 'See your person of the day',
       restKicker: 'That’s all for today',
       restTitle: 'See you tomorrow',
@@ -311,7 +315,7 @@ export const chemin = messages({
   es: {
     home: {
       kicker: (n: number): string => `Sesión del día · ${n} preguntas · 2 min`,
-      bonusKicker: (n: number): string => `Sesión extra · ${n} preguntas · 2 min`,
+      bonusKicker: (n: number): string => `Siguiente paso · ${n} preguntas · Minimoa+`,
       path: (i: number, n: number): string => `Tu camino · paso ${i} de ${n}`,
       note: 'Al final: tu persona del día',
       start: 'Empezar',
@@ -319,6 +323,8 @@ export const chemin = messages({
       doneKicker: 'Sesión del día hecha',
       doneTitle: 'Tu persona del día',
       doneNote: 'Mañana, una nueva sesión',
+      morePlus: 'Seguir avanzando con Minimoa+',
+      unitKicker: (i: number, done: number, total: number): string => `Universo ${i} · ${done} de ${total}`,
       doneAction: 'Volver a ver a tu persona del día',
       restKicker: 'Eso es todo por hoy',
       restTitle: 'Hasta mañana',
@@ -459,7 +465,7 @@ export const chemin = messages({
   pt: {
     home: {
       kicker: (n: number): string => `Sessão do dia · ${n} perguntas · 2 min`,
-      bonusKicker: (n: number): string => `Sessão bônus · ${n} perguntas · 2 min`,
+      bonusKicker: (n: number): string => `Próxima etapa · ${n} perguntas · Minimoa+`,
       path: (i: number, n: number): string => `Seu caminho · etapa ${i} de ${n}`,
       note: 'No final: sua pessoa do dia',
       start: 'Começar',
@@ -467,6 +473,8 @@ export const chemin = messages({
       doneKicker: 'Sessão do dia feita',
       doneTitle: 'Sua pessoa do dia',
       doneNote: 'Amanhã, uma nova sessão',
+      morePlus: 'Continuar avançando com o Minimoa+',
+      unitKicker: (i: number, done: number, total: number): string => `Universo ${i} · ${done} de ${total}`,
       doneAction: 'Ver de novo sua pessoa do dia',
       restKicker: 'Por hoje é só',
       restTitle: 'Até amanhã',
@@ -609,7 +617,7 @@ export const chemin = messages({
   nl: {
     home: {
       kicker: (n: number): string => `Sessie van vandaag · ${n} vragen · 2 min`,
-      bonusKicker: (n: number): string => `Bonussessie · ${n} vragen · 2 min`,
+      bonusKicker: (n: number): string => `Volgende stap · ${n} vragen · Minimoa+`,
       path: (i: number, n: number): string => `Je pad · stap ${i} van ${n}`,
       note: 'Aan het eind: je persoon van de dag',
       start: 'Beginnen',
@@ -617,6 +625,8 @@ export const chemin = messages({
       doneKicker: 'Sessie van vandaag gedaan',
       doneTitle: 'Je persoon van de dag',
       doneNote: 'Morgen een nieuwe sessie',
+      morePlus: 'Doorgaan met Minimoa+',
+      unitKicker: (i: number, done: number, total: number): string => `Wereld ${i} · ${done} van ${total}`,
       doneAction: 'Je persoon van de dag terugzien',
       restKicker: 'Dat was het voor vandaag',
       restTitle: 'Tot morgen',

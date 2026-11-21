@@ -17,19 +17,26 @@ const fr = {
     today: {
       todo: ((m) => `${m} a 5 questions pour toi. 2 minutes.`) as M,
       done: ((m) => `Séance faite. ${m} revient demain avec 5 nouvelles questions.`) as M,
-      bonus: 'Séance bonus débloquée. Elle t’attend.',
+      bonus: 'Avec Minimoa+, l’étape suivante t’attend déjà.',
       all_done: 'Séance et bonus faits. À demain !',
     },
   },
   bonusHint: 'Invite un pote ou réponds à un bonjour : une séance bonus t’attend.',
   session: {
-    intro: [(m) => `${m} a préparé 5 questions. C’est parti ?`, (m) => `Cinq questions, deux minutes. ${m} est tout ouïe.`] as M[],
+    intro: [
+      (m) => `${m} a préparé 5 questions. C’est parti ?`,
+      (m) => `Cinq questions, deux minutes. ${m} est tout ouïe.`,
+    ] as M[],
     review: ((m) => `${m} révise avec toi : quelques questions déjà vues, pour voir si ça a bougé.`) as M,
     bonus: 'Séance bonus ! Merci d’avoir fait venir du monde.',
     quotaUsed: ((m) => `C’est tout pour aujourd’hui. ${m} revient demain avec la suite.`) as M,
     nothingLeft: 'Plus de nouvelles questions pour l’instant. Reviens bientôt, il y en aura d’autres.',
   },
-  knows: { little: 'Il te connaît un peu', well: 'Il te connaît bien', very_well: 'Il te connaît très bien' } as Record<KnowsLevel, string>,
+  knows: {
+    little: 'Il te connaît un peu',
+    well: 'Il te connaît bien',
+    very_well: 'Il te connaît très bien',
+  } as Record<KnowsLevel, string>,
   revelation: {
     title: ((m) => `Ce que ${m} a appris`) as M,
     none: 'Merci pour tes réponses. Il range tout ça précieusement.',
@@ -81,15 +88,31 @@ const fr = {
   person: {
     title: 'Ta personne du jour',
     together: 'Vous deux :',
-    line: [(m: string, name: string) => `${m} a trouvé quelqu’un qui a répondu comme toi : ${name}.`, (m: string, name: string) => `${name} habite pas loin. ${m} pense que vous allez bien vous entendre.`],
+    line: [
+      (m: string, name: string) => `${m} a trouvé quelqu’un qui a répondu comme toi : ${name}.`,
+      (m: string, name: string) => `${name} habite pas loin. ${m} pense que vous allez bien vous entendre.`,
+    ],
     openerFallback: 'Demande-lui ce qui a rendu sa journée meilleure.',
   },
   empty: {
-    first_here: { title: 'Tu es parmi les premiers ici', text: (m) => `${m} garde l’œil ouvert : dès que quelqu’un qui te ressemble arrive près de chez toi, il te le présente. Invite un pote pour accélérer les choses.` },
-    no_location: { title: 'Où est ton coin ?', text: (m) => `Choisis ta zone : sans elle, ${m} ne peut présenter personne près de chez toi.` },
-    not_ready: { title: 'Encore une ou deux séances', text: (m) => `${m} veut mieux te connaître avant de te présenter quelqu’un.` },
+    first_here: {
+      title: 'Tu es parmi les premiers ici',
+      text: (m) =>
+        `${m} garde l’œil ouvert : dès que quelqu’un qui te ressemble arrive près de chez toi, il te le présente. Invite un pote pour accélérer les choses.`,
+    },
+    no_location: {
+      title: 'Où est ton coin ?',
+      text: (m) => `Choisis ta zone : sans elle, ${m} ne peut présenter personne près de chez toi.`,
+    },
+    not_ready: {
+      title: 'Encore une ou deux séances',
+      text: (m) => `${m} veut mieux te connaître avant de te présenter quelqu’un.`,
+    },
   } as Record<'first_here' | 'no_location' | 'not_ready', Empty>,
-  errors: { session: 'Cette séance n’existe pas.', answers: 'Réponds à chaque question de la séance, une fois chacune.' },
+  errors: {
+    session: 'Cette séance n’existe pas.',
+    answers: 'Réponds à chaque question de la séance, une fois chacune.',
+  },
   tags: {
     calme: 'le goût du calme',
     monde: 'les soirées avec du monde',
@@ -126,13 +149,16 @@ export const cheminText = defineMessages({
       today: {
         todo: (m) => `${m} has 5 questions for you. 2 minutes.`,
         done: (m) => `Session done. ${m} will be back tomorrow with 5 new questions.`,
-        bonus: 'Bonus session unlocked. It’s waiting for you.',
+        bonus: 'With Minimoa+, the next step is already waiting.',
         all_done: 'Session and bonus done. See you tomorrow!',
       },
     },
     bonusHint: 'Invite a friend or answer a hello: a bonus session is waiting.',
     session: {
-      intro: [(m) => `${m} has 5 questions ready. Shall we?`, (m) => `Five questions, two minutes. ${m} is all ears.`],
+      intro: [
+        (m) => `${m} has 5 questions ready. Shall we?`,
+        (m) => `Five questions, two minutes. ${m} is all ears.`,
+      ],
       review: (m) => `${m} is reviewing with you: a few questions you’ve seen, to see if anything changed.`,
       bonus: 'Bonus session! Thanks for bringing people in.',
       quotaUsed: (m) => `That’s it for today. ${m} will be back tomorrow with more.`,
@@ -143,19 +169,45 @@ export const cheminText = defineMessages({
       title: (m) => `What ${m} learned`,
       none: 'Thanks for your answers. It’s keeping them safe.',
       axes: {
-        foyer: { high: 'You build a nest where everyone has a place.', low: 'You treasure your freedom.', mid: 'You get the mix right: your people, and some air.' },
-        ancrage: { high: 'Elsewhere is calling you.', low: 'Your roots carry you.', mid: 'You love your corner, but the door stays ajar.' },
-        elan: { high: 'Your pockets are full of projects.', low: 'You know how to take your time, and that’s a talent.', mid: 'You move forward without rushing.' },
-        rythme: { high: 'You recharge around other people.', low: 'Calm puts you back on your feet.', mid: 'You go from couch to party with ease.' },
-        cap: { high: 'You like knowing where you’re going.', low: 'You leave room for the unexpected.', mid: 'A plan, yes, but a flexible one.' },
+        foyer: {
+          high: 'You build a nest where everyone has a place.',
+          low: 'You treasure your freedom.',
+          mid: 'You get the mix right: your people, and some air.',
+        },
+        ancrage: {
+          high: 'Elsewhere is calling you.',
+          low: 'Your roots carry you.',
+          mid: 'You love your corner, but the door stays ajar.',
+        },
+        elan: {
+          high: 'Your pockets are full of projects.',
+          low: 'You know how to take your time, and that’s a talent.',
+          mid: 'You move forward without rushing.',
+        },
+        rythme: {
+          high: 'You recharge around other people.',
+          low: 'Calm puts you back on your feet.',
+          mid: 'You go from couch to party with ease.',
+        },
+        cap: {
+          high: 'You like knowing where you’re going.',
+          low: 'You leave room for the unexpected.',
+          mid: 'A plan, yes, but a flexible one.',
+        },
       },
     },
     types: {
-      phare: { name: 'The lighthouse', line: 'Calm, reliable, a clear course: people find their way thanks to you.' },
+      phare: {
+        name: 'The lighthouse',
+        line: 'Calm, reliable, a clear course: people find their way thanks to you.',
+      },
       cocon: { name: 'The cocoon', line: 'Cozy and organized: everyone feels good at your place.' },
       atelier: { name: 'The workshop', line: 'Quiet and full of ideas: you build your projects your way.' },
       hamac: { name: 'The hammock', line: 'Easygoing and free: you know how to savor the moment.' },
-      locomotive: { name: 'The locomotive', line: 'Out and about, organized, ambitious: you bring others along.' },
+      locomotive: {
+        name: 'The locomotive',
+        line: 'Out and about, organized, ambitious: you bring others along.',
+      },
       hote: { name: 'The host', line: 'You love having people over, and planning so the party is perfect.' },
       comete: { name: 'The comet', line: 'Always on the move, always a new idea.' },
       fanfare: { name: 'The marching band', line: 'Wherever you go, things liven up, no plan needed.' },
@@ -170,15 +222,31 @@ export const cheminText = defineMessages({
     person: {
       title: 'Your person of the day',
       together: 'You two:',
-      line: [(m: string, name: string) => `${m} found someone who answered like you: ${name}.`, (m: string, name: string) => `${name} lives nearby. ${m} thinks you’ll get along.`],
+      line: [
+        (m: string, name: string) => `${m} found someone who answered like you: ${name}.`,
+        (m: string, name: string) => `${name} lives nearby. ${m} thinks you’ll get along.`,
+      ],
       openerFallback: 'Ask them what made their day better.',
     },
     empty: {
-      first_here: { title: 'You’re one of the first here', text: (m) => `${m} is keeping an eye out: as soon as someone like you shows up nearby, you’ll be introduced. Invite a friend to speed things up.` },
-      no_location: { title: 'Where’s your corner?', text: (m) => `Choose your area: without it, ${m} can’t introduce anyone near you.` },
-      not_ready: { title: 'One or two more sessions', text: (m) => `${m} wants to know you better before introducing someone.` },
+      first_here: {
+        title: 'You’re one of the first here',
+        text: (m) =>
+          `${m} is keeping an eye out: as soon as someone like you shows up nearby, you’ll be introduced. Invite a friend to speed things up.`,
+      },
+      no_location: {
+        title: 'Where’s your corner?',
+        text: (m) => `Choose your area: without it, ${m} can’t introduce anyone near you.`,
+      },
+      not_ready: {
+        title: 'One or two more sessions',
+        text: (m) => `${m} wants to know you better before introducing someone.`,
+      },
     },
-    errors: { session: 'This session doesn’t exist.', answers: 'Answer each question of the session, once each.' },
+    errors: {
+      session: 'This session doesn’t exist.',
+      answers: 'Answer each question of the session, once each.',
+    },
     tags: {
       calme: 'a love of calm',
       monde: 'evenings with people',
@@ -212,13 +280,16 @@ export const cheminText = defineMessages({
       today: {
         todo: (m) => `${m} tiene 5 preguntas para ti. 2 minutos.`,
         done: (m) => `Sesión hecha. ${m} vuelve mañana con 5 preguntas nuevas.`,
-        bonus: 'Sesión extra desbloqueada. Te está esperando.',
+        bonus: 'Con Minimoa+, el siguiente paso ya te espera.',
         all_done: 'Sesión y extra hechas. ¡Hasta mañana!',
       },
     },
     bonusHint: 'Invita a un amigo o responde a un saludo: te espera una sesión extra.',
     session: {
-      intro: [(m) => `${m} ha preparado 5 preguntas. ¿Empezamos?`, (m) => `Cinco preguntas, dos minutos. ${m} es todo oídos.`],
+      intro: [
+        (m) => `${m} ha preparado 5 preguntas. ¿Empezamos?`,
+        (m) => `Cinco preguntas, dos minutos. ${m} es todo oídos.`,
+      ],
       review: (m) => `${m} repasa contigo: algunas preguntas ya vistas, para ver si algo ha cambiado.`,
       bonus: '¡Sesión extra! Gracias por traer gente.',
       quotaUsed: (m) => `Eso es todo por hoy. ${m} vuelve mañana con más.`,
@@ -229,20 +300,49 @@ export const cheminText = defineMessages({
       title: (m) => `Lo que ${m} ha aprendido`,
       none: 'Gracias por tus respuestas. Las guarda con cariño.',
       axes: {
-        foyer: { high: 'Tú construyes un nido donde todos tienen su sitio.', low: 'Tú cuidas tu libertad como oro en paño.', mid: 'Tú sabes dosificar: los tuyos, y un poco de aire.' },
-        ancrage: { high: 'A ti te llama otro lugar.', low: 'A ti tus raíces te sostienen.', mid: 'Tú quieres tu rincón, pero la puerta sigue entreabierta.' },
-        elan: { high: 'Tú tienes los bolsillos llenos de proyectos.', low: 'Tú sabes tomarte tu tiempo, y es un talento.', mid: 'Tú avanzas sin prisa.' },
-        rythme: { high: 'Tú recargas pilas con los demás.', low: 'A ti la calma te devuelve la energía.', mid: 'Tú pasas del sofá a la fiesta sin esfuerzo.' },
-        cap: { high: 'A ti te gusta saber adónde vas.', low: 'Tú dejas sitio a lo imprevisto.', mid: 'Un plan, sí, pero flexible.' },
+        foyer: {
+          high: 'Tú construyes un nido donde todos tienen su sitio.',
+          low: 'Tú cuidas tu libertad como oro en paño.',
+          mid: 'Tú sabes dosificar: los tuyos, y un poco de aire.',
+        },
+        ancrage: {
+          high: 'A ti te llama otro lugar.',
+          low: 'A ti tus raíces te sostienen.',
+          mid: 'Tú quieres tu rincón, pero la puerta sigue entreabierta.',
+        },
+        elan: {
+          high: 'Tú tienes los bolsillos llenos de proyectos.',
+          low: 'Tú sabes tomarte tu tiempo, y es un talento.',
+          mid: 'Tú avanzas sin prisa.',
+        },
+        rythme: {
+          high: 'Tú recargas pilas con los demás.',
+          low: 'A ti la calma te devuelve la energía.',
+          mid: 'Tú pasas del sofá a la fiesta sin esfuerzo.',
+        },
+        cap: {
+          high: 'A ti te gusta saber adónde vas.',
+          low: 'Tú dejas sitio a lo imprevisto.',
+          mid: 'Un plan, sí, pero flexible.',
+        },
       },
     },
     types: {
-      phare: { name: 'El faro', line: 'Tranquilidad, fiabilidad y un rumbo claro: contigo la gente se orienta.' },
+      phare: {
+        name: 'El faro',
+        line: 'Tranquilidad, fiabilidad y un rumbo claro: contigo la gente se orienta.',
+      },
       cocon: { name: 'El nido', line: 'Acogedor y organizado: en tu casa todo el mundo está a gusto.' },
-      atelier: { name: 'El taller', line: 'Con calma y lleno de ideas: das forma a tus proyectos a tu manera.' },
+      atelier: {
+        name: 'El taller',
+        line: 'Con calma y lleno de ideas: das forma a tus proyectos a tu manera.',
+      },
       hamac: { name: 'La hamaca', line: 'Tranquilidad y libertad: sabes saborear el momento.' },
       locomotive: { name: 'La locomotora', line: 'Calle, organización, ambición: arrastras a los demás.' },
-      hote: { name: 'El anfitrión', line: 'Te encanta recibir, y prepararlo todo para que la fiesta salga redonda.' },
+      hote: {
+        name: 'El anfitrión',
+        line: 'Te encanta recibir, y prepararlo todo para que la fiesta salga redonda.',
+      },
       comete: { name: 'El cometa', line: 'Siempre en movimiento, siempre con una idea nueva.' },
       fanfare: { name: 'La charanga', line: 'Por donde pasas todo se anima, y sin plan.' },
     },
@@ -256,15 +356,31 @@ export const cheminText = defineMessages({
     person: {
       title: 'Tu persona del día',
       together: 'Vosotros dos:',
-      line: [(m: string, name: string) => `${m} ha encontrado a alguien que ha respondido como tú: ${name}.`, (m: string, name: string) => `${name} vive cerca. ${m} cree que os vais a llevar bien.`],
+      line: [
+        (m: string, name: string) => `${m} ha encontrado a alguien que ha respondido como tú: ${name}.`,
+        (m: string, name: string) => `${name} vive cerca. ${m} cree que os vais a llevar bien.`,
+      ],
       openerFallback: 'Pregúntale qué le ha alegrado el día.',
     },
     empty: {
-      first_here: { title: 'Estás entre los primeros aquí', text: (m) => `${m} está atento: en cuanto alguien parecido a ti llegue cerca de tu casa, te lo presentará. Invita a un amigo para acelerar las cosas.` },
-      no_location: { title: '¿Dónde está tu rincón?', text: (m) => `Elige tu zona: sin ella, ${m} no puede presentarte a nadie cerca de ti.` },
-      not_ready: { title: 'Una o dos sesiones más', text: (m) => `${m} quiere conocerte mejor antes de presentarte a alguien.` },
+      first_here: {
+        title: 'Estás entre los primeros aquí',
+        text: (m) =>
+          `${m} está atento: en cuanto alguien parecido a ti llegue cerca de tu casa, te lo presentará. Invita a un amigo para acelerar las cosas.`,
+      },
+      no_location: {
+        title: '¿Dónde está tu rincón?',
+        text: (m) => `Elige tu zona: sin ella, ${m} no puede presentarte a nadie cerca de ti.`,
+      },
+      not_ready: {
+        title: 'Una o dos sesiones más',
+        text: (m) => `${m} quiere conocerte mejor antes de presentarte a alguien.`,
+      },
     },
-    errors: { session: 'Esta sesión no existe.', answers: 'Responde a cada pregunta de la sesión, una vez cada una.' },
+    errors: {
+      session: 'Esta sesión no existe.',
+      answers: 'Responde a cada pregunta de la sesión, una vez cada una.',
+    },
     tags: {
       calme: 'el gusto por la calma',
       monde: 'las noches con gente',
@@ -298,34 +414,64 @@ export const cheminText = defineMessages({
       today: {
         todo: (m) => `${m} tem 5 perguntas para você. 2 minutos.`,
         done: (m) => `Sessão feita. ${m} volta amanhã com 5 perguntas novas.`,
-        bonus: 'Sessão bônus liberada. Ela está esperando você.',
+        bonus: 'Com o Minimoa+, a próxima etapa já está esperando.',
         all_done: 'Sessão e bônus feitos. Até amanhã!',
       },
     },
     bonusHint: 'Convide um amigo ou responda a um oi: uma sessão bônus está esperando você.',
     session: {
-      intro: [(m) => `${m} preparou 5 perguntas. Vamos?`, (m) => `Cinco perguntas, dois minutos. ${m} é todo ouvidos.`],
+      intro: [
+        (m) => `${m} preparou 5 perguntas. Vamos?`,
+        (m) => `Cinco perguntas, dois minutos. ${m} é todo ouvidos.`,
+      ],
       review: (m) => `${m} está revisando com você: algumas perguntas já vistas, para ver se algo mudou.`,
       bonus: 'Sessão bônus! Obrigado por trazer gente.',
       quotaUsed: (m) => `Por hoje é só. ${m} volta amanhã com mais.`,
       nothingLeft: 'Nenhuma pergunta nova por enquanto. Volte logo, vai ter mais.',
     },
-    knows: { little: 'Ele te conhece um pouco', well: 'Ele te conhece bem', very_well: 'Ele te conhece muito bem' },
+    knows: {
+      little: 'Ele te conhece um pouco',
+      well: 'Ele te conhece bem',
+      very_well: 'Ele te conhece muito bem',
+    },
     revelation: {
       title: (m) => `O que ${m} aprendeu`,
       none: 'Obrigado pelas respostas. Ele guarda tudo com carinho.',
       axes: {
-        foyer: { high: 'Você constrói um ninho onde todo mundo tem lugar.', low: 'Você cuida da sua liberdade como de um tesouro.', mid: 'Você sabe dosar: os seus, e um pouco de ar.' },
-        ancrage: { high: 'Outros lugares estão chamando você.', low: 'Suas raízes te sustentam.', mid: 'Você ama o seu canto, mas a porta fica entreaberta.' },
-        elan: { high: 'Você tem os bolsos cheios de projetos.', low: 'Você sabe ir com calma, e isso é um talento.', mid: 'Você avança sem pressa.' },
-        rythme: { high: 'Você se recarrega perto das pessoas.', low: 'A calma te põe de pé de novo.', mid: 'Você vai do sofá à festa sem esforço.' },
-        cap: { high: 'Você gosta de saber para onde vai.', low: 'Você deixa espaço para o imprevisto.', mid: 'Um plano, sim, mas flexível.' },
+        foyer: {
+          high: 'Você constrói um ninho onde todo mundo tem lugar.',
+          low: 'Você cuida da sua liberdade como de um tesouro.',
+          mid: 'Você sabe dosar: os seus, e um pouco de ar.',
+        },
+        ancrage: {
+          high: 'Outros lugares estão chamando você.',
+          low: 'Suas raízes te sustentam.',
+          mid: 'Você ama o seu canto, mas a porta fica entreaberta.',
+        },
+        elan: {
+          high: 'Você tem os bolsos cheios de projetos.',
+          low: 'Você sabe ir com calma, e isso é um talento.',
+          mid: 'Você avança sem pressa.',
+        },
+        rythme: {
+          high: 'Você se recarrega perto das pessoas.',
+          low: 'A calma te põe de pé de novo.',
+          mid: 'Você vai do sofá à festa sem esforço.',
+        },
+        cap: {
+          high: 'Você gosta de saber para onde vai.',
+          low: 'Você deixa espaço para o imprevisto.',
+          mid: 'Um plano, sim, mas flexível.',
+        },
       },
     },
     types: {
       phare: { name: 'O farol', line: 'Calma, confiança, um rumo claro: as pessoas se orientam por você.' },
       cocon: { name: 'O casulo', line: 'Aconchegante e organizado: na sua casa todo mundo se sente bem.' },
-      atelier: { name: 'O ateliê', line: 'Na calma e cheio de ideias: você cria seus projetos do seu jeito.' },
+      atelier: {
+        name: 'O ateliê',
+        line: 'Na calma e cheio de ideias: você cria seus projetos do seu jeito.',
+      },
       hamac: { name: 'A rede', line: 'Tranquilidade e liberdade: você sabe saborear o momento.' },
       locomotive: { name: 'A locomotiva', line: 'Na rua, organizado, ambicioso: você leva os outros junto.' },
       hote: { name: 'O anfitrião', line: 'Você adora receber, e planejar tudo para a festa ser linda.' },
@@ -342,15 +488,31 @@ export const cheminText = defineMessages({
     person: {
       title: 'Sua pessoa do dia',
       together: 'Vocês dois:',
-      line: [(m: string, name: string) => `${m} encontrou alguém que respondeu como você: ${name}.`, (m: string, name: string) => `${name} mora perto. ${m} acha que vocês vão se dar bem.`],
+      line: [
+        (m: string, name: string) => `${m} encontrou alguém que respondeu como você: ${name}.`,
+        (m: string, name: string) => `${name} mora perto. ${m} acha que vocês vão se dar bem.`,
+      ],
       openerFallback: 'Pergunte o que deixou o dia dessa pessoa melhor.',
     },
     empty: {
-      first_here: { title: 'Você está entre os primeiros aqui', text: (m) => `${m} está de olho: assim que alguém parecido com você chegar perto da sua casa, ele vai te apresentar. Convide um amigo para acelerar.` },
-      no_location: { title: 'Onde fica o seu canto?', text: (m) => `Escolha sua região: sem ela, ${m} não pode apresentar ninguém perto de você.` },
-      not_ready: { title: 'Mais uma ou duas sessões', text: (m) => `${m} quer te conhecer melhor antes de apresentar alguém.` },
+      first_here: {
+        title: 'Você está entre os primeiros aqui',
+        text: (m) =>
+          `${m} está de olho: assim que alguém parecido com você chegar perto da sua casa, ele vai te apresentar. Convide um amigo para acelerar.`,
+      },
+      no_location: {
+        title: 'Onde fica o seu canto?',
+        text: (m) => `Escolha sua região: sem ela, ${m} não pode apresentar ninguém perto de você.`,
+      },
+      not_ready: {
+        title: 'Mais uma ou duas sessões',
+        text: (m) => `${m} quer te conhecer melhor antes de apresentar alguém.`,
+      },
     },
-    errors: { session: 'Esta sessão não existe.', answers: 'Responda a cada pergunta da sessão, uma vez cada.' },
+    errors: {
+      session: 'Esta sessão não existe.',
+      answers: 'Responda a cada pergunta da sessão, uma vez cada.',
+    },
     tags: {
       calme: 'o gosto pela calma',
       monde: 'as noites com gente',
@@ -384,14 +546,18 @@ export const cheminText = defineMessages({
       today: {
         todo: (m) => `${m} heeft 5 vragen voor je. 2 minuten.`,
         done: (m) => `Sessie gedaan. ${m} komt morgen terug met 5 nieuwe vragen.`,
-        bonus: 'Bonussessie ontgrendeld. Hij wacht op je.',
+        bonus: 'Met Minimoa+ wacht de volgende stap al op je.',
         all_done: 'Sessie en bonus gedaan. Tot morgen!',
       },
     },
     bonusHint: 'Nodig een vriend uit of beantwoord een hallo: er wacht een bonussessie.',
     session: {
-      intro: [(m) => `${m} heeft 5 vragen klaar. Zullen we?`, (m) => `Vijf vragen, twee minuten. ${m} is één en al oor.`],
-      review: (m) => `${m} herhaalt met je: een paar vragen die je al zag, om te zien of er iets veranderd is.`,
+      intro: [
+        (m) => `${m} heeft 5 vragen klaar. Zullen we?`,
+        (m) => `Vijf vragen, twee minuten. ${m} is één en al oor.`,
+      ],
+      review: (m) =>
+        `${m} herhaalt met je: een paar vragen die je al zag, om te zien of er iets veranderd is.`,
       bonus: 'Bonussessie! Bedankt dat je mensen meebrengt.',
       quotaUsed: (m) => `Dat was het voor vandaag. ${m} komt morgen terug met meer.`,
       nothingLeft: 'Even geen nieuwe vragen. Kom snel terug, er komen er meer.',
@@ -401,20 +567,46 @@ export const cheminText = defineMessages({
       title: (m) => `Wat ${m} heeft geleerd`,
       none: 'Bedankt voor je antwoorden. Hij bewaart ze goed.',
       axes: {
-        foyer: { high: 'Jij bouwt een nest waar iedereen een plek heeft.', low: 'Jij koestert je vrijheid.', mid: 'Jij vindt de juiste mix: je mensen, en wat lucht.' },
-        ancrage: { high: 'Jij hoort het verre roepen.', low: 'Jouw wortels dragen je.', mid: 'Jij houdt van je plekje, maar de deur staat op een kier.' },
-        elan: { high: 'Jij zit vol plannen.', low: 'Jij neemt je tijd, en dat is een talent.', mid: 'Jij gaat vooruit zonder te haasten.' },
-        rythme: { high: 'Jij laadt op tussen de mensen.', low: 'Rust zet jou weer op de been.', mid: 'Jij gaat moeiteloos van bank naar feest.' },
-        cap: { high: 'Jij weet graag waar je heen gaat.', low: 'Jij laat ruimte voor het onverwachte.', mid: 'Een plan, ja, maar een soepel plan.' },
+        foyer: {
+          high: 'Jij bouwt een nest waar iedereen een plek heeft.',
+          low: 'Jij koestert je vrijheid.',
+          mid: 'Jij vindt de juiste mix: je mensen, en wat lucht.',
+        },
+        ancrage: {
+          high: 'Jij hoort het verre roepen.',
+          low: 'Jouw wortels dragen je.',
+          mid: 'Jij houdt van je plekje, maar de deur staat op een kier.',
+        },
+        elan: {
+          high: 'Jij zit vol plannen.',
+          low: 'Jij neemt je tijd, en dat is een talent.',
+          mid: 'Jij gaat vooruit zonder te haasten.',
+        },
+        rythme: {
+          high: 'Jij laadt op tussen de mensen.',
+          low: 'Rust zet jou weer op de been.',
+          mid: 'Jij gaat moeiteloos van bank naar feest.',
+        },
+        cap: {
+          high: 'Jij weet graag waar je heen gaat.',
+          low: 'Jij laat ruimte voor het onverwachte.',
+          mid: 'Een plan, ja, maar een soepel plan.',
+        },
       },
     },
     types: {
-      phare: { name: 'De vuurtoren', line: 'Rustig, betrouwbaar, een duidelijke koers: anderen vinden hun weg dankzij jou.' },
+      phare: {
+        name: 'De vuurtoren',
+        line: 'Rustig, betrouwbaar, een duidelijke koers: anderen vinden hun weg dankzij jou.',
+      },
       cocon: { name: 'De cocon', line: 'Knus en georganiseerd: bij jou voelt iedereen zich thuis.' },
       atelier: { name: 'De werkplaats', line: 'Rustig en vol ideeën: je bouwt je projecten op jouw manier.' },
       hamac: { name: 'De hangmat', line: 'Relaxed en vrij: jij weet te genieten van het moment.' },
       locomotive: { name: 'De locomotief', line: 'Op pad, georganiseerd, ambitieus: jij neemt anderen mee.' },
-      hote: { name: 'De gastheer', line: 'Je ontvangt graag mensen, en plant alles zodat het feest geslaagd is.' },
+      hote: {
+        name: 'De gastheer',
+        line: 'Je ontvangt graag mensen, en plant alles zodat het feest geslaagd is.',
+      },
       comete: { name: 'De komeet', line: 'Altijd in beweging, altijd een nieuw idee.' },
       fanfare: { name: 'De fanfare', line: 'Waar jij komt, wordt het levendig, zonder plan.' },
     },
@@ -428,15 +620,31 @@ export const cheminText = defineMessages({
     person: {
       title: 'Jouw persoon van de dag',
       together: 'Jullie twee:',
-      line: [(m: string, name: string) => `${m} vond iemand die net als jij antwoordde: ${name}.`, (m: string, name: string) => `${name} woont dichtbij. ${m} denkt dat het klikt.`],
+      line: [
+        (m: string, name: string) => `${m} vond iemand die net als jij antwoordde: ${name}.`,
+        (m: string, name: string) => `${name} woont dichtbij. ${m} denkt dat het klikt.`,
+      ],
       openerFallback: 'Vraag wat de dag van die persoon beter maakte.',
     },
     empty: {
-      first_here: { title: 'Je bent een van de eersten hier', text: (m) => `${m} houdt een oogje in het zeil: zodra er iemand zoals jij in de buurt komt, stelt hij jullie voor. Nodig een vriend uit om het te versnellen.` },
-      no_location: { title: 'Waar is jouw plek?', text: (m) => `Kies je gebied: zonder kan ${m} niemand bij jou in de buurt voorstellen.` },
-      not_ready: { title: 'Nog een of twee sessies', text: (m) => `${m} wil je beter leren kennen voordat hij iemand voorstelt.` },
+      first_here: {
+        title: 'Je bent een van de eersten hier',
+        text: (m) =>
+          `${m} houdt een oogje in het zeil: zodra er iemand zoals jij in de buurt komt, stelt hij jullie voor. Nodig een vriend uit om het te versnellen.`,
+      },
+      no_location: {
+        title: 'Waar is jouw plek?',
+        text: (m) => `Kies je gebied: zonder kan ${m} niemand bij jou in de buurt voorstellen.`,
+      },
+      not_ready: {
+        title: 'Nog een of twee sessies',
+        text: (m) => `${m} wil je beter leren kennen voordat hij iemand voorstelt.`,
+      },
     },
-    errors: { session: 'Deze sessie bestaat niet.', answers: 'Beantwoord elke vraag van de sessie, één keer.' },
+    errors: {
+      session: 'Deze sessie bestaat niet.',
+      answers: 'Beantwoord elke vraag van de sessie, één keer.',
+    },
     tags: {
       calme: 'liefde voor rust',
       monde: 'avonden met mensen',
