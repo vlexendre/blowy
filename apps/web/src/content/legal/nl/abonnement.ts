@@ -22,7 +22,7 @@ export const abonnement: LegalPage = {
     {
       ul: [
         '**De hele kaart**, en **van stad wisselen wanneer je wilt**, zonder te verhuizen. Zonder Minimoa+ zie je je gebied (ongeveer 1,5 km om je heen); zonder locatie kies je zelf je stad, maximaal eens per 30 dagen.',
-        '**Elke dag één ontmoeting extra.**',
+        '**10 mensen per dag voorgesteld in plaats van 3.**',
         '**3 reeksjokers per week** om je reeks te beschermen (zonder Minimoa+: één per week).',
         '**Tot 6 gewoontes** tegelijk (zonder Minimoa+: 2).',
         'Het **uitgebreide zondagsoverzicht**: hoe je kijk over 4 weken is veranderd en een check-up van elke band.',

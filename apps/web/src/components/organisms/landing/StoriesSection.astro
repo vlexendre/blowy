@@ -1,0 +1,131 @@
+---
+/**
+ * « Fais-en ta story » : cinq moments de l'app au format story (9:16), tels qu'on les partage. La série qui monte, la
+ * personne présentée, le point commun d'une question surprise, la ligue, les trophées. Rangée qui défile au doigt sur
+ * téléphone, éventail incliné sur grand écran.
+ */
+import { smallest } from '../../../lib/img';
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { IMG, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].stories;
+const V = '/img/v7';
+const days = c.streak.days;
+---
+<SnapSection section={sections.stories} panel="p-violet s-stories">
+  <SectionTitle lines={c.title}>
+    <p class="lead" data-r="up">{c.lead}</p>
+  </SectionTitle>
+  <div class="strow" role="list" aria-label={c.label}>
+    <article class="st st-serie" role="listitem" aria-label={c.streak.alt}>
+      <div class="st-bars" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      <p class="st-who" aria-hidden="true"><img src={smallest('/img/nino_face.webp')} alt="" loading="lazy" />Nino · {c.ago}</p>
+      <img class="st-pet" src={smallest(`${IMG}/nino_fier.webp`)} alt="" loading="lazy" />
+      <p class="st-big">13</p>
+      <p class="st-cap">{c.streak.unit}</p>
+      <div class="st-week" aria-hidden="true">{days.map((d, i) => <span class={i < 3 ? 'ok' : undefined}><b>{d}</b><i>{i < 3 ? '✓' : ''}</i></span>)}</div>
+    </article>
+    <article class="st st-intro" role="listitem" aria-label={c.intro.alt}>
+      <div class="st-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+      <p class="st-who" aria-hidden="true"><img src={smallest('/img/nino_face.webp')} alt="" loading="lazy" />Nino · {c.ago}</p>
+      <p class="st-head">{c.intro.head}</p>
+      <img class="st-duo" src={smallest(`${IMG}/duo_check.webp`)} alt="" loading="lazy" />
+      <p class="st-chip">{c.intro.chip}</p>
+    </article>
+    <article class="st st-commun" role="listitem" aria-label={c.common.alt}>
+      <div class="st-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+      <p class="st-who" aria-hidden="true"><img src={smallest('/img/suzie_face.webp')} alt="" loading="lazy" />Suzie · {c.ago}</p>
+      <img class="st-suzie" src={smallest('/img/suzie_amour.webp')} alt="" loading="lazy" />
+      <div class="st-chat" aria-hidden="true">
+        <span class="pet">{c.common.question}</span>
+        <span class="me">{c.common.me}</span>
+        <span class="them">{c.common.them}</span>
+      </div>
+      <p class="st-win">{c.common.win}</p>
+    </article>
+    <article class="st st-ligue" role="listitem" aria-label={c.league.alt}>
+      <div class="st-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+      <p class="st-who" aria-hidden="true"><img src={smallest('/img/pia_face.webp')} alt="" loading="lazy" />Pia · {c.ago}</p>
+      <img class="st-badge" src={`${V}/ligue_couronne.webp`} alt="" loading="lazy" />
+      <p class="st-head">{c.league.head}</p>
+      <p class="st-chip">{c.league.chip}</p>
+    </article>
+    <article class="st st-troph" role="listitem" aria-label={c.trophies.alt}>
+      <div class="st-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+      <p class="st-who" aria-hidden="true"><img src={smallest('/img/gaston_face.webp')} alt="" loading="lazy" />Gaston · {c.ago}</p>
+      <div class="st-cups" aria-hidden="true">
+        <img src={`${V}/trophee_bonjour_argent.webp`} alt="" loading="lazy" />
+        <img class="mid" src={`${V}/trophee_serie_or.webp`} alt="" loading="lazy" />
+        <img src={`${V}/trophee_communs_bronze.webp`} alt="" loading="lazy" />
+      </div>
+      <p class="st-head">{c.trophies.head}</p>
+      <p class="st-chip">{c.trophies.chip}</p>
+    </article>
+  </div>
+  <p class="st-tag" data-r="up">{c.tag}</p>
+</SnapSection>
+<style is:global>
+.s-stories{grid-template-rows:auto minmax(0,1fr) auto;text-align:center;justify-items:center}
+.s-stories .hd{--k:10}
+.s-stories .lead{margin-left:auto;margin-right:auto;text-align:center;max-width:30em}
+.strow{--h:min(56svh,520px);--w:calc(var(--h) * .5625);width:100%;min-height:0;display:flex;gap:14px;align-items:center;overflow-x:auto;scroll-snap-type:x mandatory;padding:12px 18px 18px;margin:0 -18px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.strow::-webkit-scrollbar{display:none}
+.st{position:relative;flex:0 0 var(--w);height:var(--h);scroll-snap-align:center;border-radius:24px;overflow:hidden;padding:14px 14px 16px;display:flex;flex-direction:column;align-items:center;text-align:center;color:#fff;box-shadow:0 22px 44px rgba(20,16,31,.35);isolation:isolate}
+.st::after{content:'';position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);pointer-events:none}
+.st-bars{display:flex;gap:4px;width:100%}
+.st-bars i{flex:1 1 0;height:3px;border-radius:9px;background:rgba(255,255,255,.35)}
+.st-bars i.on{background:#fff}
+.st-who{display:flex;align-items:center;gap:7px;align-self:flex-start;margin:8px 0 0;font-size:12px;font-weight:800}
+.st-who img{width:24px;height:24px;border-radius:50%;background:#fff}
+.st-head{font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:.95;font-size:calc(var(--w) * .12);margin:8px 0 0}
+.st-chip{margin:auto 0 0;padding:8px 14px;border-radius:999px;background:#fff;color:var(--ink);font-weight:800;font-size:13px;box-shadow:0 8px 18px rgba(20,16,31,.25)}
+/* 1. La série : orange plein, le grand nombre */
+.st-serie{background:linear-gradient(180deg,#FF8A1F,#FFB13D)}
+.st-pet{width:62%;margin-top:6px;filter:drop-shadow(0 10px 14px rgba(20,16,31,.3))}
+.st-big{font-family:var(--display);font-weight:800;font-size:calc(var(--w) * .42);line-height:.85;margin:4px 0 0;color:#FFF3C4;text-shadow:0 6px 0 rgba(160,60,0,.35)}
+.st-cap{margin:2px 0 0;font-weight:800;font-size:calc(var(--w) * .075)}
+.st-week{display:flex;justify-content:space-between;width:100%;margin-top:auto}
+.st-week span{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px}
+.st-week i{width:22px;height:22px;border-radius:50%;background:rgba(20,16,31,.16);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;color:#C25E00}
+.st-week .ok i{background:#FFD23F}
+/* 2. La personne présentée : vert */
+.st-intro{background:linear-gradient(180deg,#B7E33A,#7FC41E);color:var(--ink)}
+.st-intro .st-head{margin-top:14px}
+.st-duo{width:112%;max-width:none;margin:auto -6% 0;filter:drop-shadow(0 12px 16px rgba(20,16,31,.3))}
+.st-intro .st-chip{margin-top:-6px;background:var(--ink);color:#fff}
+/* 3. Le point commun : rose, une question surprise */
+.st-commun{background:linear-gradient(180deg,#FF8FC6,#FF5FA8)}
+.st-chat{display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:100%;margin-top:10px;text-align:left;font-size:13px;font-weight:700;line-height:1.25}
+.st-chat span{display:block;width:fit-content;max-width:86%;padding:8px 12px;border-radius:16px}
+.st-suzie{width:44%;margin-top:auto;filter:drop-shadow(0 10px 14px rgba(140,29,79,.35))}
+.st-chat .pet{background:var(--ink);border-radius:16px 16px 16px 4px}
+.st-chat .me{align-self:flex-end;background:#FFB800;color:var(--ink);border-radius:16px 16px 4px 16px}
+.st-chat .them{background:#fff;color:var(--ink);border-radius:16px 16px 16px 4px}
+.st-win{margin:12px 0 0;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:calc(var(--w) * .11);line-height:.95;color:#fff;text-shadow:0 4px 0 rgba(140,29,79,.35);rotate:-3deg}
+/* 4. La ligue : violet profond, le badge */
+.st-ligue{background:radial-gradient(circle at 50% 38%,#9A6BFF 0,#5B2BD9 55%,#2C1478 100%)}
+.st-badge{width:76%;margin-top:auto;filter:drop-shadow(0 14px 18px rgba(0,0,0,.35))}
+/* 5. Les trophées : nuit, trois coupes */
+.st-troph{background:radial-gradient(circle at 50% 30%,#3A2F6B 0,#17142A 70%)}
+.st-cups{display:flex;align-items:flex-end;justify-content:center;margin-top:auto;width:100%}
+.st-cups img{width:34%;margin:0 -4%;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
+.st-cups .mid{width:46%;z-index:1;translate:0 -10%}
+.st-tag{margin:0;font-weight:800;font-size:14px;opacity:.85}
+@media (min-width:900px){
+  .strow{--h:min(50svh,520px);justify-content:center;overflow:visible;gap:0;padding:28px 0 10px}
+  .st{margin:0 -10px;transition:transform .3s}
+  .st:nth-child(1){rotate:-8deg;translate:0 22px}
+  .st:nth-child(2){rotate:-4deg;translate:0 6px;z-index:1}
+  .st:nth-child(3){z-index:2;scale:1.06}
+  .st:nth-child(4){rotate:4deg;translate:0 6px;z-index:1}
+  .st:nth-child(5){rotate:8deg;translate:0 22px}
+  .st:hover{transform:translateY(-12px)}
+}
+@media (prefers-reduced-motion:reduce){.st{transition:none}.st:hover{transform:none}}
+</style>

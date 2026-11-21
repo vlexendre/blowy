@@ -11,6 +11,7 @@ export const nl: LandingText = {
   dots: {
     top: 'Home',
     comment: 'Hoe het werkt',
+    stories: 'Jouw story',
     pet: 'Hij leeft',
     garde: 'Garderobe',
     caractere: 'Karakter',
@@ -52,6 +53,18 @@ export const nl: LandingText = {
     ],
     cta: 'Welke minimoa ben jij?',
     quartier: 'Je buurt gaat open bij 50',
+  },
+  stories: {
+    title: [{ text: 'MAAK ER' }, { text: 'JE STORY VAN.', dim: true }],
+    lead: 'Je reeks, de persoon die hij voorstelde, wat jullie gemeen hebben, je league: elk moment deel je met één tik.',
+    label: 'Minimoa-momenten in story-formaat',
+    ago: '2 u',
+    streak: { days: ['M', 'D', 'W', 'D', 'V', 'Z', 'Z'], unit: 'dagen op rij', alt: 'Story: 13 dagen op rij met Nino' },
+    intro: { head: 'Hij stelde me voor aan Léa 👀', chip: '3 dingen gemeen', alt: 'Story: Nino stelde me voor aan Léa, 3 dingen gemeen' },
+    common: { question: 'Verrassingsvraag: koffie of thee?', me: 'Koffie, duidelijk', them: 'Koffie ☕ altijd', win: 'Gemeenschappelijk punt #3!', alt: 'Story: een verrassingsvraag en nog iets gemeen' },
+    league: { head: 'Kroon-league', chip: '4e in mijn buurt', alt: 'Story: ik zit in de Kroon-league' },
+    trophies: { head: '3 trofeeën', chip: 'Reeks in vuur · goud', alt: 'Story: drie trofeeën gewonnen' },
+    tag: 'Maak een screenshot, post, tag @minimoa.app',
   },
   alive: {
     title: [{ text: 'HIJ LEEFT.' }, { text: 'ZORG', dim: true }, { text: 'VOOR HEM.', dim: true }],
@@ -239,12 +252,12 @@ export const nl: LandingText = {
     free: {
       name: 'Gratis',
       note: (zero: string) => `${zero}, voor altijd`,
-      items: ['Je minimoa, de zorg, de garderobe', '2 gewoontes, 2 groepen', '1 joker per week', 'Jouw zone op de kaart', 'Nul advertenties. Nooit.'],
+      items: ['3 mensen voorgesteld per dag', 'Je minimoa, de zorg, de garderobe', '2 gewoontes, 2 groepen', '1 joker per week', 'Jouw zone op de kaart', 'Nul advertenties. Nooit.'],
     },
     pro: {
       name: 'Minimoa+',
       note: (days: number) => `${days} dagen gratis bij het jaarabonnement`,
-      items: ['De hele kaart, en van stad wisselen', 'Eén persoon extra per dag', '3 jokers per week', '6 gewoontes, 10 groepen', 'Het uitgebreide zondagoverzicht', 'De Wintercollectie'],
+      items: ['10 mensen per dag in plaats van 3', 'De hele kaart, en van stad wisselen', '3 jokers per week', '6 gewoontes, 10 groepen', 'Het uitgebreide zondagoverzicht', 'De Wintercollectie'],
       price: (year: string) => `${year} per jaar`,
       priceNote: (month: string, days: number) => `dus ${month} per maand · ${days} dagen gratis`,
       others: (month: string, week: string) => `Of ${month} per maand, of ${week} per week, zonder proefperiode.`,

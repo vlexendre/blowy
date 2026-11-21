@@ -22,7 +22,7 @@ export const abonnement: LegalPage = {
     {
       ul: [
         '**The whole map**, and **change city whenever you like**, without moving. Without Minimoa+, you see your area (about 1.5 km around you); without location, you pick your city by hand, at most once every 30 days.',
-        '**One more encounter every day.**',
+        '**10 people introduced a day instead of 3.**',
         '**3 streak jokers per week** to protect your streak (without Minimoa+: one per week).',
         '**Up to 6 habits** followed at the same time (without Minimoa+: 2).',
         'The **detailed Sunday review**: how your vision has changed over 4 weeks and a check-up of each connection.',

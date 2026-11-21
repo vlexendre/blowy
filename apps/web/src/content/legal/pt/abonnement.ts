@@ -22,7 +22,7 @@ export const abonnement: LegalPage = {
     {
       ul: [
         '**O mapa inteiro**, e **mudar de cidade quando quiser**, sem sair do lugar. Sem o Minimoa+, você vê a sua região (cerca de 1,5 km ao seu redor); sem localização, você escolhe sua cidade manualmente, no máximo uma vez a cada 30 dias.',
-        '**Um encontro a mais por dia.**',
+        '**10 pessoas apresentadas por dia em vez de 3.**',
         '**3 coringas de sequência por semana** para proteger sua sequência (sem o Minimoa+: um por semana).',
         '**Até 6 hábitos** acompanhados ao mesmo tempo (sem o Minimoa+: 2).',
         'O **resumo detalhado de domingo**: a evolução da sua visão em 4 semanas e a análise de cada vínculo.',

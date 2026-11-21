@@ -11,6 +11,7 @@ export const es: LandingText = {
   dots: {
     top: 'Inicio',
     comment: 'Cómo funciona',
+    stories: 'Tu story',
     pet: 'Está vivo',
     garde: 'Armario',
     caractere: 'Carácter',
@@ -52,6 +53,18 @@ export const es: LandingText = {
     ],
     cta: '¿Qué minimoa eres?',
     quartier: 'Tu barrio abre con 50',
+  },
+  stories: {
+    title: [{ text: 'HAZLO' }, { text: 'TU STORY.', dim: true }],
+    lead: 'Tu racha, la persona que te presentó, lo que tenéis en común, tu liga: cada momento se comparte en un gesto.',
+    label: 'Momentos de Minimoa en formato story',
+    ago: '2 h',
+    streak: { days: ['L', 'M', 'X', 'J', 'V', 'S', 'D'], unit: 'días seguidos', alt: 'Story: 13 días seguidos con Nino' },
+    intro: { head: 'Me presentó a Léa 👀', chip: '3 cosas en común', alt: 'Story: Nino me presentó a Léa, 3 cosas en común' },
+    common: { question: 'Pregunta sorpresa: ¿café o té?', me: 'Café, sin duda', them: 'Café ☕ claro', win: '¡Punto en común n.º 3!', alt: 'Story: una pregunta sorpresa y un punto en común más' },
+    league: { head: 'Liga Corona', chip: '4.º de mi barrio', alt: 'Story: estoy en la liga Corona' },
+    trophies: { head: '3 trofeos', chip: 'Racha en llamas · oro', alt: 'Story: tres trofeos ganados' },
+    tag: 'Haz captura, publica, etiqueta a @minimoa.app',
   },
   alive: {
     title: [{ text: 'ESTÁ VIVO.' }, { text: 'CUÍDALO', dim: true }, { text: 'BIEN.', dim: true }],
@@ -239,12 +252,12 @@ export const es: LandingText = {
     free: {
       name: 'Gratis',
       note: (zero: string) => `${zero}, para siempre`,
-      items: ['Tu minimoa, sus cuidados, su armario', '2 hábitos, 2 grupos', '1 comodín por semana', 'Tu zona en el mapa', 'Cero anuncios. Nunca.'],
+      items: ['3 personas presentadas al día', 'Tu minimoa, sus cuidados, su armario', '2 hábitos, 2 grupos', '1 comodín por semana', 'Tu zona en el mapa', 'Cero anuncios. Nunca.'],
     },
     pro: {
       name: 'Minimoa+',
       note: (days: number) => `${days} días gratis en el plan anual`,
-      items: ['Todo el mapa, y cambiar de ciudad', 'Una persona más al día', '3 comodines por semana', '6 hábitos, 10 grupos', 'El resumen detallado del domingo', 'La colección Invierno'],
+      items: ['10 personas al día en vez de 3', 'Todo el mapa, y cambiar de ciudad', '3 comodines por semana', '6 hábitos, 10 grupos', 'El resumen detallado del domingo', 'La colección Invierno'],
       price: (year: string) => `${year} al año`,
       priceNote: (month: string, days: number) => `es decir, ${month} al mes · ${days} días gratis`,
       others: (month: string, week: string) => `O ${month} al mes, o ${week} a la semana, sin prueba.`,

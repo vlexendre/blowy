@@ -15,6 +15,7 @@ export const fr = {
   dots: {
     top: 'Accueil',
     comment: 'Comment ça marche',
+    stories: 'Ta story',
     pet: 'Il est vivant',
     garde: 'Garde-robe',
     caractere: 'Caractère',
@@ -56,6 +57,18 @@ export const fr = {
     ],
     cta: 'Quel minimoa es-tu ?',
     quartier: 'Ton quartier ouvre à 50',
+  },
+  stories: {
+    title: [{ text: 'FAIS-EN' }, { text: 'TA STORY.', dim: true }] as TitleLine[],
+    lead: 'Ta série, la personne qu’il t’a présentée, vos points communs, ta ligue : chaque moment se partage en un geste.',
+    label: 'Moments de Minimoa au format story',
+    ago: '2 h',
+    streak: { days: ['L', 'M', 'M', 'J', 'V', 'S', 'D'], unit: 'jours d’affilée', alt: 'Story : 13 jours d’affilée avec Nino' },
+    intro: { head: 'Il m’a présenté Léa 👀', chip: '3 points communs', alt: 'Story : Nino m’a présenté Léa, 3 points communs' },
+    common: { question: 'Question surprise : café ou thé ?', me: 'Café, sans hésiter', them: 'Café ☕ évidemment', win: 'Point commun n°3 !', alt: 'Story : une question surprise, et un point commun de plus' },
+    league: { head: 'Ligue Couronne', chip: '4ᵉ de mon quartier', alt: 'Story : je suis en ligue Couronne' },
+    trophies: { head: '3 trophées', chip: 'Série en feu · or', alt: 'Story : trois trophées gagnés' },
+    tag: 'Fais une capture, poste, tague @minimoa.app',
   },
   alive: {
     title: [{ text: 'IL EST VIVANT.' }, { text: 'OCCUPE-TOI', dim: true }, { text: 'DE LUI.', dim: true }] as TitleLine[],
@@ -252,12 +265,12 @@ export const fr = {
     free: {
       name: 'Gratuit',
       note: (zero: string) => `${zero}, pour toujours`,
-      items: ['Ton minimoa, ses soins, sa garde-robe', '2 habitudes, 2 groupes', '1 joker par semaine', 'Ta zone sur la carte', 'Zéro pub. Jamais.'],
+      items: ['3 personnes présentées par jour', 'Ton minimoa, ses soins, sa garde-robe', '2 habitudes, 2 groupes', '1 joker par semaine', 'Ta zone sur la carte', 'Zéro pub. Jamais.'],
     },
     pro: {
       name: 'Minimoa+',
       note: (days: number) => `${days} jours offerts sur l’annuel`,
-      items: ['Toute la carte, et changer de ville', 'Une rencontre de plus par jour', '3 jokers par semaine', '6 habitudes, 10 groupes', 'Le bilan détaillé du dimanche', 'La collection Hiver'],
+      items: ['10 personnes par jour au lieu de 3', 'Toute la carte, et changer de ville', '3 jokers par semaine', '6 habitudes, 10 groupes', 'Le bilan détaillé du dimanche', 'La collection Hiver'],
       price: (year: string) => `${year} par an`,
       priceNote: (month: string, days: number) => `soit ${month} par mois · ${days} jours offerts`,
       others: (month: string, week: string) => `Ou ${month} par mois, ou ${week} par semaine, sans essai.`,

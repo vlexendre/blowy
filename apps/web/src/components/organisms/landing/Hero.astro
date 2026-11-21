@@ -49,7 +49,7 @@ const b1 = { who: hero.b1.who, whoColor: '#8C1D4F', text: hero.b1.text, avatar: 
 </SnapSection>
 <style is:global>
 .hero{grid-template-rows:auto auto minmax(0,1fr);text-align:center;justify-items:center}
-.hero .hd{--k:10;--hs:12svh;--hmax:150px}
+.hero .hd{--k:13;--hs:12svh;--hmax:150px}
 .hero .hlead{margin-left:auto;margin-right:auto;font-weight:700;font-size:clamp(16px,min(1.6vw,2.4svh),24px);max-width:24em}
 .hcta{display:flex;flex-direction:column;align-items:center;gap:8px}
 .hbtns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
@@ -82,6 +82,9 @@ const b1 = { who: hero.b1.who, whoColor: '#8C1D4F', text: hero.b1.text, avatar: 
   .hl-meet{right:0;bottom:0;align-items:flex-end;gap:6px}
   .hl-meet img{height:min(70cqh - 34px,(100cqw - 4px) / 1.549)}
   .hl-step{font-size:13px;padding:4px 11px 4px 4px;gap:6px}
+  /* Les autocollants ne mordent plus sur le titre : ils tombent à côté de la scène. */
+  .hero .s1{left:auto;right:8%;top:auto;bottom:44%}
+  .hero .s2{right:auto;left:40%;top:auto;bottom:30%}
 }
 @media (min-width:900px){
   .hero{grid-template-rows:auto;align-content:start}

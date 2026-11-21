@@ -22,7 +22,7 @@ export const abonnement: LegalPage = {
     {
       ul: [
         '**Toute la carte**, et **changer de ville quand tu veux**, sans bouger. Sans Minimoa+, tu vois ta zone (environ 1,5 km autour de toi) ; sans localisation, tu choisis ta ville à la main, au plus une fois tous les 30 jours.',
-        '**Une rencontre de plus chaque jour.**',
+        '**10 personnes présentées par jour au lieu de 3.**',
         '**3 jokers de série par semaine** pour protéger ta série (sans Minimoa+ : un par semaine).',
         '**Jusqu’à 6 habitudes** suivies en même temps (sans Minimoa+ : 2).',
         'Le **bilan détaillé du dimanche** : l’évolution de ta vision sur 4 semaines et l’audit de chaque lien.',

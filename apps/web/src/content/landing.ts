@@ -39,6 +39,7 @@ export const IMG = '/img/m';
 export const sections = {
   top: { id: 'top', glow: ['#FFB800', '#6D3DF0', '#FF8FC6'] },
   comment: { id: 'comment', glow: ['#6D3DF0', '#FFB800', '#FF8FC6'] },
+  stories: { id: 'stories', glow: ['#FF8FC6', '#6D3DF0', '#FFB800'] },
   pet: { id: 'pet', glow: ['#6D3DF0', '#FFB800', '#FF5A3C'] },
   garde: { id: 'garde-robe', glow: ['#FF9A3D', '#FF5A3C', '#FFB800'] },
   caractere: { id: 'caractere', glow: ['#A98BFF', '#6D3DF0', '#FF8FC6'] },
@@ -56,7 +57,7 @@ export const sections = {
 } as const satisfies Record<string, SectionMeta>;
 export type SectionId = keyof typeof sections;
 /** Ordre des sections (la galerie « ecrans » n'apparaît que si des captures sont présentes : voir LandingPage.astro). */
-export const sectionOrder: SectionId[] = ['top', 'comment', 'pet', 'garde', 'caractere', 'habitudes', 'groupes', 'chats', 'vies', 'rencontres', 'sorties', 'mots', 'ecrans', 'plus', 'faq', 'go'];
+export const sectionOrder: SectionId[] = ['top', 'comment', 'stories', 'pet', 'garde', 'caractere', 'habitudes', 'groupes', 'chats', 'vies', 'rencontres', 'sorties', 'mots', 'ecrans', 'plus', 'faq', 'go'];
 
 /** Liens de la barre (ancre de section), dans l'ordre. */
 export const NAV_LINKS = ['pet', 'habitudes', 'groupes', 'rencontres', 'plus'] as const;
@@ -70,6 +71,7 @@ export const NAV_ACTIVE: Record<string, NavLink> = {
   groupes: 'groupes',
   chats: 'groupes',
   vies: 'groupes',
+  stories: 'rencontres',
   rencontres: 'rencontres',
   sorties: 'rencontres',
   mots: 'rencontres',

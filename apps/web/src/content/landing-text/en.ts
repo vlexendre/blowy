@@ -11,6 +11,7 @@ export const en: LandingText = {
   dots: {
     top: 'Home',
     comment: 'How it works',
+    stories: 'Your story',
     pet: 'It’s alive',
     garde: 'Wardrobe',
     caractere: 'Personality',
@@ -52,6 +53,18 @@ export const en: LandingText = {
     ],
     cta: 'Which minimoa are you?',
     quartier: 'Your neighborhood opens at 50',
+  },
+  stories: {
+    title: [{ text: 'MAKE IT' }, { text: 'YOUR STORY.', dim: true }],
+    lead: 'Your streak, the person it introduced, what you have in common, your league: every moment is one tap from your story.',
+    label: 'Minimoa moments in story format',
+    ago: '2h',
+    streak: { days: ['M', 'T', 'W', 'T', 'F', 'S', 'S'], unit: 'days in a row', alt: 'Story: 13 days in a row with Nino' },
+    intro: { head: 'It introduced me to Léa 👀', chip: '3 things in common', alt: 'Story: Nino introduced me to Léa, 3 things in common' },
+    common: { question: 'Surprise question: coffee or tea?', me: 'Coffee, obviously', them: 'Coffee ☕ always', win: 'Common ground #3!', alt: 'Story: a surprise question, and one more thing in common' },
+    league: { head: 'Crown League', chip: '4th in my neighbourhood', alt: 'Story: I am in the Crown league' },
+    trophies: { head: '3 trophies', chip: 'On fire streak · gold', alt: 'Story: three trophies won' },
+    tag: 'Screenshot it, post it, tag @minimoa.app',
   },
   alive: {
     title: [{ text: 'IT’S ALIVE.' }, { text: 'TAKE CARE', dim: true }, { text: 'OF IT.', dim: true }],
@@ -239,12 +252,12 @@ export const en: LandingText = {
     free: {
       name: 'Free',
       note: (zero: string) => `${zero}, forever`,
-      items: ['Your minimoa, its care, its wardrobe', '2 habits, 2 groups', '1 joker a week', 'Your zone on the map', 'Zero ads. Ever.'],
+      items: ['3 people introduced a day', 'Your minimoa, its care, its wardrobe', '2 habits, 2 groups', '1 joker a week', 'Your zone on the map', 'Zero ads. Ever.'],
     },
     pro: {
       name: 'Minimoa+',
       note: (days: number) => `${days} days free on the yearly plan`,
-      items: ['The whole map, and switching cities', 'One more person a day', '3 jokers a week', '6 habits, 10 groups', 'The detailed Sunday review', 'The Winter collection'],
+      items: ['10 people a day instead of 3', 'The whole map, and switching cities', '3 jokers a week', '6 habits, 10 groups', 'The detailed Sunday review', 'The Winter collection'],
       price: (year: string) => `${year} per year`,
       priceNote: (month: string, days: number) => `that’s ${month} per month · ${days} days free`,
       others: (month: string, week: string) => `Or ${month} per month, or ${week} per week, no trial.`,
