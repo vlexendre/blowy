@@ -49,7 +49,7 @@ export const nice: CityPage = {
         '**Le Carnaval** en février : la ville en fête pendant deux semaines. Une belle occasion de sortir en groupe.',
         '**La montagne** : les stations et les sentiers de l’arrière-pays sont tout proches. Les clubs de randonnée ou de ski organisent des sorties collectives où l’on fait connaissance pendant les trajets.',
         'Tu passes beaucoup de temps seul en dehors de la saison ? Notre guide [où rencontrer des gens quand on est seul](/guides/rencontrer-des-gens-seul/) a des idées concrètes.',
-        'Hors saison, on bouge aussi le long de la côte et vers l’ouest. Nos pages pour [rencontrer du monde à Marseille](/se-faire-des-amis/marseille/) et à [Montpellier, ville étudiante](/se-faire-des-amis/montpellier/) peuvent t’inspirer. Pour que Minimoa arrive dans ton coin de Nice, [ouvre ton quartier](/quartier/).',
+        'Hors saison, on bouge aussi le long de la côte et vers l’ouest. Nos pages pour [rencontrer du monde à Marseille](/se-faire-des-amis/marseille/), [à Toulon, entre rade et mont Faron](/se-faire-des-amis/toulon/), et à [Montpellier, ville étudiante](/se-faire-des-amis/montpellier/) peuvent t’inspirer. Pour que Minimoa arrive dans ton coin de Nice, [ouvre ton quartier](/quartier/).',
       ],
     },
   ],

@@ -2,7 +2,7 @@
  * Textes communs des pages éditoriales (villes, guides), en français seulement : ces pages n'ont pas de version
  * traduite (voir ./types.ts).
  */
-import type { Meta, OgSpec } from './types';
+import { CITY_SLUGS, type Meta, type OgSpec } from './types';
 
 export const editorialUi = {
   home: 'Accueil',
@@ -15,7 +15,7 @@ export const editorialUi = {
     path: '/se-faire-des-amis/',
     crumb: 'Se faire des amis',
     meta: {
-      title: 'Se faire des amis dans ta ville : 16 villes',
+      title: `Se faire des amis dans ta ville : ${CITY_SLUGS.length} villes`,
       description: 'Paris, Lyon, Lille, Bruxelles, Genève, Luxembourg… Où rencontrer des gens dans ta ville, comment s’y prendre, et comment ouvrir ton quartier.',
     } satisfies Meta,
     h1: 'Se faire des amis dans ta ville',
