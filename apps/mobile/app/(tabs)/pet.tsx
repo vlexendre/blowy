@@ -487,7 +487,6 @@ export default function PetHome() {
                                   : nodeLabel(n),
                             },
                       )}
-                          startLabel={view.kind === 'todo' || view.kind === 'bonus' ? c.home.start : null}
                       onStart={view.kind === 'todo' || view.kind === 'bonus' ? openSeance : undefined}
                       pet={{ species: p.species, outfit: p.outfit, id: p.id }}
                       league={

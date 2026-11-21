@@ -77,7 +77,6 @@ export default function Parcours() {
         ) : (
           <CheminPath
             nodes={nodes}
-            startLabel={todo ? c.home.start : null}
             onStart={todo ? () => router.push('/chemin/seance') : undefined}
             pet={me.data ? { species: me.data.pet.species, outfit: me.data.pet.outfit, id: me.data.pet.id } : null}
             onCurrentY={(y) => {
