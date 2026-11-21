@@ -14,6 +14,7 @@ export const color = {
   rose: '#FF8FC6',
   orange: '#FF9A3D',
   lime: '#A8D52A',
+  sky: '#5CE1FF',
   danger: '#FF4D4D',
   ok: '#3DDC97',
 } as const;

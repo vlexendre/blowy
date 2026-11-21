@@ -29,7 +29,7 @@ export interface StreakTierProps {
   accessibilityLabel: string;
 }
 
-const ORANGE = '#FF9A1F';
+const ORANGE = color.orange;
 
 /** La série qui monte (maquette V7 « Palier de série ») : fond orange plein, le grand nombre, la semaine cochée. */
 export function StreakTier({ species, count, from, unit, days, shareLabel, onShare, continueLabel, onContinue, accessibilityLabel }: StreakTierProps) {
@@ -42,7 +42,7 @@ export function StreakTier({ species, count, from, unit, days, shareLabel, onSha
       </View>
       <View accessible accessibilityLabel={accessibilityLabel}>
         <View style={styles.center}>
-          <CountUp value={count} from={from} variant="hero" size={130} color="#FFF3C4" />
+          <CountUp value={count} from={from} variant="hero" size={130} color={color.white} />
         </View>
         <Text variant="h2" center color={color.white}>
           {unit}
@@ -56,7 +56,7 @@ export function StreakTier({ species, count, from, unit, days, shareLabel, onSha
             </Text>
             <PopIn delay={400 + i * 150} onMount={d.done}>
               <View style={[styles.dot, d.done ? (d.today ? styles.today : styles.done) : styles.empty]}>
-                {d.done ? <Text variant="bodyHeavy" color={d.today ? ORANGE : '#C25E00'}>✓</Text> : null}
+                {d.done ? <Text variant="bodyHeavy" color={d.today ? ORANGE : color.dark}>✓</Text> : null}
               </View>
             </PopIn>
           </View>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   week: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xl },
   day: { alignItems: 'center', gap: space.sm },
   dot: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  done: { backgroundColor: '#FFD23F' },
+  done: { backgroundColor: color.accentSoft },
   today: { backgroundColor: color.white },
   empty: { backgroundColor: alpha(color.dark, 0.16) },
   grow: { flex: 1 },

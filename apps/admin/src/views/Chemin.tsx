@@ -78,7 +78,7 @@ export function Chemin() {
                     </td>
                     <td>{u.steps.map((s) => s.texts.fr.title).join(' · ')}</td>
                     <td className="num">{u.minBuild}</td>
-                    <td>{LABEL[u.status]}</td>
+                    <td><span className={`status ${u.status}`}>{LABEL[u.status]}</span></td>
                     <td>
                       {NEXT[u.status].map((s) => (
                         <button key={s} type="button" className="btn" onClick={() => setUnit(u.id, s)}>
@@ -118,7 +118,7 @@ export function Chemin() {
                       {q.axis} ({q.direction > 0 ? '+' : '−'})
                     </td>
                     <td className="muted">{q.warnings.join(' ') || '—'}</td>
-                    <td>{LABEL[q.status]}</td>
+                    <td><span className={`status ${q.status}`}>{LABEL[q.status]}</span></td>
                     <td>
                       {NEXT[q.status].map((s) => (
                         <button key={s} type="button" className="btn" onClick={() => setQuestion(q.id, s)}>

@@ -15,6 +15,8 @@ export function applyTheme(root: HTMLElement = document.documentElement): void {
     '--ok': color.ok,
     '--violet': color.violet,
     '--coral': color.coral,
+    '--lime': color.lime,
+    '--sky': color.sky,
     '--font-display': font.web.display,
     '--font-body': font.web.body,
     '--r-sm': `${radius.sm}px`,

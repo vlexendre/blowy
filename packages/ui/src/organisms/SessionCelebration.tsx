@@ -27,7 +27,7 @@ export interface SessionCelebrationProps {
   onCta: () => void;
 }
 
-const TONE = { accent: color.accent, lime: color.lime, sky: '#5CE1FF' } as const;
+const TONE = { accent: color.accent, lime: color.lime, sky: color.sky } as const;
 
 /**
  * Fin de séance réussie (maquette V7 « Célébration », façon Duolingo) : le minimoa rit dans les confettis, un grand
