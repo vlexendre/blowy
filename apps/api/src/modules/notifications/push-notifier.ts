@@ -50,6 +50,8 @@ import {
 
 /** Catégorie iOS/Android enregistrée par l'app : une action « Ne plus recevoir » (coupe la catégorie du type). */
 export const MUTE_CATEGORY = 'minimoa_mute';
+/** Ligue : sa propre catégorie (les anciens builds ne la connaissent pas, donc pas d'action qui couperait autre chose). */
+export const MUTE_LEAGUE_CATEGORY = 'minimoa_mute_league';
 /** Message d'une personne : « Répondre » (champ de texte dans la notification) et « Ne plus recevoir ce genre ». */
 export const REPLY_CATEGORY = 'minimoa_reply';
 
@@ -409,6 +411,7 @@ export class PushNotifier implements Notifier {
     const data: PushData = {
       // `league` : inconnu des builds déjà servis ; ils suivent l'adresse (`url`).
       kind: kind === 'league' ? 'minimoa_news' : kind,
+      ...(kind === 'league' ? { topic: 'league' as const } : {}),
       url: deepLink(kind, vars),
       ...(vars.linkId && single ? { linkId: vars.linkId } : {}),
       ...(vars.groupId ? { groupId: vars.groupId } : {}),
@@ -437,9 +440,11 @@ export class PushNotifier implements Notifier {
       data,
       ...(kind === 'message' && single && vars.linkId
         ? { categoryId: REPLY_CATEGORY }
-        : kind !== 'league' && categoryOf(kind)
-          ? { categoryId: MUTE_CATEGORY }
-          : {}),
+        : kind === 'league'
+          ? { categoryId: MUTE_LEAGUE_CATEGORY }
+          : categoryOf(kind)
+            ? { categoryId: MUTE_CATEGORY }
+            : {}),
     };
     return {
       kind,

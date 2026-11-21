@@ -164,6 +164,10 @@ export const NotificationSettingsZ = z.object({
   marketing: z.boolean().optional(),
   /** Types qu'on ne peut pas couper (rappel de fin d'essai). */
   mandatory: z.array(NotificationKindZ).optional(),
+  /** Ligue (classement de la semaine, résultat) : à part de `kinds` pour les anciennes apps. Absent : ancienne API. */
+  league: z.boolean().optional(),
+  /** Libellé de la ligue, dans la langue du profil. */
+  leagueLabel: z.string().optional(),
 });
 export type NotificationSettings = z.infer<typeof NotificationSettingsZ>;
 
@@ -173,6 +177,8 @@ export const NotificationSettingsBody = z.object({
   timeZone: z.string().min(1).max(64).optional(),
   /** Accord pour les offres (marketing). */
   marketing: z.boolean().optional(),
+  /** Notifications de ligue. */
+  league: z.boolean().optional(),
 });
 export type NotificationSettingsBody = z.infer<typeof NotificationSettingsBody>;
 
@@ -215,6 +221,11 @@ export const PushDataZ = z.object({
   /** Groupe concerné (messages de groupe) : l'app ne montre rien si ce groupe est ouvert. */
   groupId: Id.optional(),
   state: WidgetStateZ.optional(),
+  /**
+   * Sujet précis quand `kind` est un type plus ancien (la ligue part en `minimoa_news` pour les builds déjà servis) :
+   * « Ne plus recevoir ce genre » coupe ce sujet seulement.
+   */
+  topic: z.literal('league').optional(),
 });
 export type PushData = z.infer<typeof PushDataZ>;
 

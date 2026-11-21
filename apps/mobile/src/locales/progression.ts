@@ -41,7 +41,17 @@ export const progression = messages({
         left > 0
           ? `Encore ${left} ${plural(left, { one: 'étincelle', other: 'étincelles' })} pour entrer dans la zone de montée vers ${next}`
           : `Tu es dans la zone de montée : garde ta place jusqu’à dimanche pour passer en ${next} !`,
-      zoneUp: (next: string) => `Zone de montée vers ${next}`,
+      zoneUp: (next: string) => `${next} la semaine prochaine`,
+      goalShort: (left: number, next: string, days: number) =>
+        `${left > 0 ? `Encore ${left} ${plural(left, { one: 'étincelle', other: 'étincelles' })} pour ${next}` : `Dans la zone de montée vers ${next}`} · ${days} ${plural(days, { one: 'jour', other: 'jours' })}`,
+      topShort: (days: number) => `Tu es au sommet · ${days} ${plural(days, { one: 'jour', other: 'jours' })}`,
+      sparksShort: (n: number) => `${n} ét.`,
+      howRows: [
+        { key: 'seance', label: 'Ta séance · vitesse + cohérence', value: '10 à 25' },
+        { key: 'link', label: 'Un nouveau lien', value: '+20' },
+        { key: 'wave', label: 'Un bonjour', value: '+5' },
+        { key: 'message', label: 'Un message · 100 max', value: '+1' },
+      ],
       zoneDown: (prev: string) => `Zone de descente vers ${prev}`,
       resultUp: (tier: string) => `Bravo ! Tu montes en Ligue ${tier}.`,
       resultDown: (tier: string) => `Tu redescends en Ligue ${tier}. Remonte dès cette semaine !`,

@@ -178,6 +178,7 @@ export {
 export { type PreviewPerson, PreviewPeople, type PreviewPeopleProps } from './PreviewPeople';
 export { NOW_BAR_SPACE, NowBar, type NowBarProps } from './NowBar';
 export { LeagueRow, type LeagueRowProps, LeagueZoneLine } from './LeagueRow';
+export { LeagueHowCard } from './LeagueHowCard';
 export { TrophyCard, type TrophyCardProps } from './TrophyCard';
 export { SessionCelebration, type CelebrationTile, type SessionCelebrationProps } from './SessionCelebration';
 export { STREAK_TIER_BACKGROUND, StreakTier, type StreakTierDay, type StreakTierProps } from './StreakTier';

@@ -26,8 +26,6 @@ import {
   type CareProp,
   careProp,
   CheminPath,
-  NOW_BAR_SPACE,
-  NowBar,
   PeopleCard,
   PetHomeSkeleton,
   PetRefresh,
@@ -73,7 +71,7 @@ import { maybeAskForReview, useReviewMemory } from '@/features/review';
 import { usePrivateMemories, useRitualsToday, useStreakParty } from '@/features/rituals';
 import {
   hasSessionToDo,
-  pathAll,
+  pathChapters,
   stepOf,
   todayView,
   useCheminMap,
@@ -89,6 +87,13 @@ import { rituels as r } from '@/locales/rituels';
 
 /** Durée d'affichage d'une réplique après un soin (« miam. », « il n'a plus faim. »). */
 const SAID_MS = 3500;
+
+/** Le chapitre du jour (l'univers de l'étape du jour, sinon le dernier), du bas vers le haut, sans son bandeau (le bandeau violet le dit). */
+function currentChapter(cm: Parameters<typeof pathChapters>[0]) {
+  const chapters = pathChapters(cm);
+  const ch = chapters.find((x) => x.current) ?? chapters[chapters.length - 1];
+  return (ch?.nodes ?? []).filter((n) => n.kind !== 'unit').reverse();
+}
 
 /** Les 4 soins, en pastille dans la carte (le câlin se fait aussi en touchant le minimoa). */
 const HOME_CARE: readonly CareAction[] = CARE_ACTIONS;
@@ -324,30 +329,6 @@ export default function PetHome() {
   const firstUnit = cm?.units[0]?.title ?? null;
   const firstUnitDone = !!cm && cm.units[0]?.state === 'done';
   const openSeance = () => router.push('/chemin/seance');
-  // Un seul gros bouton, en bas : la chose à faire maintenant (un bonjour reçu, un message, la séance, sinon la journée faite).
-  const now =
-    people.kind === 'waved'
-      ? {
-          label: a.now.waved(people.name),
-          sub: a.now.wavedSub,
-          variant: 'accent' as const,
-          onPress: () => router.push('/(tabs)/rencontres'),
-        }
-      : people.kind === 'wrote'
-        ? {
-            label: a.now.wrote(people.name),
-            sub: people.preview ? a.wroteText(people.preview) : a.now.wroteSub,
-            variant: 'accent' as const,
-            onPress: () => router.push({ pathname: '/link/[id]', params: { id: people.linkId } }),
-          }
-        : view && (view.kind === 'todo' || view.kind === 'bonus')
-          ? {
-              label: a.now.seance,
-              sub: a.now.seanceSub(view.questions),
-              variant: 'accent' as const,
-              onPress: openSeance,
-            }
-          : null;
   const nodeLabel = (n: { kind: string; title: string; unitTitle: string }) =>
     n.kind === 'done'
       ? c.home.node.done(n.title)
@@ -366,7 +347,6 @@ export default function PetHome() {
           <TabTemplate
             gutter={14}
             top={6}
-            bottomExtra={now ? NOW_BAR_SPACE : 0}
             {...scroll}
             scrollRef={scrollRef}
           >
@@ -484,7 +464,7 @@ export default function PetHome() {
                   />
                   <View onLayout={(e) => (pathTop.current = blockTop.current + e.nativeEvent.layout.y)}>
                     <CheminPath
-                      nodes={pathAll(cm).map((n) =>
+                      nodes={currentChapter(cm).map((n) =>
                         n.kind === 'unit'
                           ? {
                               key: n.key,
@@ -507,16 +487,7 @@ export default function PetHome() {
                                   : nodeLabel(n),
                             },
                       )}
-                      onCurrentY={(y) => {
-                        // Une seule fois par ouverture : l'écran descend jusqu'à l'étape du jour si elle est loin.
-                        if (scrolledTo.current || y < 260) return;
-                        scrolledTo.current = true;
-                        setTimeout(
-                          () => scrollRef.current?.scrollTo({ y: pathTop.current + y - 240, animated: true }),
-                          350,
-                        );
-                      }}
-                      startLabel={view.kind === 'todo' || view.kind === 'bonus' ? c.home.start : null}
+                          startLabel={view.kind === 'todo' || view.kind === 'bonus' ? c.home.start : null}
                       onStart={view.kind === 'todo' || view.kind === 'bonus' ? openSeance : undefined}
                       pet={{ species: p.species, outfit: p.outfit, id: p.id }}
                       league={
@@ -621,7 +592,7 @@ export default function PetHome() {
           </TabTemplate>
         )}
       </PetRefresh>
-      {now ? <NowBar label={now.label} sub={now.sub} variant={now.variant} onPress={now.onPress} /> : null}
+      {/* Plus de gros bouton en bas : l'étape du jour se lance depuis le chemin, les bonjours depuis Rencontres. */}
     </ScreenMotion>
   );
 }

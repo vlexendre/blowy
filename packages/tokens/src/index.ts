@@ -9,6 +9,9 @@ export const color = {
   white: '#FFFFFF',
   accent: '#FFB800',
   accentSoft: '#FFD23F',
+  /** Médailles de la ligue (V6-Ligue) : argent et bronze. */
+  silver: '#D9D6E8',
+  bronze: '#E8A15C',
   coral: '#FF5A3C',
   violet: '#8D5CF6',
   rose: '#FF8FC6',

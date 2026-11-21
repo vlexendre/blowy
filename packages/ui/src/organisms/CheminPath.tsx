@@ -14,7 +14,7 @@ import { PetActor } from '../motion/pets/PetActor';
 import { alpha, color, extra, radius, space } from '../theme';
 
 /** Une étape du chemin : faite, celle du jour, un coffre (fin d'unité), verrouillée, ou le bandeau d'un univers. */
-export type CheminNodeKind = 'done' | 'current' | 'chest' | 'chestOpen' | 'locked' | 'unit';
+export type CheminNodeKind = 'done' | 'current' | 'chest' | 'chestOpen' | 'locked' | 'unit' | 'gap';
 
 export interface CheminPathNode {
   key: string;
@@ -25,6 +25,8 @@ export interface CheminPathNode {
   subtitle?: string;
   /** Rang de l'univers (couleur du bandeau). */
   index?: number;
+  /** Espace vide (`gap`) : pour qu'un chapitre remplisse l'écran. */
+  height?: number;
 }
 
 export interface CheminPathProps {
@@ -88,12 +90,12 @@ export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, on
   const top = startLabel && nowIndex >= 0 ? 34 : 6;
   let cursor = top;
   let step = 0;
-  const sizeOf = (k: CheminNodeKind | undefined) => (k === 'current' ? NOW : k === 'unit' ? UNIT : NODE);
+  const sizeOf = (n: CheminPathNode | undefined) => (n?.kind === 'current' ? NOW : n?.kind === 'unit' ? UNIT : n?.kind === 'gap' ? (n.height ?? 0) : NODE);
   const centers = nodes.map((n, i) => {
-    const size = sizeOf(n.kind);
-    const prev = i > 0 ? sizeOf(nodes[i - 1]?.kind) : 0;
+    const size = sizeOf(n);
+    const prev = i > 0 ? sizeOf(nodes[i - 1]) : 0;
     cursor = i === 0 ? top + size / 2 : cursor + (prev + size) / 2 + GAP;
-    if (n.kind === 'unit') return { x: width / 2, y: cursor, size };
+    if (n.kind === 'unit' || n.kind === 'gap') return { x: width / 2, y: cursor, size };
     step += 1;
     return { x: width / 2 + cheminSwing(step) * half, y: cursor, size };
   });
@@ -131,6 +133,7 @@ export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, on
           </Svg>
           {nodes.map((n, i) => {
             const c = centers[i] as (typeof centers)[number];
+            if (n.kind === 'gap') return null;
             if (n.kind === 'unit') {
               return (
                 <View
@@ -236,6 +239,7 @@ const LOOK: Record<CheminNodeKind, { bg: string; edge: string; ink: string }> = 
   chest: { bg: extra.relief.chest, edge: extra.relief.chestEdge, ink: extra.relief.chestInk },
   chestOpen: { bg: extra.relief.done, edge: extra.relief.doneEdge, ink: color.dark },
   unit: { bg: extra.relief.unit, edge: extra.relief.unit, ink: color.white },
+  gap: { bg: 'transparent', edge: 'transparent', ink: color.white },
   locked: { bg: extra.relief.locked, edge: extra.relief.lockedEdge, ink: extra.relief.lockedInk },
 };
 

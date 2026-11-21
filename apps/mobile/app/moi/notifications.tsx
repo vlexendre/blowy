@@ -104,7 +104,15 @@ export default function Notifications() {
                 { key: 'quiet', title: t.quiet.title, right: <Value text={t.quiet.value(s.quietHours.start, s.quietHours.end)} />, onPress: () => setQuietSheet(true), chevron: true },
               ]}
             />
-            <SettingsSection key="pet" title={t.sections.pet} rows={toRows(s, petRows)} />
+            <SettingsSection
+              key="pet"
+              title={t.sections.pet}
+              rows={[
+                ...toRows(s, petRows),
+                // Ligue : à part des types (les anciennes apps ne la connaissent pas). Absente : ancienne API.
+                ...(s.league === undefined ? [] : [{ key: 'league', ...t.rows.league, switchValue: s.league, onSwitchChange: (on: boolean) => update.mutate({ league: on }) }]),
+              ]}
+            />
             <SettingsSection key="links" title={t.sections.links} rows={toRows(s, linkRows)} />
             <SettingsSection key="groups" title={g.section} rows={toRows(s, groupRows)} />
             <SettingsSection

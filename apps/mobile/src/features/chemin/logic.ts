@@ -108,6 +108,26 @@ export function pathWindow(map: Pick<CheminMap, 'units' | 'currentStepId'>): Pat
   return all.slice(start, start + WINDOW);
 }
 
+/**
+ * Le chemin par chapitres (un univers = un chapitre), dans l'ordre : son bandeau, ses étapes, son coffre. L'écran les
+ * montre du bas vers le haut (on monte en avançant) : à l'affichage, la liste est retournée.
+ */
+export function pathChapters(map: Pick<CheminMap, 'units' | 'currentStepId'>): { unitId: string; current: boolean; nodes: PathNode[] }[] {
+  const all = pathAll(map);
+  const out: { unitId: string; current: boolean; nodes: PathNode[] }[] = [];
+  for (const n of all) {
+    const unitId = n.key.split(':')[0] ?? '';
+    let ch = out[out.length - 1];
+    if (!ch || ch.unitId !== unitId) {
+      ch = { unitId, current: false, nodes: [] };
+      out.push(ch);
+    }
+    ch.nodes.push(n);
+    if (n.kind === 'current') ch.current = true;
+  }
+  return out;
+}
+
 // ── Accueil : le bandeau de la séance ─────────────────────────────────────────
 export type TodayView =
   /** La séance du jour attend. */

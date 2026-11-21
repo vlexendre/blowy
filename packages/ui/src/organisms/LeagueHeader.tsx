@@ -2,9 +2,9 @@ import { LEAGUE_TIERS, type LeagueTier } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import { Image, StyleSheet, View } from 'react-native';
 import { leagueImage } from '../assets/ligues';
-import { Card } from '../atoms/Card';
 import { ProgressBar } from '../atoms/ProgressBar';
 import { Text } from '../atoms/Text';
+import { Title } from '../atoms/Title';
 import { PopIn } from '../motion/PopIn';
 import { space } from '../theme';
 
@@ -23,7 +23,7 @@ export interface LeagueHeaderProps {
 export function LeagueHeader({ tier, title, goal, progress, tierLabels }: LeagueHeaderProps) {
   const mine = LEAGUE_TIERS.indexOf(tier);
   return (
-    <Card padding="md">
+    <View>
       <View style={styles.row}>
         {LEAGUE_TIERS.map((t, i) => (
           <View key={t} style={styles.cell} accessible accessibilityLabel={tierLabels[t]}>
@@ -37,25 +37,24 @@ export function LeagueHeader({ tier, title, goal, progress, tierLabels }: League
           </View>
         ))}
       </View>
-      <Text variant="h3" center style={styles.title}>
-        {title}
-      </Text>
-      <Text variant="small" muted center>
+      <Title text={title} size={38} center style={styles.title} />
+      <Text size={15} muted center>
         {goal}
       </Text>
       <View style={styles.bar}>
         <ProgressBar value={progress} height={8} color={color.accent} />
       </View>
-    </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   cell: { flex: 1, alignItems: 'center' },
-  big: { width: 76, height: 76 },
-  small: { width: 44, height: 44 },
+  // V6-Ligue : la tienne 84, les autres 48, celles d'après estompées.
+  big: { width: 84, height: 84 },
+  small: { width: 48, height: 48 },
   locked: { opacity: 0.35 },
-  title: { marginTop: space.sm },
-  bar: { marginTop: space.sm },
+  title: { marginTop: 6 },
+  bar: { marginTop: 10, marginHorizontal: 24 },
 });

@@ -5,6 +5,7 @@ export function setForegroundHandler(_isOpen?: (data: unknown) => boolean): void
 export const MUTE_CATEGORY = 'minimoa_mute';
 export const MUTE_ACTION = 'mute';
 export async function registerMuteCategory(_buttonTitle: string): Promise<void> {}
+export async function registerMuteLeagueCategory(_buttonTitle: string): Promise<void> {}
 export const REPLY_ACTION = 'reply';
 export async function registerReplyCategory(_t: {
   action: string;

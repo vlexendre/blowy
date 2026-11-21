@@ -35,6 +35,8 @@ export interface SettingsView {
   hasDevice: boolean;
   marketing: boolean;
   mandatory: PublicNotificationKind[];
+  league: boolean;
+  leagueLabel: string;
 }
 
 @Injectable()
@@ -73,10 +75,12 @@ export class NotificationSettings {
       hasDevice: devices.some((d) => d.kind === 'expo'),
       marketing: s.marketingOptInAt !== null,
       mandatory: MANDATORY_KINDS.filter((k): k is PublicNotificationKind => k !== 'league'),
+      league: !s.disabledKinds.includes('league'),
+      leagueLabel: notificationKindLabel(lang, 'league'),
     };
   }
 
-  async update(userId: string, patch: { kinds?: Partial<Record<NotificationKindKey, boolean>>; morningHour?: number; timeZone?: string; marketing?: boolean }): Promise<SettingsView> {
+  async update(userId: string, patch: { kinds?: Partial<Record<NotificationKindKey, boolean>>; morningHour?: number; timeZone?: string; marketing?: boolean; league?: boolean }): Promise<SettingsView> {
     if (patch.timeZone !== undefined && !isValidTimeZone(patch.timeZone)) throw new DomainError('invalid', errorText('unknownTimeZone'));
     const current = await this.resolve(userId);
     const disabled = new Set(current.disabledKinds);
@@ -84,6 +88,8 @@ export class NotificationSettings {
       if (on === true || isMandatory(k)) disabled.delete(k);
       else if (on === false) disabled.add(k);
     }
+    if (patch.league === true) disabled.delete('league');
+    else if (patch.league === false) disabled.add('league');
     const now = this.clock.now().toISOString();
     // Accord marketing : daté à l'activation (preuve), effacé au retrait.
     const marketingOptInAt = patch.marketing === undefined ? current.marketingOptInAt : patch.marketing ? (current.marketingOptInAt ?? now) : null;

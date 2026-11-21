@@ -43,6 +43,19 @@ export async function registerMuteCategory(buttonTitle: string): Promise<void> {
   }
 }
 
+/** Ligue (`MUTE_LEAGUE_CATEGORY` de l'API) : « Ne plus recevoir ce genre » coupe la ligue seulement. */
+export const MUTE_LEAGUE_CATEGORY = 'minimoa_mute_league';
+
+export async function registerMuteLeagueCategory(buttonTitle: string): Promise<void> {
+  try {
+    await Notifications.setNotificationCategoryAsync(MUTE_LEAGUE_CATEGORY, [
+      { identifier: MUTE_ACTION, buttonTitle, options: { opensAppToForeground: true, isDestructive: true } },
+    ]);
+  } catch {
+    // Catégorie facultative : sans elle, la notification s'ouvre simplement.
+  }
+}
+
 /** Catégorie des messages (`REPLY_CATEGORY` de l'API) : répondre depuis la notification, ou couper ce genre. */
 export const REPLY_CATEGORY = 'minimoa_reply';
 export const REPLY_ACTION = 'reply';
