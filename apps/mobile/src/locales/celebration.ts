@@ -1,5 +1,4 @@
 /** Fin de séance fêtée (maquette V7 « Célébration ») et série qui monte (« Palier de série »). */
-import { TODO } from '@blowy/content';
 import { messages, plural } from './runtime';
 
 export const celebration = messages({
@@ -19,8 +18,68 @@ export const celebration = messages({
       continue: 'Continuer',
     },
   },
-  en: TODO,
-  es: TODO,
-  pt: TODO,
-  nl: TODO,
+  en: {
+    titles: ['You know yourself by heart!', 'Nice one!', 'Session done!', 'You’re on a roll!', 'High five!'],
+    text: (pet: string, answers: number) => `${answers} ${plural(answers, { one: 'answer', other: 'answers' })}. ${pet} is taking notes.`,
+    tiles: { sparks: 'Sparks', streak: 'Streak', time: 'Speed', coherence: 'Consistency' },
+    coherence: (ok: number, of: number) => `${ok}/${of}`,
+    sparks: (n: number) => `+${n}`,
+    time: (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`,
+    cta: 'Collect',
+    tier: {
+      unit: (n: number) => plural(n, { one: 'day in a row', other: 'days in a row' }),
+      a11y: (n: number) => `${n} ${plural(n, { one: 'day in a row', other: 'days in a row' })}`,
+      share: 'Share',
+      shareText: (n: number) => `${n} ${plural(n, { one: 'day in a row', other: 'days in a row' })} on Minimoa 🔥 https://minimoa.app`,
+      continue: 'Continue',
+    },
+  },
+  es: {
+    titles: ['¡Te conoces de memoria!', '¡Bien hecho!', '¡Sesión terminada!', '¡Lo haces genial!', '¡Y van cinco!'],
+    text: (pet: string, answers: number) => `${answers} ${plural(answers, { one: 'respuesta', other: 'respuestas' })}. ${pet} toma notas.`,
+    tiles: { sparks: 'Chispas', streak: 'Racha', time: 'Rapidez', coherence: 'Coherencia' },
+    coherence: (ok: number, of: number) => `${ok}/${of}`,
+    sparks: (n: number) => `+${n}`,
+    time: (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`,
+    cta: 'Recoger',
+    tier: {
+      unit: (n: number) => plural(n, { one: 'día seguido', other: 'días seguidos' }),
+      a11y: (n: number) => `${n} ${plural(n, { one: 'día seguido', other: 'días seguidos' })}`,
+      share: 'Compartir',
+      shareText: (n: number) => `${n} ${plural(n, { one: 'día seguido', other: 'días seguidos' })} en Minimoa 🔥 https://minimoa.app`,
+      continue: 'Continuar',
+    },
+  },
+  pt: {
+    titles: ['Você se conhece de cor!', 'Mandou bem!', 'Sessão concluída!', 'Você arrasa!', 'E são cinco!'],
+    text: (pet: string, answers: number) => `${answers} ${plural(answers, { one: 'resposta', other: 'respostas' })}. ${pet} está anotando.`,
+    tiles: { sparks: 'Faíscas', streak: 'Sequência', time: 'Rapidez', coherence: 'Coerência' },
+    coherence: (ok: number, of: number) => `${ok}/${of}`,
+    sparks: (n: number) => `+${n}`,
+    time: (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`,
+    cta: 'Pegar',
+    tier: {
+      unit: (n: number) => plural(n, { one: 'dia seguido', other: 'dias seguidos' }),
+      a11y: (n: number) => `${n} ${plural(n, { one: 'dia seguido', other: 'dias seguidos' })}`,
+      share: 'Compartilhar',
+      shareText: (n: number) => `${n} ${plural(n, { one: 'dia seguido', other: 'dias seguidos' })} en Minimoa 🔥 https://minimoa.app`,
+      continue: 'Continuar',
+    },
+  },
+  nl: {
+    titles: ['Je kent jezelf door en door!', 'Goed gedaan!', 'Sessie klaar!', 'Je bent goed bezig!', 'En dat is vijf!'],
+    text: (pet: string, answers: number) => `${answers} ${plural(answers, { one: 'antwoord', other: 'antwoorden' })}. ${pet} maakt aantekeningen.`,
+    tiles: { sparks: 'Vonken', streak: 'Reeks', time: 'Snelheid', coherence: 'Samenhang' },
+    coherence: (ok: number, of: number) => `${ok}/${of}`,
+    sparks: (n: number) => `+${n}`,
+    time: (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`,
+    cta: 'Ophalen',
+    tier: {
+      unit: (n: number) => plural(n, { one: 'dag op rij', other: 'dagen op rij' }),
+      a11y: (n: number) => `${n} ${plural(n, { one: 'dag op rij', other: 'dagen op rij' })}`,
+      share: 'Delen',
+      shareText: (n: number) => `${n} ${plural(n, { one: 'dag op rij', other: 'dagen op rij' })} op Minimoa 🔥 https://minimoa.app`,
+      continue: 'Doorgaan',
+    },
+  },
 });
