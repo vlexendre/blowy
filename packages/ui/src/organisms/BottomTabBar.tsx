@@ -43,9 +43,9 @@ export interface BottomTabBarProps<K extends string = string> {
   style?: StyleProp<ViewStyle>;
 }
 
-/** `.gnav` : onglets de 54 + 2 × 6 de marge intérieure + 2 × 1 de bordure. */
-const BAR_HEIGHT = ITEM_HEIGHT + 2 * 6 + 2;
-const PAD = 6;
+/** `.gnav` V7 : onglets de 44 + 2 × 4 de marge intérieure + 2 × 1 de bordure. */
+const BAR_HEIGHT = ITEM_HEIGHT + 2 * 4 + 2;
+const PAD = 4;
 const GAP = 2;
 const PEEK = 52;
 
@@ -140,7 +140,7 @@ export function BottomTabBar<K extends string>({
   return (
     <View pointerEvents="box-none" style={[floating ? styles.floating : null, { paddingBottom: bottom }, styles.outer, style]}>
       {peek && peekAt.key > 0 && width > 0 ? (
-        <TabPeek species={peek.species} mood={peek.mood} index={peekAt.index} step={seg + GAP} offset={14 + 1 + PAD} show={peekAt.key} />
+        <TabPeek species={peek.species} mood={peek.mood} index={peekAt.index} step={seg + GAP} offset={28 + 1 + PAD} show={peekAt.key} />
       ) : null}
       <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel} onLayout={onLayout} style={[styles.bar, LIQUID_GLASS && styles.barLiquid]}>
         {LIQUID_GLASS ? (
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   glass: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: BAR_HEIGHT / 2, overflow: 'hidden' },
   tint: { backgroundColor: alpha(color.card, 0.62) },
   floating: { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  outer: { paddingHorizontal: 14 },
+  outer: { paddingHorizontal: 28 },
   pill: { position: 'absolute', top: PAD, left: PAD, height: ITEM_HEIGHT, borderRadius: radius.lg, backgroundColor: color.accent },
   peekClip: { position: 'absolute', width: PEEK, overflow: 'hidden' },
   bar: {

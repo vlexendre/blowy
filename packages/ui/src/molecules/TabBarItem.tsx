@@ -12,7 +12,8 @@ import { type Indicator, useActiveInk, useIndicator } from '../motion/indicator'
 import { color, radius } from '../theme';
 
 /** Hauteur d'un onglet (`.gnav a` : 54 px). */
-export const ITEM_HEIGHT = 54;
+/** Onglet compact (V7 : pictogrammes seuls, barre plus fine). */
+export const ITEM_HEIGHT = 44;
 
 export interface TabBarItemProps {
   label: string;
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
   base: { flex: 1, height: ITEM_HEIGHT, minWidth: 0, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', gap: 2 },
   active: { backgroundColor: color.accent },
   label: { letterSpacing: 0.4 },
-  big: { transform: [{ scale: 1.25 }] },
+  big: { transform: [{ scale: 1.15 }] },
   face: { alignItems: 'center', justifyContent: 'center', gap: 2 },
   badge: { position: 'absolute', top: 5, left: '50%', marginLeft: 6 },
 });
