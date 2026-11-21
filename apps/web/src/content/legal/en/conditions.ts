@@ -120,7 +120,7 @@ export const conditions: LegalPage = {
 
     { h2: '9. Free, with Minimoa+ as an option', id: 'blowy-plus' },
     {
-      p: 'Minimoa is free and has no ads. **Minimoa+** is an optional subscription that unlocks extra features. It is sold and billed by Apple, on iPhone (a subscription taken on iPhone follows your account on your other devices). What it includes, its prices, free trial, renewal and how to cancel are in the [Minimoa+ subscription terms](@abonnement).',
+      p: 'Minimoa is free and has no ads. **Minimoa+** is an optional subscription that unlocks extra features. It is sold and billed by Apple, on iPhone (a subscription taken on iPhone follows your account on your other devices). What it includes, its prices, renewal and how to cancel are in the [Minimoa+ subscription terms](@abonnement).',
     },
     {
       p: 'If you downloaded Minimoa from the App Store, Apple’s [Licensed Application End User License Agreement](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (the “Standard EULA”) also applies to the app.',

@@ -125,7 +125,7 @@ export const conditions: LegalPage = {
 
     { h2: '9. Gratuito, com o Minimoa+ como opção', id: 'blowy-plus' },
     {
-      p: 'O Minimoa é gratuito e sem anúncios. O **Minimoa+** é uma assinatura opcional que libera funções extras. Ele é vendido e cobrado pela Apple, no iPhone (uma assinatura feita no iPhone acompanha sua conta nos seus outros aparelhos). Os preços, o que está incluído, o teste grátis, a renovação e como cancelar estão nos [termos da assinatura Minimoa+](@abonnement).',
+      p: 'O Minimoa é gratuito e sem anúncios. O **Minimoa+** é uma assinatura opcional que libera funções extras. Ele é vendido e cobrado pela Apple, no iPhone (uma assinatura feita no iPhone acompanha sua conta nos seus outros aparelhos). Os preços, o que está incluído, a renovação e como cancelar estão nos [termos da assinatura Minimoa+](@abonnement).',
     },
     {
       p: 'Se você baixou o Minimoa na App Store, o [contrato de licença padrão da Apple para aplicativos](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (“Licensed Application End User License Agreement”) também se aplica ao app.',

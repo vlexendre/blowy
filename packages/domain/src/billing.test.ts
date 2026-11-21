@@ -46,7 +46,7 @@ const run = (events: StoreEvent[]): SubscriptionState => {
 describe('offres', () => {
   it('59,99 € par an soit 4,99 € par mois, 14,99 € par mois, remise exacte de 67 %', () => {
     expect(OFFERS.yearly.amountMinor).toBe(5999);
-    expect(OFFERS.yearly.trialDays).toBe(7);
+    expect(OFFERS.yearly.trialDays).toBe(0);
     expect(OFFERS.monthly.amountMinor).toBe(1499);
     expect(OFFERS.monthly.trialDays).toBe(0);
     expect(OFFERS.weekly).toMatchObject({ period: 'week', amountMinor: 299, trialDays: 0 });

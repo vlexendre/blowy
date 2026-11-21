@@ -397,7 +397,8 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
     const prices = offerPrices(o, s, sellable);
     if (!prices) return [];
     const trialDays = sellable ? (s?.trialDays ?? 0) : o.trialDays;
-    const eligible = trialDays > 0 && (s?.introEligible ?? data?.trial.eligible ?? false);
+    // L'essai n'est montré que si l'API le propose encore (aucun depuis le 21 nov. 2026), même si le magasin en annonce un.
+    const eligible = trialDays > 0 && (data?.trial.eligible ?? false) && (s?.introEligible ?? true);
     const name = t.plan[o.plan];
     const badge = sellable ? (o.period === 'year' ? discount : null) : o.discountPercent;
     return [

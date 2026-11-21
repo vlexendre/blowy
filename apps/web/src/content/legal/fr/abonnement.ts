@@ -9,10 +9,9 @@ export const abonnement: LegalPage = {
   summary: {
     title: 'En bref',
     items: [
-      '**59,99 € par an**, avec **7 jours gratuits** au début, **14,99 € par mois** ou **2,99 € par semaine**, sans essai.',
+      '**59,99 € par an** (soit 4,99 € par mois), **14,99 € par mois** ou **2,99 € par semaine**. Pas d’essai gratuit : tu paies à l’achat.',
       'L’abonnement **se renouvelle automatiquement** tant que tu ne l’annules pas.',
       'Minimoa+ s’achète sur iPhone : c’est **Apple** qui te facture, et c’est dans les réglages de ton iPhone que tu l’annules.',
-      'Au 5e jour de l’essai, on te prévient **par notification et par e-mail**.',
       'Supprimer l’app ou ton compte **n’annule pas** l’abonnement.',
       'Minimoa reste gratuit sans Minimoa+.',
     ],
@@ -39,7 +38,7 @@ export const abonnement: LegalPage = {
       table: {
         head: ['Offre', 'Prix', 'Essai gratuit'],
         rows: [
-          ['Annuelle', '59,99 € par an, soit 4,99 € par mois', '7 jours, puis 59,99 € par an'],
+          ['Annuelle', '59,99 € par an, soit 4,99 € par mois', 'Pas d’essai'],
           ['Mensuelle', '14,99 € par mois', 'Pas d’essai'],
           ['Hebdomadaire', '2,99 € par semaine', 'Pas d’essai'],
         ],
@@ -49,21 +48,13 @@ export const abonnement: LegalPage = {
       p: 'Les prix sont indiqués toutes taxes comprises, pour la France. Dans d’autres pays, l’App Store affiche le prix dans ta devise, qui peut être différent. Le prix qui fait foi est celui affiché par l’App Store au moment où tu confirmes l’achat.',
     },
 
-    { h2: "L'essai gratuit", id: 'essai' },
-    {
-      ul: [
-        'L’essai de 7 jours concerne seulement l’offre annuelle, et seulement un nouvel abonnement, dans les conditions d’Apple (en général, un essai par compte Apple).',
-        'Pendant l’essai, tout Minimoa+ est ouvert, et tu ne paies rien.',
-        'Au 5e jour, on t’envoie un rappel : il reste 2 jours. Il part par notification (si tu les as autorisées) et par e-mail, à l’adresse liée à ton compte Apple.',
-        'Si tu n’annules pas **au moins 24 heures avant la fin de l’essai**, le premier paiement de 59,99 € est prélevé le 7e jour, et l’abonnement annuel commence.',
-        'Si tu annules pendant l’essai, tu gardes Minimoa+ jusqu’à la fin des 7 jours, et tu ne paies rien.',
-      ],
-    },
+    { h2: 'Pas d’essai gratuit', id: 'essai' },
+    { p: 'Minimoa+ n’a pas d’essai gratuit : le paiement est débité dès que tu confirmes l’achat. Si tu as commencé un essai avant le 21 novembre 2026, il va jusqu’à son terme : on te prévient au 5e jour, et tu peux l’annuler jusqu’à 24 heures avant la fin sans rien payer.' },
 
     { h2: 'Paiement et renouvellement automatique', id: 'renouvellement' },
     {
       ul: [
-        'L’achat se fait dans l’app, sur iPhone, par l’**App Store**. Le paiement est débité sur le moyen de paiement de ton compte Apple, à la confirmation de l’achat ou à la fin de l’essai. Sur Android et sur le web, Minimoa+ n’est pas en vente ; un abonnement pris sur iPhone suit ton compte Minimoa partout.',
+        'L’achat se fait dans l’app, sur iPhone, par l’**App Store**. Le paiement est débité sur le moyen de paiement de ton compte Apple, à la confirmation de l’achat. Sur Android et sur le web, Minimoa+ n’est pas en vente ; un abonnement pris sur iPhone suit ton compte Minimoa partout.',
         'L’abonnement **se renouvelle automatiquement** pour la même durée (un an ou un mois), au même prix, sauf si tu l’annules **au moins 24 heures avant la fin de la période en cours**.',
         'Si le prix change, Apple te prévient avant, selon ses règles, et te demande ton accord quand elles l’exigent.',
         'On ne reçoit jamais tes coordonnées bancaires. Apple nous confirme seulement l’achat, que notre serveur vérifie auprès de lui.',
@@ -106,7 +97,7 @@ export const abonnement: LegalPage = {
         '**Apple :** [reportaproblem.apple.com](https://reportaproblem.apple.com), ou depuis l’historique d’achats de ton compte.',
       ],
     },
-    { p: 'Pendant l’essai gratuit, il n’y a rien à rétracter : il suffit d’annuler avant la fin pour ne rien payer.' },
+    { p: 'Un essai commencé avant le 21 novembre 2026 se rétracte simplement : annule avant la fin pour ne rien payer.' },
 
     { h2: 'Remboursements', id: 'remboursements' },
     {

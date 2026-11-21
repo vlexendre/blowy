@@ -120,7 +120,7 @@ export const conditions: LegalPage = {
 
     { h2: '9. Gratis, met Minimoa+ als optie', id: 'blowy-plus' },
     {
-      p: 'Minimoa is gratis en zonder reclame. **Minimoa+** is een optioneel abonnement dat extra functies ontgrendelt. Het wordt verkocht en gefactureerd door Apple, op iPhone (een abonnement dat je op iPhone neemt, volgt je account op je andere apparaten). Wat het bevat, de prijzen, de gratis proefperiode, de verlenging en hoe je opzegt staan in de [voorwaarden van het Minimoa+-abonnement](@abonnement).',
+      p: 'Minimoa is gratis en zonder reclame. **Minimoa+** is een optioneel abonnement dat extra functies ontgrendelt. Het wordt verkocht en gefactureerd door Apple, op iPhone (een abonnement dat je op iPhone neemt, volgt je account op je andere apparaten). Wat het bevat, de prijzen, de verlenging en hoe je opzegt staan in de [voorwaarden van het Minimoa+-abonnement](@abonnement).',
     },
     {
       p: 'Heb je Minimoa uit de App Store gedownload, dan geldt voor de app ook Apples [standaard licentieovereenkomst voor apps](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (“Licensed Application End User License Agreement”).',

@@ -63,13 +63,13 @@ describe('Minimoa+', () => {
     return { status: res.status, body: (await res.json()) as { outcome?: string } };
   };
 
-  it('paywall : montants facturés en données, essai de 7 jours, avantages, preuve concrète à 0 sans position', async () => {
+  it('paywall : montants facturés en données, sans essai, avantages, preuve concrète à 0 sans position', async () => {
     const { api } = w.client();
     await api.me.onboard(onboardBody());
     const p = await api.plus.paywall();
     expect(p.defaultPlan).toBe('yearly');
     expect(p.offers.map((o) => [o.plan, o.productId, o.billed.amountMinor, o.period, o.trialDays])).toEqual([
-      ['yearly', 'app.blowy.plus.yearly', 5999, 'year', 7],
+      ['yearly', 'app.blowy.plus.yearly', 5999, 'year', 0],
       ['monthly', 'app.blowy.plus.monthly', 1499, 'month', 0],
       ['weekly', 'app.blowy.plus.weekly', 299, 'week', 0],
     ]);
@@ -79,9 +79,9 @@ describe('Minimoa+', () => {
     const yearly = p.offers[0];
     // Espaces insécables (fines ou non) normalisées : seule la formulation compte ici.
     const plain = (o: Record<string, string | null> | undefined) => Object.fromEntries(Object.entries(o ?? {}).map(([k, v]) => [k, v?.replace(/[\u00a0\u202f]/g, ' ') ?? v]));
-    expect(plain(yearly?.labels)).toEqual({ price: '59,99 € par an', perMonth: 'soit 4,99 € par mois', trial: '7 jours gratuits, puis 59,99 € par an', name: 'Abonnement annuel Minimoa+' });
+    expect(plain(yearly?.labels)).toEqual({ price: '59,99 € par an', perMonth: 'soit 4,99 € par mois', trial: null, name: 'Abonnement annuel Minimoa+' });
     expect(yearly?.discountPercent).toBe(67);
-    expect(p.trial).toMatchObject({ days: 7, reminderDay: 5, eligible: true });
+    expect(p.trial).toMatchObject({ days: 7, reminderDay: 5, eligible: false });
     expect(p.trial.timeline.map((s) => s.day)).toEqual([0, 5, 7]);
     expect(p.perks.map((x) => x.key)).toContain('more_habits');
     expect(p.teaser).toEqual({ compatibleNearby: 0, label: null });

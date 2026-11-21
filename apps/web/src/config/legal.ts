@@ -28,7 +28,7 @@ export const known = (v: LegalValue | undefined): v is LegalValue => v !== undef
 export const inLocale = (v: LegalValue, locale: Locale): string => (typeof v === 'string' ? v : v[locale]);
 
 /** Date de dernière mise à jour des pages légales (affichée dans chaque langue). */
-export const LEGAL_UPDATED_ISO = '2026-11-18';
+export const LEGAL_UPDATED_ISO = '2026-11-21';
 
 /** Éditeur du site et de l'application. */
 export const PUBLISHER = {

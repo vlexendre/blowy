@@ -9,10 +9,9 @@ export const abonnement: LegalPage = {
   summary: {
     title: 'In short',
     items: [
-      '**€59.99 per year**, with **7 days free** at the start, **€14.99 per month** or **€2.99 per week**, without a trial.',
+      '**€59.99 per year** (i.e. €4.99 per month), **€14.99 per month** or **€2.99 per week**. No free trial: you pay when you buy.',
       'The subscription **renews automatically** until you cancel it.',
       'Minimoa+ is bought on iPhone: **Apple** bills you, and you cancel in your iPhone settings.',
-      'On day 5 of the trial, we let you know **by notification and by email**.',
       'Deleting the app or your account **does not cancel** the subscription.',
       'Minimoa stays free without Minimoa+.',
     ],
@@ -37,7 +36,7 @@ export const abonnement: LegalPage = {
       table: {
         head: ['Plan', 'Price', 'Free trial'],
         rows: [
-          ['Annual', '€59.99 per year, i.e. €4.99 per month', '7 days, then €59.99 per year'],
+          ['Annual', '€59.99 per year, i.e. €4.99 per month', 'No trial'],
           ['Monthly', '€14.99 per month', 'No trial'],
           ['Weekly', '€2.99 per week', 'No trial'],
         ],
@@ -47,21 +46,13 @@ export const abonnement: LegalPage = {
       p: 'Prices include all taxes, for France. In other countries, the App Store shows the price in your currency, which may differ. The price that applies is the one shown by the App Store when you confirm the purchase.',
     },
 
-    { h2: 'The free trial', id: 'essai' },
-    {
-      ul: [
-        'The 7-day trial only applies to the annual plan, and only to a new subscription, under Apple’s conditions (usually one trial per Apple account).',
-        'During the trial, all of Minimoa+ is unlocked and you pay nothing.',
-        'On day 5, we send you a reminder: 2 days left. It goes out by notification (if you allowed them) and by email, to the address linked to your Apple account.',
-        'If you do not cancel **at least 24 hours before the trial ends**, the first payment of €59.99 is taken on day 7 and the annual subscription begins.',
-        'If you cancel during the trial, you keep Minimoa+ until the end of the 7 days and pay nothing.',
-      ],
-    },
+    { h2: 'No free trial', id: 'essai' },
+    { p: 'Minimoa+ has no free trial: payment is taken as soon as you confirm the purchase. If you started a trial before 21 November 2026, it runs to its end: we let you know on day 5, and you can cancel up to 24 hours before it ends without paying anything.' },
 
     { h2: 'Payment and automatic renewal', id: 'renouvellement' },
     {
       ul: [
-        'You buy in the app, on iPhone, through the **App Store**. Payment is charged to the payment method of your Apple account, when you confirm the purchase or at the end of the trial. On Android and on the web, Minimoa+ is not for sale; a subscription taken on iPhone follows your Minimoa account everywhere.',
+        'You buy in the app, on iPhone, through the **App Store**. Payment is charged to the payment method of your Apple account, when you confirm the purchase. On Android and on the web, Minimoa+ is not for sale; a subscription taken on iPhone follows your Minimoa account everywhere.',
         'The subscription **renews automatically** for the same period (one year or one month), at the same price, unless you cancel it **at least 24 hours before the end of the current period**.',
         'If the price changes, Apple tells you in advance, under its rules, and asks for your agreement where they require it.',
         'We never receive your bank details. Apple only confirms the purchase to us, which our server verifies with it.',
@@ -94,7 +85,7 @@ export const abonnement: LegalPage = {
     },
     { p: 'As the purchase is made with Apple, you request withdrawal from Apple:' },
     { ul: ['**Apple:** [reportaproblem.apple.com](https://reportaproblem.apple.com), or from your account’s purchase history.'] },
-    { p: 'During the free trial, there is nothing to withdraw from: just cancel before the end to pay nothing.' },
+    { p: 'A trial started before 21 November 2026 is simple to withdraw from: cancel before it ends to pay nothing.' },
 
     { h2: 'Refunds', id: 'remboursements' },
     {

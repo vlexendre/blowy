@@ -6,6 +6,7 @@ import {
   PLANS,
   PLUS_PERKS,
   TRIAL_DAYS,
+  TRIAL_OFFERED,
   TRIAL_REMINDER_DAY,
   currentCollection,
   dayOf,
@@ -165,7 +166,7 @@ export class GetPaywall {
     return {
       offers,
       defaultPlan: 'yearly',
-      trial: { days: TRIAL_DAYS, reminderDay: TRIAL_REMINDER_DAY, timeline: plusText.timeline(TRIAL_REMINDER_DAY, TRIAL_DAYS), eligible: !trialUsed },
+      trial: { days: TRIAL_DAYS, reminderDay: TRIAL_REMINDER_DAY, timeline: plusText.timeline(TRIAL_REMINDER_DAY, TRIAL_DAYS), eligible: TRIAL_OFFERED && !trialUsed },
       perks: PLUS_PERKS.map((key) => ({ key, label: plusPerkText[key] })),
       teaser: { compatibleNearby: count, label: count > 0 ? plusText.teaser(count) : null },
       renewalNotice: plusText.renewalNotice,

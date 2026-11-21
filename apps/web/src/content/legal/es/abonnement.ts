@@ -9,10 +9,9 @@ export const abonnement: LegalPage = {
   summary: {
     title: 'En resumen',
     items: [
-      '**59,99 € al año**, con **7 días gratis** al principio, **14,99 € al mes** o **2,99 € a la semana**, sin prueba.',
+      '**59,99 € al año** (es decir, 4,99 € al mes), **14,99 € al mes** o **2,99 € a la semana**. Sin prueba gratuita: pagas al comprar.',
       'La suscripción **se renueva automáticamente** mientras no la canceles.',
       'Minimoa+ se compra en iPhone: te factura **Apple**, y se cancela en los ajustes de tu iPhone.',
-      'El día 5 de la prueba te avisamos **por notificación y por correo**.',
       'Eliminar la app o tu cuenta **no cancela** la suscripción.',
       'Minimoa sigue siendo gratis sin Minimoa+.',
     ],
@@ -37,7 +36,7 @@ export const abonnement: LegalPage = {
       table: {
         head: ['Plan', 'Precio', 'Prueba gratuita'],
         rows: [
-          ['Anual', '59,99 € al año, es decir, 4,99 € al mes', '7 días, después 59,99 € al año'],
+          ['Anual', '59,99 € al año, es decir, 4,99 € al mes', 'Sin prueba'],
           ['Mensual', '14,99 € al mes', 'Sin prueba'],
           ['Semanal', '2,99 € a la semana', 'Sin prueba'],
         ],
@@ -47,21 +46,13 @@ export const abonnement: LegalPage = {
       p: 'Los precios incluyen todos los impuestos, para Francia. En otros países, la App Store muestra el precio en tu moneda, que puede ser distinto. El precio que cuenta es el que muestra la App Store cuando confirmas la compra.',
     },
 
-    { h2: 'La prueba gratuita', id: 'essai' },
-    {
-      ul: [
-        'La prueba de 7 días solo se aplica al plan anual, y solo a una suscripción nueva, en las condiciones de Apple (normalmente, una prueba por cuenta de Apple).',
-        'Durante la prueba, todo Minimoa+ está abierto y no pagas nada.',
-        'El día 5 te enviamos un recordatorio: quedan 2 días. Llega por notificación (si las has permitido) y por correo, a la dirección vinculada a tu cuenta de Apple.',
-        'Si no cancelas **al menos 24 horas antes del final de la prueba**, el primer pago de 59,99 € se cobra el día 7 y empieza la suscripción anual.',
-        'Si cancelas durante la prueba, conservas Minimoa+ hasta el final de los 7 días y no pagas nada.',
-      ],
-    },
+    { h2: 'Sin prueba gratuita', id: 'essai' },
+    { p: 'Minimoa+ no tiene prueba gratuita: el pago se cobra en cuanto confirmas la compra. Si empezaste una prueba antes del 21 de noviembre de 2026, sigue hasta el final: te avisamos el día 5 y puedes cancelarla hasta 24 horas antes del final sin pagar nada.' },
 
     { h2: 'Pago y renovación automática', id: 'renouvellement' },
     {
       ul: [
-        'La compra se hace en la app, en iPhone, a través de la **App Store**. El pago se carga al método de pago de tu cuenta de Apple, al confirmar la compra o al final de la prueba. En Android y en la web, Minimoa+ no está a la venta; una suscripción hecha en iPhone acompaña a tu cuenta de Minimoa en todas partes.',
+        'La compra se hace en la app, en iPhone, a través de la **App Store**. El pago se carga al método de pago de tu cuenta de Apple, al confirmar la compra. En Android y en la web, Minimoa+ no está a la venta; una suscripción hecha en iPhone acompaña a tu cuenta de Minimoa en todas partes.',
         'La suscripción **se renueva automáticamente** por el mismo periodo (un año o un mes), al mismo precio, salvo que la canceles **al menos 24 horas antes del final del periodo en curso**.',
         'Si el precio cambia, Apple te avisa antes, según sus normas, y te pide tu conformidad cuando estas lo exigen.',
         'Nunca recibimos tus datos bancarios. Apple solo nos confirma la compra, que nuestro servidor verifica con ella.',
@@ -94,7 +85,7 @@ export const abonnement: LegalPage = {
     },
     { p: 'Como la compra se hace con Apple, el desistimiento se pide a Apple:' },
     { ul: ['**Apple:** [reportaproblem.apple.com](https://reportaproblem.apple.com), o desde el historial de compras de tu cuenta.'] },
-    { p: 'Durante la prueba gratuita no hay nada de lo que desistir: basta con cancelar antes del final para no pagar nada.' },
+    { p: 'Una prueba empezada antes del 21 de noviembre de 2026 se desiste fácilmente: cancela antes del final para no pagar nada.' },
 
     { h2: 'Reembolsos', id: 'remboursements' },
     {

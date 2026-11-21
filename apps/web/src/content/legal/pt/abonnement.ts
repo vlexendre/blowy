@@ -9,10 +9,9 @@ export const abonnement: LegalPage = {
   summary: {
     title: 'Em resumo',
     items: [
-      '**€ 59,99 por ano**, com **7 dias grátis** no início, **€ 14,99 por mês** ou **€ 2,99 por semana**, sem teste grátis.',
+      '**€ 59,99 por ano** (ou seja, € 4,99 por mês), **€ 14,99 por mês** ou **€ 2,99 por semana**. Sem teste grátis: você paga na compra.',
       'A assinatura **é renovada automaticamente** enquanto você não cancelar.',
       'O Minimoa+ é comprado no iPhone: quem te cobra é a **Apple**, e é nos ajustes do seu iPhone que você cancela.',
-      'No 5º dia do teste, avisamos você **por notificação e por e-mail**.',
       'Apagar o app ou excluir sua conta **não cancela** a assinatura.',
       'O Minimoa continua gratuito sem o Minimoa+.',
     ],
@@ -39,7 +38,7 @@ export const abonnement: LegalPage = {
       table: {
         head: ['Plano', 'Preço', 'Teste grátis'],
         rows: [
-          ['Anual', '€ 59,99 por ano, ou seja, € 4,99 por mês', '7 dias, depois € 59,99 por ano'],
+          ['Anual', '€ 59,99 por ano, ou seja, € 4,99 por mês', 'Sem teste grátis'],
           ['Mensal', '€ 14,99 por mês', 'Sem teste grátis'],
           ['Semanal', '€ 2,99 por semana', 'Sem teste grátis'],
         ],
@@ -49,21 +48,13 @@ export const abonnement: LegalPage = {
       p: 'Os preços incluem todos os impostos, para a França. Em outros países, a App Store mostra o preço na sua moeda, que pode ser diferente. O preço que vale é o exibido pela App Store no momento em que você confirma a compra.',
     },
 
-    { h2: 'O teste grátis', id: 'essai' },
-    {
-      ul: [
-        'O teste de 7 dias vale só para o plano anual, e só para uma nova assinatura, nas condições da Apple (em geral, um teste por conta Apple).',
-        'Durante o teste, todo o Minimoa+ fica liberado, e você não paga nada.',
-        'No 5º dia, mandamos um lembrete: faltam 2 dias. Ele chega por notificação (se você as autorizou) e por e-mail, no endereço ligado à sua conta Apple.',
-        'Se você não cancelar **pelo menos 24 horas antes do fim do teste**, o primeiro pagamento de € 59,99 é cobrado no 7º dia, e a assinatura anual começa.',
-        'Se você cancelar durante o teste, continua com o Minimoa+ até o fim dos 7 dias, e não paga nada.',
-      ],
-    },
+    { h2: 'Sem teste grátis', id: 'essai' },
+    { p: 'O Minimoa+ não tem teste grátis: o pagamento é cobrado assim que você confirma a compra. Se você começou um teste antes de 21 de novembro de 2026, ele vai até o fim: avisamos você no 5º dia, e você pode cancelar até 24 horas antes do fim sem pagar nada.' },
 
     { h2: 'Pagamento e renovação automática', id: 'renouvellement' },
     {
       ul: [
-        'A compra é feita no app, no iPhone, pela **App Store**. O pagamento é cobrado na forma de pagamento da sua conta Apple, na confirmação da compra ou no fim do teste. No Android e na web, o Minimoa+ não está à venda; uma assinatura feita no iPhone acompanha sua conta Minimoa em todo lugar.',
+        'A compra é feita no app, no iPhone, pela **App Store**. O pagamento é cobrado na forma de pagamento da sua conta Apple, na confirmação da compra. No Android e na web, o Minimoa+ não está à venda; uma assinatura feita no iPhone acompanha sua conta Minimoa em todo lugar.',
         'A assinatura **é renovada automaticamente** pelo mesmo período (um ano ou um mês), pelo mesmo preço, a não ser que você cancele **pelo menos 24 horas antes do fim do período atual**.',
         'Se o preço mudar, a Apple avisa você antes, de acordo com as regras dela, e pede sua concordância quando essas regras exigem.',
         'Nunca recebemos seus dados bancários. A Apple só nos confirma a compra, que o nosso servidor verifica com ela.',
@@ -106,7 +97,7 @@ export const abonnement: LegalPage = {
         '**Apple:** [reportaproblem.apple.com](https://reportaproblem.apple.com), ou pelo histórico de compras da sua conta.',
       ],
     },
-    { p: 'Durante o teste grátis, não há nada do que se arrepender: basta cancelar antes do fim para não pagar nada.' },
+    { p: 'Um teste começado antes de 21 de novembro de 2026 se cancela facilmente: cancele antes do fim para não pagar nada.' },
 
     { h2: 'Reembolsos', id: 'remboursements' },
     {

@@ -20,12 +20,16 @@ export interface Offer {
   trialDays: number;
 }
 
-/** Durée de l'essai gratuit (offre annuelle seulement ; ni la mensuelle ni l'hebdomadaire n'en ont) et jour du rappel promis sur la frise du paywall. */
+/**
+ * Plus d'essai gratuit (21 nov. 2026) : Minimoa+ se paie dès l'achat, l'offre d'introduction est retirée de l'App
+ * Store. `TRIAL_DAYS` et `TRIAL_REMINDER_DAY` restent pour les essais déjà en cours (leur rappel du jour 5).
+ */
+export const TRIAL_OFFERED = false;
 export const TRIAL_DAYS = 7;
 export const TRIAL_REMINDER_DAY = 5;
 
 export const OFFERS: Readonly<Record<Plan, Offer>> = Object.freeze({
-  yearly: { plan: 'yearly', period: 'year', amountMinor: 5999, currency: 'EUR', trialDays: TRIAL_DAYS },
+  yearly: { plan: 'yearly', period: 'year', amountMinor: 5999, currency: 'EUR', trialDays: TRIAL_OFFERED ? TRIAL_DAYS : 0 },
   monthly: { plan: 'monthly', period: 'month', amountMinor: 1499, currency: 'EUR', trialDays: 0 },
   weekly: { plan: 'weekly', period: 'week', amountMinor: 299, currency: 'EUR', trialDays: 0 },
 });
