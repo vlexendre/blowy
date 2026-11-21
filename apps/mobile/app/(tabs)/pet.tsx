@@ -88,11 +88,18 @@ import { rituels as r } from '@/locales/rituels';
 /** Durée d'affichage d'une réplique après un soin (« miam. », « il n'a plus faim. »). */
 const SAID_MS = 3500;
 
-/** Le chapitre du jour (l'univers de l'étape du jour, sinon le dernier), du bas vers le haut, sans son bandeau (le bandeau violet le dit). */
-function currentChapter(cm: Parameters<typeof pathChapters>[0]) {
-  const chapters = pathChapters(cm);
-  const ch = chapters.find((x) => x.current) ?? chapters[chapters.length - 1];
-  return (ch?.nodes ?? []).filter((n) => n.kind !== 'unit').reverse();
+/**
+ * Tout le chemin, façon Duolingo : un chapitre par univers, chacun sur au moins une page, du bas (chapitre 1) vers le
+ * haut (on monte en avançant). Un espace vide en haut de chapitre lui fait remplir l'écran.
+ */
+function chaptersBottomUp(cm: Parameters<typeof pathChapters>[0], page: number) {
+  type Gap = { key: string; kind: 'gap'; height: number };
+  return pathChapters(cm)
+    .flatMap((ch, i): (ReturnType<typeof pathChapters>[number]['nodes'][number] | Gap)[] => {
+      const used = ch.nodes.reduce((sum, n) => sum + (n.kind === 'unit' ? 92 : 52), 0);
+      return [...ch.nodes, { key: `gap:${i}`, kind: 'gap', height: Math.max(0, page - used) }];
+    })
+    .reverse();
 }
 
 /** Les 4 soins, en pastille dans la carte (le câlin se fait aussi en touchant le minimoa). */
@@ -138,7 +145,8 @@ export default function PetHome() {
   // Retour après 14 jours et plus : il t'accueille et dit ce qui s'est passé (fermé d'un tap).
   const [welcomeBack, setWelcomeBack] = useState(false);
   // Petit habitat de la scène (flou d'arrière-plan) : pas sur les petits écrans.
-  const roomy = useWindowDimensions().height >= 700;
+  const winHeight = useWindowDimensions().height;
+  const roomy = winHeight >= 700;
   const memories = usePrivateMemories();
   const lastPhoto = memories.data?.pages[0]?.items[0]?.url ?? null;
   const [reactionKey, setReactionKey] = useState(0);
@@ -464,8 +472,10 @@ export default function PetHome() {
                   />
                   <View onLayout={(e) => (pathTop.current = blockTop.current + e.nativeEvent.layout.y)}>
                     <CheminPath
-                      nodes={currentChapter(cm).map((n) =>
-                        n.kind === 'unit'
+                      nodes={chaptersBottomUp(cm, Math.max(420, winHeight - 150)).map((n) =>
+                        n.kind === 'gap'
+                          ? { key: n.key, kind: n.kind, height: n.height, accessibilityLabel: '' }
+                          : n.kind === 'unit'
                           ? {
                               key: n.key,
                               kind: n.kind,
@@ -500,6 +510,15 @@ export default function PetHome() {
                             }
                           : null
                       }
+                      onCurrentY={(y) => {
+                        // Une fois par ouverture : l'écran se place sur l'étape du jour (les chapitres suivants sont au-dessus).
+                        if (scrolledTo.current) return;
+                        scrolledTo.current = true;
+                        setTimeout(
+                          () => scrollRef.current?.scrollTo({ y: Math.max(0, pathTop.current + y - winHeight / 2), animated: false }),
+                          150,
+                        );
+                      }}
                       streak={{
                         label: c.home.streak(cm.streak.current),
                         accessibilityLabel: c.home.streakA11y(cm.streak.current),

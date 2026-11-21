@@ -102,13 +102,14 @@ export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, on
   const last = centers[centers.length - 1];
   const height = last ? last.y + last.size / 2 + EDGE + space.sm : 0;
   const d = centers
-    .filter((_, i) => nodes[i]?.kind !== 'unit')
+    .filter((_, i) => nodes[i]?.kind !== 'unit' && nodes[i]?.kind !== 'gap')
     .reduce((acc, c, i, list) => {
       if (i === 0) return `M${c.x} ${c.y}`;
       const p = list[i - 1] as (typeof centers)[number];
       return `${acc} Q${p.x} ${(p.y + c.y) / 2} ${(p.x + c.x) / 2} ${(p.y + c.y) / 2} T${c.x} ${c.y}`;
     }, '');
   const now = nowIndex >= 0 ? centers[nowIndex] : null;
+  const pillTop = { top: now ? Math.max(0, now.y - 22) : 0 };
   const nowY = now?.y ?? null;
   useEffect(() => {
     if (nowY !== null && width > 0) onCurrentY?.(nowY);
@@ -201,12 +202,13 @@ export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, on
           ) : null}
         </>
       ) : null}
+      {/* Ligue et série à hauteur de l'étape du jour (le chemin peut être bien plus haut que l'écran). */}
       {league ? (
         <Pressable
           onPress={league.onPress}
           accessibilityRole="button"
           accessibilityLabel={league.accessibilityLabel}
-          style={[styles.streak, styles.league, league.up ? styles.leagueUp : null]}
+          style={[styles.streak, styles.league, league.up ? styles.leagueUp : null, pillTop]}
           scaleTo={0.96}
         >
           <Image source={leagueImage(league.tier)} style={styles.leagueBadge} contentFit="contain" />
@@ -220,7 +222,7 @@ export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, on
           onPress={streak.onPress}
           accessibilityRole="button"
           accessibilityLabel={streak.accessibilityLabel}
-          style={styles.streak}
+          style={[styles.streak, pillTop]}
           scaleTo={0.96}
         >
           <Icon name="flamme" size={18} />
