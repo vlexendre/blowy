@@ -6,7 +6,23 @@
  */
 import { itemLabel } from '@/locales/content';
 import { color } from '@blowy/tokens';
-import { Banner, Button, Icon, type Milestone, MilestoneTrack, ScreenTemplate, Skeleton, Stack, StreakHero, StreakWeek, Text, TipRow } from '@blowy/ui';
+import {
+  Banner,
+  Button,
+  Chip,
+  Header,
+  Icon,
+  type Milestone,
+  MilestoneTrack,
+  ScreenTemplate,
+  Skeleton,
+  Stack,
+  StreakHeadline,
+  StreakWeek,
+  Text,
+  TipRow,
+  Title,
+} from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { RefreshControl } from 'react-native';
@@ -33,7 +49,9 @@ export default function StreakScreen() {
     await Promise.all([map.refetch(), pet.refetch()]);
     setRefreshing(false);
   };
-  const refreshControl = <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />;
+  const refreshControl = (
+    <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />
+  );
 
   const s = map.data?.streak;
   const p = pet.data?.pet;
@@ -43,7 +61,13 @@ export default function StreakScreen() {
       <ScreenTemplate refreshControl={refreshControl}>
         <Stack top={6}>
           {failed ? (
-            <Banner tone="error" title={t.loadError} text="" actionLabel={t.retry} onAction={() => void Promise.all([map.refetch(), pet.refetch()])} />
+            <Banner
+              tone="error"
+              title={t.loadError}
+              text=""
+              actionLabel={t.retry}
+              onAction={() => void Promise.all([map.refetch(), pet.refetch()])}
+            />
           ) : (
             <>
               <Skeleton height={372} radius="xl" />
@@ -56,14 +80,23 @@ export default function StreakScreen() {
     );
   }
 
-  const week = s.week.map((d, i) => ({ letter: days.letters[i] ?? '', status: d.status, label: days.dayA11y[d.status](days.weekday(d.day)) }));
-  const doneThisWeek = s.week.filter((d) => d.status === 'done').length;
+  const week = s.week.map((d, i) => ({
+    letter: days.letters[i] ?? '',
+    status: d.status,
+    label: days.dayA11y[d.status](days.weekday(d.day)),
+  }));
   // Paliers de Ton chemin (7, 30, 100, 365) : gagnés, le prochain, puis les autres ; un palier sans objet : « Bientôt ».
   const next = s.nextMilestone;
   const milestones: Milestone[] = s.milestones.map((m) => {
     const state: Milestone['state'] = m.reached ? 'owned' : m.days === next?.days ? 'next' : 'locked';
     const name = m.itemId ? (itemLabel[m.itemId] ?? m.itemId) : t.milestoneSoon;
-    return { days: m.days, itemId: m.itemId, state, label: t.milestoneLabel(m.days), accessibilityLabel: t.milestoneA11y(name, m.days, state) };
+    return {
+      days: m.days,
+      itemId: m.itemId,
+      state,
+      label: t.milestoneLabel(m.days),
+      accessibilityLabel: t.milestoneA11y(name, m.days, state),
+    };
   });
   const plus = map.data?.plus ?? false;
   const isRecord = s.current > 0 && s.current >= s.best;
@@ -71,24 +104,46 @@ export default function StreakScreen() {
 
   return (
     <ScreenMotion>
-      <ScreenTemplate refreshControl={refreshControl} footer={todo ? <Button label={t.cta} icon="play" onPress={() => router.push('/chemin/seance')} /> : undefined}>
+      <ScreenTemplate
+        refreshControl={refreshControl}
+        footer={
+          todo ? (
+            <Button label={t.cta} icon="play" onPress={() => router.push('/chemin/seance')} />
+          ) : undefined
+        }
+      >
         <Stack top={6} gap={10}>
-          <StreakHero
-            pet={{ species: p.species, outfit: p.outfit, name: p.name, id: p.id }}
-            count={s.current}
-            title={[{ text: `${t.count(s.current)}\n` }, { text: t.countDim, dim: true }]}
-            line={t.line}
-            badge={isRecord && s.current > 1 ? days.record : s.best > s.current ? t.record(s.best) : null}
-            record={isRecord && s.current > 1}
-            low={!s.doneToday}
+          <Header
             onBack={back}
             backLabel={t.back}
-            petLabel={p.name}
+            center={<Title text={t.title.toUpperCase()} size={32} />}
           />
-          <StreakWeek days={week} runs={[{ text: `${t.week} · ${t.weekCount(doneThisWeek)}`, color: color.mute }]} animateKey={s.week[0]?.day} />
-          {s.current === 0 && s.best > 0 ? <TipRow icon={<Icon name="flamme" size={26} />} text={days.reset(s.best)} /> : null}
-          <TipRow icon={<Icon name="gel" size={26} />} disc={color.violet} lead={t.freeze(s.freezesLeft)} text={t.freezeText} />
-          {!plus ? <Button label={t.freezePlus} variant="ghost" size="md" onPress={() => openPlus('jokers')} /> : null}
+          <StreakHeadline
+            title={[
+              { text: `${t.count(s.current).toUpperCase()} ` },
+              { text: t.countDim.toUpperCase(), color: color.orange },
+            ]}
+            line={isRecord && s.current > 1 ? days.record : s.best > s.current ? t.record(s.best) : t.line}
+            low={!s.doneToday}
+            accessibilityLabel={`${t.count(s.current)} ${t.countDim}`}
+          />
+          <StreakWeek
+            title={t.week}
+            right={
+              <Chip
+                label={t.freezeChip(s.freezesLeft)}
+                tone="sky"
+                size="sm"
+                accessibilityLabel={t.freezeA11y(s.freezesLeft)}
+                onPress={plus ? undefined : () => openPlus('jokers')}
+              />
+            }
+            days={week}
+            animateKey={s.week[0]?.day}
+          />
+          {s.current === 0 && s.best > 0 ? (
+            <TipRow icon={<Icon name="flamme" size={26} />} text={days.reset(s.best)} />
+          ) : null}
           <MilestoneTrack
             title={t.milestones}
             hint={next ? t.milestoneLeft(Math.max(0, next.days - s.current)) : undefined}

@@ -3,11 +3,11 @@ import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { InkProvider } from '../lib/ink';
 import { hitSlopFor, layout } from '../lib/styles';
-import { color, radius, space, veil } from '../theme';
+import { alpha, color, radius, space, veil } from '../theme';
 import { Pressable } from './Pressable';
 import { Text } from './Text';
 
-export type ChipTone = 'glass' | 'accent' | 'dark' | 'light' | 'coral' | 'rose' | 'orange' | 'violet';
+export type ChipTone = 'glass' | 'accent' | 'dark' | 'light' | 'coral' | 'rose' | 'orange' | 'violet' | 'sky';
 
 export interface ChipProps {
   label: string;
@@ -33,23 +33,45 @@ const TONES: Record<ChipTone, { bg: string; ink: string }> = {
   rose: { bg: color.rose, ink: color.dark },
   orange: { bg: color.orange, ink: color.dark },
   violet: { bg: color.violet, ink: color.white },
+  // Gel de série (V6-GSerie) : bleu glacier sur fond bleu à 14 %.
+  sky: { bg: alpha(color.sky, 0.14), ink: color.sky },
 };
 
 const HEIGHT = { sm: 24, md: 30, lg: 44 } as const;
 
 /** Puce pilule (`.chip`) : étiquette, filtre ou mot à choisir. */
-export function Chip({ label, onPress, selected, tone = 'glass', left, size = 'md', ink, accessibilityLabel, style }: ChipProps) {
+export function Chip({
+  label,
+  onPress,
+  selected,
+  tone = 'glass',
+  left,
+  size = 'md',
+  ink,
+  accessibilityLabel,
+  style,
+}: ChipProps) {
   const t = TONES[selected ? 'accent' : tone];
   const h = HEIGHT[size];
   const content = (
     <InkProvider value={(!selected && ink) || t.ink}>
       {left}
-      <Text variant="bodyHeavy" size={size === 'sm' ? 11 : size === 'lg' ? 15 : 12} numberOfLines={1} style={styles.label}>
+      <Text
+        variant="bodyHeavy"
+        size={size === 'sm' ? 11 : size === 'lg' ? 15 : 12}
+        numberOfLines={1}
+        style={styles.label}
+      >
         {label}
       </Text>
     </InkProvider>
   );
-  const s = [styles.base, layout.row, { height: h, backgroundColor: t.bg, paddingHorizontal: size === 'sm' ? space.sm + 1 : space.md }, style];
+  const s = [
+    styles.base,
+    layout.row,
+    { height: h, backgroundColor: t.bg, paddingHorizontal: size === 'sm' ? space.sm + 1 : space.md },
+    style,
+  ];
   if (!onPress) return <View style={s}>{content}</View>;
   return (
     <Pressable

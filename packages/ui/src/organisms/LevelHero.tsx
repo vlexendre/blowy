@@ -16,13 +16,22 @@ export interface LevelHeroProps {
   /** Avancement vers le niveau suivant (0 à 1). */
   ratio: number;
   /** « 340 / 500 xp avant le niveau 4 ». */
+  /** Lu par VoiceOver ; affiché sous la barre seulement si `showProgressLabel`. */
   progressLabel: string;
+  showProgressLabel?: boolean;
   /** Les deux pets, posés en bas à droite et débordant du panneau. */
   art?: ReactNode;
 }
 
 /** Panneau du niveau d'un lien (V6-Lien) : niveau, titre, barre d'xp, les pets qui débordent. */
-export function LevelHero({ kicker, title, ratio, progressLabel, art }: LevelHeroProps) {
+export function LevelHero({
+  kicker,
+  title,
+  ratio,
+  progressLabel,
+  showProgressLabel = true,
+  art,
+}: LevelHeroProps) {
   return (
     <View style={styles.panel}>
       <LinearGradient colors={extra.roseLight} style={[StyleSheet.absoluteFill, styles.round]} />
@@ -38,10 +47,18 @@ export function LevelHero({ kicker, title, ratio, progressLabel, art }: LevelHer
         <Title text={title} size={44} style={styles.title} />
         <View style={styles.progress}>
           {/* Se remplit depuis 0 à l'ouverture, avec un léger dépassement (transformations seulement). */}
-          <ProgressBar value={ratio} color={color.dark} trackColor={alpha(color.dark, 0.18)} height={10} accessibilityLabel={progressLabel} />
-          <Text variant="bodyHeavy" size={12} style={styles.caption}>
-            {progressLabel}
-          </Text>
+          <ProgressBar
+            value={ratio}
+            color={color.dark}
+            trackColor={alpha(color.dark, 0.18)}
+            height={10}
+            accessibilityLabel={progressLabel}
+          />
+          {showProgressLabel ? (
+            <Text variant="bodyHeavy" size={12} style={styles.caption}>
+              {progressLabel}
+            </Text>
+          ) : null}
         </View>
       </InkProvider>
     </View>

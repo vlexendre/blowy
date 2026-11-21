@@ -34,6 +34,8 @@ export interface LinkRowProps {
   streak?: number;
   /** Unité de la série (« j »). */
   streakUnit?: string;
+  /** Puce discrète sous l'aperçu (« Présentée par Nino hier »), pour un lien tout neuf. */
+  noteLabel?: string;
   /** Puce « à toi » : l'autre a écrit aujourd'hui, pas toi. */
   turnLabel?: string;
   /** Lien mis en avant (pastille de niveau jaune). Défaut : s'il y a des non-lus. */
@@ -59,6 +61,7 @@ export const LinkRow = memo(function LinkRow({
   streak = 0,
   streakUnit,
   turnLabel,
+  noteLabel,
   highlight,
   onPress,
   onLongPress,
@@ -68,9 +71,18 @@ export const LinkRow = memo(function LinkRow({
   const { other, myPet } = link;
   const unread = ghost ? 0 : link.unread;
   const preview = link.lastMessage?.preview ?? emptyPreview ?? '';
-  const a11y = accessibilityLabel ?? [other.displayName, preview, timeLabel, turnLabel, levelLabel].filter(Boolean).join(', ');
+  const a11y =
+    accessibilityLabel ??
+    [other.displayName, preview, timeLabel, turnLabel, levelLabel].filter(Boolean).join(', ');
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} scaleTo={0.98} dimTo={0.85} accessibilityLabel={a11y} style={[layout.row, styles.row, ghost && styles.ghost]}>
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      scaleTo={0.98}
+      dimTo={0.85}
+      accessibilityLabel={a11y}
+      style={[layout.row, styles.row, ghost && styles.ghost]}
+    >
       {ghost ? (
         <View style={styles.ghostAvatar}>
           <Avatar size={46} pet={other.pet} hidden pose="fantome" bg={extra.ghostDisc} />
@@ -95,9 +107,17 @@ export const LinkRow = memo(function LinkRow({
           ) : null}
         </View>
         <View style={[layout.row, layout.gapSm]}>
-          <Text variant={unread ? 'bodyBold' : 'body'} size={14} numberOfLines={1} color={unread ? color.white : extra.preview} style={layout.grow}>
+          <Text
+            variant={unread ? 'bodyBold' : 'body'}
+            size={14}
+            numberOfLines={1}
+            color={unread ? color.white : extra.preview}
+            style={layout.grow}
+          >
             {previewAuthor ? (
-              <Text variant="bodyBold" size={14} color={previewAuthorColor ?? speciesColor[myPet.species]}>{previewAuthor}</Text>
+              <Text variant="bodyBold" size={14} color={previewAuthorColor ?? speciesColor[myPet.species]}>
+                {previewAuthor}
+              </Text>
             ) : null}
             {/* L'espace ouvre la suite plutôt que de finir le nom en couleur (voir `lib/runs`). */}
             {previewAuthor ? ` ${preview}` : preview}
@@ -106,13 +126,18 @@ export const LinkRow = memo(function LinkRow({
         </View>
         <View style={[layout.row, layout.gapSm, styles.meta]}>
           {ghost ? (
-            ghostLabel ? <Chip label={ghostLabel} size="sm" /> : null
+            ghostLabel ? (
+              <Chip label={ghostLabel} size="sm" />
+            ) : null
           ) : (
             <>
               <LifeSparks lives={link.lives} size={14} beat={link.lives > 0 && link.lives <= DANGER_LIVES} />
               <LevelPill label={levelLabel} tone={(highlight ?? unread > 0) ? 'accent' : 'glass'} size="sm" />
-              {streak > 0 && streakUnit ? <StreakPill count={streak} label={streakUnit} style={styles.streak} /> : null}
+              {streak > 0 && streakUnit ? (
+                <StreakPill count={streak} label={streakUnit} style={styles.streak} />
+              ) : null}
               {turnLabel ? <Chip label={turnLabel} tone="orange" size="sm" /> : null}
+              {noteLabel ? <Chip label={noteLabel} size="sm" /> : null}
             </>
           )}
         </View>
@@ -122,7 +147,14 @@ export const LinkRow = memo(function LinkRow({
 });
 
 const styles = StyleSheet.create({
-  row: { gap: space.md, paddingVertical: space.md - 1, paddingHorizontal: space.xs, minHeight: 72, borderBottomWidth: 1, borderBottomColor: veil.hairline },
+  row: {
+    gap: space.md,
+    paddingVertical: space.md - 1,
+    paddingHorizontal: space.xs,
+    minHeight: 72,
+    borderBottomWidth: 1,
+    borderBottomColor: veil.hairline,
+  },
   ghostAvatar: { width: 66, alignItems: 'center' },
   time: { marginLeft: 'auto' },
   body: { gap: 3 },

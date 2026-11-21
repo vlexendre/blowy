@@ -215,27 +215,32 @@ export default function Moi() {
             key="rows"
             variant="plain"
             rows={[
-              ...(prog.data
-                ? [
-                    {
-                      key: 'league',
-                      title: lp.rows.league,
-                      subtitle: lp.rows.leagueSub(
-                        prog.data.sparks,
-                        prog.data.league.located
-                          ? (prog.data.league.rows.find((r) => r.me)?.rank ?? null)
-                          : null,
-                      ),
-                      onPress: () => router.push('/moi/ligue'),
-                    },
-                    {
-                      key: 'trophies',
-                      title: lp.rows.trophies,
-                      subtitle: lp.rows.trophiesSub(prog.data.trophiesWon, prog.data.trophiesTotal),
-                      onPress: () => router.push('/moi/trophees'),
-                    },
-                  ]
-                : []),
+              // Toujours là (même avant la réponse de l'API) : la ligue et les trophées s'ouvrent depuis Moi.
+              {
+                key: 'league',
+                title: prog.data
+                  ? lp.league.tierTitle(lp.league.tiers[prog.data.league.tier])
+                  : lp.rows.league,
+                subtitle: (() => {
+                  const rank = prog.data?.league.located
+                    ? (prog.data.league.rows.find((r) => r.me)?.rank ?? null)
+                    : null;
+                  return rank
+                    ? lp.rows.leagueRank(rank)
+                    : prog.data
+                      ? lp.rows.leagueSub(prog.data.sparks, null)
+                      : lp.rows.leagueEmpty;
+                })(),
+                onPress: () => router.push('/moi/ligue'),
+              },
+              {
+                key: 'trophies',
+                title: lp.rows.trophies,
+                subtitle: prog.data
+                  ? lp.rows.trophiesSub(prog.data.trophiesWon, prog.data.trophiesTotal)
+                  : undefined,
+                onPress: () => router.push('/moi/trophees'),
+              },
               {
                 key: 'discreet',
                 title: t.rows.discreet.title,

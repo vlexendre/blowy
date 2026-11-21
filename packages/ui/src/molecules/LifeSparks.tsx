@@ -38,13 +38,10 @@ export interface LifeSparksProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/**
- * Étincelle à quatre branches (14 × 13). Les vies d'un lien ne sont plus des cœurs (spéc. §27 : rien de romantique
- * imposé, la nature du lien regarde les gens) ; les cœurs restent pour l'affection envers son propre minimoa.
- */
-const SPARK = 'M7 0 C7.6 4.2 8.6 5.6 14 6.5 C8.6 7.4 7.6 8.8 7 13 C6.4 8.8 5.4 7.4 0 6.5 C5.4 5.6 6.4 4.2 7 0 Z';
-/** Couleur d'une vie allumée : le jaune d'accent (étincelle). */
-const LIT = color.accent;
+/** Cœur (14 × 13), comme les vies des maquettes V6 (V6-Chats, V6-GChat, V6-Lien). Le nom `SPARK` est resté. */
+const SPARK = 'M7 13 C2 9 0 6.5 0 4 A3.6 3.6 0 0 1 7 2.6 A3.6 3.6 0 0 1 14 4 C14 6.5 12 9 7 13 Z';
+/** Couleur d'une vie allumée : le rose des cœurs. */
+const LIT = color.heart;
 const OFF = 0.2;
 /** Décalage entre deux étincelles qui se rallument. */
 const RETURN_STEP = 110;
@@ -53,7 +50,16 @@ const RETURN_STEP = 110;
  * Les vies d'un lien : n étincelles allumées sur 7, les perdues estompées.
  * Une étincelle perdue se brise (deux moitiés qui tombent) ; une regagnée revient en « pop », une par une.
  */
-export function LifeSparks({ lives, max = MAX_LIVES, size = sizes.heart, ghost, from, beat, accessibilityLabel, style }: LifeSparksProps) {
+export function LifeSparks({
+  lives,
+  max = MAX_LIVES,
+  size = sizes.heart,
+  ghost,
+  from,
+  beat,
+  accessibilityLabel,
+  style,
+}: LifeSparksProps) {
   const ink = useInk();
   const clamp = (n: number) => Math.max(0, Math.min(max, n));
   const on = clamp(ghost ? 0 : lives);
@@ -65,7 +71,12 @@ export function LifeSparks({ lives, max = MAX_LIVES, size = sizes.heart, ghost, 
   }, [on]);
   const h = (size * 13) / 14;
   return (
-    <View accessible accessibilityRole="text" accessibilityLabel={accessibilityLabel ?? `${on}/${max}`} style={[styles.row, { gap: Math.max(2, Math.round(size / 5)) }, style]}>
+    <View
+      accessible
+      accessibilityRole="text"
+      accessibilityLabel={accessibilityLabel ?? `${on}/${max}`}
+      style={[styles.row, { gap: Math.max(2, Math.round(size / 5)) }, style]}
+    >
       {Array.from({ length: max }, (_, i) => (
         <Spark
           key={i}
@@ -123,7 +134,14 @@ function Spark({
         return;
       }
       o.value = withDelay(delay, withTiming(1, { duration: motion.instant }));
-      s.value = withDelay(delay, withSequence(withTiming(0.3, { duration: 0 }), withTiming(1.3, { duration: motion.fast, easing: ease.out }), withSpring(1, springs.pop)));
+      s.value = withDelay(
+        delay,
+        withSequence(
+          withTiming(0.3, { duration: 0 }),
+          withTiming(1.3, { duration: motion.fast, easing: ease.out }),
+          withSpring(1, springs.pop),
+        ),
+      );
       const t = setTimeout(() => hapticFor(last && returning > 1 ? 'success' : 'select'), delay);
       return () => clearTimeout(t);
     }
@@ -151,7 +169,10 @@ function Spark({
     }
     beating.current = true;
     const up = (to: number, d: number) => withTiming(to, { duration: d, easing: ease.out });
-    s.value = withRepeat(withSequence(up(1.28, 110), up(1, 120), up(1.18, 100), up(1, 160), withTiming(1, { duration: 1100 })), -1);
+    s.value = withRepeat(
+      withSequence(up(1.28, 110), up(1, 120), up(1.18, 100), up(1, 160), withTiming(1, { duration: 1100 })),
+      -1,
+    );
     return () => cancelAnimation(s);
   }, [beat, reduced, active, s]);
 

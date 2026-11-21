@@ -15,6 +15,8 @@ export const color = {
   orange: '#FF9A3D',
   lime: '#A8D52A',
   sky: '#5CE1FF',
+  /** Vies d'un lien (cœurs des maquettes V6). */
+  heart: '#FF3D6E',
   danger: '#FF4D4D',
   ok: '#3DDC97',
 } as const;
@@ -34,9 +36,19 @@ export const gradient = {
 export type GradientName = keyof typeof gradient;
 
 /** Couleur du pelage de chaque espèce (Nino vert, Suzie rose, Gaston orange, Pia violette). */
-export const speciesColor = { nino: color.lime, suzie: color.rose, gaston: color.orange, pia: color.violet } as const;
+export const speciesColor = {
+  nino: color.lime,
+  suzie: color.rose,
+  gaston: color.orange,
+  pia: color.violet,
+} as const;
 /** Panneau placé derrière chaque espèce : choisi pour contraster avec son pelage. */
-export const speciesGradient = { nino: 'coral', suzie: 'wine', gaston: 'violet', pia: 'accent' } as const satisfies Record<string, GradientName>;
+export const speciesGradient = {
+  nino: 'coral',
+  suzie: 'wine',
+  gaston: 'violet',
+  pia: 'accent',
+} as const satisfies Record<string, GradientName>;
 
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, xxxl: 48 } as const;
 /** `card` : carte ordinaire de l'app (passe « densité » : 22 au lieu de 28) ; `lg` reste celui du site et de la barre d'onglets. */
@@ -72,7 +84,13 @@ export const displayLeading = 1.02;
 
 const display = (n: number) => {
   const px = displaySize(n);
-  return { fontFamily: font.display, fontSize: px, lineHeight: Math.round(px * displayLeading), letterSpacing: px * displayTracking, textTransform: 'uppercase' } as const;
+  return {
+    fontFamily: font.display,
+    fontSize: px,
+    lineHeight: Math.round(px * displayLeading),
+    letterSpacing: px * displayTracking,
+    textTransform: 'uppercase',
+  } as const;
 };
 
 export const type = {
@@ -84,6 +102,12 @@ export const type = {
   bodyBold: { fontFamily: font.bodyBold, fontSize: 16, lineHeight: 22 },
   bodyHeavy: { fontFamily: font.bodyHeavy, fontSize: 16, lineHeight: 22 },
   small: { fontFamily: font.body, fontSize: 13, lineHeight: 18 },
-  label: { fontFamily: font.bodyHeavy, fontSize: 12, lineHeight: 15, letterSpacing: 0.6, textTransform: 'uppercase' },
+  label: {
+    fontFamily: font.bodyHeavy,
+    fontSize: 12,
+    lineHeight: 15,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+  },
 } as const;
 export type TypeName = keyof typeof type;

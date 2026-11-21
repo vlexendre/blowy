@@ -1,7 +1,14 @@
 import { LEVEL_KEYS, type LevelKey } from '@blowy/domain';
 import { type ComponentRef, type ReactNode, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { Chip } from '../atoms/Chip';
 import { Glyph } from '../atoms/Glyph';
@@ -43,7 +50,16 @@ const NEXT_OPACITY = 0.62;
 const LATER_OPACITY = 0.42;
 
 /** L'échelle des 7 niveaux d'un lien (V6-Lien) : passés cochés, actuel mis en avant, suivants en pointillés. */
-export function LevelLadder({ level, labels, ratio, currentLabel, nextLabel, tint = color.rose, animateKey, celebrate }: LevelLadderProps) {
+export function LevelLadder({
+  level,
+  labels,
+  ratio,
+  currentLabel,
+  nextLabel,
+  tint = color.rose,
+  animateKey,
+  celebrate,
+}: LevelLadderProps) {
   const climb = useFirstTime(animateKey ? `ladder:${animateKey}` : undefined) && !!animateKey;
   // La marche atteinte s'allume une fois le rail monté jusqu'à elle (et tout de suite si on fête un passage).
   const lightAt = climb || celebrate ? RAIL_START + Math.max(0, level - 1) * RAIL_STEP + 80 : 0;
@@ -57,7 +73,14 @@ export function LevelLadder({ level, labels, ratio, currentLabel, nextLabel, tin
         const last = n === LEVEL_KEYS.length;
         const { title, text } = labels[key];
         const dotNode = (
-          <View style={[styles.dot, done && styles.done, current && { backgroundColor: tint }, locked && styles.locked]}>
+          <View
+            style={[
+              styles.dot,
+              done && styles.done,
+              current && { backgroundColor: tint },
+              locked && styles.locked,
+            ]}
+          >
             {done ? (
               <Glyph name="check" size={14} color={color.dark} />
             ) : (
@@ -70,9 +93,13 @@ export function LevelLadder({ level, labels, ratio, currentLabel, nextLabel, tin
         const row = (children: ReactNode) => (
           <View
             accessible
-            accessibilityLabel={`${n}. ${title}. ${text}`}
+            accessibilityLabel={text ? `${n}. ${title}. ${text}` : `${n}. ${title}`}
             accessibilityState={{ disabled: locked, selected: current }}
-            style={[layout.row, styles.row, locked && { opacity: n === level + 1 ? NEXT_OPACITY : LATER_OPACITY }]}
+            style={[
+              layout.row,
+              styles.row,
+              locked && { opacity: n === level + 1 ? NEXT_OPACITY : LATER_OPACITY },
+            ]}
           >
             {children}
           </View>
@@ -93,13 +120,19 @@ export function LevelLadder({ level, labels, ratio, currentLabel, nextLabel, tin
               <Text variant="bodyBold" size={15} style={styles.title}>
                 {title}
               </Text>
-              <Text variant="body" size={12} muted>
-                {text}
-              </Text>
-              {current && ratio !== undefined ? <ProgressBar value={ratio} color={tint} height={6} style={styles.progress} /> : null}
+              {text ? (
+                <Text variant="body" size={12} muted>
+                  {text}
+                </Text>
+              ) : null}
+              {current && ratio !== undefined ? (
+                <ProgressBar value={ratio} color={tint} height={6} style={styles.progress} />
+              ) : null}
             </View>
             {current && currentLabel ? <Chip label={currentLabel} tone="rose" /> : null}
-            {n === level + 1 && nextLabel ? <Chip label={nextLabel} tone="glass" style={styles.nextChip} /> : null}
+            {n === level + 1 && nextLabel ? (
+              <Chip label={nextLabel} tone="glass" style={styles.nextChip} />
+            ) : null}
           </>
         );
         // Une seule fois par lien : les niveaux arrivent en cascade.
@@ -124,13 +157,17 @@ function Rail({ done, play, delay }: { done: boolean; play: boolean; delay: numb
   const fill = useSharedValue(play && done ? 0 : 1);
   useEffect(() => {
     if (!play || !done) return;
-    fill.value = reduced ? 1 : withDelay(delay, withTiming(1, { duration: RAIL_STEP + 40, easing: ease.standard }));
+    fill.value = reduced
+      ? 1
+      : withDelay(delay, withTiming(1, { duration: RAIL_STEP + 40, easing: ease.standard }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const style = useAnimatedStyle(() => ({ transform: [{ scaleY: fill.value }] }));
   return (
     <View style={styles.line}>
-      {done ? <Animated.View style={[StyleSheet.absoluteFill, styles.lineDone, styles.railOrigin, style]} /> : null}
+      {done ? (
+        <Animated.View style={[StyleSheet.absoluteFill, styles.lineDone, styles.railOrigin, style]} />
+      ) : null}
     </View>
   );
 }
@@ -153,7 +190,19 @@ function Tick({ delay, children }: { delay: number; children: ReactNode }) {
  * s'efface. En cas de passage de niveau : confettis depuis la pastille et vibration de fête.
  * Animations réduites : le halo apparaît en fondu, pas de confettis.
  */
-function Lit({ tint, play, delay, celebrate, children }: { tint: string; play: boolean; delay: number; celebrate: boolean; children: ReactNode }) {
+function Lit({
+  tint,
+  play,
+  delay,
+  celebrate,
+  children,
+}: {
+  tint: string;
+  play: boolean;
+  delay: number;
+  celebrate: boolean;
+  children: ReactNode;
+}) {
   const reduced = useReducedMotion();
   const burst = useBurst();
   const ref = useRef<ComponentRef<typeof View>>(null);
@@ -168,12 +217,19 @@ function Lit({ tint, play, delay, celebrate, children }: { tint: string; play: b
       halo.value = withDelay(Math.min(at, motion.base), fadeTo(1, motion.base));
       return;
     }
-    on.value = withDelay(at, withSequence(withTiming(1.3, { duration: 160, easing: ease.out }), withSpring(1, springs.plush)));
+    on.value = withDelay(
+      at,
+      withSequence(withTiming(1.3, { duration: 160, easing: ease.out }), withSpring(1, springs.plush)),
+    );
     halo.value = withDelay(at + 60, withSpring(1, springs.pop));
-    wave.value = withSequence(withTiming(0, { duration: 0 }), withDelay(at + 60, withTiming(1, { duration: 900, easing: ease.out })));
+    wave.value = withSequence(
+      withTiming(0, { duration: 0 }),
+      withDelay(at + 60, withTiming(1, { duration: 900, easing: ease.out })),
+    );
     timer.current = setTimeout(() => {
       hapticFor(party ? 'celebrate' : 'land');
-      if (party) ref.current?.measureInWindow((x, y, w, h) => burst({ kind: 'confetti', x: x + w / 2, y: y + h / 2 }));
+      if (party)
+        ref.current?.measureInWindow((x, y, w, h) => burst({ kind: 'confetti', x: x + w / 2, y: y + h / 2 }));
     }, at + 80);
   };
   useEffect(() => {
@@ -192,12 +248,21 @@ function Lit({ tint, play, delay, celebrate, children }: { tint: string; play: b
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [celebrate]);
   const dot = useAnimatedStyle(() => ({ transform: [{ scale: Math.max(0, on.value) }] }));
-  const ring = useAnimatedStyle(() => ({ opacity: Math.min(1, halo.value), transform: [{ scale: 0.5 + 0.5 * halo.value }] }));
-  const ripple = useAnimatedStyle(() => ({ opacity: wave.value > 0 && wave.value < 1 ? 0.6 * (1 - wave.value) : 0, transform: [{ scale: 1 + 1.4 * wave.value }] }));
+  const ring = useAnimatedStyle(() => ({
+    opacity: Math.min(1, halo.value),
+    transform: [{ scale: 0.5 + 0.5 * halo.value }],
+  }));
+  const ripple = useAnimatedStyle(() => ({
+    opacity: wave.value > 0 && wave.value < 1 ? 0.6 * (1 - wave.value) : 0,
+    transform: [{ scale: 1 + 1.4 * wave.value }],
+  }));
   return (
     <View ref={ref} collapsable={false}>
       {/* Niveau actuel : halo de 4 pt (`box-shadow: 0 0 0 4px` à 25 %). */}
-      <Animated.View pointerEvents="none" style={[styles.haloRing, { backgroundColor: alpha(tint, 0.25) }, ring]} />
+      <Animated.View
+        pointerEvents="none"
+        style={[styles.haloRing, { backgroundColor: alpha(tint, 0.25) }, ring]}
+      />
       <Animated.View pointerEvents="none" style={[styles.wave, { borderColor: tint }, ripple]} />
       <Animated.View style={dot}>{children}</Animated.View>
     </View>
@@ -208,14 +273,34 @@ const styles = StyleSheet.create({
   list: { gap: space.sm, paddingHorizontal: space.xs },
   row: { gap: space.md, minHeight: 42 },
   // Rail : de 34 pt sous le haut de la ligne jusqu'à 8 pt sous son bas (l'écart entre deux niveaux).
-  line: { position: 'absolute', left: DOT / 2 - 1, top: 34, bottom: -space.sm, width: 2, backgroundColor: veil.track },
+  line: {
+    position: 'absolute',
+    left: DOT / 2 - 1,
+    top: 34,
+    bottom: -space.sm,
+    width: 2,
+    backgroundColor: veil.track,
+  },
   lineDone: { backgroundColor: color.accent },
   dot: { width: DOT, height: DOT, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
   done: { backgroundColor: color.accent },
   haloRing: { position: 'absolute', left: -4, top: -4, right: -4, bottom: -4, borderRadius: radius.pill },
-  wave: { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, borderRadius: radius.pill, borderWidth: 2 },
+  wave: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: radius.pill,
+    borderWidth: 2,
+  },
   railOrigin: { transformOrigin: '50% 0%' },
-  locked: { backgroundColor: alpha(color.white, 0.06), borderWidth: 1.5, borderStyle: 'dashed', borderColor: alpha(color.white, 0.25) },
+  locked: {
+    backgroundColor: alpha(color.white, 0.06),
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: alpha(color.white, 0.25),
+  },
   title: { lineHeight: 17 },
   progress: { marginTop: space.sm },
   nextChip: { backgroundColor: veil.line },

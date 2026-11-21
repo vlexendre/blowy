@@ -2,15 +2,42 @@
  * Contrat de l'API Minimoa (REST /v1). Source de vérité partagée par l'API, l'app et le site.
  * Tout ce qui traverse le réseau est décrit ici en Zod ; les types en sont dérivés.
  */
-import { CARE_ACTIONS, ENCOUNTER_OUTCOMES, GAUGE_KEYS, ITEM_IDS, ITEM_SLOTS, LEVEL_KEYS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SHAPES, SPECIES, WORD_KEYS } from '@blowy/domain';
+import {
+  CARE_ACTIONS,
+  ENCOUNTER_OUTCOMES,
+  GAUGE_KEYS,
+  ITEM_IDS,
+  ITEM_SLOTS,
+  LEVEL_KEYS,
+  LINK_STATUSES,
+  MOODS,
+  PET_EVENT_KINDS,
+  SHAPES,
+  SPECIES,
+  WORD_KEYS,
+} from '@blowy/domain';
 import { z } from 'zod';
-import { IdentityZ, LatLngZ, MapBeyondZ, MatchExplanationZ, OnboardIdentityFields, UpdateIdentityFields } from './v7/vision';
+import {
+  IdentityZ,
+  LatLngZ,
+  MapBeyondZ,
+  MatchExplanationZ,
+  OnboardIdentityFields,
+  UpdateIdentityFields,
+} from './v7/vision';
 import { PetRoleZ } from './v7/plateforme';
 import { OnboardHabitZ, SharedHabitsZ } from './v7/rituels';
 import { AttributionZ } from './v7/croissance';
 import { SeasonalCollectionZ } from './v7/billing';
 import { SessionSparksZ } from './v7/progression';
-import { CheminEmptyZ, CheminKnowsZ, CheminProgressZ, CheminQuotaZ, CheminRevelationZ, CheminStreakZ } from './v7/chemin';
+import {
+  CheminEmptyZ,
+  CheminKnowsZ,
+  CheminProgressZ,
+  CheminQuotaZ,
+  CheminRevelationZ,
+  CheminStreakZ,
+} from './v7/chemin';
 
 export const API_PREFIX = '/v1';
 
@@ -26,7 +53,12 @@ export const GaugeKeyZ = z.enum(GAUGE_KEYS);
 export const FormZ = z.enum(['equilibre', 'casanier', 'sociable', 'joueur', 'piquant', 'tendre']);
 export const FaceZ = z.enum(['hidden', 'blurred', 'clear']);
 
-export const TraitZ = z.object({ gauge: GaugeKeyZ, pole: z.string().nullable(), tier: z.union([z.literal(0), z.literal(1), z.literal(2)]), value: gauge });
+export const TraitZ = z.object({
+  gauge: GaugeKeyZ,
+  pole: z.string().nullable(),
+  tier: z.union([z.literal(0), z.literal(1), z.literal(2)]),
+  value: gauge,
+});
 
 // ── Soins et garde-robe ────────────────────────────────────────────────────
 const need = z.number().int().min(0).max(100);
@@ -36,7 +68,12 @@ export const ShapeZ = z.enum(SHAPES);
 export const ItemSlotZ = z.enum(ITEM_SLOTS);
 export const ItemIdZ = z.enum(ITEM_IDS as [string, ...string[]]);
 /** Un objet au plus par emplacement. */
-export const OutfitZ = z.object({ head: ItemIdZ.optional(), face: ItemIdZ.optional(), body: ItemIdZ.optional(), toy: ItemIdZ.optional() });
+export const OutfitZ = z.object({
+  head: ItemIdZ.optional(),
+  face: ItemIdZ.optional(),
+  body: ItemIdZ.optional(),
+  toy: ItemIdZ.optional(),
+});
 export type OutfitDto = z.infer<typeof OutfitZ>;
 
 // ── Pet ────────────────────────────────────────────────────────────────────
@@ -56,11 +93,22 @@ export const PetZ = z.object({
 });
 export type Pet = z.infer<typeof PetZ>;
 
-export const PetEventZ = z.object({ id: z.string(), kind: z.enum(PET_EVENT_KINDS), delta: GaugesZ.partial(), at: Iso });
+export const PetEventZ = z.object({
+  id: z.string(),
+  kind: z.enum(PET_EVENT_KINDS),
+  delta: GaugesZ.partial(),
+  at: Iso,
+});
 export type PetEvent = z.infer<typeof PetEventZ>;
 
 /** Pet vu par les autres : pas de jauges chiffrées, seulement sa forme et son humeur. */
-export const PublicPetZ = z.object({ name: z.string(), species: SpeciesZ, form: FormZ, mood: MoodZ, outfit: OutfitZ });
+export const PublicPetZ = z.object({
+  name: z.string(),
+  species: SpeciesZ,
+  form: FormZ,
+  mood: MoodZ,
+  outfit: OutfitZ,
+});
 export type PublicPet = z.infer<typeof PublicPetZ>;
 
 export const PetViewZ = z.object({
@@ -96,7 +144,24 @@ export const WardrobeItemZ = z.object({
   /** Objet premium (inclus dans Minimoa+) : vrai qu'il soit possédé ou non. Absent des réponses des anciennes API. */
   plus: z.boolean().optional(),
   /** Étape à franchir (objets à gagner) : compteur concerné et avancement. */
-  goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept', 'referrals', 'founded']), have: z.number().int(), need: z.number().int() }).nullable(),
+  goal: z
+    .object({
+      stat: z.enum([
+        'careDays',
+        'links',
+        'bestLevel',
+        'bestStreak',
+        'challenges',
+        'words',
+        'ritualStreak',
+        'habitsKept',
+        'referrals',
+        'founded',
+      ]),
+      have: z.number().int(),
+      need: z.number().int(),
+    })
+    .nullable(),
 });
 export type WardrobeItem = z.infer<typeof WardrobeItemZ>;
 export const WardrobeZ = z.object({
@@ -225,7 +290,14 @@ export const LinkZ = z.object({
   bestStreak: z.number().int(),
   canRevive: z.boolean(),
   unread: z.number().int(),
-  lastMessage: z.object({ preview: z.string(), at: Iso }).nullable(),
+  /** `author` : qui a écrit le dernier message, vu de toi (préfixe « Nino : » de l'aperçu) ; absent d'une API plus ancienne. */
+  lastMessage: z
+    .object({
+      preview: z.string(),
+      at: Iso,
+      author: z.enum(['me', 'other', 'my_pet', 'other_pet', 'system']).optional(),
+    })
+    .nullable(),
   today: TodayZ,
   createdAt: Iso,
   /** Habitudes tenues tous les deux (onglet « Le lien ») : seulement dans `GET /v1/links/:id`. */
@@ -269,18 +341,28 @@ export type LinkAction = z.infer<typeof LinkActionZ>;
 
 export const UploadTicketZ = z.object({ path: z.string(), uploadUrl: z.string(), token: z.string() });
 export type UploadTicket = z.infer<typeof UploadTicketZ>;
-export const UploadTicketBody = z.object({ contentType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/heic']) });
+export const UploadTicketBody = z.object({
+  contentType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/heic']),
+});
 export const ConfirmUploadBody = z.object({ path: z.string().min(1) });
 
 /**
  * Étapes d'un lien, de la plus récente à la plus ancienne : niveaux passés, paliers de série (3, 7, 14, 30, 60, 100
  * jours), et la rencontre (toujours la dernière). `on` : null pour une étape passée avant qu'on la date.
  */
-export const LinkMilestoneZ = z.object({ kind: z.enum(['met', 'level', 'streak']), value: z.number().int(), on: DayStr.nullable() });
+export const LinkMilestoneZ = z.object({
+  kind: z.enum(['met', 'level', 'streak']),
+  value: z.number().int(),
+  on: DayStr.nullable(),
+});
 export type LinkMilestone = z.infer<typeof LinkMilestoneZ>;
 
 /** Anciennes photos du lien (d'avant la conversation quotidienne) : la tienne, et celle de l'autre si vous aviez posté tous les deux. */
-export const MemoryDayZ = z.object({ day: DayStr, myPhotoUrl: z.string().nullable(), theirPhotoUrl: z.string().nullable() });
+export const MemoryDayZ = z.object({
+  day: DayStr,
+  myPhotoUrl: z.string().nullable(),
+  theirPhotoUrl: z.string().nullable(),
+});
 export const MemoriesZ = z.object({
   milestones: z.array(LinkMilestoneZ),
   /** Vide pour un lien sans anciennes photos. */
@@ -381,7 +463,11 @@ export type Waves = z.infer<typeof WavesZ>;
  * « Vu de loin » (sans Minimoa+) : de vraies personnes compatibles autour de toi (20 km), montrables sur la carte,
  * que le minimoa ne t'a pas encore présentées. Un nombre seulement, jamais d'identité. null : rien à dire (Minimoa+, ou personne).
  */
-export const FarAwayZ = z.object({ count: z.number().int().positive(), strong: z.number().int().min(0), label: z.string() });
+export const FarAwayZ = z.object({
+  count: z.number().int().positive(),
+  strong: z.number().int().min(0),
+  label: z.string(),
+});
 export type FarAway = z.infer<typeof FarAwayZ>;
 
 export const EncountersZ = z.object({
@@ -452,7 +538,10 @@ export const EncounterHistoryItemZ = z.object({
 });
 export type EncounterHistoryItem = z.infer<typeof EncounterHistoryItemZ>;
 /** Historique des rencontres, du plus récent au plus ancien, par pages (`?before=<nextBefore>`). */
-export const EncounterHistoryZ = z.object({ items: z.array(EncounterHistoryItemZ), nextBefore: Iso.nullable() });
+export const EncounterHistoryZ = z.object({
+  items: z.array(EncounterHistoryItemZ),
+  nextBefore: Iso.nullable(),
+});
 export type EncounterHistory = z.infer<typeof EncounterHistoryZ>;
 
 // ── Invitations et « 3 mots » (publics) ────────────────────────────────────
@@ -468,7 +557,13 @@ export type WordsBody = z.infer<typeof WordsBody>;
 export const BlockBody = z.object({ userId: Uuid });
 export const BlockedZ = z.object({ userId: Uuid, displayName: z.string() });
 export type Blocked = z.infer<typeof BlockedZ>;
-export const REPORT_REASONS = ['harcelement', 'contenu_inapproprie', 'faux_profil', 'mineur', 'autre'] as const;
+export const REPORT_REASONS = [
+  'harcelement',
+  'contenu_inapproprie',
+  'faux_profil',
+  'mineur',
+  'autre',
+] as const;
 export const ReportBody = z.object({
   userId: Uuid,
   linkId: Uuid.optional(),
@@ -514,7 +609,13 @@ export type ErrorCode = (typeof ERROR_CODES)[number];
  */
 export const REFUSED_FIELDS = ['displayName', 'petName'] as const;
 export type RefusedField = (typeof REFUSED_FIELDS)[number];
-export const ApiErrorZ = z.object({ error: z.object({ code: z.enum(ERROR_CODES), message: z.string(), field: z.enum(REFUSED_FIELDS).optional() }) });
+export const ApiErrorZ = z.object({
+  error: z.object({
+    code: z.enum(ERROR_CODES),
+    message: z.string(),
+    field: z.enum(REFUSED_FIELDS).optional(),
+  }),
+});
 export type ApiErrorBody = z.infer<typeof ApiErrorZ>;
 
 /** `GET /health` : vivante, et dans quel environnement (rien d'autre : ni version, ni configuration). */

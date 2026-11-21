@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Card } from '../atoms/Card';
@@ -18,6 +19,9 @@ export interface StreakWeekProps {
   days: readonly { letter: string; status: StreakDayStatus; label: string }[];
   /** Phrase sous la semaine (« Aujourd'hui : **le café dehors**, et c'est 13. »). */
   runs?: readonly TextRun[];
+  /** En-tête de la carte (« Cette semaine ») et, à droite, une puce (« 1 gel »). */
+  title?: string;
+  right?: ReactNode;
   /** Clé de la semaine : à la première apparition de la session, les jours faits se cochent un à un. */
   animateKey?: string;
 }
@@ -30,12 +34,24 @@ const DOT = 38;
  * La semaine de la série (V6-GSerie) : jours faits en jaune cochés, joker en violet, aujourd'hui en pointillé, jours
  * d'avant l'arrivée de la personne à peine tracés (neutres).
  */
-export function StreakWeek({ days, runs, animateKey }: StreakWeekProps) {
+export function StreakWeek({ days, runs, title, right, animateKey }: StreakWeekProps) {
   const first = useFirstTime(animateKey ? `streak-week:${animateKey}` : undefined);
   const tick = !!animateKey && first;
   let ticked = 0;
   return (
     <Card padding="none" style={styles.card}>
+      {title || right ? (
+        <View style={[layout.rowBetween, styles.head]}>
+          {title ? (
+            <Text variant="bodyHeavy" size={17} accessibilityRole="header">
+              {title}
+            </Text>
+          ) : (
+            <View />
+          )}
+          {right}
+        </View>
+      ) : null}
       <View style={layout.rowBetween}>
         {days.map((d, i) => {
           const pops = tick && (d.status === 'done' || d.status === 'joker');
@@ -79,4 +95,5 @@ const styles = StyleSheet.create({
   future: { borderWidth: 1.5, borderColor: alpha(color.white, 0.24) },
   not_yet: { opacity: 0.6, borderWidth: 1.5, borderStyle: 'dotted', borderColor: alpha(color.white, 0.24) },
   text: { marginTop: space.sm + 2 },
+  head: { marginBottom: space.sm + 2 },
 });

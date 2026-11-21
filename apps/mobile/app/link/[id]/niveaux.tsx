@@ -1,6 +1,16 @@
 import { levelLabel } from '@/locales/content';
 import { LEVEL_KEYS, MAX_LEVEL, MAX_LIVES, levelProgress, type Species } from '@blowy/domain';
-import { AvatarPair, Banner, Header, LevelHero, LevelLadder, LivesCard, PetImage, ScreenTemplate, Skeleton } from '@blowy/ui';
+import {
+  AvatarPair,
+  Banner,
+  Header,
+  LevelHero,
+  LevelLadder,
+  LivesCard,
+  PetImage,
+  ScreenTemplate,
+  Skeleton,
+} from '@blowy/ui';
 import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
@@ -24,7 +34,16 @@ export default function LevelsScreen() {
       style={styles.edge}
       right={
         l ? (
-          <AvatarPair size={34} first={{ pet: l.myPet, hidden: true }} second={{ pet: l.other.pet, uri: l.other.avatarUrl, face: l.other.face, name: l.other.displayName }} />
+          <AvatarPair
+            size={34}
+            first={{ pet: l.myPet, hidden: true }}
+            second={{
+              pet: l.other.pet,
+              uri: l.other.avatarUrl,
+              face: l.other.face,
+              name: l.other.displayName,
+            }}
+          />
         ) : undefined
       }
     />
@@ -33,16 +52,22 @@ export default function LevelsScreen() {
   if (!l) {
     return (
       <ScreenMotion>
-      <ScreenTemplate header={header}>
-        {link.isPending ? (
-          <View style={styles.body}>
-            <Skeleton height={190} radius="xl" />
-            <Skeleton height={320} radius="lg" />
-          </View>
-        ) : (
-          <Banner tone="error" title={linkText.loadError} text={link.error?.message ?? ''} actionLabel={linkText.retry} onAction={() => void link.refetch()} />
-        )}
-      </ScreenTemplate>
+        <ScreenTemplate header={header}>
+          {link.isPending ? (
+            <View style={styles.body}>
+              <Skeleton height={190} radius="xl" />
+              <Skeleton height={320} radius="lg" />
+            </View>
+          ) : (
+            <Banner
+              tone="error"
+              title={linkText.loadError}
+              text={link.error?.message ?? ''}
+              actionLabel={linkText.retry}
+              onAction={() => void link.refetch()}
+            />
+          )}
+        </ScreenTemplate>
       </ScreenMotion>
     );
   }
@@ -53,28 +78,36 @@ export default function LevelsScreen() {
 
   return (
     <ScreenMotion>
-    <ScreenTemplate header={header} padded={false} contentStyle={styles.edge}>
-      <View style={styles.body}>
-        <LevelHero
-          kicker={t.kicker(l.level)}
-          title={t.heroTitle(levelLabel[key].title)}
-          ratio={atMax ? 1 : l.levelRatio}
-          progressLabel={atMax ? t.maxProgress : t.progress(p.into, p.span, l.level + 1)}
-          art={<DuoArt mine={l.myPet.species} theirs={l.other.pet.species} />}
-        />
+      <ScreenTemplate header={header} padded={false} contentStyle={styles.edge}>
+        <View style={styles.body}>
+          <LevelHero
+            kicker={t.kicker(l.level)}
+            title={t.heroTitle(levelLabel[key].title)}
+            ratio={atMax ? 1 : l.levelRatio}
+            progressLabel={atMax ? t.maxProgress : t.progress(p.into, p.span, l.level + 1)}
+            showProgressLabel={false}
+            art={<DuoArt mine={l.myPet.species} theirs={l.other.pet.species} />}
+          />
 
-        <LevelLadder
-          level={l.level}
-          labels={ladder}
-          currentLabel={t.current}
-          nextLabel={atMax ? undefined : t.next(Math.max(0, p.span - p.into))}
-          animateKey={l.id}
-          celebrate={levelUps > 0}
-        />
+          <LevelLadder
+            level={l.level}
+            labels={ladder}
+            currentLabel={t.current}
+            animateKey={l.id}
+            celebrate={levelUps > 0}
+          />
 
-        <LivesCard style={styles.lives} title={t.livesTitle(l.lives)} lives={l.lives} max={MAX_LIVES} ghost={l.status === 'ghost'} text={t.livesText} accessibilityLabel={linkText.lives(l.lives)} />
-      </View>
-    </ScreenTemplate>
+          <LivesCard
+            style={styles.lives}
+            title={t.livesTitle(l.lives)}
+            lives={l.lives}
+            max={MAX_LIVES}
+            ghost={l.status === 'ghost'}
+            text={t.livesText}
+            accessibilityLabel={linkText.lives(l.lives)}
+          />
+        </View>
+      </ScreenTemplate>
     </ScreenMotion>
   );
 }
@@ -87,19 +120,22 @@ function DuoArt({ mine, theirs }: { mine: Species; theirs: Species }) {
   return (
     <View style={styles.duo}>
       <PetImage species={mine} mood="joie" size={112} animation="breathe" />
-      <PetImage species={theirs} mood="salut" size={112} animation="breathe" delay={400} style={styles.duoSecond} />
+      <PetImage
+        species={theirs}
+        mood="salut"
+        size={112}
+        animation="breathe"
+        delay={400}
+        style={styles.duoSecond}
+      />
     </View>
   );
 }
 
-/** Titres et phrases des niveaux en minuscules, sans point final (ton des maquettes). */
+/** Les niveaux, titres seuls (V6-Lien). */
 const ladder = Object.fromEntries(
-  Object.entries(levelLabel).map(([k, v]) => [k, { title: lowerFirst(v.title), text: lowerFirst(v.text).replace(/\.$/, '') }]),
+  Object.entries(levelLabel).map(([k, v]) => [k, { title: v.title, text: '' }]),
 ) as typeof levelLabel;
-
-function lowerFirst(s: string): string {
-  return s.charAt(0).toLowerCase() + s.slice(1);
-}
 
 const styles = StyleSheet.create({
   // Maquette : panneau 12 sous l'en-tête, échelle 16 plus bas, carte des vies collée en bas (24 au-dessus du bord).

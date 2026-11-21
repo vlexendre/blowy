@@ -3,7 +3,17 @@
  * (Pet, PublicPet, Person, Link, Message, Suggestion, Incoming, Memories, PetEvent) sans en dépendre :
  * un écran peut passer l'objet du contrat tel quel.
  */
-import type { FaceVisibility, Gauges, ItemSlot, LinkStatus, Mood, Outfit, PetEventKind, PetForm, Species } from '@blowy/domain';
+import type {
+  FaceVisibility,
+  Gauges,
+  ItemSlot,
+  LinkStatus,
+  Mood,
+  Outfit,
+  PetEventKind,
+  PetForm,
+  Species,
+} from '@blowy/domain';
 
 /** Compatible avec `PublicPet` (et `Pet`, dont `mood` est absent). */
 export interface PetLook {
@@ -59,7 +69,7 @@ export interface LinkLook {
   lives: number;
   level: number;
   unread: number;
-  lastMessage: { preview: string; at: string } | null;
+  lastMessage: { preview: string; at: string; author?: MessageAuthor } | null;
 }
 
 /** Compatible avec `PetEvent`. */

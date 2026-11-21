@@ -14,6 +14,8 @@ import {
   GhostPanel,
   Header,
   LinkTemplate,
+  MemoryRecap,
+  ShareCard,
   LinkTodayHero,
   LivesPanel,
   MemoryGrid,
@@ -37,10 +39,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
-import { ScreenMotion } from '@/core';
+import { inviteUrl, ScreenMotion } from '@/core';
 import { useDraft, useRefusal } from '@/features/chat';
 import { sharedHabitsView } from '@/features/groups';
-import { openLegal } from '@/features/me';
+import { displayUrl, openLegal, useMe, useStoryShare } from '@/features/me';
 import { MEET_LEVEL, useMeetReminders } from '@/features/safety';
 import { home as homeText } from '@/locales/pet';
 import {
@@ -61,7 +63,15 @@ import {
   useUpdateLinkMinimoas,
   weekStrip,
 } from '@/features/links';
-import { chat as chatText, ghost as ghostText, link as t, memories as memText, minimoas as minimoaText, today as todayText } from '@/locales/chats';
+import { croissance } from '@/locales/croissance';
+import {
+  chat as chatText,
+  ghost as ghostText,
+  link as t,
+  memories as memText,
+  minimoas as minimoaText,
+  today as todayText,
+} from '@/locales/chats';
 
 /**
  * Deux onglets : le chat (par défaut) et « Le lien » (la journée, la semaine, les vies, le prochain niveau, les étapes).
@@ -76,9 +86,10 @@ const SHOW_CONSENT_SHEET: boolean = false;
 type Tab = 'chat' | 'lien';
 const TABS = [
   { key: 'chat', label: t.tabs.chat },
-  { key: 'lien', label: t.tabs.lien },
+  { key: 'lien', label: t.tabs.souvenirs },
 ] as const;
-const tabOf = (v: unknown): Tab | null => (v === 'chat' ? 'chat' : v === 'lien' || v === 'today' || v === 'memories' ? 'lien' : null);
+const tabOf = (v: unknown): Tab | null =>
+  v === 'chat' ? 'chat' : v === 'lien' || v === 'today' || v === 'memories' ? 'lien' : null;
 
 export default function LinkScreen() {
   const params = useLocalSearchParams<{ id: string; tab?: string }>();
@@ -99,6 +110,10 @@ export default function LinkScreen() {
   }, [notice]);
 
   const l = link.data;
+  // Souvenirs : « Partager en story » (la carte est montée hors écran pour la capture).
+  const story = useStoryShare();
+  const me = useMe();
+  const shareUrl = me.data ? inviteUrl(me.data.inviteCode) : '';
   // Les minimoas de ce chat : accord de lecture (demandé une fois la conversation lancée), coupure, explication des rôles.
   const minimoas = useLinkMinimoas(id);
   const updateMinimoas = useUpdateLinkMinimoas(id);
@@ -122,10 +137,15 @@ export default function LinkScreen() {
   // Ranimé à l'instant : les cœurs reviennent un à un dans l'en-tête.
   const [revived, setRevived] = useState(false);
   const levelUps = useLevelUps(id, l?.level);
-  const goChats = useCallback(() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chats')), [router]);
+  const goChats = useCallback(
+    () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chats')),
+    [router],
+  );
 
   // Lien quitté, ou disparu (blocage) : retour à la liste.
-  const gone = l?.status === 'archived' || (link.error instanceof ApiError && (link.error.code === 'not_found' || link.error.code === 'forbidden'));
+  const gone =
+    l?.status === 'archived' ||
+    (link.error instanceof ApiError && (link.error.code === 'not_found' || link.error.code === 'forbidden'));
   useEffect(() => {
     if (l?.status === 'archived') router.replace('/(tabs)/chats');
   }, [l?.status, router]);
@@ -133,19 +153,31 @@ export default function LinkScreen() {
   if (!l) {
     return (
       <ScreenMotion>
-      <ScreenTemplate header={<Header onBack={goChats} backLabel={t.back} />}>
-        {link.isPending ? (
-          <View style={styles.gap}>
-            <Skeleton height={44} radius="pill" />
-            <Skeleton height={320} radius="xl" />
-            <Skeleton height={140} radius="lg" />
-          </View>
-        ) : gone ? (
-          <EmptyState peek mood="triste" title={t.gone} actionLabel={t.backToChats} onAction={() => router.replace('/(tabs)/chats')} />
-        ) : (
-          <Banner tone="error" title={t.loadError} text={link.error?.message ?? ''} actionLabel={t.retry} onAction={() => void link.refetch()} />
-        )}
-      </ScreenTemplate>
+        <ScreenTemplate header={<Header onBack={goChats} backLabel={t.back} />}>
+          {link.isPending ? (
+            <View style={styles.gap}>
+              <Skeleton height={44} radius="pill" />
+              <Skeleton height={320} radius="xl" />
+              <Skeleton height={140} radius="lg" />
+            </View>
+          ) : gone ? (
+            <EmptyState
+              peek
+              mood="triste"
+              title={t.gone}
+              actionLabel={t.backToChats}
+              onAction={() => router.replace('/(tabs)/chats')}
+            />
+          ) : (
+            <Banner
+              tone="error"
+              title={t.loadError}
+              text={link.error?.message ?? ''}
+              actionLabel={t.retry}
+              onAction={() => void link.refetch()}
+            />
+          )}
+        </ScreenTemplate>
       </ScreenMotion>
     );
   }
@@ -153,12 +185,18 @@ export default function LinkScreen() {
   const ghost = l.status === 'ghost';
   // Par défaut : le chat (maquettes : une ligne de la liste ouvre V6-Chat) ; un lien fantôme a son propre écran (V6-Fantome).
   const active: Tab = tab ?? 'chat';
+  const shareStory = () => void story.share(memText.storyMessage(shareUrl), shareUrl);
 
   // Lien fantôme : écran plein, sans onglets (V6-Fantome).
   if (ghost) {
     return (
       <ScreenMotion>
-        <GhostBody link={l} onBack={goChats} onLeft={() => router.replace('/(tabs)/chats')} onRevived={() => setRevived(true)} />
+        <GhostBody
+          link={l}
+          onBack={goChats}
+          onLeft={() => router.replace('/(tabs)/chats')}
+          onRevived={() => setRevived(true)}
+        />
       </ScreenMotion>
     );
   }
@@ -167,17 +205,26 @@ export default function LinkScreen() {
   const muted = mm?.muted ?? false;
   // Maquette V7 : plus de demande d'accord dans le chat (trop de friction ; se parler suffit). Sans réponse, les
   // minimoas parlent sans lire (`consent.mine` null) ; l'accord reste dans Options à tout moment.
-  const askConsent = SHOW_CONSENT_SHEET && !!mm && mm.consent.mine === null && !consentLater && exchanged >= CONSENT_AFTER_MESSAGES;
+  const askConsent =
+    SHOW_CONSENT_SHEET &&
+    !!mm &&
+    mm.consent.mine === null &&
+    !consentLater &&
+    exchanged >= CONSENT_AFTER_MESSAGES;
   const toggleMuted = () =>
     updateMinimoas.mutate(
       { muted: !muted },
       {
-        onSuccess: (next) => setNotice({ tone: 'success', text: next.muted ? chatText.mutedNotice : chatText.unmutedNotice }),
+        onSuccess: (next) =>
+          setNotice({ tone: 'success', text: next.muted ? chatText.mutedNotice : chatText.unmutedNotice }),
         onError: () => setNotice({ tone: 'error', text: chatText.muteError }),
       },
     );
   const answerConsent = (consent: boolean) =>
-    updateMinimoas.mutate({ consent }, { onError: () => setNotice({ tone: 'error', text: minimoaText.error }) });
+    updateMinimoas.mutate(
+      { consent },
+      { onError: () => setNotice({ tone: 'error', text: minimoaText.error }) },
+    );
 
   return (
     <ScreenMotion>
@@ -186,7 +233,7 @@ export default function LinkScreen() {
         myPet={l.myPet}
         lives={l.lives}
         ghost={ghost}
-        levelLabel={minimoas.data ? t.levelShort(l.level) : t.level(l.level)}
+        levelLabel={t.level(l.level)}
         onLevelPress={() => router.push(`/link/${l.id}/niveaux`)}
         onBack={goChats}
         backLabel={t.back}
@@ -196,14 +243,13 @@ export default function LinkScreen() {
         levelUp={levelUps}
         onOptions={() => router.push(`/link/${l.id}/options`)}
         optionsLabel={t.options}
-        headerAction={
-          mm ? (
-            <MinimoaSwitch pet={l.myPet} on={!muted} onToggle={toggleMuted} accessibilityLabel={muted ? chatText.switchOff : chatText.switchOn} disabled={updateMinimoas.isPending} />
-          ) : undefined
-        }
         notice={
           // Accord venu du réglage par défaut : la question n'est pas posée, mais l'état reste visible, en une ligne.
-          active === 'chat' && mm && mm.consent.byDefault && mm.consent.mine !== null && !defaultNoticeClosed ? (
+          active === 'chat' &&
+          mm &&
+          mm.consent.byDefault &&
+          mm.consent.mine !== null &&
+          !defaultNoticeClosed ? (
             <Banner
               tone="info"
               text={minimoaText.byDefault(mm.consent.mine)}
@@ -213,7 +259,14 @@ export default function LinkScreen() {
               closeLabel={minimoaText.guideClose}
             />
           ) : active === 'chat' && mm && mm.consent.mine !== null && guide.seen === false ? (
-            <Banner tone="info" title={minimoaText.guideTitle} actionLabel={minimoaText.guideMore} onAction={() => setRolesOpen(true)} onClose={guide.dismiss} closeLabel={minimoaText.guideClose} />
+            <Banner
+              tone="info"
+              title={minimoaText.guideTitle}
+              actionLabel={minimoaText.guideMore}
+              onAction={() => setRolesOpen(true)}
+              onClose={guide.dismiss}
+              closeLabel={minimoaText.guideClose}
+            />
           ) : undefined
         }
         tabs={TABS}
@@ -229,9 +282,19 @@ export default function LinkScreen() {
               notice={notice}
               onNotice={setNotice}
               onRhythm={() => setRolesOpen(true)}
-              rhythm={mm ? (mm.muted ? chatText.rhythmMuted : mm.consent.reading ? chatText.rhythm(mm.maxPerDay) : chatText.rhythmNoReading(mm.maxPerDay)) : null}
+              rhythm={
+                mm
+                  ? mm.muted
+                    ? chatText.rhythmMuted
+                    : mm.consent.reading
+                      ? chatText.rhythm(mm.maxPerDay)
+                      : chatText.rhythmNoReading(mm.maxPerDay)
+                  : null
+              }
             />
-          ) : undefined
+          ) : (
+            <Button label={memText.share} icon="share" loading={story.busy} onPress={shareStory} />
+          )
         }
       >
         {notice && active !== 'chat' ? (
@@ -240,11 +303,31 @@ export default function LinkScreen() {
           </View>
         ) : null}
         {active === 'lien' ? (
-          <LienBody link={l} onWrite={() => setTab('chat')} onLevels={() => router.push(`/link/${l.id}/niveaux`)} />
+          <SouvenirsBody link={l} />
         ) : (
           <ChatBody link={l} chat={chat} onReport={onReport} />
         )}
       </LinkTemplate>
+      {active === 'lien' && me.data ? (
+        <ShareCard
+          ref={story.card}
+          brand={croissance.brand}
+          kicker={memText.storyKicker}
+          title={[
+            { text: `${me.data.displayName.toUpperCase()} & ` },
+            { text: l.other.displayName.toUpperCase(), dim: true },
+          ]}
+          big={{
+            value: String(Math.max(l.bestStreak, l.streak)),
+            unit: memText.storyUnit(Math.max(l.bestStreak, l.streak)),
+          }}
+          pet={l.myPet}
+          callout={memText.storyCallout}
+          url={displayUrl(shareUrl)}
+          gradient="coral"
+          offscreen
+        />
+      ) : null}
 
       {/* Accord de lecture : après quelques messages échangés, la phrase de l'API telle quelle et les deux choix. */}
       <SheetTemplate
@@ -255,8 +338,17 @@ export default function LinkScreen() {
         closeLabel={minimoaText.later}
         footer={
           <>
-            <Button label={minimoaText.accept} onPress={() => answerConsent(true)} loading={updateMinimoas.isPending && updateMinimoas.variables?.consent === true} />
-            <Button label={minimoaText.decline} variant="ghost" onPress={() => answerConsent(false)} loading={updateMinimoas.isPending && updateMinimoas.variables?.consent === false} />
+            <Button
+              label={minimoaText.accept}
+              onPress={() => answerConsent(true)}
+              loading={updateMinimoas.isPending && updateMinimoas.variables?.consent === true}
+            />
+            <Button
+              label={minimoaText.decline}
+              variant="ghost"
+              onPress={() => answerConsent(false)}
+              loading={updateMinimoas.isPending && updateMinimoas.variables?.consent === false}
+            />
           </>
         }
       >
@@ -323,7 +415,8 @@ export default function LinkScreen() {
               onPress={() => {
                 const m = reporting;
                 setReporting(null);
-                if (m) router.push({ pathname: '/link/[id]/signaler', params: { id: l.id, messageId: m.id } });
+                if (m)
+                  router.push({ pathname: '/link/[id]/signaler', params: { id: l.id, messageId: m.id } });
               }}
             />
             <Button label={chatText.cancel} variant="ghost" onPress={() => setReporting(null)} />
@@ -365,97 +458,44 @@ function Refresh({ linkId, ...rest }: { linkId: string }) {
 type Notice = { tone: 'success' | 'error' | 'info'; text: string };
 
 function NoticeBanner({ notice, onClose }: { notice: Notice; onClose: () => void }) {
-  return <Banner tone={notice.tone} text={notice.text} onClose={notice.tone === 'info' ? undefined : onClose} closeLabel={todayText.dismiss} />;
+  return (
+    <Banner
+      tone={notice.tone}
+      text={notice.text}
+      onClose={notice.tone === 'info' ? undefined : onClose}
+      closeLabel={todayText.dismiss}
+    />
+  );
 }
 
 // ── Le lien : la journée, la semaine, le prochain niveau, les étapes ───────────
 // Encre sombre sur jaune, orange et rose ; blanc sur violet (docs/DESIGN.md : jamais de petit texte blanc sur corail).
-const HERO_GRADIENT = { both: 'accent', yourTurn: 'orange', atStake: 'orange', theirTurn: 'rose', fresh: 'violet' } as const;
+const HERO_GRADIENT = {
+  both: 'accent',
+  yourTurn: 'orange',
+  atStake: 'orange',
+  theirTurn: 'rose',
+  fresh: 'violet',
+} as const;
 
-function LienBody({ link, onWrite, onLevels }: { link: Link; onWrite: () => void; onLevels: () => void }) {
-  const { today, other, streak } = link;
-  const name = other.displayName;
-  const state = linkDayState(link);
-  const copy =
-    state === 'both'
-      ? { title: todayText.both.title, text: todayText.both.text(streak) }
-      : state === 'yourTurn'
-        ? { title: todayText.yourTurn.title, text: todayText.yourTurn.text(name, streak + 1) }
-        : state === 'theirTurn'
-          ? { title: todayText.theirTurn.title(name), text: todayText.theirTurn.text(name, streak + 1) }
-          : state === 'atStake'
-            ? { title: todayText.atStake.title, text: todayText.atStake.text(streak) }
-            : { title: todayText.fresh.title, text: todayText.fresh.text };
-  const next = link.next;
-  const key = `${link.id}:${today.day}`;
-  // Niveau « se voir » atteint : le même rappel de sécurité que l'accueil, lu une seule fois (où qu'il soit lu).
-  const meetSeen = useMeetReminders((s) => s.seen);
-  const dismissMeet = useMeetReminders((s) => s.dismiss);
-  const meet = link.status === 'active' && link.level >= MEET_LEVEL && !meetSeen.includes(link.id);
-  // Habitudes tenues tous les deux (spéc. §25) : absentes sans habitude commune ou si l'un des deux a coupé le réglage.
-  const shared = sharedHabitsView(link.sharedHabits, name);
+/** Souvenirs (V6-Souvenirs) : le lien en bref (meilleure série, messages), puis ses étapes et ses photos d'avant. */
+function SouvenirsBody({ link }: { link: Link }) {
+  const memories = useMemories(link.id);
+  const stats = memories.data?.stats;
   return (
     <View style={styles.body}>
-      <Stagger onceKey={`lien:${link.id}`} step={70}>
-        <LinkTodayHero
-          key="hero"
-          motionKey={link.id}
-          streak={streak}
-          streakUnit={todayText.streakUnit(streak)}
-          streakA11y={todayText.streakA11y(streak)}
-          title={copy.title}
-          text={copy.text}
-          myPet={link.myPet}
-          other={other}
-          me={{ label: todayText.me, wrote: today.mine }}
-          them={{ label: name, wrote: today.theirs }}
-          wroteLabel={todayText.wrote}
-          waitingLabel={todayText.waiting}
-          cta={today.mine ? todayText.ctaBack : todayText.ctaWrite(name)}
-          onCta={onWrite}
-          gradient={HERO_GRADIENT[state]}
-        />
-        {meet ? (
-          <Banner
-            key="meet"
-            tone="info"
-            title={homeText.meetTitle(name)}
-            text={homeText.meetText}
-            actionLabel={homeText.meetAction}
-            onAction={openLegal('securite')}
-            actionBelow
-            onClose={() => dismissMeet(link.id)}
-            closeLabel={homeText.meetClose}
-          />
-        ) : null}
-        <LivesPanel
-          key="week"
-          animateKey={key}
-          lives={link.lives}
-          max={MAX_LIVES}
-          count={todayText.livesCount(link.lives)}
-          weekTitle={todayText.weekTitle}
-          week={weekStrip(today)}
-          text={todayText.livesText}
-          accessibilityLabel={t.lives(link.lives)}
-          danger={link.lives > 0 && link.lives <= 2 ? link.myPet : null}
-        />
-        {shared ? <SharedHabitsCard key="shared" {...shared} /> : null}
-        <Text key="todoTitle" variant="label" size={11} muted style={styles.todoTitle}>
-          {todayText.todoTitle}
-        </Text>
-        <TodoRow
-          key="todo"
-          tile={next ? <Avatar size={34} pet={other.pet} hidden /> : <PetImage art="oeuf" size={38} />}
-          tileGradient={next ? 'violet' : 'rose'}
-          title={next ? todayText.nextTodo(next.level, levelLabel[next.key].title) : levelLabel.oeuf.title}
-          subtitle={next ? levelLabel[next.key].text : todayText.maxText}
-          chip={next ? todayText.nextChip(next.xpLeft) : undefined}
-          onPress={onLevels}
-          accessibilityLabel={todayText.nextA11y}
-        />
-        <Milestones key="steps" link={link} />
-      </Stagger>
+      <MemoryRecap
+        title={memText.recapTitle}
+        line={
+          stats
+            ? stats.bestStreak > 0
+              ? memText.recapStreak(stats.bestStreak)
+              : memText.recapMessages(stats.messages)
+            : undefined
+        }
+        pets={[link.myPet, link.other.pet]}
+      />
+      <Milestones link={link} />
     </View>
   );
 }
@@ -475,11 +515,23 @@ function Milestones({ link }: { link: Link }) {
     );
   }
   if (memories.isError) {
-    return <Banner tone="error" title={memText.loadError} text={memories.error.message} actionLabel={memText.retry} onAction={() => void memories.refetch()} />;
+    return (
+      <Banner
+        tone="error"
+        title={memText.loadError}
+        text={memories.error.message}
+        actionLabel={memText.retry}
+        onAction={() => void memories.refetch()}
+      />
+    );
   }
   const { milestones, photos, stats } = memories.data;
   const title = (m: (typeof milestones)[number]): string =>
-    m.kind === 'met' ? memText.met : m.kind === 'streak' ? memText.streak(m.value) : memText.level(m.value, levelLabel[LEVEL_KEYS[m.value - 1] ?? 'rendezvous'].title);
+    m.kind === 'met'
+      ? memText.met
+      : m.kind === 'streak'
+        ? memText.streak(m.value)
+        : memText.level(m.value, levelLabel[LEVEL_KEYS[m.value - 1] ?? 'rendezvous'].title);
   return (
     <View style={styles.steps}>
       <CountTitle title={memText.title} count={milestones.length} />
@@ -488,11 +540,20 @@ function Milestones({ link }: { link: Link }) {
         {stats.bestStreak > 0 ? ` · ${memText.bestStreak(stats.bestStreak)}` : ''}
       </Text>
       {milestones.map((m) => (
-        <FeatureRow key={`${m.kind}:${m.value}`} icon={MILESTONE_ICON[m.kind]} title={title(m)} text={m.on ? shortDay(m.on) : memText.earlier} />
+        <FeatureRow
+          key={`${m.kind}:${m.value}`}
+          icon={MILESTONE_ICON[m.kind]}
+          title={title(m)}
+          text={m.on ? shortDay(m.on) : memText.earlier}
+        />
       ))}
       {photos.length > 0 ? (
         <>
-          <CountTitle title={memText.photosTitle} count={photos.length} hint={link.level < 5 ? memText.blurredHint : undefined} />
+          <CountTitle
+            title={memText.photosTitle}
+            count={photos.length}
+            hint={link.level < 5 ? memText.blurredHint : undefined}
+          />
           <MemoryGrid days={photos} dayLabel={shortDay} blurred={link.level < 5} animateKey={link.id} />
         </>
       ) : null}
@@ -503,7 +564,15 @@ function Milestones({ link }: { link: Link }) {
 // ── Chat ─────────────────────────────────────────────────────────────────────
 type LinkChat = ReturnType<typeof useLinkChat>;
 
-const ChatBody = memo(function ChatBody({ link, chat, onReport }: { link: Link; chat: LinkChat; onReport: (m: MessageLook) => void }) {
+const ChatBody = memo(function ChatBody({
+  link,
+  chat,
+  onReport,
+}: {
+  link: Link;
+  chat: LinkChat;
+  onReport: (m: MessageLook) => void;
+}) {
   const { thread, looks, retry } = chat;
   useMarkRead(link.id, thread.messages[0]?.id);
   const dayLabel = useCallback((day: string) => chatDayLabel(day), []);
@@ -524,7 +593,13 @@ const ChatBody = memo(function ChatBody({ link, chat, onReport }: { link: Link; 
   if (thread.isError && looks.length === 0) {
     return (
       <View style={styles.padded}>
-        <Banner tone="error" title={chatText.loadError} text={thread.error.message} actionLabel={chatText.retry} onAction={() => void thread.refetch()} />
+        <Banner
+          tone="error"
+          title={chatText.loadError}
+          text={thread.error.message}
+          actionLabel={chatText.retry}
+          onAction={() => void thread.refetch()}
+        />
       </View>
     );
   }
@@ -545,7 +620,14 @@ const ChatBody = memo(function ChatBody({ link, chat, onReport }: { link: Link; 
       failedLabel={chatText.failed}
       onRetry={retry}
       empty={
-        <EmptyState peek seed={link.id} species={link.myPet.species} mood="salut" title={chatText.emptyTitle} text={chatText.emptyText(link.myPet.name, link.other.pet.name)} />
+        <EmptyState
+          peek
+          seed={link.id}
+          species={link.myPet.species}
+          mood="salut"
+          title={chatText.emptyTitle}
+          text={chatText.emptyText(link.myPet.name, link.other.pet.name)}
+        />
       }
     />
   );
@@ -588,12 +670,33 @@ function ChatComposer({
     <View style={styles.composer}>
       {notice ? <NoticeBanner notice={notice} onClose={() => onNotice(null)} /> : null}
       {refusal?.code === 'content_refused' ? (
-        <Banner tone="error" title={refusal.message || chatText.notSent} text={chatText.refusedKeep} onClose={clear} closeLabel={todayText.dismiss} />
+        <Banner
+          tone="error"
+          title={refusal.message || chatText.notSent}
+          text={chatText.refusedKeep}
+          onClose={clear}
+          closeLabel={todayText.dismiss}
+        />
       ) : refusal ? (
-        <Banner tone="error" title={chatText.notSent} text={errorText(refusal, chatText.sendError, { link_not_active: chatText.ghostDisabled })} onClose={clear} closeLabel={todayText.dismiss} />
+        <Banner
+          tone="error"
+          title={chatText.notSent}
+          text={errorText(refusal, chatText.sendError, { link_not_active: chatText.ghostDisabled })}
+          onClose={clear}
+          closeLabel={todayText.dismiss}
+        />
       ) : null}
       {rhythm ? (
-        <Pressable onPress={onRhythm} accessibilityRole="button" accessibilityLabel={`${rhythm} ${chatText.rhythmA11y}`} hitSlop={12} dimTo={0.6} scaleTo={1} haptic={false} style={styles.rhythm}>
+        <Pressable
+          onPress={onRhythm}
+          accessibilityRole="button"
+          accessibilityLabel={`${rhythm} ${chatText.rhythmA11y}`}
+          hitSlop={12}
+          dimTo={0.6}
+          scaleTo={1}
+          haptic={false}
+          style={styles.rhythm}
+        >
           <Text size={13} muted numberOfLines={1} style={styles.shrink}>
             {rhythm}
           </Text>
@@ -614,7 +717,17 @@ function ChatComposer({
 }
 
 // ── Lien fantôme ────────────────────────────────────────────────────────────
-function GhostBody({ link, onBack, onLeft, onRevived }: { link: Link; onBack: () => void; onLeft: () => void; onRevived: () => void }) {
+function GhostBody({
+  link,
+  onBack,
+  onLeft,
+  onRevived,
+}: {
+  link: Link;
+  onBack: () => void;
+  onLeft: () => void;
+  onRevived: () => void;
+}) {
   const revive = useRevive(link.id);
   const archive = useArchiveLink();
   const error = revive.isError
@@ -662,7 +775,13 @@ const styles = StyleSheet.create({
   nextRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   progress: { gap: 6, marginTop: 12 },
   composer: { gap: 8 },
-  rhythm: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingHorizontal: 20 },
+  rhythm: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    paddingHorizontal: 20,
+  },
   shrink: { flexShrink: 1 },
   notice: { paddingTop: 12 },
 });

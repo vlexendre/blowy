@@ -48,16 +48,28 @@ export const tabs = messages({
 export const chats = messages({
   fr: {
     brand: 'minimoa',
-    title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
+    title: (n: number): TitleSegment[] => [
+      { text: 'CHATS' },
+      ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : []),
+    ],
     newChat: 'Rencontrer un nouveau minimoa',
     wavesKicker: 'Rencontres',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} A TROUVÉ ` }, { text: 'QUELQU’UN', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [
+      { text: `${pet.toUpperCase()} A TROUVÉ ` },
+      { text: 'QUELQU’UN', dim: true },
+    ],
     wavesText: (names: string[]): string =>
-      names.length === 1 ? `${names[0]} te fait signe. Tu réponds ?` : `${names.slice(0, -1).join(', ')} et ${names.at(-1)} te font signe.`,
-    wavesA11y: (n: number): string => `${n} ${n > 1 ? 'personnes te font signe' : 'personne te fait signe'}. Ouvrir les rencontres.`,
+      names.length === 1
+        ? `${names[0]} te fait signe. Tu réponds ?`
+        : `${names.slice(0, -1).join(', ')} et ${names.at(-1)} te font signe.`,
+    wavesA11y: (n: number): string =>
+      `${n} ${n > 1 ? 'personnes te font signe' : 'personne te fait signe'}. Ouvrir les rencontres.`,
     /** Bandeau : des séries en jeu ce soir, l'autre a écrit, pas toi. */
     turnKicker: 'Série en jeu',
-    turnTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n > 1 ? 'LIENS' : 'LIEN'} ` }, { text: n > 1 ? 'T’ATTENDENT' : 'T’ATTEND', dim: true }],
+    turnTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n > 1 ? 'LIENS' : 'LIEN'} ` },
+      { text: n > 1 ? 'T’ATTENDENT' : 'T’ATTEND', dim: true },
+    ],
     turnText: (names: string[]): string =>
       names.length === 1
         ? `${names[0] ?? ''} t’a écrit aujourd’hui. Réponds avant minuit pour garder votre série.`
@@ -69,6 +81,7 @@ export const chats = messages({
     level: (n: number): string => `Niv. ${n}`,
     ghost: 'Lien fantôme 👻',
     isNew: 'Nouveau',
+    introducedBy: (pet: string): string => `Présentés par ${pet}`,
     emptyPreview: 'Dites-vous bonjour.',
     emptyTitle: [{ text: 'PAS ENCORE\n' }, { text: 'DE CHAT', dim: true }] as TitleSegment[],
     emptyText: (pet: string): string => `${pet} attend de croiser quelqu’un.`,
@@ -82,15 +95,26 @@ export const chats = messages({
   },
   en: {
     brand: 'minimoa',
-    title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
+    title: (n: number): TitleSegment[] => [
+      { text: 'CHATS' },
+      ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : []),
+    ],
     newChat: 'Meet a new minimoa',
     wavesKicker: 'Encounters',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} FOUND ` }, { text: 'SOMEONE', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [
+      { text: `${pet.toUpperCase()} FOUND ` },
+      { text: 'SOMEONE', dim: true },
+    ],
     wavesText: (names: string[]): string =>
-      names.length === 1 ? `${names[0]} waved at you. Wave back?` : `${names.slice(0, -1).join(', ')} and ${names.at(-1)} waved at you.`,
+      names.length === 1
+        ? `${names[0]} waved at you. Wave back?`
+        : `${names.slice(0, -1).join(', ')} and ${names.at(-1)} waved at you.`,
     wavesA11y: (n: number): string => `${n} ${n === 1 ? 'person' : 'people'} waved at you. Open encounters.`,
     turnKicker: 'Streak at stake',
-    turnTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n === 1 ? 'LINK' : 'LINKS'} ` }, { text: 'WAITING ON YOU', dim: true }],
+    turnTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n === 1 ? 'LINK' : 'LINKS'} ` },
+      { text: 'WAITING ON YOU', dim: true },
+    ],
     turnText: (names: string[]): string =>
       names.length === 1
         ? `${names[0] ?? ''} wrote to you today. Reply before midnight to keep your streak.`
@@ -101,6 +125,7 @@ export const chats = messages({
     level: (n: number): string => `Lv. ${n}`,
     ghost: 'Ghost link 👻',
     isNew: 'New',
+    introducedBy: (pet: string): string => `Introduced by ${pet}`,
     emptyPreview: 'Say hello.',
     emptyTitle: [{ text: 'NO CHATS\n' }, { text: 'YET', dim: true }],
     emptyText: (pet: string): string => `${pet} is waiting to meet someone.`,
@@ -114,15 +139,27 @@ export const chats = messages({
   },
   es: {
     brand: 'minimoa',
-    title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
+    title: (n: number): TitleSegment[] => [
+      { text: 'CHATS' },
+      ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : []),
+    ],
     newChat: 'Conocer a un nuevo minimoa',
     wavesKicker: 'Encuentros',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} ENCONTRÓ A ` }, { text: 'ALGUIEN', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [
+      { text: `${pet.toUpperCase()} ENCONTRÓ A ` },
+      { text: 'ALGUIEN', dim: true },
+    ],
     wavesText: (names: string[]): string =>
-      names.length === 1 ? `${names[0]} te ha saludado. ¿Respondes?` : `${names.slice(0, -1).join(', ')} y ${names.at(-1)} te han saludado.`,
-    wavesA11y: (n: number): string => `${n} ${n === 1 ? 'persona te ha saludado' : 'personas te han saludado'}. Abrir encuentros.`,
+      names.length === 1
+        ? `${names[0]} te ha saludado. ¿Respondes?`
+        : `${names.slice(0, -1).join(', ')} y ${names.at(-1)} te han saludado.`,
+    wavesA11y: (n: number): string =>
+      `${n} ${n === 1 ? 'persona te ha saludado' : 'personas te han saludado'}. Abrir encuentros.`,
     turnKicker: 'Racha en juego',
-    turnTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n === 1 ? 'VÍNCULO' : 'VÍNCULOS'} ` }, { text: n === 1 ? 'TE ESPERA' : 'TE ESPERAN', dim: true }],
+    turnTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n === 1 ? 'VÍNCULO' : 'VÍNCULOS'} ` },
+      { text: n === 1 ? 'TE ESPERA' : 'TE ESPERAN', dim: true },
+    ],
     turnText: (names: string[]): string =>
       names.length === 1
         ? `${names[0] ?? ''} te ha escrito hoy. Responde antes de medianoche para mantener la racha.`
@@ -133,6 +170,7 @@ export const chats = messages({
     level: (n: number): string => `Niv. ${n}`,
     ghost: 'Vínculo fantasma 👻',
     isNew: 'Nuevo',
+    introducedBy: (pet: string): string => `Presentados por ${pet}`,
     emptyPreview: 'Salúdense.',
     emptyTitle: [{ text: 'AÚN NO\n' }, { text: 'HAY CHATS', dim: true }],
     emptyText: (pet: string): string => `${pet} espera cruzarse con alguien.`,
@@ -146,15 +184,27 @@ export const chats = messages({
   },
   pt: {
     brand: 'minimoa',
-    title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
+    title: (n: number): TitleSegment[] => [
+      { text: 'CHATS' },
+      ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : []),
+    ],
     newChat: 'Conhecer um novo minimoa',
     wavesKicker: 'Encontros',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} ACHOU ` }, { text: 'ALGUÉM', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [
+      { text: `${pet.toUpperCase()} ACHOU ` },
+      { text: 'ALGUÉM', dim: true },
+    ],
     wavesText: (names: string[]): string =>
-      names.length === 1 ? `${names[0]} acenou para você. Vai responder?` : `${names.slice(0, -1).join(', ')} e ${names.at(-1)} acenaram para você.`,
-    wavesA11y: (n: number): string => `${n} ${n === 1 ? 'pessoa acenou' : 'pessoas acenaram'} para você. Abrir encontros.`,
+      names.length === 1
+        ? `${names[0]} acenou para você. Vai responder?`
+        : `${names.slice(0, -1).join(', ')} e ${names.at(-1)} acenaram para você.`,
+    wavesA11y: (n: number): string =>
+      `${n} ${n === 1 ? 'pessoa acenou' : 'pessoas acenaram'} para você. Abrir encontros.`,
     turnKicker: 'Sequência em jogo',
-    turnTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n === 1 ? 'VÍNCULO' : 'VÍNCULOS'} ` }, { text: 'ESPERANDO VOCÊ', dim: true }],
+    turnTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n === 1 ? 'VÍNCULO' : 'VÍNCULOS'} ` },
+      { text: 'ESPERANDO VOCÊ', dim: true },
+    ],
     turnText: (names: string[]): string =>
       names.length === 1
         ? `${names[0] ?? ''} escreveu para você hoje. Responda antes da meia-noite para manter a sequência.`
@@ -165,6 +215,7 @@ export const chats = messages({
     level: (n: number): string => `Nív. ${n}`,
     ghost: 'Vínculo fantasma 👻',
     isNew: 'Novo',
+    introducedBy: (pet: string): string => `Apresentados por ${pet}`,
     emptyPreview: 'Digam oi.',
     emptyTitle: [{ text: 'AINDA SEM\n' }, { text: 'CHATS', dim: true }],
     emptyText: (pet: string): string => `${pet} está esperando cruzar com alguém.`,
@@ -178,15 +229,27 @@ export const chats = messages({
   },
   nl: {
     brand: 'minimoa',
-    title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
+    title: (n: number): TitleSegment[] => [
+      { text: 'CHATS' },
+      ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : []),
+    ],
     newChat: 'Een nieuwe minimoa ontmoeten',
     wavesKicker: 'Ontmoetingen',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} VOND ` }, { text: 'IEMAND', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [
+      { text: `${pet.toUpperCase()} VOND ` },
+      { text: 'IEMAND', dim: true },
+    ],
     wavesText: (names: string[]): string =>
-      names.length === 1 ? `${names[0]} zwaait naar je. Zwaai je terug?` : `${names.slice(0, -1).join(', ')} en ${names.at(-1)} zwaaien naar je.`,
-    wavesA11y: (n: number): string => `${n} ${n === 1 ? 'persoon zwaait' : 'personen zwaaien'} naar je. Ontmoetingen openen.`,
+      names.length === 1
+        ? `${names[0]} zwaait naar je. Zwaai je terug?`
+        : `${names.slice(0, -1).join(', ')} en ${names.at(-1)} zwaaien naar je.`,
+    wavesA11y: (n: number): string =>
+      `${n} ${n === 1 ? 'persoon zwaait' : 'personen zwaaien'} naar je. Ontmoetingen openen.`,
     turnKicker: 'Reeks op het spel',
-    turnTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n === 1 ? 'BAND' : 'BANDEN'} ` }, { text: n === 1 ? 'WACHT OP JE' : 'WACHTEN OP JE', dim: true }],
+    turnTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n === 1 ? 'BAND' : 'BANDEN'} ` },
+      { text: n === 1 ? 'WACHT OP JE' : 'WACHTEN OP JE', dim: true },
+    ],
     turnText: (names: string[]): string =>
       names.length === 1
         ? `${names[0] ?? ''} heeft je vandaag geschreven. Antwoord voor middernacht om jullie reeks te houden.`
@@ -197,6 +260,7 @@ export const chats = messages({
     level: (n: number): string => `Niv. ${n}`,
     ghost: 'Spookband 👻',
     isNew: 'Nieuw',
+    introducedBy: (pet: string): string => `Voorgesteld door ${pet}`,
     emptyPreview: 'Zeg hallo.',
     emptyTitle: [{ text: 'NOG GEEN\n' }, { text: 'CHATS', dim: true }],
     emptyText: (pet: string): string => `${pet} wacht tot hij iemand tegenkomt.`,
@@ -219,7 +283,7 @@ export const link = messages({
     levelA11y: (n: number): string => `Niveau ${n} sur 7. Voir les niveaux du lien`,
     lives: (n: number): string => `${n} ${n > 1 ? 'vies' : 'vie'} sur 7`,
     options: 'Options du lien : signaler, bloquer, quitter',
-    tabs: { chat: 'Chat', lien: 'Le lien' },
+    tabs: { chat: 'Chat', lien: 'Le lien', souvenirs: 'Souvenirs' },
     loadError: 'Impossible d’ouvrir ce lien',
     gone: 'Ce lien n’existe plus.',
     retry: 'Réessayer',
@@ -232,7 +296,7 @@ export const link = messages({
     levelA11y: (n: number): string => `Level ${n} of 7. See the link’s levels`,
     lives: (n: number): string => `${n} ${n === 1 ? 'life' : 'lives'} out of 7`,
     options: 'Link options: report, block, leave',
-    tabs: { chat: 'Chat', lien: 'The link' },
+    tabs: { chat: 'Chat', lien: 'The link', souvenirs: 'Memories' },
     loadError: 'Couldn’t open this link',
     gone: 'This link no longer exists.',
     retry: 'Try again',
@@ -245,7 +309,7 @@ export const link = messages({
     levelA11y: (n: number): string => `Nivel ${n} de 7. Ver los niveles del vínculo`,
     lives: (n: number): string => `${n} ${n === 1 ? 'vida' : 'vidas'} de 7`,
     options: 'Opciones del vínculo: reportar, bloquear, salir',
-    tabs: { chat: 'Chat', lien: 'El vínculo' },
+    tabs: { chat: 'Chat', lien: 'El vínculo', souvenirs: 'Recuerdos' },
     loadError: 'No se pudo abrir este vínculo',
     gone: 'Este vínculo ya no existe.',
     retry: 'Reintentar',
@@ -258,7 +322,7 @@ export const link = messages({
     levelA11y: (n: number): string => `Nível ${n} de 7. Ver os níveis do vínculo`,
     lives: (n: number): string => `${n} ${n === 1 ? 'vida' : 'vidas'} de 7`,
     options: 'Opções do vínculo: denunciar, bloquear, sair',
-    tabs: { chat: 'Chat', lien: 'O vínculo' },
+    tabs: { chat: 'Chat', lien: 'O vínculo', souvenirs: 'Lembranças' },
     loadError: 'Não foi possível abrir este vínculo',
     gone: 'Este vínculo não existe mais.',
     retry: 'Tentar de novo',
@@ -271,7 +335,7 @@ export const link = messages({
     levelA11y: (n: number): string => `Niveau ${n} van 7. Bekijk de niveaus van de band`,
     lives: (n: number): string => `${n} ${n === 1 ? 'leven' : 'levens'} van 7`,
     options: 'Opties van de band: melden, blokkeren, verlaten',
-    tabs: { chat: 'Chat', lien: 'De band' },
+    tabs: { chat: 'Chat', lien: 'De band', souvenirs: 'Herinneringen' },
     loadError: 'Deze band kon niet worden geopend',
     gone: 'Deze band bestaat niet meer.',
     retry: 'Opnieuw',
@@ -295,16 +359,24 @@ export const today = messages({
     yourTurn: {
       title: [{ text: 'À TOI\n' }, { text: 'D’ÉCRIRE', dim: true }] as TitleSegment[],
       text: (name: string, next: number): string =>
-        next > 1 ? `${name} t’a écrit. Réponds avant minuit et la série passe à ${next}.` : `${name} t’a écrit. Réponds avant minuit et votre série commence.`,
+        next > 1
+          ? `${name} t’a écrit. Réponds avant minuit et la série passe à ${next}.`
+          : `${name} t’a écrit. Réponds avant minuit et votre série commence.`,
     },
     theirTurn: {
-      title: (name: string): TitleSegment[] => [{ text: 'AU TOUR\n' }, { text: `DE ${name.toUpperCase()}`, dim: true }],
+      title: (name: string): TitleSegment[] => [
+        { text: 'AU TOUR\n' },
+        { text: `DE ${name.toUpperCase()}`, dim: true },
+      ],
       text: (name: string, next: number): string =>
-        next > 1 ? `Tu as écrit. Si ${name} répond avant minuit, la série passe à ${next}.` : `Tu as écrit. Si ${name} répond avant minuit, votre série commence.`,
+        next > 1
+          ? `Tu as écrit. Si ${name} répond avant minuit, la série passe à ${next}.`
+          : `Tu as écrit. Si ${name} répond avant minuit, votre série commence.`,
     },
     atStake: {
       title: [{ text: 'SÉRIE\n' }, { text: 'EN JEU', dim: true }] as TitleSegment[],
-      text: (n: number): string => `${n} ${n > 1 ? 'jours' : 'jour'} d’affilée. Un message de chaque côté avant minuit, sinon elle repart de zéro.`,
+      text: (n: number): string =>
+        `${n} ${n > 1 ? 'jours' : 'jour'} d’affilée. Un message de chaque côté avant minuit, sinon elle repart de zéro.`,
     },
     fresh: {
       title: [{ text: 'UN MOT\n' }, { text: 'DE CHAQUE CÔTÉ', dim: true }] as TitleSegment[],
@@ -320,7 +392,8 @@ export const today = messages({
     weekDays: ['D', 'L', 'M', 'M', 'J', 'V', 'S'] as const,
     halfMark: '1/2',
     livesCount: (n: number): string => `${n}/7`,
-    livesText: 'Un jour d’échange à deux = +1 vie. Un jour de silence = −1 vie. À 0, le lien devient fantôme.',
+    livesText:
+      'Un jour d’échange à deux = +1 vie. Un jour de silence = −1 vie. À 0, le lien devient fantôme.',
     todoTitle: 'Prochain niveau',
     nextTodo: (level: number, title: string): string => `Niv. ${level} · ${title.toLowerCase()}`,
     nextChip: (n: number): string => `${n} xp`,
@@ -329,7 +402,8 @@ export const today = messages({
   },
   en: {
     streakUnit: (n: number): string => (n === 1 ? 'day' : 'days'),
-    streakA11y: (n: number): string => `Streak: ${n} ${n === 1 ? 'day' : 'days'} in a row writing to each other`,
+    streakA11y: (n: number): string =>
+      `Streak: ${n} ${n === 1 ? 'day' : 'days'} in a row writing to each other`,
     both: {
       title: [{ text: 'YOU BOTH\n' }, { text: 'WROTE', dim: true }],
       text: (n: number): string => `${n} ${n === 1 ? 'day' : 'days'} in a row. Same again tomorrow.`,
@@ -337,16 +411,24 @@ export const today = messages({
     yourTurn: {
       title: [{ text: 'YOUR TURN\n' }, { text: 'TO WRITE', dim: true }],
       text: (name: string, next: number): string =>
-        next > 1 ? `${name} wrote to you. Reply before midnight and the streak goes to ${next}.` : `${name} wrote to you. Reply before midnight and your streak begins.`,
+        next > 1
+          ? `${name} wrote to you. Reply before midnight and the streak goes to ${next}.`
+          : `${name} wrote to you. Reply before midnight and your streak begins.`,
     },
     theirTurn: {
-      title: (name: string): TitleSegment[] => [{ text: 'NOW IT’S\n' }, { text: `${name.toUpperCase()}’S TURN`, dim: true }],
+      title: (name: string): TitleSegment[] => [
+        { text: 'NOW IT’S\n' },
+        { text: `${name.toUpperCase()}’S TURN`, dim: true },
+      ],
       text: (name: string, next: number): string =>
-        next > 1 ? `You wrote. If ${name} replies before midnight, the streak goes to ${next}.` : `You wrote. If ${name} replies before midnight, your streak begins.`,
+        next > 1
+          ? `You wrote. If ${name} replies before midnight, the streak goes to ${next}.`
+          : `You wrote. If ${name} replies before midnight, your streak begins.`,
     },
     atStake: {
       title: [{ text: 'STREAK\n' }, { text: 'AT STAKE', dim: true }],
-      text: (n: number): string => `${n} ${n === 1 ? 'day' : 'days'} in a row. One message from each side before midnight, or it goes back to zero.`,
+      text: (n: number): string =>
+        `${n} ${n === 1 ? 'day' : 'days'} in a row. One message from each side before midnight, or it goes back to zero.`,
     },
     fresh: {
       title: [{ text: 'ONE WORD\n' }, { text: 'FROM EACH SIDE', dim: true }],
@@ -362,7 +444,8 @@ export const today = messages({
     weekDays: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
     halfMark: '1/2',
     livesCount: (n: number): string => `${n}/7`,
-    livesText: 'A day of writing to each other = +1 life. A day of silence = −1 life. At 0, the link turns into a ghost.',
+    livesText:
+      'A day of writing to each other = +1 life. A day of silence = −1 life. At 0, the link turns into a ghost.',
     todoTitle: 'Next level',
     nextTodo: (level: number, title: string): string => `Lv. ${level} · ${title.toLowerCase()}`,
     nextChip: (n: number): string => `${n} xp`,
@@ -379,16 +462,24 @@ export const today = messages({
     yourTurn: {
       title: [{ text: 'TE TOCA\n' }, { text: 'ESCRIBIR', dim: true }],
       text: (name: string, next: number): string =>
-        next > 1 ? `${name} te ha escrito. Responde antes de medianoche y la racha sube a ${next}.` : `${name} te ha escrito. Responde antes de medianoche y empieza la racha.`,
+        next > 1
+          ? `${name} te ha escrito. Responde antes de medianoche y la racha sube a ${next}.`
+          : `${name} te ha escrito. Responde antes de medianoche y empieza la racha.`,
     },
     theirTurn: {
-      title: (name: string): TitleSegment[] => [{ text: 'AHORA LE TOCA\n' }, { text: `A ${name.toUpperCase()}`, dim: true }],
+      title: (name: string): TitleSegment[] => [
+        { text: 'AHORA LE TOCA\n' },
+        { text: `A ${name.toUpperCase()}`, dim: true },
+      ],
       text: (name: string, next: number): string =>
-        next > 1 ? `Ya escribiste. Si ${name} responde antes de medianoche, la racha sube a ${next}.` : `Ya escribiste. Si ${name} responde antes de medianoche, empieza la racha.`,
+        next > 1
+          ? `Ya escribiste. Si ${name} responde antes de medianoche, la racha sube a ${next}.`
+          : `Ya escribiste. Si ${name} responde antes de medianoche, empieza la racha.`,
     },
     atStake: {
       title: [{ text: 'RACHA\n' }, { text: 'EN JUEGO', dim: true }],
-      text: (n: number): string => `${n} ${n === 1 ? 'día' : 'días'} seguidos. Un mensaje de cada lado antes de medianoche, o vuelve a cero.`,
+      text: (n: number): string =>
+        `${n} ${n === 1 ? 'día' : 'días'} seguidos. Un mensaje de cada lado antes de medianoche, o vuelve a cero.`,
     },
     fresh: {
       title: [{ text: 'UNA PALABRA\n' }, { text: 'DE CADA LADO', dim: true }],
@@ -404,7 +495,8 @@ export const today = messages({
     weekDays: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
     halfMark: '1/2',
     livesCount: (n: number): string => `${n}/7`,
-    livesText: 'Un día en que se escriben los dos = +1 vida. Un día de silencio = −1 vida. A 0, el vínculo se vuelve fantasma.',
+    livesText:
+      'Un día en que se escriben los dos = +1 vida. Un día de silencio = −1 vida. A 0, el vínculo se vuelve fantasma.',
     todoTitle: 'Siguiente nivel',
     nextTodo: (level: number, title: string): string => `Niv. ${level} · ${title.toLowerCase()}`,
     nextChip: (n: number): string => `${n} xp`,
@@ -413,7 +505,8 @@ export const today = messages({
   },
   pt: {
     streakUnit: (n: number): string => (n === 1 ? 'dia' : 'dias'),
-    streakA11y: (n: number): string => `Sequência: ${n} ${n === 1 ? 'dia' : 'dias'} seguidos escrevendo um para o outro`,
+    streakA11y: (n: number): string =>
+      `Sequência: ${n} ${n === 1 ? 'dia' : 'dias'} seguidos escrevendo um para o outro`,
     both: {
       title: [{ text: 'VOCÊS SE\n' }, { text: 'ESCREVERAM', dim: true }],
       text: (n: number): string => `${n} ${n === 1 ? 'dia' : 'dias'} seguidos. Amanhã tem mais.`,
@@ -421,16 +514,24 @@ export const today = messages({
     yourTurn: {
       title: [{ text: 'SUA VEZ\n' }, { text: 'DE ESCREVER', dim: true }],
       text: (name: string, next: number): string =>
-        next > 1 ? `${name} escreveu para você. Responda antes da meia-noite e a sequência vai para ${next}.` : `${name} escreveu para você. Responda antes da meia-noite e a sequência de vocês começa.`,
+        next > 1
+          ? `${name} escreveu para você. Responda antes da meia-noite e a sequência vai para ${next}.`
+          : `${name} escreveu para você. Responda antes da meia-noite e a sequência de vocês começa.`,
     },
     theirTurn: {
-      title: (name: string): TitleSegment[] => [{ text: 'AGORA É A VEZ\n' }, { text: `DE ${name.toUpperCase()}`, dim: true }],
+      title: (name: string): TitleSegment[] => [
+        { text: 'AGORA É A VEZ\n' },
+        { text: `DE ${name.toUpperCase()}`, dim: true },
+      ],
       text: (name: string, next: number): string =>
-        next > 1 ? `Você escreveu. Se ${name} responder antes da meia-noite, a sequência vai para ${next}.` : `Você escreveu. Se ${name} responder antes da meia-noite, a sequência de vocês começa.`,
+        next > 1
+          ? `Você escreveu. Se ${name} responder antes da meia-noite, a sequência vai para ${next}.`
+          : `Você escreveu. Se ${name} responder antes da meia-noite, a sequência de vocês começa.`,
     },
     atStake: {
       title: [{ text: 'SEQUÊNCIA\n' }, { text: 'EM JOGO', dim: true }],
-      text: (n: number): string => `${n} ${n === 1 ? 'dia' : 'dias'} seguidos. Uma mensagem de cada lado antes da meia-noite, senão ela volta a zero.`,
+      text: (n: number): string =>
+        `${n} ${n === 1 ? 'dia' : 'dias'} seguidos. Uma mensagem de cada lado antes da meia-noite, senão ela volta a zero.`,
     },
     fresh: {
       title: [{ text: 'UMA PALAVRA\n' }, { text: 'DE CADA LADO', dim: true }],
@@ -446,7 +547,8 @@ export const today = messages({
     weekDays: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
     halfMark: '1/2',
     livesCount: (n: number): string => `${n}/7`,
-    livesText: 'Um dia em que os dois escrevem = +1 vida. Um dia de silêncio = −1 vida. Em 0, o vínculo vira fantasma.',
+    livesText:
+      'Um dia em que os dois escrevem = +1 vida. Um dia de silêncio = −1 vida. Em 0, o vínculo vira fantasma.',
     todoTitle: 'Próximo nível',
     nextTodo: (level: number, title: string): string => `Nív. ${level} · ${title.toLowerCase()}`,
     nextChip: (n: number): string => `${n} xp`,
@@ -463,16 +565,24 @@ export const today = messages({
     yourTurn: {
       title: [{ text: 'JOUW BEURT\n' }, { text: 'OM TE SCHRIJVEN', dim: true }],
       text: (name: string, next: number): string =>
-        next > 1 ? `${name} heeft je geschreven. Antwoord voor middernacht en de reeks gaat naar ${next}.` : `${name} heeft je geschreven. Antwoord voor middernacht en jullie reeks begint.`,
+        next > 1
+          ? `${name} heeft je geschreven. Antwoord voor middernacht en de reeks gaat naar ${next}.`
+          : `${name} heeft je geschreven. Antwoord voor middernacht en jullie reeks begint.`,
     },
     theirTurn: {
-      title: (name: string): TitleSegment[] => [{ text: 'NU IS\n' }, { text: `${name.toUpperCase()} AAN DE BEURT`, dim: true }],
+      title: (name: string): TitleSegment[] => [
+        { text: 'NU IS\n' },
+        { text: `${name.toUpperCase()} AAN DE BEURT`, dim: true },
+      ],
       text: (name: string, next: number): string =>
-        next > 1 ? `Je hebt geschreven. Als ${name} voor middernacht antwoordt, gaat de reeks naar ${next}.` : `Je hebt geschreven. Als ${name} voor middernacht antwoordt, begint jullie reeks.`,
+        next > 1
+          ? `Je hebt geschreven. Als ${name} voor middernacht antwoordt, gaat de reeks naar ${next}.`
+          : `Je hebt geschreven. Als ${name} voor middernacht antwoordt, begint jullie reeks.`,
     },
     atStake: {
       title: [{ text: 'REEKS\n' }, { text: 'OP HET SPEL', dim: true }],
-      text: (n: number): string => `${n} ${n === 1 ? 'dag' : 'dagen'} op rij. Eén bericht van elke kant voor middernacht, anders begint hij weer bij nul.`,
+      text: (n: number): string =>
+        `${n} ${n === 1 ? 'dag' : 'dagen'} op rij. Eén bericht van elke kant voor middernacht, anders begint hij weer bij nul.`,
     },
     fresh: {
       title: [{ text: 'EEN WOORD\n' }, { text: 'VAN ELKE KANT', dim: true }],
@@ -488,7 +598,8 @@ export const today = messages({
     weekDays: ['Z', 'M', 'D', 'W', 'D', 'V', 'Z'],
     halfMark: '1/2',
     livesCount: (n: number): string => `${n}/7`,
-    livesText: 'Een dag waarop jullie allebei schrijven = +1 leven. Een dag stilte = −1 leven. Op 0 wordt de band een spookband.',
+    livesText:
+      'Een dag waarop jullie allebei schrijven = +1 leven. Een dag stilte = −1 leven. Op 0 wordt de band een spookband.',
     todoTitle: 'Volgend niveau',
     nextTodo: (level: number, title: string): string => `Niv. ${level} · ${title.toLowerCase()}`,
     nextChip: (n: number): string => `${n} xp`,
@@ -515,7 +626,8 @@ export const chat = messages({
     lockedPhoto: 'Photo restée cachée',
     typing: (name: string): string => `${name} écrit…`,
     emptyTitle: [{ text: 'DITES-VOUS\n' }, { text: 'BONJOUR', dim: true }] as TitleSegment[],
-    emptyText: (pet: string, otherPet: string): string => `${pet} et ${otherPet} se sont trouvés. À toi le premier mot.`,
+    emptyText: (pet: string, otherPet: string): string =>
+      `${pet} et ${otherPet} se sont trouvés. À toi le premier mot.`,
     loadError: 'Impossible de charger les messages',
     retry: 'Réessayer',
     today: 'Aujourd’hui',
@@ -536,7 +648,8 @@ export const chat = messages({
     /** Signaler un message (appui long). */
     longPressHint: 'Signaler ce message',
     reportTitle: [{ text: 'CE ' }, { text: 'MESSAGE ?', dim: true }] as TitleSegment[],
-    reportText: 'On ne voit que ce message et les quelques messages autour. Rien d’autre de votre conversation.',
+    reportText:
+      'On ne voit que ce message et les quelques messages autour. Rien d’autre de votre conversation.',
     reportAction: 'Signaler ce message',
     quote: (body: string): string => `« ${body} »`,
     cancel: 'Annuler',
@@ -554,7 +667,8 @@ export const chat = messages({
     lockedPhoto: 'Photo stayed hidden',
     typing: (name: string): string => `${name} is typing…`,
     emptyTitle: [{ text: 'SAY\n' }, { text: 'HELLO', dim: true }],
-    emptyText: (pet: string, otherPet: string): string => `${pet} and ${otherPet} found each other. The first word is yours.`,
+    emptyText: (pet: string, otherPet: string): string =>
+      `${pet} and ${otherPet} found each other. The first word is yours.`,
     loadError: 'Couldn’t load the messages',
     retry: 'Try again',
     today: 'Today',
@@ -589,7 +703,8 @@ export const chat = messages({
     lockedPhoto: 'Foto que quedó oculta',
     typing: (name: string): string => `${name} está escribiendo…`,
     emptyTitle: [{ text: 'DIGAN\n' }, { text: 'HOLA', dim: true }],
-    emptyText: (pet: string, otherPet: string): string => `${pet} y ${otherPet} se han encontrado. La primera palabra es tuya.`,
+    emptyText: (pet: string, otherPet: string): string =>
+      `${pet} y ${otherPet} se han encontrado. La primera palabra es tuya.`,
     loadError: 'No se pudieron cargar los mensajes',
     retry: 'Reintentar',
     today: 'Hoy',
@@ -624,7 +739,8 @@ export const chat = messages({
     lockedPhoto: 'Foto que ficou oculta',
     typing: (name: string): string => `${name} está digitando…`,
     emptyTitle: [{ text: 'DIGAM\n' }, { text: 'OI', dim: true }],
-    emptyText: (pet: string, otherPet: string): string => `${pet} e ${otherPet} se encontraram. A primeira palavra é sua.`,
+    emptyText: (pet: string, otherPet: string): string =>
+      `${pet} e ${otherPet} se encontraram. A primeira palavra é sua.`,
     loadError: 'Não foi possível carregar as mensagens',
     retry: 'Tentar de novo',
     today: 'Hoje',
@@ -659,7 +775,8 @@ export const chat = messages({
     lockedPhoto: 'Foto bleef verborgen',
     typing: (name: string): string => `${name} typt…`,
     emptyTitle: [{ text: 'ZEG ELKAAR\n' }, { text: 'HALLO', dim: true }],
-    emptyText: (pet: string, otherPet: string): string => `${pet} en ${otherPet} hebben elkaar gevonden. Jij mag het eerste woord.`,
+    emptyText: (pet: string, otherPet: string): string =>
+      `${pet} en ${otherPet} hebben elkaar gevonden. Jij mag het eerste woord.`,
     loadError: 'De berichten konden niet worden geladen',
     retry: 'Opnieuw',
     today: 'Vandaag',
@@ -687,6 +804,14 @@ export const chat = messages({
 /** Les étapes du lien et ses photos d’avant (bas de l’onglet « Le lien »). */
 export const memories = messages({
   fr: {
+    recapTitle: [{ text: 'VOUS DEUX,\n' }, { text: 'EN BREF', dim: true }] as TitleSegment[],
+    recapStreak: (n: number): string => `${n} ${n > 1 ? 'jours' : 'jour'} sans en rater un.`,
+    recapMessages: (n: number): string => `${n} ${n > 1 ? 'messages' : 'message'} à deux.`,
+    share: 'Partager en story',
+    storyKicker: 'Vous deux',
+    storyUnit: (n: number): string => (n > 1 ? 'jours sans en rater un' : 'jour sans en rater un'),
+    storyCallout: 'Ton minimoa te présente du monde :',
+    storyMessage: (url: string): string => `Mon minimoa m’a présenté quelqu’un. Le tien t’attend : ${url}`,
     title: 'VOS ÉTAPES',
     met: 'Votre rencontre',
     level: (n: number, title: string): string => `Niveau ${n} : ${title.toLowerCase()}`,
@@ -701,6 +826,14 @@ export const memories = messages({
     retry: 'Réessayer',
   },
   en: {
+    recapTitle: [{ text: 'YOU TWO,\n' }, { text: 'IN SHORT', dim: true }] as TitleSegment[],
+    recapStreak: (n: number): string => `${n} ${n > 1 ? 'days' : 'day'} without missing one.`,
+    recapMessages: (n: number): string => `${n} ${n > 1 ? 'messages' : 'message'} together.`,
+    share: 'Share to story',
+    storyKicker: 'You two',
+    storyUnit: (n: number): string => (n > 1 ? 'days without missing one' : 'day without missing one'),
+    storyCallout: 'Your minimoa introduces you to people:',
+    storyMessage: (url: string): string => `My minimoa introduced me to someone. Yours is waiting: ${url}`,
     title: 'YOUR MILESTONES',
     met: 'You met',
     level: (n: number, title: string): string => `Level ${n}: ${title.toLowerCase()}`,
@@ -715,6 +848,14 @@ export const memories = messages({
     retry: 'Try again',
   },
   es: {
+    recapTitle: [{ text: 'VOSOTROS,\n' }, { text: 'EN RESUMEN', dim: true }] as TitleSegment[],
+    recapStreak: (n: number): string => `${n} ${n > 1 ? 'días' : 'día'} sin fallar ninguno.`,
+    recapMessages: (n: number): string => `${n} ${n > 1 ? 'mensajes' : 'mensaje'} entre los dos.`,
+    share: 'Compartir en historia',
+    storyKicker: 'Vosotros dos',
+    storyUnit: (n: number): string => (n > 1 ? 'días sin fallar ninguno' : 'día sin fallar ninguno'),
+    storyCallout: 'Tu minimoa te presenta a gente:',
+    storyMessage: (url: string): string => `Mi minimoa me presentó a alguien. El tuyo te espera: ${url}`,
     title: 'SUS ETAPAS',
     met: 'Cómo se conocieron',
     level: (n: number, title: string): string => `Nivel ${n}: ${title.toLowerCase()}`,
@@ -729,6 +870,15 @@ export const memories = messages({
     retry: 'Reintentar',
   },
   pt: {
+    recapTitle: [{ text: 'VOCÊS DOIS,\n' }, { text: 'EM RESUMO', dim: true }] as TitleSegment[],
+    recapStreak: (n: number): string => `${n} ${n > 1 ? 'dias' : 'dia'} sem falhar nenhum.`,
+    recapMessages: (n: number): string => `${n} ${n > 1 ? 'mensagens' : 'mensagem'} a dois.`,
+    share: 'Compartilhar no story',
+    storyKicker: 'Vocês dois',
+    storyUnit: (n: number): string => (n > 1 ? 'dias sem falhar nenhum' : 'dia sem falhar nenhum'),
+    storyCallout: 'Seu minimoa te apresenta pessoas:',
+    storyMessage: (url: string): string =>
+      `Meu minimoa me apresentou alguém. O seu está te esperando: ${url}`,
     title: 'SUAS ETAPAS',
     met: 'Vocês se conheceram',
     level: (n: number, title: string): string => `Nível ${n}: ${title.toLowerCase()}`,
@@ -743,6 +893,15 @@ export const memories = messages({
     retry: 'Tentar de novo',
   },
   nl: {
+    recapTitle: [{ text: 'JULLIE TWEE,\n' }, { text: 'IN HET KORT', dim: true }] as TitleSegment[],
+    recapStreak: (n: number): string => `${n} ${n > 1 ? 'dagen' : 'dag'} zonder er één te missen.`,
+    recapMessages: (n: number): string => `${n} ${n > 1 ? 'berichten' : 'bericht'} samen.`,
+    share: 'Delen in story',
+    storyKicker: 'Jullie twee',
+    storyUnit: (n: number): string =>
+      n > 1 ? 'dagen zonder er één te missen' : 'dag zonder er één te missen',
+    storyCallout: 'Je minimoa stelt je voor aan mensen:',
+    storyMessage: (url: string): string => `Mijn minimoa stelde me iemand voor. De jouwe wacht op je: ${url}`,
     title: 'JULLIE MIJLPALEN',
     met: 'Jullie ontmoeting',
     level: (n: number, title: string): string => `Niveau ${n}: ${title.toLowerCase()}`,
@@ -763,7 +922,8 @@ export const ghost = messages({
     title: [{ text: 'GHOSTING\n' }, { text: 'CONFIRMÉ.', dim: true }] as TitleSegment[],
     badge: (name: string): string => `${name} · lien fantôme`,
     text: (name: string): string => `7 jours de silence avec ${name}. Le lien est devenu fantôme.`,
-    speech: (name: string): string => `J’ai attendu ${name} une semaine. Je suis devenu transparent. C’est normal ?`,
+    speech: (name: string): string =>
+      `J’ai attendu ${name} une semaine. Je suis devenu transparent. C’est normal ?`,
     speaker: (pet: string): string => `${pet}, version fantôme`,
     revive: 'Le ranimer',
     reviveHint: '(une seule fois)',
@@ -815,7 +975,8 @@ export const ghost = messages({
     title: [{ text: 'GHOSTING\n' }, { text: 'BEVESTIGD.', dim: true }],
     badge: (name: string): string => `${name} · spookband`,
     text: (name: string): string => `7 dagen stilte met ${name}. De band is een spookband geworden.`,
-    speech: (name: string): string => `Ik heb een week op ${name} gewacht. Nu ben ik doorzichtig. Is dat normaal?`,
+    speech: (name: string): string =>
+      `Ik heb een week op ${name} gewacht. Nu ben ik doorzichtig. Is dat normaal?`,
     speaker: (pet: string): string => `${pet}, spookversie`,
     revive: 'Reanimeren',
     reviveHint: '(maar één keer)',
@@ -832,16 +993,23 @@ export const minimoas = messages({
     consentTitle: [{ text: 'VOS MINIMOAS\n' }, { text: 'DANS CE CHAT.', dim: true }] as TitleSegment[],
     consentSubtitle: 'Ils lancent, relancent, et glissent une remarque.',
     /** La phrase de confidentialité vient de l'API (`consent.text`) : jamais réécrite ici. */
-    ifRefused: (mine: string, theirs: string): string => `Si l’accord manque d’un côté, ${mine} et ${theirs} réagissent seulement au rythme : silences, séries, défis. Sans rien lire.`,
+    ifRefused: (mine: string, theirs: string): string =>
+      `Si l’accord manque d’un côté, ${mine} et ${theirs} réagissent seulement au rythme : silences, séries, défis. Sans rien lire.`,
     /**
      * Où en est l'autre (`consent.theirs`) : « agreed » ou « not_yet ». Un refus et une question pas encore vue se
      * disent pareil, « pas encore activé de son côté » : jamais « a refusé », aucune pression.
      */
-    otherWaiting: (name: string): string => `Pas encore activé du côté de ${name}. Tant que ce n’est pas le cas, l’IA ne lit rien. Modifiable dans les options du lien ou dans Moi › L’IA et toi.`,
-    otherAgreed: (name: string): string => `${name} l’a activé de son côté. Si tu dis oui aussi, vos minimoas liront vos messages. Modifiable dans les options du lien ou dans Moi › L’IA et toi.`,
-    bothYes: (name: string): string => `${name} a dit oui aussi : vos minimoas lisent vos messages. Modifiable dans les options du lien ou dans Moi › L’IA et toi.`,
+    otherWaiting: (name: string): string =>
+      `Pas encore activé du côté de ${name}. Tant que ce n’est pas le cas, l’IA ne lit rien. Modifiable dans les options du lien ou dans Moi › L’IA et toi.`,
+    otherAgreed: (name: string): string =>
+      `${name} l’a activé de son côté. Si tu dis oui aussi, vos minimoas liront vos messages. Modifiable dans les options du lien ou dans Moi › L’IA et toi.`,
+    bothYes: (name: string): string =>
+      `${name} a dit oui aussi : vos minimoas lisent vos messages. Modifiable dans les options du lien ou dans Moi › L’IA et toi.`,
     /** Accord venu du réglage par défaut (« Moi ») : pas de question, une ligne dans le chat. */
-    byDefault: (on: boolean): string => (on ? 'Lecture par une IA : activée d’office pour ce chat (ton réglage).' : 'Lecture par une IA : coupée d’office pour ce chat (ton réglage).'),
+    byDefault: (on: boolean): string =>
+      on
+        ? 'Lecture par une IA : activée d’office pour ce chat (ton réglage).'
+        : 'Lecture par une IA : coupée d’office pour ce chat (ton réglage).',
     byDefaultChange: 'Changer',
     /** Sous la phrase de l’API, dans la feuille d’accord. */
     policy: 'Politique de confidentialité',
@@ -855,20 +1023,63 @@ export const minimoas = messages({
     guideClose: 'Compris',
     rolesTitle: [{ text: 'LEURS ' }, { text: 'RÔLES', dim: true }] as TitleSegment[],
     roles: [
-      { key: 'icebreaker', icon: 'gel', title: 'Brise-glace', text: 'Au début du lien, une question tirée de vos points communs.' },
-      { key: 'nudge', icon: 'eclair', title: 'Relance', text: 'Après un long silence : « Ça fait 3 jours. Vous en étiez à ce resto. »' },
-      { key: 'remark', icon: 'etoiles', title: 'Remarque', text: 'De temps en temps, ce qu’ils remarquent de vous deux.' },
-      { key: 'guard', icon: 'gel', title: 'Garde-fou', text: 'Si le ton monte, ton minimoa te propose une pause. Rien que pour toi.' },
-      { key: 'review', icon: 'flamme', title: 'Bilan du dimanche', text: 'Une fois par semaine, la santé du lien, dans ton bilan.' },
+      {
+        key: 'icebreaker',
+        icon: 'gel',
+        title: 'Brise-glace',
+        text: 'Au début du lien, une question tirée de vos points communs.',
+      },
+      {
+        key: 'nudge',
+        icon: 'eclair',
+        title: 'Relance',
+        text: 'Après un long silence : « Ça fait 3 jours. Vous en étiez à ce resto. »',
+      },
+      {
+        key: 'remark',
+        icon: 'etoiles',
+        title: 'Remarque',
+        text: 'De temps en temps, ce qu’ils remarquent de vous deux.',
+      },
+      {
+        key: 'guard',
+        icon: 'gel',
+        title: 'Garde-fou',
+        text: 'Si le ton monte, ton minimoa te propose une pause. Rien que pour toi.',
+      },
+      {
+        key: 'review',
+        icon: 'flamme',
+        title: 'Bilan du dimanche',
+        text: 'Une fois par semaine, la santé du lien, dans ton bilan.',
+      },
     ] as const,
-    rolesNote: 'Ils parlent avec le caractère de leur humain. Tu peux les couper pour ce chat, en haut à droite.',
+    rolesNote:
+      'Ils parlent avec le caractère de leur humain. Tu peux les couper pour ce chat, en haut à droite.',
     /** Options du lien. */
     sectionTitle: 'Minimoas dans ce chat',
     readingRow: 'Lecture par une IA',
     /** `theirs` : `consent.theirs` de l'API (absent d'une réponse plus ancienne). */
-    readingSub: (on: boolean | null, both: boolean, theirs?: 'agreed' | 'not_yet', byDefault?: boolean): string => {
-      const mine = on === null ? 'Pas encore choisi' : !on ? 'Non : ils réagissent seulement au rythme' : both ? 'Oui, vous deux' : 'Oui';
-      const other = both || theirs === undefined ? '' : theirs === 'agreed' ? ' · activé de son côté' : ' · pas encore activé de son côté';
+    readingSub: (
+      on: boolean | null,
+      both: boolean,
+      theirs?: 'agreed' | 'not_yet',
+      byDefault?: boolean,
+    ): string => {
+      const mine =
+        on === null
+          ? 'Pas encore choisi'
+          : !on
+            ? 'Non : ils réagissent seulement au rythme'
+            : both
+              ? 'Oui, vous deux'
+              : 'Oui';
+      const other =
+        both || theirs === undefined
+          ? ''
+          : theirs === 'agreed'
+            ? ' · activé de son côté'
+            : ' · pas encore activé de son côté';
       return `${mine}${other}${byDefault ? ' · par défaut' : ''}`;
     },
     muteRow: 'Minimoas actifs',
@@ -877,11 +1088,18 @@ export const minimoas = messages({
   en: {
     consentTitle: [{ text: 'YOUR MINIMOAS\n' }, { text: 'IN THIS CHAT.', dim: true }],
     consentSubtitle: 'They get things going, follow up, and slip in a remark.',
-    ifRefused: (mine: string, theirs: string): string => `If consent is missing on either side, ${mine} and ${theirs} only react to the rhythm: silences, streaks, challenges. Without reading anything.`,
-    otherWaiting: (name: string): string => `Not turned on yet on ${name}’s side. Until it is, the AI reads nothing. You can change this in the link options or in Me › AI and you.`,
-    otherAgreed: (name: string): string => `${name} has turned it on. If you say yes too, your minimoas will read your messages. You can change this in the link options or in Me › AI and you.`,
-    bothYes: (name: string): string => `${name} said yes too: your minimoas read your messages. You can change this in the link options or in Me › AI and you.`,
-    byDefault: (on: boolean): string => (on ? 'AI reading: turned on for this chat by default (your setting).' : 'AI reading: turned off for this chat by default (your setting).'),
+    ifRefused: (mine: string, theirs: string): string =>
+      `If consent is missing on either side, ${mine} and ${theirs} only react to the rhythm: silences, streaks, challenges. Without reading anything.`,
+    otherWaiting: (name: string): string =>
+      `Not turned on yet on ${name}’s side. Until it is, the AI reads nothing. You can change this in the link options or in Me › AI and you.`,
+    otherAgreed: (name: string): string =>
+      `${name} has turned it on. If you say yes too, your minimoas will read your messages. You can change this in the link options or in Me › AI and you.`,
+    bothYes: (name: string): string =>
+      `${name} said yes too: your minimoas read your messages. You can change this in the link options or in Me › AI and you.`,
+    byDefault: (on: boolean): string =>
+      on
+        ? 'AI reading: turned on for this chat by default (your setting).'
+        : 'AI reading: turned off for this chat by default (your setting).',
     byDefaultChange: 'Change',
     policy: 'Privacy policy',
     accept: 'Turn on for this chat',
@@ -893,18 +1111,56 @@ export const minimoas = messages({
     guideClose: 'Got it',
     rolesTitle: [{ text: 'THEIR ' }, { text: 'ROLES', dim: true }],
     roles: [
-      { key: 'icebreaker', icon: 'gel', title: 'Icebreaker', text: 'At the start of the link, a question drawn from what you have in common.' },
-      { key: 'nudge', icon: 'eclair', title: 'Nudge', text: 'After a long silence: “It’s been 3 days. You were talking about that restaurant.”' },
-      { key: 'remark', icon: 'etoiles', title: 'Remark', text: 'Now and then, what they notice about the two of you.' },
-      { key: 'guard', icon: 'gel', title: 'Safeguard', text: 'If things get heated, your minimoa suggests a break. Just for you.' },
-      { key: 'review', icon: 'flamme', title: 'Sunday review', text: 'Once a week, the health of the link, in your review.' },
+      {
+        key: 'icebreaker',
+        icon: 'gel',
+        title: 'Icebreaker',
+        text: 'At the start of the link, a question drawn from what you have in common.',
+      },
+      {
+        key: 'nudge',
+        icon: 'eclair',
+        title: 'Nudge',
+        text: 'After a long silence: “It’s been 3 days. You were talking about that restaurant.”',
+      },
+      {
+        key: 'remark',
+        icon: 'etoiles',
+        title: 'Remark',
+        text: 'Now and then, what they notice about the two of you.',
+      },
+      {
+        key: 'guard',
+        icon: 'gel',
+        title: 'Safeguard',
+        text: 'If things get heated, your minimoa suggests a break. Just for you.',
+      },
+      {
+        key: 'review',
+        icon: 'flamme',
+        title: 'Sunday review',
+        text: 'Once a week, the health of the link, in your review.',
+      },
     ],
     rolesNote: 'They talk with their human’s personality. You can mute them for this chat, top right.',
     sectionTitle: 'Minimoas in this chat',
     readingRow: 'AI reading',
-    readingSub: (on: boolean | null, both: boolean, theirs?: 'agreed' | 'not_yet', byDefault?: boolean): string => {
-      const mine = on === null ? 'Not chosen yet' : !on ? 'No: they only react to the rhythm' : both ? 'Yes, both of you' : 'Yes';
-      const other = both || theirs === undefined ? '' : theirs === 'agreed' ? ' · on for them' : ' · not on for them yet';
+    readingSub: (
+      on: boolean | null,
+      both: boolean,
+      theirs?: 'agreed' | 'not_yet',
+      byDefault?: boolean,
+    ): string => {
+      const mine =
+        on === null
+          ? 'Not chosen yet'
+          : !on
+            ? 'No: they only react to the rhythm'
+            : both
+              ? 'Yes, both of you'
+              : 'Yes';
+      const other =
+        both || theirs === undefined ? '' : theirs === 'agreed' ? ' · on for them' : ' · not on for them yet';
       return `${mine}${other}${byDefault ? ' · default' : ''}`;
     },
     muteRow: 'Minimoas active',
@@ -913,11 +1169,18 @@ export const minimoas = messages({
   es: {
     consentTitle: [{ text: 'LOS MINIMOAS\n' }, { text: 'EN ESTE CHAT.', dim: true }],
     consentSubtitle: 'Abren la charla, la retoman y sueltan algún comentario.',
-    ifRefused: (mine: string, theirs: string): string => `Si falta el acuerdo de una de las partes, ${mine} y ${theirs} solo reaccionan al ritmo: silencios, rachas, retos. Sin leer nada.`,
-    otherWaiting: (name: string): string => `${name} aún no lo ha activado. Mientras no lo haga, la IA no lee nada. Puedes cambiarlo en las opciones del vínculo o en Yo › La IA y tú.`,
-    otherAgreed: (name: string): string => `${name} lo ha activado. Si tú también dices que sí, los minimoas leerán los mensajes de este chat. Puedes cambiarlo en las opciones del vínculo o en Yo › La IA y tú.`,
-    bothYes: (name: string): string => `${name} también ha dicho que sí: los minimoas leen los mensajes de este chat. Puedes cambiarlo en las opciones del vínculo o en Yo › La IA y tú.`,
-    byDefault: (on: boolean): string => (on ? 'Lectura por IA: activada por defecto en este chat (tu ajuste).' : 'Lectura por IA: desactivada por defecto en este chat (tu ajuste).'),
+    ifRefused: (mine: string, theirs: string): string =>
+      `Si falta el acuerdo de una de las partes, ${mine} y ${theirs} solo reaccionan al ritmo: silencios, rachas, retos. Sin leer nada.`,
+    otherWaiting: (name: string): string =>
+      `${name} aún no lo ha activado. Mientras no lo haga, la IA no lee nada. Puedes cambiarlo en las opciones del vínculo o en Yo › La IA y tú.`,
+    otherAgreed: (name: string): string =>
+      `${name} lo ha activado. Si tú también dices que sí, los minimoas leerán los mensajes de este chat. Puedes cambiarlo en las opciones del vínculo o en Yo › La IA y tú.`,
+    bothYes: (name: string): string =>
+      `${name} también ha dicho que sí: los minimoas leen los mensajes de este chat. Puedes cambiarlo en las opciones del vínculo o en Yo › La IA y tú.`,
+    byDefault: (on: boolean): string =>
+      on
+        ? 'Lectura por IA: activada por defecto en este chat (tu ajuste).'
+        : 'Lectura por IA: desactivada por defecto en este chat (tu ajuste).',
     byDefaultChange: 'Cambiar',
     policy: 'Política de privacidad',
     accept: 'Activar en este chat',
@@ -929,18 +1192,60 @@ export const minimoas = messages({
     guideClose: 'Entendido',
     rolesTitle: [{ text: 'SUS ' }, { text: 'PAPELES', dim: true }],
     roles: [
-      { key: 'icebreaker', icon: 'gel', title: 'Rompehielos', text: 'Al principio del vínculo, una pregunta sacada de lo que tienen en común.' },
-      { key: 'nudge', icon: 'eclair', title: 'Empujoncito', text: 'Tras un largo silencio: «Hace 3 días. Estaban hablando de ese restaurante».' },
-      { key: 'remark', icon: 'etoiles', title: 'Comentario', text: 'De vez en cuando, lo que notan entre ustedes.' },
-      { key: 'guard', icon: 'gel', title: 'Salvaguarda', text: 'Si el tono sube, tu minimoa te propone una pausa. Solo para ti.' },
-      { key: 'review', icon: 'flamme', title: 'Resumen del domingo', text: 'Una vez por semana, la salud del vínculo, en tu resumen.' },
+      {
+        key: 'icebreaker',
+        icon: 'gel',
+        title: 'Rompehielos',
+        text: 'Al principio del vínculo, una pregunta sacada de lo que tienen en común.',
+      },
+      {
+        key: 'nudge',
+        icon: 'eclair',
+        title: 'Empujoncito',
+        text: 'Tras un largo silencio: «Hace 3 días. Estaban hablando de ese restaurante».',
+      },
+      {
+        key: 'remark',
+        icon: 'etoiles',
+        title: 'Comentario',
+        text: 'De vez en cuando, lo que notan entre ustedes.',
+      },
+      {
+        key: 'guard',
+        icon: 'gel',
+        title: 'Salvaguarda',
+        text: 'Si el tono sube, tu minimoa te propone una pausa. Solo para ti.',
+      },
+      {
+        key: 'review',
+        icon: 'flamme',
+        title: 'Resumen del domingo',
+        text: 'Una vez por semana, la salud del vínculo, en tu resumen.',
+      },
     ],
     rolesNote: 'Hablan con el carácter de su humano. Puedes silenciarlos en este chat, arriba a la derecha.',
     sectionTitle: 'Minimoas en este chat',
     readingRow: 'Lectura por IA',
-    readingSub: (on: boolean | null, both: boolean, theirs?: 'agreed' | 'not_yet', byDefault?: boolean): string => {
-      const mine = on === null ? 'Aún sin elegir' : !on ? 'No: solo reaccionan al ritmo' : both ? 'Sí, por ambas partes' : 'Sí';
-      const other = both || theirs === undefined ? '' : theirs === 'agreed' ? ' · activado por la otra parte' : ' · aún no activado por la otra parte';
+    readingSub: (
+      on: boolean | null,
+      both: boolean,
+      theirs?: 'agreed' | 'not_yet',
+      byDefault?: boolean,
+    ): string => {
+      const mine =
+        on === null
+          ? 'Aún sin elegir'
+          : !on
+            ? 'No: solo reaccionan al ritmo'
+            : both
+              ? 'Sí, por ambas partes'
+              : 'Sí';
+      const other =
+        both || theirs === undefined
+          ? ''
+          : theirs === 'agreed'
+            ? ' · activado por la otra parte'
+            : ' · aún no activado por la otra parte';
       return `${mine}${other}${byDefault ? ' · por defecto' : ''}`;
     },
     muteRow: 'Minimoas activos',
@@ -949,11 +1254,18 @@ export const minimoas = messages({
   pt: {
     consentTitle: [{ text: 'OS MINIMOAS\n' }, { text: 'NESTE CHAT.', dim: true }],
     consentSubtitle: 'Eles puxam assunto, retomam a conversa e soltam um comentário.',
-    ifRefused: (mine: string, theirs: string): string => `Se faltar o consentimento de um dos lados, ${mine} e ${theirs} reagem só ao ritmo: silêncios, sequências, desafios. Sem ler nada.`,
-    otherWaiting: (name: string): string => `${name} ainda não ativou. Enquanto isso, a IA não lê nada. Dá para mudar nas opções do vínculo ou em Eu › A IA e você.`,
-    otherAgreed: (name: string): string => `${name} já ativou. Se você também disser sim, os minimoas vão ler as mensagens de vocês. Dá para mudar nas opções do vínculo ou em Eu › A IA e você.`,
-    bothYes: (name: string): string => `${name} também disse sim: os minimoas leem as mensagens de vocês. Dá para mudar nas opções do vínculo ou em Eu › A IA e você.`,
-    byDefault: (on: boolean): string => (on ? 'Leitura por IA: ativada por padrão neste chat (sua configuração).' : 'Leitura por IA: desativada por padrão neste chat (sua configuração).'),
+    ifRefused: (mine: string, theirs: string): string =>
+      `Se faltar o consentimento de um dos lados, ${mine} e ${theirs} reagem só ao ritmo: silêncios, sequências, desafios. Sem ler nada.`,
+    otherWaiting: (name: string): string =>
+      `${name} ainda não ativou. Enquanto isso, a IA não lê nada. Dá para mudar nas opções do vínculo ou em Eu › A IA e você.`,
+    otherAgreed: (name: string): string =>
+      `${name} já ativou. Se você também disser sim, os minimoas vão ler as mensagens de vocês. Dá para mudar nas opções do vínculo ou em Eu › A IA e você.`,
+    bothYes: (name: string): string =>
+      `${name} também disse sim: os minimoas leem as mensagens de vocês. Dá para mudar nas opções do vínculo ou em Eu › A IA e você.`,
+    byDefault: (on: boolean): string =>
+      on
+        ? 'Leitura por IA: ativada por padrão neste chat (sua configuração).'
+        : 'Leitura por IA: desativada por padrão neste chat (sua configuração).',
     byDefaultChange: 'Mudar',
     policy: 'Política de privacidade',
     accept: 'Ativar neste chat',
@@ -965,18 +1277,61 @@ export const minimoas = messages({
     guideClose: 'Entendi',
     rolesTitle: [{ text: 'OS ' }, { text: 'PAPÉIS', dim: true }],
     roles: [
-      { key: 'icebreaker', icon: 'gel', title: 'Quebra-gelo', text: 'No começo do vínculo, uma pergunta tirada do que vocês têm em comum.' },
-      { key: 'nudge', icon: 'eclair', title: 'Cutucada', text: 'Depois de um longo silêncio: “Já faz 3 dias. Vocês estavam falando daquele restaurante.”' },
-      { key: 'remark', icon: 'etoiles', title: 'Comentário', text: 'De vez em quando, o que eles percebem em vocês.' },
-      { key: 'guard', icon: 'gel', title: 'Proteção', text: 'Se o clima esquentar, seu minimoa sugere uma pausa. Só para você.' },
-      { key: 'review', icon: 'flamme', title: 'Resumo de domingo', text: 'Uma vez por semana, a saúde do vínculo, no seu resumo.' },
+      {
+        key: 'icebreaker',
+        icon: 'gel',
+        title: 'Quebra-gelo',
+        text: 'No começo do vínculo, uma pergunta tirada do que vocês têm em comum.',
+      },
+      {
+        key: 'nudge',
+        icon: 'eclair',
+        title: 'Cutucada',
+        text: 'Depois de um longo silêncio: “Já faz 3 dias. Vocês estavam falando daquele restaurante.”',
+      },
+      {
+        key: 'remark',
+        icon: 'etoiles',
+        title: 'Comentário',
+        text: 'De vez em quando, o que eles percebem em vocês.',
+      },
+      {
+        key: 'guard',
+        icon: 'gel',
+        title: 'Proteção',
+        text: 'Se o clima esquentar, seu minimoa sugere uma pausa. Só para você.',
+      },
+      {
+        key: 'review',
+        icon: 'flamme',
+        title: 'Resumo de domingo',
+        text: 'Uma vez por semana, a saúde do vínculo, no seu resumo.',
+      },
     ],
-    rolesNote: 'Eles falam com o jeito do seu humano. Você pode silenciá-los neste chat, no canto superior direito.',
+    rolesNote:
+      'Eles falam com o jeito do seu humano. Você pode silenciá-los neste chat, no canto superior direito.',
     sectionTitle: 'Minimoas neste chat',
     readingRow: 'Leitura por IA',
-    readingSub: (on: boolean | null, both: boolean, theirs?: 'agreed' | 'not_yet', byDefault?: boolean): string => {
-      const mine = on === null ? 'Ainda não escolhido' : !on ? 'Não: eles reagem só ao ritmo' : both ? 'Sim, dos dois lados' : 'Sim';
-      const other = both || theirs === undefined ? '' : theirs === 'agreed' ? ' · ativado do outro lado' : ' · ainda não ativado do outro lado';
+    readingSub: (
+      on: boolean | null,
+      both: boolean,
+      theirs?: 'agreed' | 'not_yet',
+      byDefault?: boolean,
+    ): string => {
+      const mine =
+        on === null
+          ? 'Ainda não escolhido'
+          : !on
+            ? 'Não: eles reagem só ao ritmo'
+            : both
+              ? 'Sim, dos dois lados'
+              : 'Sim';
+      const other =
+        both || theirs === undefined
+          ? ''
+          : theirs === 'agreed'
+            ? ' · ativado do outro lado'
+            : ' · ainda não ativado do outro lado';
       return `${mine}${other}${byDefault ? ' · padrão' : ''}`;
     },
     muteRow: 'Minimoas ativos',
@@ -985,11 +1340,18 @@ export const minimoas = messages({
   nl: {
     consentTitle: [{ text: 'JULLIE MINIMOAS\n' }, { text: 'IN DEZE CHAT.', dim: true }],
     consentSubtitle: 'Ze beginnen een gesprek, porren en laten een opmerking vallen.',
-    ifRefused: (mine: string, theirs: string): string => `Ontbreekt de toestemming aan één kant, dan reageren ${mine} en ${theirs} alleen op het ritme: stiltes, reeksen, uitdagingen. Zonder iets te lezen.`,
-    otherWaiting: (name: string): string => `${name} heeft het nog niet aangezet. Zolang dat zo is, leest de AI niets. Aan te passen in de opties van de band of in Ik › AI en jij.`,
-    otherAgreed: (name: string): string => `${name} heeft het aangezet. Zeg jij ook ja, dan lezen jullie minimoas jullie berichten. Aan te passen in de opties van de band of in Ik › AI en jij.`,
-    bothYes: (name: string): string => `${name} heeft ook ja gezegd: jullie minimoas lezen jullie berichten. Aan te passen in de opties van de band of in Ik › AI en jij.`,
-    byDefault: (on: boolean): string => (on ? 'Meelezen door AI: standaard aan in deze chat (jouw instelling).' : 'Meelezen door AI: standaard uit in deze chat (jouw instelling).'),
+    ifRefused: (mine: string, theirs: string): string =>
+      `Ontbreekt de toestemming aan één kant, dan reageren ${mine} en ${theirs} alleen op het ritme: stiltes, reeksen, uitdagingen. Zonder iets te lezen.`,
+    otherWaiting: (name: string): string =>
+      `${name} heeft het nog niet aangezet. Zolang dat zo is, leest de AI niets. Aan te passen in de opties van de band of in Ik › AI en jij.`,
+    otherAgreed: (name: string): string =>
+      `${name} heeft het aangezet. Zeg jij ook ja, dan lezen jullie minimoas jullie berichten. Aan te passen in de opties van de band of in Ik › AI en jij.`,
+    bothYes: (name: string): string =>
+      `${name} heeft ook ja gezegd: jullie minimoas lezen jullie berichten. Aan te passen in de opties van de band of in Ik › AI en jij.`,
+    byDefault: (on: boolean): string =>
+      on
+        ? 'Meelezen door AI: standaard aan in deze chat (jouw instelling).'
+        : 'Meelezen door AI: standaard uit in deze chat (jouw instelling).',
     byDefaultChange: 'Wijzigen',
     policy: 'Privacybeleid',
     accept: 'Aanzetten voor deze chat',
@@ -1001,18 +1363,60 @@ export const minimoas = messages({
     guideClose: 'Begrepen',
     rolesTitle: [{ text: 'HUN ' }, { text: 'ROLLEN', dim: true }],
     roles: [
-      { key: 'icebreaker', icon: 'gel', title: 'IJsbreker', text: 'Aan het begin van de band: een vraag op basis van wat jullie gemeen hebben.' },
-      { key: 'nudge', icon: 'eclair', title: 'Duwtje', text: 'Na een lange stilte: „Al 3 dagen niks. Jullie hadden het over dat restaurant.”' },
-      { key: 'remark', icon: 'etoiles', title: 'Opmerking', text: 'Af en toe: wat hun opvalt aan jullie tweeën.' },
-      { key: 'guard', icon: 'gel', title: 'Vangnet', text: 'Loopt het hoog op, dan stelt je minimoa een pauze voor. Alleen voor jou.' },
-      { key: 'review', icon: 'flamme', title: 'Zondagsoverzicht', text: 'Eén keer per week de gezondheid van de band, in je overzicht.' },
+      {
+        key: 'icebreaker',
+        icon: 'gel',
+        title: 'IJsbreker',
+        text: 'Aan het begin van de band: een vraag op basis van wat jullie gemeen hebben.',
+      },
+      {
+        key: 'nudge',
+        icon: 'eclair',
+        title: 'Duwtje',
+        text: 'Na een lange stilte: „Al 3 dagen niks. Jullie hadden het over dat restaurant.”',
+      },
+      {
+        key: 'remark',
+        icon: 'etoiles',
+        title: 'Opmerking',
+        text: 'Af en toe: wat hun opvalt aan jullie tweeën.',
+      },
+      {
+        key: 'guard',
+        icon: 'gel',
+        title: 'Vangnet',
+        text: 'Loopt het hoog op, dan stelt je minimoa een pauze voor. Alleen voor jou.',
+      },
+      {
+        key: 'review',
+        icon: 'flamme',
+        title: 'Zondagsoverzicht',
+        text: 'Eén keer per week de gezondheid van de band, in je overzicht.',
+      },
     ],
     rolesNote: 'Ze praten met het karakter van hun mens. Je kunt ze voor deze chat uitzetten, rechtsboven.',
     sectionTitle: 'Minimoas in deze chat',
     readingRow: 'Meelezen door AI',
-    readingSub: (on: boolean | null, both: boolean, theirs?: 'agreed' | 'not_yet', byDefault?: boolean): string => {
-      const mine = on === null ? 'Nog niet gekozen' : !on ? 'Nee: ze reageren alleen op het ritme' : both ? 'Ja, jullie allebei' : 'Ja';
-      const other = both || theirs === undefined ? '' : theirs === 'agreed' ? ' · aan bij de ander' : ' · nog niet aan bij de ander';
+    readingSub: (
+      on: boolean | null,
+      both: boolean,
+      theirs?: 'agreed' | 'not_yet',
+      byDefault?: boolean,
+    ): string => {
+      const mine =
+        on === null
+          ? 'Nog niet gekozen'
+          : !on
+            ? 'Nee: ze reageren alleen op het ritme'
+            : both
+              ? 'Ja, jullie allebei'
+              : 'Ja';
+      const other =
+        both || theirs === undefined
+          ? ''
+          : theirs === 'agreed'
+            ? ' · aan bij de ander'
+            : ' · nog niet aan bij de ander';
       return `${mine}${other}${byDefault ? ' · standaard' : ''}`;
     },
     muteRow: 'Minimoas actief',
@@ -1030,12 +1434,17 @@ export const levels = messages({
       const last = words.pop() ?? '';
       return words.length ? [{ text: `${words.join(' ')}\n` }, { text: last, dim: true }] : [{ text: last }];
     },
-    progress: (into: number, span: number, next: number): string => `${into} / ${span} xp avant le niveau ${next}`,
+    progress: (into: number, span: number, next: number): string =>
+      `${into} / ${span} xp avant le niveau ${next}`,
     maxProgress: 'Dernier niveau atteint',
     current: 'Vous êtes là',
     next: (n: number): string => `Encore ${n} xp`,
-    livesTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n > 1 ? 'VIES' : 'VIE'} ` }, { text: 'SUR 7', dim: true }],
-    livesText: 'Un jour d’échange à deux = +1 vie. Un jour de silence = −1 vie. À 0, le lien devient fantôme.',
+    livesTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n > 1 ? 'VIES' : 'VIE'} ` },
+      { text: 'SUR 7', dim: true },
+    ],
+    livesText:
+      'Un jour d’échange à deux = +1 vie. Un jour de silence = −1 vie. À 0, le lien devient fantôme.',
   },
   en: {
     header: (name: string): string => `Your link with ${name}`,
@@ -1049,8 +1458,12 @@ export const levels = messages({
     maxProgress: 'Top level reached',
     current: 'You’re here',
     next: (n: number): string => `${n} xp to go`,
-    livesTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n === 1 ? 'LIFE' : 'LIVES'} ` }, { text: 'OUT OF 7', dim: true }],
-    livesText: 'A day of writing to each other = +1 life. A day of silence = −1 life. At 0, the link turns into a ghost.',
+    livesTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n === 1 ? 'LIFE' : 'LIVES'} ` },
+      { text: 'OUT OF 7', dim: true },
+    ],
+    livesText:
+      'A day of writing to each other = +1 life. A day of silence = −1 life. At 0, the link turns into a ghost.',
   },
   es: {
     header: (name: string): string => `Tu vínculo con ${name}`,
@@ -1060,12 +1473,17 @@ export const levels = messages({
       const last = words.pop() ?? '';
       return words.length ? [{ text: `${words.join(' ')}\n` }, { text: last, dim: true }] : [{ text: last }];
     },
-    progress: (into: number, span: number, next: number): string => `${into} / ${span} xp para el nivel ${next}`,
+    progress: (into: number, span: number, next: number): string =>
+      `${into} / ${span} xp para el nivel ${next}`,
     maxProgress: 'Último nivel alcanzado',
     current: 'Están aquí',
     next: (n: number): string => `Faltan ${n} xp`,
-    livesTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n === 1 ? 'VIDA' : 'VIDAS'} ` }, { text: 'DE 7', dim: true }],
-    livesText: 'Un día en que se escriben los dos = +1 vida. Un día de silencio = −1 vida. A 0, el vínculo se vuelve fantasma.',
+    livesTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n === 1 ? 'VIDA' : 'VIDAS'} ` },
+      { text: 'DE 7', dim: true },
+    ],
+    livesText:
+      'Un día en que se escriben los dos = +1 vida. Un día de silencio = −1 vida. A 0, el vínculo se vuelve fantasma.',
   },
   pt: {
     header: (name: string): string => `Seu vínculo com ${name}`,
@@ -1075,12 +1493,17 @@ export const levels = messages({
       const last = words.pop() ?? '';
       return words.length ? [{ text: `${words.join(' ')}\n` }, { text: last, dim: true }] : [{ text: last }];
     },
-    progress: (into: number, span: number, next: number): string => `${into} / ${span} xp até o nível ${next}`,
+    progress: (into: number, span: number, next: number): string =>
+      `${into} / ${span} xp até o nível ${next}`,
     maxProgress: 'Último nível alcançado',
     current: 'Vocês estão aqui',
     next: (n: number): string => `Faltam ${n} xp`,
-    livesTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n === 1 ? 'VIDA' : 'VIDAS'} ` }, { text: 'DE 7', dim: true }],
-    livesText: 'Um dia em que os dois escrevem = +1 vida. Um dia de silêncio = −1 vida. Em 0, o vínculo vira fantasma.',
+    livesTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n === 1 ? 'VIDA' : 'VIDAS'} ` },
+      { text: 'DE 7', dim: true },
+    ],
+    livesText:
+      'Um dia em que os dois escrevem = +1 vida. Um dia de silêncio = −1 vida. Em 0, o vínculo vira fantasma.',
   },
   nl: {
     header: (name: string): string => `Jouw band met ${name}`,
@@ -1094,16 +1517,24 @@ export const levels = messages({
     maxProgress: 'Hoogste niveau bereikt',
     current: 'Hier zijn jullie',
     next: (n: number): string => `Nog ${n} xp`,
-    livesTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n === 1 ? 'LEVEN' : 'LEVENS'} ` }, { text: 'VAN 7', dim: true }],
-    livesText: 'Een dag waarop jullie allebei schrijven = +1 leven. Een dag stilte = −1 leven. Op 0 wordt de band een spookband.',
+    livesTitle: (n: number): TitleSegment[] => [
+      { text: `${n} ${n === 1 ? 'LEVEN' : 'LEVENS'} ` },
+      { text: 'VAN 7', dim: true },
+    ],
+    livesText:
+      'Een dag waarop jullie allebei schrijven = +1 leven. Een dag stilte = −1 leven. Op 0 wordt de band een spookband.',
   },
 });
 
 export const options = messages({
   fr: {
     close: 'Fermer',
-    title: (name: string, pet: string): TitleSegment[] => [{ text: `${name.toUpperCase()} ` }, { text: `ET ${pet.toUpperCase()}`, dim: true }],
-    meta: (created: string, level: number, lives: number): string => `Lien créé le ${created} · niveau ${level} · ${lives} ${lives > 1 ? 'vies' : 'vie'}`,
+    title: (name: string, pet: string): TitleSegment[] => [
+      { text: `${name.toUpperCase()} ` },
+      { text: `ET ${pet.toUpperCase()}`, dim: true },
+    ],
+    meta: (created: string, level: number, lives: number): string =>
+      `Lien créé le ${created} · niveau ${level} · ${lives} ${lives > 1 ? 'vies' : 'vie'}`,
     levels: 'Voir les 7 niveaux',
     report: (name: string): string => `Signaler ${name}`,
     reportSub: 'On regarde chaque signalement',
@@ -1111,8 +1542,12 @@ export const options = messages({
     blockSub: 'Plus de messages, plus de rencontre',
     leave: 'Quitter ce lien',
     leaveSub: 'Le lien disparaît de vos chats, à tous les deux',
-    reportTitle: (name: string): TitleSegment[] => [{ text: 'SIGNALER ' }, { text: name.toUpperCase(), dim: true }],
-    reportIntro: (name: string): string => `${name} ne saura pas que ça vient de toi. Dis-nous ce qui ne va pas.`,
+    reportTitle: (name: string): TitleSegment[] => [
+      { text: 'SIGNALER ' },
+      { text: name.toUpperCase(), dim: true },
+    ],
+    reportIntro: (name: string): string =>
+      `${name} ne saura pas que ça vient de toi. Dis-nous ce qui ne va pas.`,
     reportReason: 'Qu’est-ce qui se passe ?',
     reportDetails: 'Des détails (facultatif)',
     reportDetailsHint: 'Ce qui s’est passé, quand. Ça nous aide à agir vite.',
@@ -1124,12 +1559,16 @@ export const options = messages({
     reportEmergency: 'En danger immédiat ? Appelle le 17 ou le 112.',
     reportDone: 'Merci. Ton signalement est envoyé, on le regarde vite.',
     reportPickFirst: 'Choisis une raison.',
-    blockTitle: (name: string): TitleSegment[] => [{ text: 'BLOQUER ' }, { text: `${name.toUpperCase()} ?`, dim: true }],
+    blockTitle: (name: string): TitleSegment[] => [
+      { text: 'BLOQUER ' },
+      { text: `${name.toUpperCase()} ?`, dim: true },
+    ],
     blockText: (name: string): string =>
       `${name} ne pourra plus t’écrire ni croiser ton minimoa. Ce lien disparaît. Tu pourras revenir dessus depuis Moi › Personnes bloquées.`,
     blockConfirm: 'Bloquer',
     leaveTitle: [{ text: 'QUITTER ' }, { text: 'CE LIEN ?', dim: true }] as TitleSegment[],
-    leaveText: (name: string): string => `Ton lien avec ${name} disparaît de vos chats, à tous les deux. Ce n’est pas un blocage : si vous vous retrouvez sur Minimoa, il revient, avec votre conversation.`,
+    leaveText: (name: string): string =>
+      `Ton lien avec ${name} disparaît de vos chats, à tous les deux. Ce n’est pas un blocage : si vous vous retrouvez sur Minimoa, il revient, avec votre conversation.`,
     leaveConfirm: 'Quitter le lien',
     cancel: 'Annuler',
     error: 'Ça n’a pas marché. Réessaie.',
@@ -1137,8 +1576,12 @@ export const options = messages({
   },
   en: {
     close: 'Close',
-    title: (name: string, pet: string): TitleSegment[] => [{ text: `${name.toUpperCase()} ` }, { text: `AND ${pet.toUpperCase()}`, dim: true }],
-    meta: (created: string, level: number, lives: number): string => `Link created ${created} · level ${level} · ${lives} ${lives === 1 ? 'life' : 'lives'}`,
+    title: (name: string, pet: string): TitleSegment[] => [
+      { text: `${name.toUpperCase()} ` },
+      { text: `AND ${pet.toUpperCase()}`, dim: true },
+    ],
+    meta: (created: string, level: number, lives: number): string =>
+      `Link created ${created} · level ${level} · ${lives} ${lives === 1 ? 'life' : 'lives'}`,
     levels: 'See the 7 levels',
     report: (name: string): string => `Report ${name}`,
     reportSub: 'We look at every report',
@@ -1146,7 +1589,10 @@ export const options = messages({
     blockSub: 'No more messages, no more encounters',
     leave: 'Leave this link',
     leaveSub: 'The link disappears from both your chats',
-    reportTitle: (name: string): TitleSegment[] => [{ text: 'REPORT ' }, { text: name.toUpperCase(), dim: true }],
+    reportTitle: (name: string): TitleSegment[] => [
+      { text: 'REPORT ' },
+      { text: name.toUpperCase(), dim: true },
+    ],
     reportIntro: (name: string): string => `${name} won’t know it came from you. Tell us what’s wrong.`,
     reportReason: 'What’s going on?',
     reportDetails: 'Details (optional)',
@@ -1159,12 +1605,16 @@ export const options = messages({
     reportEmergency: 'In immediate danger? Call 911, 112 or your local emergency number.',
     reportDone: 'Thanks. Your report has been sent, we’ll look at it quickly.',
     reportPickFirst: 'Pick a reason.',
-    blockTitle: (name: string): TitleSegment[] => [{ text: 'BLOCK ' }, { text: `${name.toUpperCase()}?`, dim: true }],
+    blockTitle: (name: string): TitleSegment[] => [
+      { text: 'BLOCK ' },
+      { text: `${name.toUpperCase()}?`, dim: true },
+    ],
     blockText: (name: string): string =>
       `${name} won’t be able to write to you or meet your minimoa anymore. This link disappears. You can undo this in Me › Blocked people.`,
     blockConfirm: 'Block',
     leaveTitle: [{ text: 'LEAVE ' }, { text: 'THIS LINK?', dim: true }],
-    leaveText: (name: string): string => `Your link with ${name} disappears from both your chats. It’s not a block: if you find each other again on Minimoa, it comes back, with your conversation.`,
+    leaveText: (name: string): string =>
+      `Your link with ${name} disappears from both your chats. It’s not a block: if you find each other again on Minimoa, it comes back, with your conversation.`,
     leaveConfirm: 'Leave link',
     cancel: 'Cancel',
     error: 'That didn’t work. Try again.',
@@ -1172,8 +1622,12 @@ export const options = messages({
   },
   es: {
     close: 'Cerrar',
-    title: (name: string, pet: string): TitleSegment[] => [{ text: `${name.toUpperCase()} ` }, { text: `Y ${pet.toUpperCase()}`, dim: true }],
-    meta: (created: string, level: number, lives: number): string => `Vínculo creado el ${created} · nivel ${level} · ${lives} ${lives === 1 ? 'vida' : 'vidas'}`,
+    title: (name: string, pet: string): TitleSegment[] => [
+      { text: `${name.toUpperCase()} ` },
+      { text: `Y ${pet.toUpperCase()}`, dim: true },
+    ],
+    meta: (created: string, level: number, lives: number): string =>
+      `Vínculo creado el ${created} · nivel ${level} · ${lives} ${lives === 1 ? 'vida' : 'vidas'}`,
     levels: 'Ver los 7 niveles',
     report: (name: string): string => `Reportar a ${name}`,
     reportSub: 'Revisamos cada reporte',
@@ -1181,7 +1635,10 @@ export const options = messages({
     blockSub: 'Ni mensajes ni encuentros',
     leave: 'Salir de este vínculo',
     leaveSub: 'El vínculo desaparece de los chats de ambas partes',
-    reportTitle: (name: string): TitleSegment[] => [{ text: 'REPORTAR A ' }, { text: name.toUpperCase(), dim: true }],
+    reportTitle: (name: string): TitleSegment[] => [
+      { text: 'REPORTAR A ' },
+      { text: name.toUpperCase(), dim: true },
+    ],
     reportIntro: (name: string): string => `${name} no sabrá que viene de ti. Cuéntanos qué pasa.`,
     reportReason: '¿Qué está pasando?',
     reportDetails: 'Detalles (opcional)',
@@ -1194,12 +1651,16 @@ export const options = messages({
     reportEmergency: '¿En peligro inmediato? Llama al 112 o al número de emergencias local.',
     reportDone: 'Gracias. Tu reporte se ha enviado, lo revisaremos pronto.',
     reportPickFirst: 'Elige un motivo.',
-    blockTitle: (name: string): TitleSegment[] => [{ text: '¿BLOQUEAR A ' }, { text: `${name.toUpperCase()}?`, dim: true }],
+    blockTitle: (name: string): TitleSegment[] => [
+      { text: '¿BLOQUEAR A ' },
+      { text: `${name.toUpperCase()}?`, dim: true },
+    ],
     blockText: (name: string): string =>
       `${name} ya no podrá escribirte ni cruzarse con tu minimoa. Este vínculo desaparece. Puedes deshacerlo en Yo › Personas bloqueadas.`,
     blockConfirm: 'Bloquear',
     leaveTitle: [{ text: '¿SALIR DE ' }, { text: 'ESTE VÍNCULO?', dim: true }],
-    leaveText: (name: string): string => `Tu vínculo con ${name} desaparece de los chats de ambas partes. No es un bloqueo: si vuelven a encontrarse en Minimoa, regresa, con la conversación.`,
+    leaveText: (name: string): string =>
+      `Tu vínculo con ${name} desaparece de los chats de ambas partes. No es un bloqueo: si vuelven a encontrarse en Minimoa, regresa, con la conversación.`,
     leaveConfirm: 'Salir del vínculo',
     cancel: 'Cancelar',
     error: 'No ha funcionado. Inténtalo de nuevo.',
@@ -1207,8 +1668,12 @@ export const options = messages({
   },
   pt: {
     close: 'Fechar',
-    title: (name: string, pet: string): TitleSegment[] => [{ text: `${name.toUpperCase()} ` }, { text: `E ${pet.toUpperCase()}`, dim: true }],
-    meta: (created: string, level: number, lives: number): string => `Vínculo criado em ${created} · nível ${level} · ${lives} ${lives === 1 ? 'vida' : 'vidas'}`,
+    title: (name: string, pet: string): TitleSegment[] => [
+      { text: `${name.toUpperCase()} ` },
+      { text: `E ${pet.toUpperCase()}`, dim: true },
+    ],
+    meta: (created: string, level: number, lives: number): string =>
+      `Vínculo criado em ${created} · nível ${level} · ${lives} ${lives === 1 ? 'vida' : 'vidas'}`,
     levels: 'Ver os 7 níveis',
     report: (name: string): string => `Denunciar ${name}`,
     reportSub: 'Analisamos cada denúncia',
@@ -1216,8 +1681,12 @@ export const options = messages({
     blockSub: 'Sem mensagens, sem encontros',
     leave: 'Sair deste vínculo',
     leaveSub: 'O vínculo some dos chats dos dois lados',
-    reportTitle: (name: string): TitleSegment[] => [{ text: 'DENUNCIAR ' }, { text: name.toUpperCase(), dim: true }],
-    reportIntro: (name: string): string => `${name} não vai saber que veio de você. Conte para a gente o que está errado.`,
+    reportTitle: (name: string): TitleSegment[] => [
+      { text: 'DENUNCIAR ' },
+      { text: name.toUpperCase(), dim: true },
+    ],
+    reportIntro: (name: string): string =>
+      `${name} não vai saber que veio de você. Conte para a gente o que está errado.`,
     reportReason: 'O que está acontecendo?',
     reportDetails: 'Detalhes (opcional)',
     reportDetailsHint: 'O que aconteceu e quando. Isso nos ajuda a agir rápido.',
@@ -1229,12 +1698,16 @@ export const options = messages({
     reportEmergency: 'Em perigo imediato? Ligue para o 190 ou para o número de emergência local.',
     reportDone: 'Obrigado. Sua denúncia foi enviada, vamos analisá-la rapidinho.',
     reportPickFirst: 'Escolha um motivo.',
-    blockTitle: (name: string): TitleSegment[] => [{ text: 'BLOQUEAR ' }, { text: `${name.toUpperCase()}?`, dim: true }],
+    blockTitle: (name: string): TitleSegment[] => [
+      { text: 'BLOQUEAR ' },
+      { text: `${name.toUpperCase()}?`, dim: true },
+    ],
     blockText: (name: string): string =>
       `${name} não vai mais poder escrever para você nem cruzar com seu minimoa. Este vínculo some. Você pode desfazer isso em Eu › Pessoas bloqueadas.`,
     blockConfirm: 'Bloquear',
     leaveTitle: [{ text: 'SAIR ' }, { text: 'DESTE VÍNCULO?', dim: true }],
-    leaveText: (name: string): string => `Seu vínculo com ${name} some dos chats dos dois lados. Não é um bloqueio: se vocês se reencontrarem no Minimoa, ele volta, com a conversa.`,
+    leaveText: (name: string): string =>
+      `Seu vínculo com ${name} some dos chats dos dois lados. Não é um bloqueio: se vocês se reencontrarem no Minimoa, ele volta, com a conversa.`,
     leaveConfirm: 'Sair do vínculo',
     cancel: 'Cancelar',
     error: 'Não deu certo. Tente de novo.',
@@ -1242,8 +1715,12 @@ export const options = messages({
   },
   nl: {
     close: 'Sluiten',
-    title: (name: string, pet: string): TitleSegment[] => [{ text: `${name.toUpperCase()} ` }, { text: `EN ${pet.toUpperCase()}`, dim: true }],
-    meta: (created: string, level: number, lives: number): string => `Band gemaakt op ${created} · niveau ${level} · ${lives} ${lives === 1 ? 'leven' : 'levens'}`,
+    title: (name: string, pet: string): TitleSegment[] => [
+      { text: `${name.toUpperCase()} ` },
+      { text: `EN ${pet.toUpperCase()}`, dim: true },
+    ],
+    meta: (created: string, level: number, lives: number): string =>
+      `Band gemaakt op ${created} · niveau ${level} · ${lives} ${lives === 1 ? 'leven' : 'levens'}`,
     levels: 'Bekijk de 7 niveaus',
     report: (name: string): string => `${name} melden`,
     reportSub: 'We bekijken elke melding',
@@ -1251,8 +1728,12 @@ export const options = messages({
     blockSub: 'Geen berichten en ontmoetingen meer',
     leave: 'Deze band verlaten',
     leaveSub: 'De band verdwijnt bij jullie allebei uit de chats',
-    reportTitle: (name: string): TitleSegment[] => [{ text: 'MELD ' }, { text: name.toUpperCase(), dim: true }],
-    reportIntro: (name: string): string => `${name} weet niet dat het van jou komt. Vertel ons wat er mis is.`,
+    reportTitle: (name: string): TitleSegment[] => [
+      { text: 'MELD ' },
+      { text: name.toUpperCase(), dim: true },
+    ],
+    reportIntro: (name: string): string =>
+      `${name} weet niet dat het van jou komt. Vertel ons wat er mis is.`,
     reportReason: 'Wat is er aan de hand?',
     reportDetails: 'Details (optioneel)',
     reportDetailsHint: 'Wat er gebeurde, en wanneer. Zo kunnen we snel handelen.',
@@ -1264,12 +1745,16 @@ export const options = messages({
     reportEmergency: 'In direct gevaar? Bel 112.',
     reportDone: 'Bedankt. Je melding is verstuurd, we bekijken hem snel.',
     reportPickFirst: 'Kies een reden.',
-    blockTitle: (name: string): TitleSegment[] => [{ text: 'BLOKKEER ' }, { text: `${name.toUpperCase()}?`, dim: true }],
+    blockTitle: (name: string): TitleSegment[] => [
+      { text: 'BLOKKEER ' },
+      { text: `${name.toUpperCase()}?`, dim: true },
+    ],
     blockText: (name: string): string =>
       `${name} kan je niet meer schrijven en je minimoa niet meer tegenkomen. Deze band verdwijnt. Je kunt dit terugdraaien via Ik › Geblokkeerde personen.`,
     blockConfirm: 'Blokkeren',
     leaveTitle: [{ text: 'DEZE BAND ' }, { text: 'VERLATEN?', dim: true }],
-    leaveText: (name: string): string => `Je band met ${name} verdwijnt bij jullie allebei uit de chats. Het is geen blokkade: vinden jullie elkaar terug op Minimoa, dan komt hij terug, met jullie gesprek.`,
+    leaveText: (name: string): string =>
+      `Je band met ${name} verdwijnt bij jullie allebei uit de chats. Het is geen blokkade: vinden jullie elkaar terug op Minimoa, dan komt hij terug, met jullie gesprek.`,
     leaveConfirm: 'Band verlaten',
     cancel: 'Annuleren',
     error: 'Dat lukte niet. Probeer het opnieuw.',
@@ -1280,7 +1765,20 @@ export const options = messages({
 /** Jours et mois pour les dates courtes. */
 export const dates = messages({
   fr: {
-    months: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'] as const,
+    months: [
+      'janv.',
+      'févr.',
+      'mars',
+      'avr.',
+      'mai',
+      'juin',
+      'juil.',
+      'août',
+      'sept.',
+      'oct.',
+      'nov.',
+      'déc.',
+    ] as const,
     weekdays: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'] as const,
     weekdaysShort: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'] as const,
     today: 'aujourd’hui',
@@ -1310,7 +1808,15 @@ export const dates = messages({
   },
   pt: {
     months: ['jan.', 'fev.', 'mar.', 'abr.', 'mai.', 'jun.', 'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.'],
-    weekdays: ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'],
+    weekdays: [
+      'domingo',
+      'segunda-feira',
+      'terça-feira',
+      'quarta-feira',
+      'quinta-feira',
+      'sexta-feira',
+      'sábado',
+    ],
     weekdaysShort: ['dom.', 'seg.', 'ter.', 'qua.', 'qui.', 'sex.', 'sáb.'],
     today: 'hoje',
     yesterday: 'ontem',

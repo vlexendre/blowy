@@ -1,6 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Link, Message } from '@blowy/contract';
-import { canRevive, dayOf, faceVisibility, levelProgress, linkToday, linkWeek, type Mood, moodForLives, nextLevel } from '@blowy/domain';
+import {
+  canRevive,
+  dayOf,
+  faceVisibility,
+  levelProgress,
+  linkToday,
+  linkWeek,
+  type Mood,
+  moodForLives,
+  nextLevel,
+} from '@blowy/domain';
 import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/ports';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { CLOCK, LINK_READS, MESSAGES, PAST_PHOTOS, PETS, PROFILES, STORAGE } from '../../../shared/tokens';
@@ -9,7 +19,14 @@ import type { ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import { toPublicPet } from '../../pets/interface/pet.presenter';
 import type { PetsRepository } from '../../pets/ports';
-import { type LinkReadsRepository, type LinkRecord, type MessageRecord, type MessagesRepository, type PastPhotosRepository, sideOf } from '../ports';
+import {
+  type LinkReadsRepository,
+  type LinkRecord,
+  type MessageRecord,
+  type MessagesRepository,
+  type PastPhotosRepository,
+  sideOf,
+} from '../ports';
 import { labels } from '@blowy/content';
 import { requestLocale } from '../../../shared/locale';
 
@@ -19,6 +36,20 @@ const preview = (m: MessageRecord): string => {
   if (m.kind === 'photo') return labels.in(requestLocale()).photoPreview;
   const body = (m.body ?? '').replace(/\s+/g, ' ').trim();
   return body.length > PREVIEW_MAX ? `${body.slice(0, PREVIEW_MAX - 1)}…` : body;
+};
+
+/** Qui a écrit, vu de `viewerId`. */
+const authorOf = (m: MessageRecord, viewerId: string): Message['author'] => {
+  const mine = m.authorId === viewerId;
+  return m.authorKind === 'system'
+    ? 'system'
+    : m.authorKind === 'pet'
+      ? mine
+        ? 'my_pet'
+        : 'other_pet'
+      : mine
+        ? 'me'
+        : 'other';
 };
 
 const linkMood = (link: LinkRecord): Mood => (link.status === 'ghost' ? 'triste' : moodForLives(link.lives));
@@ -46,7 +77,10 @@ export class LinkPresenter {
     const now = this.clock.now();
     const today = todayOf(this.clock);
     const otherIds = links.map((l) => (l.userA === viewerId ? l.userB : l.userA));
-    const [profiles, pets] = await Promise.all([this.profiles.findByIds(otherIds), this.pets.findByOwners([viewerId, ...otherIds])]);
+    const [profiles, pets] = await Promise.all([
+      this.profiles.findByIds(otherIds),
+      this.pets.findByOwners([viewerId, ...otherIds]),
+    ]);
     const profileById = new Map(profiles.map((p) => [p.id, p]));
     const petByOwner = new Map(pets.map((p) => [p.ownerId, livePet(p, now)]));
 
@@ -89,8 +123,18 @@ export class LinkPresenter {
           bestStreak: Math.max(link.bestStreak, day.streak),
           canRevive: canRevive(link),
           unread,
-          lastMessage: latest ? { preview: preview(latest), at: latest.createdAt } : null,
-          today: { day: today, mine: day.mine, theirs: day.theirs, atStake: day.atStake, week, myPhotoUrl: null, theirPhotoUrl: null },
+          lastMessage: latest
+            ? { preview: preview(latest), at: latest.createdAt, author: authorOf(latest, viewerId) }
+            : null,
+          today: {
+            day: today,
+            mine: day.mine,
+            theirs: day.theirs,
+            atStake: day.atStake,
+            week,
+            myPhotoUrl: null,
+            theirPhotoUrl: null,
+          },
           createdAt: link.createdAt,
         };
       }),
@@ -102,7 +146,11 @@ export class LinkPresenter {
    * Messages vus par `viewerId`. Une ancienne photo du jour de l'autre n'est visible que si tu avais envoyé la tienne
    * le même jour (règle d'alors, gardée pour l'historique).
    */
-  async messagesFor(link: LinkRecord, records: readonly MessageRecord[], viewerId: string): Promise<Message[]> {
+  async messagesFor(
+    link: LinkRecord,
+    records: readonly MessageRecord[],
+    viewerId: string,
+  ): Promise<Message[]> {
     const hasPhotos = records.some((m) => m.mediaPath !== null);
     const photos = hasPhotos ? await this.photos.listForLink(link.id) : [];
     const dayOfPath = new Map(photos.map((p) => [p.mediaPath, p.day]));
@@ -111,20 +159,20 @@ export class LinkPresenter {
       records
         .filter((m) => !m.visibleTo || m.visibleTo === viewerId)
         .map(async (m): Promise<Message> => {
-        const mine = m.authorId === viewerId;
-        const day = m.mediaPath ? dayOfPath.get(m.mediaPath) : undefined;
-        const visible = m.mediaPath !== null && (mine || (day !== undefined && myDays.has(day)));
-        return {
-          id: m.id,
-          linkId: m.linkId,
-          author: m.authorKind === 'system' ? 'system' : m.authorKind === 'pet' ? (mine ? 'my_pet' : 'other_pet') : mine ? 'me' : 'other',
-          kind: m.kind,
-          body: m.body,
-          mediaUrl: visible && m.mediaPath ? await this.sign(m.mediaPath) : null,
-          at: m.createdAt,
-          petRole: m.authorKind === 'pet' ? (m.petRole ?? null) : null,
-        };
-      }),
+          const mine = m.authorId === viewerId;
+          const day = m.mediaPath ? dayOfPath.get(m.mediaPath) : undefined;
+          const visible = m.mediaPath !== null && (mine || (day !== undefined && myDays.has(day)));
+          return {
+            id: m.id,
+            linkId: m.linkId,
+            author: authorOf(m, viewerId),
+            kind: m.kind,
+            body: m.body,
+            mediaUrl: visible && m.mediaPath ? await this.sign(m.mediaPath) : null,
+            at: m.createdAt,
+            petRole: m.authorKind === 'pet' ? (m.petRole ?? null) : null,
+          };
+        }),
     );
   }
 

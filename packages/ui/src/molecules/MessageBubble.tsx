@@ -2,7 +2,15 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { memo, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { Avatar } from '../atoms/Avatar';
 import { Glyph } from '../atoms/Glyph';
@@ -11,7 +19,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { fadeTo, springs, useReducedMotion } from '../lib/motion';
 import { TypingDots } from '../motion/TypingDots';
-import { alpha, color, motion, petTint, radius, space, veil } from '../theme';
+import { alpha, color, motion, petTint, radius, space, veil, gradient } from '../theme';
 import type { MessageLook, MessageStatus, PersonLook, PetLook, PetRoleLook } from '../types';
 
 export interface MessageBubbleProps {
@@ -94,9 +102,21 @@ export const MessageBubble = memo(function MessageBubble({
   if (author === 'system' || kind === 'event') {
     const isEvent = kind === 'event';
     return (
-      <Animated.View entering={fade ? FadeIn : undefined} style={[styles.pill, isEvent ? styles.eventPill : null, entrance.row]} accessible accessibilityRole="text">
+      <Animated.View
+        entering={fade ? FadeIn : undefined}
+        style={[styles.pill, isEvent ? styles.eventPill : null, entrance.row]}
+        accessible
+        accessibilityRole="text"
+      >
         {isEvent ? <Icon name="etoiles" size={16} /> : null}
-        <Text variant="bodyBold" size={12} muted={!isEvent} color={isEvent ? color.accent : undefined} center style={styles.pillText}>
+        <Text
+          variant="bodyBold"
+          size={12}
+          muted={!isEvent}
+          color={isEvent ? color.accent : undefined}
+          center
+          style={styles.pillText}
+        >
           {body ?? ''}
         </Text>
       </Animated.View>
@@ -110,53 +130,111 @@ export const MessageBubble = memo(function MessageBubble({
 
   const tint = isPet && pet ? petTint[pet.species] : null;
   const role = isPet ? (petRole ?? null) : null;
-  const petLook = tint ? roleLook(role, tint) : null;
+  const petLook = tint && pet ? roleLook(role, tint, pet.species) : null;
+  // Bulle de minimoa pleine (V6-GChat) : texte sombre, sauf sur le violet de Pia.
+  const petInk = petLook?.ink ?? color.white;
   const petStyle = petLook ? [styles.petBubble, petLook.bubble] : styles.petBubble;
 
   const content = typing ? (
-    <View style={[styles.bubble, styles.typing, isPet ? petStyle : styles.other]} accessible accessibilityLabel={typingLabel}>
-      <TypingDots color={isPet ? color.white : color.dark} size={7} />
+    <View
+      style={[styles.bubble, styles.typing, isPet ? petStyle : styles.other]}
+      accessible
+      accessibilityLabel={typingLabel}
+    >
+      <TypingDots color={isPet ? petInk : color.dark} size={7} />
     </View>
   ) : kind === 'photo' && mediaUrl ? (
-      <Pressable onPress={onPhotoPress} disabled={!onPhotoPress} accessibilityRole="image" accessibilityLabel={photoLabel ?? body ?? undefined} scaleTo={0.98}>
-        <Image source={{ uri: mediaUrl }} contentFit="cover" transition={150} style={[styles.photo, mine ? styles.mineRadius : styles.otherRadius]} />
-      </Pressable>
-    ) : kind === 'photo' && !body ? (
-      <View style={[styles.locked, mine ? styles.mineRadius : styles.otherRadius]} accessible accessibilityRole="image" accessibilityLabel={lockedPhotoLabel ?? photoLabel}>
-        <Glyph name="lock" size={22} color={color.white} />
-        {lockedPhotoLabel ? (
-          <Text variant="bodyBold" size={13} color={color.white} center>
-            {lockedPhotoLabel}
-          </Text>
-        ) : null}
-      </View>
-    ) : (
-      <View style={[styles.bubble, mine ? styles.mine : isPet ? petStyle : styles.other]}>
-        {petLook?.wash ? <LinearGradient colors={petLook.wash} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
-        {role === 'guard' ? <Glyph name="lock" size={13} color={color.mute} style={styles.guardLock} /> : null}
-        <Text variant="body" size={15} color={isPet ? color.white : color.dark} style={styles.bodyText}>
-          {body ?? ''}
-        </Text>
-      </View>
-    );
-  const pressable = onLongPress && !typing ? (
-    <Pressable onLongPress={onLongPress} delayLongPress={380} haptic={false} scaleTo={0.97} accessibilityRole="text" accessibilityHint={longPressHint} accessibilityActions={longPressHint ? [{ name: 'longpress', label: longPressHint }] : undefined} onAccessibilityAction={(e) => (e.nativeEvent.actionName === 'longpress' ? onLongPress() : undefined)}>
-      {content}
+    <Pressable
+      onPress={onPhotoPress}
+      disabled={!onPhotoPress}
+      accessibilityRole="image"
+      accessibilityLabel={photoLabel ?? body ?? undefined}
+      scaleTo={0.98}
+    >
+      <Image
+        source={{ uri: mediaUrl }}
+        contentFit="cover"
+        transition={150}
+        style={[styles.photo, mine ? styles.mineRadius : styles.otherRadius]}
+      />
     </Pressable>
+  ) : kind === 'photo' && !body ? (
+    <View
+      style={[styles.locked, mine ? styles.mineRadius : styles.otherRadius]}
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={lockedPhotoLabel ?? photoLabel}
+    >
+      <Glyph name="lock" size={22} color={color.white} />
+      {lockedPhotoLabel ? (
+        <Text variant="bodyBold" size={13} color={color.white} center>
+          {lockedPhotoLabel}
+        </Text>
+      ) : null}
+    </View>
   ) : (
-    content
+    <View style={[styles.bubble, mine ? styles.mine : isPet ? petStyle : styles.other]}>
+      {petLook?.wash ? (
+        <LinearGradient
+          colors={petLook.wash}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      ) : null}
+      {role === 'guard' ? <Glyph name="lock" size={13} color={color.mute} style={styles.guardLock} /> : null}
+      <Text
+        variant={isPet && role !== 'guard' ? 'bodyBold' : 'body'}
+        size={15}
+        color={isPet ? petInk : color.dark}
+        style={styles.bodyText}
+      >
+        {body ?? ''}
+      </Text>
+    </View>
   );
+  const pressable =
+    onLongPress && !typing ? (
+      <Pressable
+        onLongPress={onLongPress}
+        delayLongPress={380}
+        haptic={false}
+        scaleTo={0.97}
+        accessibilityRole="text"
+        accessibilityHint={longPressHint}
+        accessibilityActions={longPressHint ? [{ name: 'longpress', label: longPressHint }] : undefined}
+        onAccessibilityAction={(e) => (e.nativeEvent.actionName === 'longpress' ? onLongPress() : undefined)}
+      >
+        {content}
+      </Pressable>
+    ) : (
+      content
+    );
 
   return (
-    <Animated.View entering={fade ? FadeIn : undefined} style={[styles.row, mine ? styles.rowMine : null, entrance.row]}>
+    <Animated.View
+      entering={fade ? FadeIn : undefined}
+      style={[styles.row, mine ? styles.rowMine : null, entrance.row]}
+    >
       {!mine ? (
         <Animated.View style={[styles.avatarSlot, entrance.avatar]}>
           {continued ? null : isPet && pet ? (
             <Avatar size={AVATAR} pet={pet} hidden bg={avatarBg ?? petTint[pet.species]} />
           ) : person && hiddenFace ? (
-            <LinearGradient colors={[color.rose, color.violet]} start={{ x: 0.18, y: 0.05 }} end={{ x: 0.82, y: 0.95 }} style={styles.hiddenFace} />
+            <LinearGradient
+              colors={[color.rose, color.violet]}
+              start={{ x: 0.18, y: 0.05 }}
+              end={{ x: 0.82, y: 0.95 }}
+              style={styles.hiddenFace}
+            />
           ) : person ? (
-            <Avatar size={AVATAR} uri={person.avatarUrl} face={person.face} pet={person.pet} name={person.displayName} />
+            <Avatar
+              size={AVATAR}
+              uri={person.avatarUrl}
+              face={person.face}
+              pet={person.pet}
+              name={person.displayName}
+            />
           ) : null}
         </Animated.View>
       ) : null}
@@ -166,15 +244,35 @@ export const MessageBubble = memo(function MessageBubble({
             {name}
           </Text>
         ) : null}
-        <Animated.View style={[mine ? styles.originMine : styles.originOther, entrance.bubble, status ? styles.unconfirmed : null]}>{pressable}</Animated.View>
-        {mine && status ? <SendState status={status} sendingLabel={sendingLabel} failedLabel={failedLabel} onRetry={onRetry} /> : null}
+        <Animated.View
+          style={[
+            mine ? styles.originMine : styles.originOther,
+            entrance.bubble,
+            status ? styles.unconfirmed : null,
+          ]}
+        >
+          {pressable}
+        </Animated.View>
+        {mine && status ? (
+          <SendState
+            status={status}
+            sendingLabel={sendingLabel}
+            failedLabel={failedLabel}
+            onRetry={onRetry}
+          />
+        ) : null}
       </View>
     </Animated.View>
   );
 });
 
 /** Sous une bulle à soi pas encore confirmée : « Envoi… » (après un délai) ou « Pas envoyé · Réessayer ». */
-function SendState({ status, sendingLabel, failedLabel, onRetry }: Pick<MessageBubbleProps, 'sendingLabel' | 'failedLabel' | 'onRetry'> & { status: MessageStatus }) {
+function SendState({
+  status,
+  sendingLabel,
+  failedLabel,
+  onRetry,
+}: Pick<MessageBubbleProps, 'sendingLabel' | 'failedLabel' | 'onRetry'> & { status: MessageStatus }) {
   const [late, setLate] = useState(false);
   useEffect(() => {
     if (status !== 'sending') return;
@@ -184,7 +282,16 @@ function SendState({ status, sendingLabel, failedLabel, onRetry }: Pick<MessageB
   }, [status]);
   if (status === 'failed') {
     return (
-      <Pressable onPress={onRetry} disabled={!onRetry} accessibilityRole="button" accessibilityLabel={failedLabel} hitSlop={10} scaleTo={0.96} haptic="light" style={styles.state}>
+      <Pressable
+        onPress={onRetry}
+        disabled={!onRetry}
+        accessibilityRole="button"
+        accessibilityLabel={failedLabel}
+        hitSlop={10}
+        scaleTo={0.96}
+        haptic="light"
+        style={styles.state}
+      >
         <Text variant="bodyBold" size={12} color={color.coral}>
           {failedLabel ?? ''}
         </Text>
@@ -193,7 +300,11 @@ function SendState({ status, sendingLabel, failedLabel, onRetry }: Pick<MessageB
   }
   if (!late || !sendingLabel) return null;
   return (
-    <Animated.View entering={FadeIn.duration(motion.fast)} style={styles.state} accessibilityLiveRegion="polite">
+    <Animated.View
+      entering={FadeIn.duration(motion.fast)}
+      style={styles.state}
+      accessibilityLiveRegion="polite"
+    >
       <Text size={12} muted>
         {sendingLabel}
       </Text>
@@ -201,25 +312,42 @@ function SendState({ status, sendingLabel, failedLabel, onRetry }: Pick<MessageB
   );
 }
 
+/** Dégradé plein de chaque minimoa (V6-GChat : Nino jaune, Suzie rose, Gaston orange, Pia violette). */
+const PET_WASH = {
+  nino: gradient.accent,
+  suzie: gradient.rose,
+  gaston: gradient.orange,
+  pia: gradient.violet,
+} as const;
+
 /**
- * Bulle d'un minimoa selon son rôle (spéc §9) : jamais pleine comme celles des humains (jaune pour toi, blanche pour
- * l'autre), mais teintée de la couleur du minimoa. Brise-glace : voile coloré franc ; relance : bord pointillé ;
- * remarque : voile léger ; garde-fou : nuit calme, cadenas (visible par toi seul) ; annonce : voile léger.
+ * Bulle d'un minimoa (V6-GChat) : pleine, dans le dégradé du minimoa, texte sombre (blanc sur Pia). La relance garde un
+ * bord pointillé ; le garde-fou reste nuit calme avec un cadenas (visible par toi seul).
  */
-function roleLook(role: PetRoleLook | null, tint: string): { bubble: object; wash?: readonly [string, string] } {
-  switch (role) {
-    case 'icebreaker':
-      return { bubble: { borderColor: alpha(tint, 0.75), borderWidth: 1.5, backgroundColor: color.card }, wash: [alpha(tint, 0.4), alpha(tint, 0.14)] };
-    case 'nudge':
-      return { bubble: { borderColor: alpha(tint, 0.85), borderWidth: 1.5, borderStyle: 'dashed', backgroundColor: alpha(tint, 0.1) } };
-    case 'remark':
-    case 'event':
-      return { bubble: { borderColor: alpha(tint, 0.45), backgroundColor: color.card }, wash: [alpha(tint, 0.22), alpha(tint, 0.06)] };
-    case 'guard':
-      return { bubble: { borderColor: veil.glassStrong, backgroundColor: color.panel, paddingLeft: space.md + 18 } };
-    default:
-      return { bubble: {} };
-  }
+function roleLook(
+  role: PetRoleLook | null,
+  tint: string,
+  species: keyof typeof PET_WASH,
+): { bubble: object; wash?: readonly [string, string]; ink: string } {
+  const ink = species === 'pia' ? color.white : color.dark;
+  if (role === 'guard')
+    return {
+      bubble: { borderColor: veil.glassStrong, backgroundColor: color.panel, paddingLeft: space.md + 18 },
+      ink: color.white,
+    };
+  const wash = PET_WASH[species] as readonly [string, string];
+  if (role === 'nudge')
+    return {
+      bubble: {
+        borderColor: color.white,
+        borderWidth: 1.5,
+        borderStyle: 'dashed',
+        backgroundColor: 'transparent',
+      },
+      wash,
+      ink,
+    };
+  return { bubble: { borderWidth: 0, backgroundColor: tint }, wash, ink };
 }
 
 /**
@@ -262,17 +390,27 @@ function useEntrance(enter: MessageBubbleProps['enter'], typing: boolean) {
     }),
     avatar: useAnimatedStyle(() => {
       const k = enter === 'receive' && !reduced ? 1 - head.value : 0;
-      return { opacity: 1 - Math.max(0, k * 3 - 2), transform: [{ translateY: k * 22 }, { scale: 1 - 0.5 * k }] };
+      return {
+        opacity: 1 - Math.max(0, k * 3 - 2),
+        transform: [{ translateY: k * 22 }, { scale: 1 - 0.5 * k }],
+      };
     }),
     bubble: useAnimatedStyle(() => {
-      const base = enter && !reduced ? (enter === 'send' ? 0.82 + 0.18 * row.value : 0.4 + 0.6 * row.value) : 1;
+      const base =
+        enter && !reduced ? (enter === 'send' ? 0.82 + 0.18 * row.value : 0.4 + 0.6 * row.value) : 1;
       return { transform: [{ scale: base * pop.value }] };
     }),
   };
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'flex-end', gap: space.sm, maxWidth: '86%', alignSelf: 'flex-start' },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: space.sm,
+    maxWidth: '86%',
+    alignSelf: 'flex-start',
+  },
   rowMine: { alignSelf: 'flex-end', flexDirection: 'row-reverse' },
   avatarSlot: { width: AVATAR },
   // `linear-gradient(140deg, #FF8FC6, #8D5CF6)` (le flou de 1,5 px de la maquette est omis).
@@ -283,7 +421,13 @@ const styles = StyleSheet.create({
   bodyText: { lineHeight: 20 },
   other: { backgroundColor: color.white, borderBottomLeftRadius: 6 },
   mine: { backgroundColor: color.accent, borderBottomRightRadius: 6 },
-  petBubble: { backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass, borderBottomLeftRadius: 6, overflow: 'hidden' },
+  petBubble: {
+    backgroundColor: color.card,
+    borderWidth: 1,
+    borderColor: veil.glass,
+    borderBottomLeftRadius: 6,
+    overflow: 'hidden',
+  },
   photo: { width: 200, height: 250, borderRadius: radius.md + 2, backgroundColor: color.card },
   locked: {
     width: 200,
@@ -299,7 +443,14 @@ const styles = StyleSheet.create({
   },
   typing: { paddingVertical: space.sm + 3 },
   unconfirmed: { opacity: 0.72 },
-  state: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end', gap: space.xs, marginTop: space.xs, marginRight: space.xs },
+  state: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    gap: space.xs,
+    marginTop: space.xs,
+    marginRight: space.xs,
+  },
   guardLock: { position: 'absolute', left: space.md, top: space.sm + 4 },
   // Les bulles grandissent depuis leur coin pointu (vers le champ pour moi, vers l'avatar pour l'autre).
   originMine: { transformOrigin: '100% 100%' },

@@ -175,7 +175,6 @@ export default function RencontresScreen() {
           <Banner
             tone="info"
             title={sulking ? t.waveSulk(petName) : t.bofTitle(petName)}
-            text={t.moodText}
             actionLabel={t.sulkAction}
             onAction={toPet}
           />
