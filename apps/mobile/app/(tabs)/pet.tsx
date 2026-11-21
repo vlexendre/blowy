@@ -23,6 +23,8 @@ import {
   Banner,
   Button,
   CareBar,
+  CheminBadges,
+  cheminStackHeight,
   type CareProp,
   careProp,
   CheminPath,
@@ -38,10 +40,13 @@ import {
   formBodyPose,
   useHelloWave,
   usePetLure,
+  useTabBarSpace,
 } from '@blowy/ui';
 import { useFocusEffect, useIsFocused, useLocalSearchParams, useRouter } from 'expo-router';
 import { type ComponentRef, useCallback, useEffect, useRef, useState } from 'react';
-import { LayoutAnimation, Platform, RefreshControl, type ScrollView, useWindowDimensions, View } from 'react-native';
+import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform, RefreshControl, type ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { errorText, useLinks } from '@/features/links';
@@ -87,6 +92,8 @@ import { rituels as r } from '@/locales/rituels';
 
 /** Durée d'affichage d'une réplique après un soin (« miam. », « il n'a plus faim. »). */
 const SAID_MS = 3500;
+/** Hauteur de la carte du minimoa repliée (on descend dans le chemin). */
+const COMPACT_STAGE = 136;
 
 /**
  * Tout le chemin, façon Duolingo : un chapitre par univers, chacun sur au moins une page, du bas (chapitre 1) vers le
@@ -96,7 +103,7 @@ function chaptersBottomUp(cm: Parameters<typeof pathChapters>[0], page: number) 
   type Gap = { key: string; kind: 'gap'; height: number };
   return pathChapters(cm)
     .flatMap((ch, i): (ReturnType<typeof pathChapters>[number]['nodes'][number] | Gap)[] => {
-      const used = ch.nodes.reduce((sum, n) => sum + (n.kind === 'unit' ? 92 : 52), 0);
+      const used = cheminStackHeight(ch.nodes.map((n) => n.kind));
       return [...ch.nodes, { key: `gap:${i}`, kind: 'gap', height: Math.max(0, page - used) }];
     })
     .reverse();
@@ -120,8 +127,16 @@ export default function PetHome() {
   const scrolledTo = useRef(false);
   const blockTop = useRef(0);
   const pathTop = useRef(0);
-  const fixedHeight = useRef(0);
+  // Hauteur de la carte du haut (grande), mesurée : décide de la place visible du chemin.
+  const [fixedHeight, setFixedHeight] = useState(0);
   const [compact, setCompact] = useState(false);
+  const collapse = useSharedValue(0);
+  const insets = useSafeAreaInsets();
+  const tabBar = useTabBarSpace();
+  const [snaps, setSnaps] = useState<number[] | undefined>(undefined);
+  const winHeight = useWindowDimensions().height;
+  // Un chapitre = exactement ce qu'on voit du chemin sous la carte repliée.
+  const chapterPage = fixedHeight > 0 ? Math.max(320, winHeight - tabBar - (insets.top + 14 + fixedHeight - (256 - COMPACT_STAGE))) : 420;
   const location = useLocation(me.data);
   const push = usePushPermission();
   const [locationDenied, setLocationDenied] = useState(false);
@@ -147,7 +162,6 @@ export default function PetHome() {
   // Retour après 14 jours et plus : il t'accueille et dit ce qui s'est passé (fermé d'un tap).
   const [welcomeBack, setWelcomeBack] = useState(false);
   // Petit habitat de la scène (flou d'arrière-plan) : pas sur les petits écrans.
-  const winHeight = useWindowDimensions().height;
   const roomy = winHeight >= 700;
   const memories = usePrivateMemories();
   const lastPhoto = memories.data?.pages[0]?.items[0]?.url ?? null;
@@ -358,7 +372,7 @@ export default function PetHome() {
         onRefresh={refresh}
         onCollapse={(on) => {
           // En descendant, la carte du minimoa rapetisse ; en remontant (ou tirée vers le bas), elle regrandit.
-          LayoutAnimation.configureNext(LayoutAnimation.create(220, 'easeInEaseOut', 'scaleXY'));
+          collapse.value = withTiming(on ? 1 : 0, { duration: 320, easing: Easing.out(Easing.cubic) });
           setCompact(on);
         }}
       >
@@ -368,9 +382,15 @@ export default function PetHome() {
             top={6}
             {...scroll}
             scrollRef={scrollRef}
+            snapToOffsets={snaps}
             // La carte du minimoa reste en haut ; le chemin défile dessous.
             fixed={
-              <View onLayout={(e) => (fixedHeight.current = e.nativeEvent.layout.height)}>
+              <View
+                onLayout={(e) => {
+                  const h = e.nativeEvent.layout.height;
+                  setFixedHeight((x) => (h > x ? h : x));
+                }}
+              >
                 <PetStage
                   pet={p}
                   title={p.name.toUpperCase()}
@@ -404,13 +424,17 @@ export default function PetHome() {
                   reactionKey={reactionKey}
                   reactionItem={reactionItem}
                   mood={homeRest({ form: p.form, needs: p.needs, sulking, neglected }) ?? formBodyPose(p.form)}
-                  habitat={roomy && !compact ? { photo: lastPhoto, night: sleep.night } : null}
+                  habitat={roomy ? { photo: lastPhoto, night: sleep.night } : null}
                   petLabel={a.petA11yCuddle(p.name)}
                   onPetPress={onPetPress}
                   lure={lure}
                   meter={null}
-                  height={compact ? 136 : 256}
-                  petSize={compact ? 108 : 214}
+                  height={256}
+                  petSize={214}
+                  compactHeight={COMPACT_STAGE}
+                  compactPetSize={108}
+                  collapse={collapse}
+                  compact={compact}
                   care={
                     <CareBar
                       compact
@@ -433,6 +457,23 @@ export default function PetHome() {
                       }}
                     />
                   }
+                />
+                {/* Ligue et série : collées sous la carte, à droite. */}
+                <CheminBadges
+                  league={lg && myRank
+                          ? {
+                              tier: lg.tier,
+                              label: lp.league.pill(lp.league.tiers[lg.tier], myRank),
+                              accessibilityLabel: lp.league.pillA11y(lp.league.tiers[lg.tier], myRank),
+                              up: lg.toPromote === 0,
+                              onPress: () => router.push('/moi/ligue'),
+                            }
+                          : null}
+                  streak={cm ? {
+                        label: c.home.streak(cm.streak.current),
+                        accessibilityLabel: c.home.streakA11y(cm.streak.current),
+                        onPress: () => router.push('/pet/serie'),
+                      } : null}
                 />
               </View>
             }
@@ -487,7 +528,7 @@ export default function PetHome() {
                   />
                   <View onLayout={(e) => (pathTop.current = blockTop.current + e.nativeEvent.layout.y)}>
                     <CheminPath
-                      nodes={chaptersBottomUp(cm, Math.max(360, winHeight - 450)).map((n) =>
+                      nodes={chaptersBottomUp(cm, chapterPage).map((n) =>
                         n.kind === 'gap'
                           ? { key: n.key, kind: n.kind, height: n.height, accessibilityLabel: '' }
                           : n.kind === 'unit'
@@ -514,30 +555,34 @@ export default function PetHome() {
                       )}
                       onStart={view.kind === 'todo' || view.kind === 'bonus' ? openSeance : undefined}
                       pet={{ species: p.species, outfit: p.outfit, id: p.id }}
-                      league={
-                        lg && myRank
-                          ? {
-                              tier: lg.tier,
-                              label: lp.league.pill(lp.league.tiers[lg.tier], myRank),
-                              accessibilityLabel: lp.league.pillA11y(lp.league.tiers[lg.tier], myRank),
-                              up: lg.toPromote === 0,
-                              onPress: () => router.push('/moi/ligue'),
-                            }
-                          : null
-                      }
                       onCurrentY={(y) => {
-                        // Une fois par ouverture : l'écran se place sur l'étape du jour (les chapitres suivants sont au-dessus).
+                        // Une fois par ouverture : l'étape du jour au milieu de ce qu'on voit du chemin.
                         if (scrolledTo.current) return;
                         scrolledTo.current = true;
-                        setTimeout(
-                          () => scrollRef.current?.scrollTo({ y: Math.max(0, pathTop.current + y - fixedHeight.current - (winHeight - fixedHeight.current - 90) / 2), animated: false }),
-                          150,
-                        );
+                        setTimeout(() => {
+                          const top = insets.top + 6 + fixedHeight + 8;
+                          const bottom = winHeight - tabBar;
+                          scrollRef.current?.scrollTo({ y: Math.max(0, insets.top + pathTop.current + y - (top + bottom) / 2), animated: false });
+                        }, 150);
                       }}
-                      streak={{
-                        label: c.home.streak(cm.streak.current),
-                        accessibilityLabel: c.home.streakA11y(cm.streak.current),
-                        onPress: () => router.push('/pet/serie'),
+                      onGeometry={(geo) => {
+                        // Arrêts du défilement : chaque chapitre calé en haut et en bas de ce qu'on voit (carte repliée),
+                        // et l'étape du jour au milieu.
+                        const top = insets.top + 6 + fixedHeight - (256 - COMPACT_STAGE) + 8;
+                        const bottom = winHeight - tabBar;
+                        const at = (y: number) => insets.top + pathTop.current + y;
+                        const out: number[] = [];
+                        let start: number | null = null;
+                        for (const n of geo) {
+                          if (n.kind === 'gap') start = n.y - n.size / 2;
+                          if (n.kind === 'unit' && start !== null) {
+                            out.push(at(start) - top, at(n.y + n.size / 2) - bottom);
+                            start = null;
+                          }
+                          if (n.kind === 'current') out.push(at(n.y) - (top + bottom) / 2);
+                        }
+                        const next = [...new Set(out.filter((x) => x > 0).map(Math.round))].sort((x, y) => x - y);
+                        setSnaps((prev) => (prev && prev.join() === next.join() ? prev : next));
                       }}
                     />
                   </View>

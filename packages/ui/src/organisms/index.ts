@@ -151,7 +151,10 @@ export {
 export { UpdateBanner, type UpdateBannerProps } from './UpdateBanner';
 export {
   type CheminNodeKind,
+  CheminBadges,
+  type CheminBadgesProps,
   CheminPath,
+  cheminStackHeight,
   type CheminPathNode,
   type CheminPathProps,
   cheminSwing,

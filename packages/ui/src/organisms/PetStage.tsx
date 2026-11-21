@@ -2,7 +2,7 @@ import type { Mood, Shape } from '@blowy/domain';
 import { Image } from 'expo-image';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Platform, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, { interpolate, type SharedValue, useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
 
 import { type CareProp, PROP_RATIO, propImage } from '../assets/misc';
 import type { BodyPose, PetPose } from '../assets/pets';
@@ -111,6 +111,15 @@ export interface PetStageProps {
   /** En bas à gauche de la carte : la pastille des soins (`CareBar compact`, V6-GAccueil). */
   care?: ReactNode;
   style?: StyleProp<ViewStyle>;
+  /**
+   * Repli animé (0 : grande, 1 : petite). La carte passe de `height` à `compactHeight`, le minimoa de `petSize` à
+   * `compactPetSize` ; les actions (garde-robe, soins) et le décor s'effacent.
+   */
+  collapse?: SharedValue<number>;
+  compactHeight?: number;
+  compactPetSize?: number;
+  /** Repliée : les actions effacées ne se touchent plus. */
+  compact?: boolean;
 }
 
 /**
@@ -153,6 +162,10 @@ export function PetStage({
   meter,
   care,
   style,
+  collapse,
+  compactHeight,
+  compactPetSize,
+  compact = false,
 }: PetStageProps) {
   const reduced = useReducedMotion();
   const actor = useRef<PetActorHandle>(null);
@@ -181,18 +194,33 @@ export function PetStage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reaction, reactionKey, reduced, dim]);
   const night = useAnimatedStyle(() => ({ opacity: dim.value }));
+  const fold = useAnimatedStyle(() => {
+    const c = collapse?.value ?? 0;
+    return { height: interpolate(c, [0, 1], [height, compactHeight ?? height]) };
+  });
+  const petFold = useAnimatedStyle(() => {
+    const c = collapse?.value ?? 0;
+    return { transform: [{ scale: interpolate(c, [0, 1], [1, (compactPetSize ?? petSize) / petSize]) }] };
+  });
+  const fade = useAnimatedStyle(() => ({ opacity: interpolate(collapse?.value ?? 0, [0, 0.6], [1, 0], 'clamp') }));
 
   return (
+    <Animated.View style={[{ height }, fold, lifted && styles.lifted, style]}>
     <Panel
       gradient={gradient ?? (sulking ? 'wine' : speciesGradient[pet.species])}
       radius={32}
       padding="none"
       overflow={lifted}
-      style={[styles.panel, { height }, lifted && styles.lifted, style]}
+      style={[styles.panel, styles.fill]}
     >
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.night, night]} />
-      {habitat ? <Habitat petSize={petSize} photo={habitat.photo ?? null} night={!!habitat.night} /> : null}
-      <View ref={lure?.target} collapsable={false} style={[styles.pet, { width: petSize, height: Math.round(petSize / 0.9) }, sulking && styles.sulk]}>
+      {habitat ? (
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, fade]}>
+          <Habitat petSize={petSize} photo={habitat.photo ?? null} night={!!habitat.night} />
+        </Animated.View>
+      ) : null}
+      <Animated.View style={[styles.pet, styles.petOrigin, petFold]} pointerEvents="box-none">
+      <View ref={lure?.target} collapsable={false} style={[{ width: petSize, height: Math.round(petSize / 0.9) }, sulking && styles.sulk]}>
         <PetActor
           ref={actor}
           species={pet.species}
@@ -214,6 +242,7 @@ export function PetStage({
           accessibilityLabel={petLabel ?? pet.name}
         />
       </View>
+      </Animated.View>
       <View style={styles.head} pointerEvents="box-none">
         <View style={styles.name}>
           <Title text={title ?? pet.name.toUpperCase()} size={40} numberOfLines={1} />
@@ -222,7 +251,7 @@ export function PetStage({
           ) : null}
         </View>
         {action ? (
-          <View>
+          <Animated.View style={fade} pointerEvents={compact ? 'none' : 'auto'}>
             <Button
               label={action.label}
               onPress={action.onPress}
@@ -240,7 +269,7 @@ export function PetStage({
                 </Text>
               </View>
             ) : null}
-          </View>
+          </Animated.View>
         ) : null}
       </View>
       {said || button ? (
@@ -265,8 +294,13 @@ export function PetStage({
         </View>
       ) : null}
       {meter ? <View style={styles.meter}>{meter}</View> : null}
-      {care ? <View style={styles.care}>{care}</View> : null}
+      {care ? (
+        <Animated.View style={[styles.care, fade]} pointerEvents={compact ? 'none' : 'box-none'}>
+          {care}
+        </Animated.View>
+      ) : null}
     </Panel>
+    </Animated.View>
   );
 }
 
@@ -302,6 +336,9 @@ function Habitat({ petSize, photo, night }: { petSize: number; photo: string | n
 
 const styles = StyleSheet.create({
   panel: {},
+  fill: { flex: 1 },
+  // Le minimoa rapetisse vers le coin bas droit, là où il est posé.
+  petOrigin: { transformOrigin: 'right bottom' },
   decor: { position: 'absolute' },
   // Halo de la veilleuse : un disque jaune très transparent.
   glow: { position: 'absolute', backgroundColor: alpha(color.accent, 0.12) },

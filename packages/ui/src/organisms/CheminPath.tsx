@@ -49,6 +49,8 @@ export interface CheminPathProps {
   } | null;
   /** Hauteur (dans le chemin) de l'étape du jour, pour y faire défiler l'écran. */
   onCurrentY?: (y: number) => void;
+  /** Hauteur et taille de chaque case dans le chemin (pour caler le défilement sur les chapitres). */
+  onGeometry?: (nodes: { key: string; kind: CheminNodeKind; y: number; size: number }[]) => void;
 }
 
 /** Hauteur d'un bandeau d'univers dans le chemin (marges comprises). */
@@ -67,6 +69,12 @@ const NOW = 72;
 /** Écart vertical entre deux étapes (bord à bord, en relief compris). */
 const GAP = 4;
 const EDGE = 5;
+
+/** Hauteur qu'occupe une suite de cases dans le chemin (pour qu'un chapitre remplisse exactement une page). */
+export function cheminStackHeight(kinds: readonly CheminNodeKind[]): number {
+  const size = (k: CheminNodeKind) => (k === 'current' ? NOW : k === 'unit' ? UNIT : k === 'gap' ? 0 : NODE);
+  return kinds.reduce((sum, k) => sum + size(k), 0) + GAP * Math.max(0, kinds.length);
+}
 /** Amplitude des virages, en part de la demi-largeur utile. */
 const SWING = 0.42;
 
@@ -81,7 +89,7 @@ export function cheminSwing(i: number): number {
  * minimoa qui attend à côté, le coffre de l'unité, puis les verrouillées. La série en puce, en haut à droite.
  * Mouvement : l'étape du jour bat deux fois à l'arrivée (une vedette, rien en boucle) ; animations réduites : fixe.
  */
-export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, onCurrentY }: CheminPathProps) {
+export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, onCurrentY, onGeometry }: CheminPathProps) {
   const [width, setWidth] = useState(0);
   const onLayout = (e: LayoutChangeEvent) => setWidth(Math.round(e.nativeEvent.layout.width));
   const half = Math.max(0, width / 2 - NOW / 2 - space.sm);
@@ -111,6 +119,12 @@ export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, on
   const now = nowIndex >= 0 ? centers[nowIndex] : null;
   const pillTop = { top: now ? Math.max(0, now.y - 22) : 0 };
   const nowY = now?.y ?? null;
+  const geometry = width > 0 ? nodes.map((n, i) => `${n.key}:${n.kind}:${centers[i]?.y ?? 0}:${centers[i]?.size ?? 0}`).join('|') : '';
+  useEffect(() => {
+    if (!geometry) return;
+    onGeometry?.(nodes.map((n, i) => ({ key: n.key, kind: n.kind, y: centers[i]?.y ?? 0, size: centers[i]?.size ?? 0 })));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geometry]);
   useEffect(() => {
     if (nowY !== null && width > 0) onCurrentY?.(nowY);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -293,7 +307,46 @@ function StepDisc({ node, size, onPress }: { node: CheminPathNode; size: number;
   );
 }
 
+export interface CheminBadgesProps {
+  league?: CheminPathProps['league'];
+  streak?: CheminPathProps['streak'];
+}
+
+/** Ligue et série côte à côte (accueil : collées sous la carte du minimoa, à droite). */
+export function CheminBadges({ league, streak }: CheminBadgesProps) {
+  if (!league && !streak) return null;
+  return (
+    <View style={styles.badges}>
+      {league ? (
+        <Pressable
+          onPress={league.onPress}
+          accessibilityRole="button"
+          accessibilityLabel={league.accessibilityLabel}
+          style={[styles.streak, styles.badge, styles.leagueBorder, league.up ? styles.leagueUp : null]}
+          scaleTo={0.96}
+        >
+          <Image source={leagueImage(league.tier)} style={styles.leagueBadge} contentFit="contain" />
+          <Text variant="bodyHeavy" size={14} numberOfLines={1}>
+            {league.label}
+          </Text>
+        </Pressable>
+      ) : null}
+      {streak ? (
+        <Pressable onPress={streak.onPress} accessibilityRole="button" accessibilityLabel={streak.accessibilityLabel} style={[styles.streak, styles.badge]} scaleTo={0.96}>
+          <Icon name="flamme" size={18} />
+          <Text variant="bodyHeavy" size={14} numberOfLines={1}>
+            {streak.label}
+          </Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  badges: { flexDirection: 'row', justifyContent: 'flex-end', gap: space.sm, paddingTop: space.sm },
+  badge: { position: 'relative', top: undefined, right: undefined, height: 38 },
+  leagueBorder: { borderColor: alpha(color.violet, 0.55) },
   league: { right: undefined, left: 0, borderColor: alpha(color.violet, 0.55) },
   leagueUp: { borderColor: alpha(color.ok, 0.7) },
   leagueBadge: { width: 24, height: 24 },

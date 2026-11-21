@@ -40,6 +40,7 @@ export interface TabTemplateProps {
    * rapetisser : le contenu garde la place de sa plus grande taille, rien ne saute.
    */
   fixed?: ReactNode;
+  snapToOffsets?: number[];
 }
 
 /** Grand titre d'onglet (64 dans V6 ; 56 depuis la passe « densité »). */
@@ -68,6 +69,7 @@ export function TabTemplate({
   scrollRef,
   bottomExtra = 0,
   fixed,
+  snapToOffsets,
 }: TabTemplateProps) {
   const barSpace = useTabBarSpace();
   const insets = useSafeAreaInsets();
@@ -85,6 +87,7 @@ export function TabTemplate({
       onScroll={onScroll}
       scrollEventThrottle={scrollEventThrottle}
       scrollRef={scrollRef}
+      snapToOffsets={snapToOffsets}
       contentStyle={gutter !== undefined ? { paddingHorizontal: gutter } : undefined}
     >
       {brand || title || right ? (

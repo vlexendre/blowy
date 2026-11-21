@@ -59,6 +59,8 @@ export interface ScreenTemplateProps {
   onScroll?: ((e: NativeSyntheticEvent<NativeScrollEvent>) => void) | ComponentProps<typeof Animated.ScrollView>['onScroll'];
   scrollEventThrottle?: number;
   contentStyle?: StyleProp<ViewStyle>;
+  /** Arrêts du défilement (le chemin s'arrête sur ses chapitres et sur l'étape du jour). */
+  snapToOffsets?: number[];
   /**
    * Petit titre qui apparaît dans la barre du haut quand le grand titre est sorti de l'écran (corps défilant
    * sans `header`, ex. onglets). `compactAfter` : défilement (pt) à partir duquel il apparaît.
@@ -160,6 +162,7 @@ function ScreenBody({
   onScroll,
   scrollEventThrottle,
   contentStyle,
+  snapToOffsets,
   compactTitle,
   compactAfter = 72,
 }: ScreenTemplateProps) {
@@ -213,6 +216,10 @@ function ScreenBody({
       keyboardDismissMode="interactive"
       showsVerticalScrollIndicator={false}
       refreshControl={refresh}
+      snapToOffsets={snapToOffsets}
+      snapToStart={false}
+      snapToEnd={false}
+      decelerationRate={snapToOffsets ? 'fast' : 'normal'}
     >
       {bar}
       <View style={[styles.grow, pad, { paddingBottom: bodyBottom }, contentStyle]}>{children}</View>
