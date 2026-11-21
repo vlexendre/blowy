@@ -35,8 +35,19 @@ export const NOTIFICATION_KINDS = [
   'minimoa_news',
   /** Ton abonnement Minimoa+ : bienvenue, renouvellement annuel, paiement refusé, fin, relance unique un mois après. */
   'plus_account',
+  /**
+   * Ligue de la semaine (façon Duolingo, `step`) : `passed` (quelqu'un vient de te dépasser), `ending` (dimanche,
+   * dernières heures), `up`, `stay`, `down` (résultat du lundi).
+   */
+  'league',
 ] as const;
 export type NotificationKindKey = (typeof NOTIFICATION_KINDS)[number];
+/**
+ * Types montrés à l'app (réglages, données d'un push) : sans `league`, que les builds déjà servis ne savent pas lire
+ * (docs/VERSIONING.md). Une notification de ligue part avec le type `minimoa_news` dans ses données et son adresse.
+ */
+export const PUBLIC_NOTIFICATION_KINDS = NOTIFICATION_KINDS.filter((k): k is Exclude<NotificationKindKey, 'league'> => k !== 'league');
+export type PublicNotificationKind = Exclude<NotificationKindKey, 'league'>;
 
 // ── Priorités ─────────────────────────────────────────────────────────────────
 /**
@@ -61,7 +72,11 @@ export function notificationTierOf(kind: NotificationKindKey, step?: string | nu
     case 'trial_reminder':
       return 'urgent';
     case 'plus_account':
-      return step === 'billing_grace' || step === 'billing_retry' ? 'urgent' : step === 'winback' ? 'marketing' : 'news';
+      return step === 'billing_grace' || step === 'billing_retry'
+        ? 'urgent'
+        : step === 'winback'
+          ? 'marketing'
+          : 'news';
     case 'waved':
     case 'words_received':
     case 'group_invite':
@@ -82,6 +97,8 @@ export function notificationTierOf(kind: NotificationKindKey, step?: string | nu
     case 'first_steps':
     case 'minimoa_news':
       return 'news';
+    case 'league':
+      return step === 'passed' ? 'social' : step === 'ending' ? 'ritual' : 'news';
   }
 }
 
@@ -113,12 +130,16 @@ export const NOTIFICATION_CATEGORIES = {
   group_joined: ['group_joined'],
   group_lives: ['group_life_lost', 'group_asleep'],
   plus_account: ['plus_account'],
+  league: ['league'],
 } as const satisfies Record<string, readonly NotificationKindKey[]>;
 export type NotificationCategory = keyof typeof NOTIFICATION_CATEGORIES;
 
 /** Catégorie d'un type (null : obligatoire, rien à couper). */
 export function categoryOf(kind: NotificationKindKey): NotificationCategory | null {
-  for (const [cat, kinds] of Object.entries(NOTIFICATION_CATEGORIES) as [NotificationCategory, readonly NotificationKindKey[]][]) {
+  for (const [cat, kinds] of Object.entries(NOTIFICATION_CATEGORIES) as [
+    NotificationCategory,
+    readonly NotificationKindKey[],
+  ][]) {
     if (kinds.includes(kind)) return cat;
   }
   return null;
@@ -133,12 +154,18 @@ export const isQuietHour = (hour: number): boolean => hour >= QUIET_START_HOUR |
 /** Plafond global du jour (local) pour tout ce qui n'est ni direct ni urgent. */
 export const NOTIFICATION_DAILY_CAP = 3;
 /** Plafond par priorité (dans le plafond global). */
-export const TIER_DAILY_CAPS: Readonly<Partial<Record<NotificationTier, number>>> = { social: 3, ritual: 2, news: 1, marketing: 1 };
+export const TIER_DAILY_CAPS: Readonly<Partial<Record<NotificationTier, number>>> = {
+  social: 3,
+  ritual: 2,
+  news: 1,
+  marketing: 1,
+};
 /** Place gardée pour les gens : rappels de rituels et marketing ne prennent jamais la dernière place du jour. */
 export const PEOPLE_RESERVE = 1;
 export const isCappedTier = (tier: NotificationTier): boolean => TIER_DAILY_CAPS[tier] !== undefined;
 /** Hors plafond : messages directs, réponses à ton signe, échéances. */
-export const capExempt = (kind: NotificationKindKey, step?: string | null): boolean => !isCappedTier(notificationTierOf(kind, step));
+export const capExempt = (kind: NotificationKindKey, step?: string | null): boolean =>
+  !isCappedTier(notificationTierOf(kind, step));
 
 /** Un push par conversation (lien ou groupe) toutes les 5 minutes au plus. */
 export const MESSAGE_PUSH_COOLDOWN_MINUTES = 5;
@@ -152,7 +179,9 @@ const COOLDOWN_KINDS: readonly NotificationKindKey[] = ['message', 'group_messag
 
 /** Délai (minutes) avant le prochain push d'une conversation, d'après le nombre déjà envoyés aujourd'hui pour elle. */
 export const conversationCooldownMinutes = (sentTodayForConversation: number): number =>
-  sentTodayForConversation >= BUSY_CONVERSATION_PUSHES ? BUSY_CONVERSATION_COOLDOWN_MINUTES : MESSAGE_PUSH_COOLDOWN_MINUTES;
+  sentTodayForConversation >= BUSY_CONVERSATION_PUSHES
+    ? BUSY_CONVERSATION_COOLDOWN_MINUTES
+    : MESSAGE_PUSH_COOLDOWN_MINUTES;
 
 /**
  * Pendant les heures calmes : ces types sont reportés au matin (8 h) et regroupés (un seul envoi par type et par
@@ -178,14 +207,32 @@ export const DEFERRABLE_KINDS: readonly NotificationKindKey[] = [
 export const isDeferrable = (kind: NotificationKindKey): boolean => DEFERRABLE_KINDS.includes(kind);
 
 /** Une fois par jour local au plus (par conversation pour `link_in_danger`). */
-export const ONCE_A_DAY_KINDS: readonly NotificationKindKey[] = ['daily_challenge', 'needs_out', 'streak_in_danger', 'link_in_danger', 'your_turn', 'weekly_review', 'trial_reminder', 'together_proposal', 'first_steps', 'minimoa_news'];
+export const ONCE_A_DAY_KINDS: readonly NotificationKindKey[] = [
+  'daily_challenge',
+  'needs_out',
+  'streak_in_danger',
+  'link_in_danger',
+  'your_turn',
+  'weekly_review',
+  'trial_reminder',
+  'together_proposal',
+  'first_steps',
+  'minimoa_news',
+  'league',
+];
 export const isOnceADay = (kind: NotificationKindKey): boolean => ONCE_A_DAY_KINDS.includes(kind);
 
 /**
  * Rafales regroupées : après un envoi, les suivants du même type (et de la même conversation) pendant une heure
  * attendent la fin de l'heure et partent en un seul push (« Léa et 4 autres t'ont fait signe »).
  */
-export const GROUPED_KINDS: readonly NotificationKindKey[] = ['waved', 'words_received', 'new_encounter', 'group_joined', 'item_unlocked'];
+export const GROUPED_KINDS: readonly NotificationKindKey[] = [
+  'waved',
+  'words_received',
+  'new_encounter',
+  'group_joined',
+  'item_unlocked',
+];
 export const GROUP_WINDOW_MINUTES = 60;
 export const isGrouped = (kind: NotificationKindKey): boolean => GROUPED_KINDS.includes(kind);
 /** Clé du report des messages de la nuit : un seul push le matin pour toutes les conversations. */
@@ -241,15 +288,33 @@ export interface LocalTime {
 /** Jour et heure locaux d'un instant dans un fuseau (repli sur Europe/Paris si le fuseau est inconnu). */
 export function localTimeOf(now: Date, timeZone: string): LocalTime {
   const tz = isValidTimeZone(timeZone) ? timeZone : DEFAULT_NOTIFICATION_TIMEZONE;
-  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(now);
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(now);
   const get = (type: string): string => parts.find((p) => p.type === type)?.value ?? '00';
-  return { day: `${get('year')}-${get('month')}-${get('day')}`, hour: Number(get('hour')) % 24, minute: Number(get('minute')) };
+  return {
+    day: `${get('year')}-${get('month')}-${get('day')}`,
+    hour: Number(get('hour')) % 24,
+    minute: Number(get('minute')),
+  };
 }
 
 /** Décalage (ms) du fuseau à un instant : heure murale locale lue comme UTC, moins l'instant. */
 function offsetMs(at: Date, tz: string): number {
   const l = localTimeOf(at, tz);
-  const wall = Date.UTC(Number(l.day.slice(0, 4)), Number(l.day.slice(5, 7)) - 1, Number(l.day.slice(8, 10)), l.hour, l.minute);
+  const wall = Date.UTC(
+    Number(l.day.slice(0, 4)),
+    Number(l.day.slice(5, 7)) - 1,
+    Number(l.day.slice(8, 10)),
+    l.hour,
+    l.minute,
+  );
   return wall - Math.floor(at.getTime() / 60_000) * 60_000;
 }
 
@@ -258,7 +323,13 @@ export function nextLocalHour(now: Date, timeZone: string, hour: number): Date {
   const tz = isValidTimeZone(timeZone) ? timeZone : DEFAULT_NOTIFICATION_TIMEZONE;
   const l = localTimeOf(now, tz);
   for (let addDay = 0; addDay <= 2; addDay++) {
-    const wall = Date.UTC(Number(l.day.slice(0, 4)), Number(l.day.slice(5, 7)) - 1, Number(l.day.slice(8, 10)) + addDay, hour, 0);
+    const wall = Date.UTC(
+      Number(l.day.slice(0, 4)),
+      Number(l.day.slice(5, 7)) - 1,
+      Number(l.day.slice(8, 10)) + addDay,
+      hour,
+      0,
+    );
     // Deux passes pour tomber juste autour d'un changement d'heure.
     let guess = wall - offsetMs(now, tz);
     guess = wall - offsetMs(new Date(guess), tz);
@@ -310,7 +381,17 @@ export interface NotificationInput {
   link?: string | null;
 }
 
-export type NotificationSkipReason = 'disabled' | 'not_opted_in' | 'expired' | 'foreground' | 'window' | 'once_a_day' | 'quiet' | 'decay' | 'cap' | 'cooldown';
+export type NotificationSkipReason =
+  | 'disabled'
+  | 'not_opted_in'
+  | 'expired'
+  | 'foreground'
+  | 'window'
+  | 'once_a_day'
+  | 'quiet'
+  | 'decay'
+  | 'cap'
+  | 'cooldown';
 
 export type NotificationDecision =
   | { action: 'send' }
@@ -338,17 +419,20 @@ export function decideNotification(i: NotificationInput): NotificationDecision {
   // Premier plan : la personne est dans l'app. Rien sur la conversation ouverte ; seuls les messages d'une autre
   // conversation et les échéances passent (l'app les montre en bandeau discret, sans son).
   if (i.foreground) {
-    if (tier === 'direct' && i.key !== null && i.foreground.key === i.key) return { action: 'skip', reason: 'foreground' };
+    if (tier === 'direct' && i.key !== null && i.foreground.key === i.key)
+      return { action: 'skip', reason: 'foreground' };
     if (tier !== 'direct' && tier !== 'urgent') return { action: 'skip', reason: 'foreground' };
   }
 
   const local = localTimeOf(i.now, i.timeZone);
   const window = LOCAL_WINDOWS[i.kind];
-  if (window && !i.fromQueue && (local.hour < window[0] || local.hour >= window[1])) return { action: 'skip', reason: 'window' };
+  if (window && !i.fromQueue && (local.hour < window[0] || local.hour >= window[1]))
+    return { action: 'skip', reason: 'window' };
 
   const sent = i.history.filter((h) => h.status === 'sent');
   const sentToday = sent.filter((h) => h.localDay === local.day);
-  if (isOnceADay(i.kind) && sentToday.some((h) => h.kind === i.kind && h.key === i.key)) return { action: 'skip', reason: 'once_a_day' };
+  if (isOnceADay(i.kind) && sentToday.some((h) => h.kind === i.kind && h.key === i.key))
+    return { action: 'skip', reason: 'once_a_day' };
 
   const quiet = isQuietHour(local.hour);
   if (!i.fromQueue) {
@@ -362,14 +446,20 @@ export function decideNotification(i: NotificationInput): NotificationDecision {
     if (quiet) {
       const morning = nextLocalHour(i.now, i.timeZone, QUIET_END_HOUR);
       // Échéance avant le matin : on prévient tout de suite (seul cas où les heures calmes cèdent).
-      if (tier === 'urgent' && i.expiresAt && Date.parse(i.expiresAt) <= morning.getTime()) return { action: 'send' };
+      if (tier === 'urgent' && i.expiresAt && Date.parse(i.expiresAt) <= morning.getTime())
+        return { action: 'send' };
       if (isDeferrable(i.kind)) return { action: 'defer', until: morning, bucket, reason: 'quiet' };
       return { action: 'skip', reason: 'quiet' };
     }
     if (isGrouped(i.kind)) {
       const last = latest(sent.filter((h) => h.kind === i.kind && h.key === i.key));
       if (last !== null && now - last < GROUP_WINDOW_MINUTES * MINUTE) {
-        return { action: 'defer', until: new Date(last + GROUP_WINDOW_MINUTES * MINUTE), bucket: i.key, reason: 'group' };
+        return {
+          action: 'defer',
+          until: new Date(last + GROUP_WINDOW_MINUTES * MINUTE),
+          bucket: i.key,
+          reason: 'group',
+        };
       }
     }
   } else if (quiet && tier !== 'urgent') {
@@ -389,19 +479,29 @@ export function decideNotification(i: NotificationInput): NotificationDecision {
   if (isCappedTier(tier)) {
     const counted = sentToday.filter((h) => isCappedTier(notificationTierOf(h.kind)));
     if (counted.length >= NOTIFICATION_DAILY_CAP) return { action: 'skip', reason: 'cap' };
-    if (counted.filter((h) => notificationTierOf(h.kind) === tier).length >= (TIER_DAILY_CAPS[tier] ?? NOTIFICATION_DAILY_CAP)) return { action: 'skip', reason: 'cap' };
-    if ((tier === 'ritual' || tier === 'marketing') && counted.length >= NOTIFICATION_DAILY_CAP - PEOPLE_RESERVE) return { action: 'skip', reason: 'cap' };
+    if (
+      counted.filter((h) => notificationTierOf(h.kind) === tier).length >=
+      (TIER_DAILY_CAPS[tier] ?? NOTIFICATION_DAILY_CAP)
+    )
+      return { action: 'skip', reason: 'cap' };
+    if (
+      (tier === 'ritual' || tier === 'marketing') &&
+      counted.length >= NOTIFICATION_DAILY_CAP - PEOPLE_RESERVE
+    )
+      return { action: 'skip', reason: 'cap' };
   }
 
   if (COOLDOWN_KINDS.includes(i.kind) && !i.fromQueue) {
     const same = sent.filter((h) => h.kind === i.kind && h.key === i.key);
     const todayCount = same.filter((h) => h.localDay === local.day).length;
     const last = latest(same);
-    if (last !== null && now - last < conversationCooldownMinutes(todayCount) * MINUTE) return { action: 'skip', reason: 'cooldown' };
+    if (last !== null && now - last < conversationCooldownMinutes(todayCount) * MINUTE)
+      return { action: 'skip', reason: 'cooldown' };
     // « Léa t'a répondu » vient de partir pour ce lien : son premier message ne sonne pas une seconde fois.
     if (i.kind === 'message' && i.link) {
       const created = latest(sent.filter((h) => h.kind === 'new_encounter' && h.link === i.link));
-      if (created !== null && now - created < MESSAGE_PUSH_COOLDOWN_MINUTES * MINUTE) return { action: 'skip', reason: 'cooldown' };
+      if (created !== null && now - created < MESSAGE_PUSH_COOLDOWN_MINUTES * MINUTE)
+        return { action: 'skip', reason: 'cooldown' };
     }
   }
   return { action: 'send' };
@@ -422,7 +522,9 @@ function latest(entries: readonly NotificationHistoryEntry[]): number | null {
  * On montre le plus important (priorité, puis le plus ancien) et on compte les autres (« Et 2 autres nouvelles »).
  * Rend l'indice du report à montrer, ou -1 pour une liste vide.
  */
-export function pickDigestLead(entries: readonly { kind: NotificationKindKey; step?: string | null; at: string }[]): number {
+export function pickDigestLead(
+  entries: readonly { kind: NotificationKindKey; step?: string | null; at: string }[],
+): number {
   let best = -1;
   entries.forEach((e, idx) => {
     if (best < 0) {
@@ -446,12 +548,21 @@ const MAX_GROUPED_PEOPLE = 50;
  * (`n`) et les autres personnes (`others`, d'après `about`, l'identifiant de la personne concernée ; à défaut, les
  * événements). Exemple : 5 signes de 4 personnes → « Léa et 3 autres t'ont fait signe ».
  */
-export function mergeNotificationVars(prev: Readonly<Record<string, string>>, next: Readonly<Record<string, string>>): Record<string, string> {
+export function mergeNotificationVars(
+  prev: Readonly<Record<string, string>>,
+  next: Readonly<Record<string, string>>,
+): Record<string, string> {
   const people = new Set((prev.people ?? prev.about ?? '').split(',').filter(Boolean));
   if (next.about) people.add(next.about);
   const n = (Number(prev.n) || 1) + 1;
   const others = people.size > 0 ? people.size - 1 : n - 1;
-  const out: Record<string, string> = { ...prev, n: String(n), others: String(others), ...(next.count ? { count: next.count } : {}) };
+  const out: Record<string, string> = {
+    ...prev,
+    n: String(n),
+    others: String(others),
+    ...(next.count ? { count: next.count } : {}),
+    ...(next.text ? { text: next.text } : {}),
+  };
   if (people.size > 0) out.people = [...people].slice(0, MAX_GROUPED_PEOPLE).join(',');
   // Plusieurs conversations dans le paquet : le lien profond mène à la liste.
   if (next.linkId && prev.linkId && next.linkId !== prev.linkId) out.multi = '1';
@@ -476,7 +587,9 @@ export type PersonEmailKind =
  * double : l'e-mail ne part que si la personne n'a aucun appareil qui reçoit les push (une seule notification par
  * événement et par personne).
  */
-export const EMAIL_CHANNEL: Readonly<Record<PersonEmailKind, { mode: 'always' } | { mode: 'fallback'; push: NotificationKindKey }>> = {
+export const EMAIL_CHANNEL: Readonly<
+  Record<PersonEmailKind, { mode: 'always' } | { mode: 'fallback'; push: NotificationKindKey }>
+> = {
   welcome: { mode: 'always' },
   wave_received: { mode: 'fallback', push: 'waved' },
   link_created: { mode: 'fallback', push: 'new_encounter' },
@@ -489,9 +602,11 @@ export const EMAIL_CHANNEL: Readonly<Record<PersonEmailKind, { mode: 'always' } 
 };
 
 /** L'e-mail doit-il partir ? Un e-mail de repli respecte aussi le réglage du push qu'il remplace. */
-export function emailAllowed(kind: PersonEmailKind, ctx: { hasActivePush: boolean; disabledKinds: readonly NotificationKindKey[] }): boolean {
+export function emailAllowed(
+  kind: PersonEmailKind,
+  ctx: { hasActivePush: boolean; disabledKinds: readonly NotificationKindKey[] },
+): boolean {
   const rule = EMAIL_CHANNEL[kind];
   if (rule.mode === 'always') return true;
   return !ctx.hasActivePush && !ctx.disabledKinds.includes(rule.push);
 }
-

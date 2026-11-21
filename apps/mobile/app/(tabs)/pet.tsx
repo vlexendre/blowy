@@ -321,6 +321,8 @@ export default function PetHome() {
   const cm = chemin.data;
   const view = cm ? todayView(cm) : null;
   const step = cm ? stepOf(cm) : { step: 0, steps: 0 };
+  const firstUnit = cm?.units[0]?.title ?? null;
+  const firstUnitDone = !!cm && cm.units[0]?.state === 'done';
   const openSeance = () => router.push('/chemin/seance');
   // Un seul gros bouton, en bas : la chose à faire maintenant (un bonjour reçu, un message, la séance, sinon la journée faite).
   const now =
@@ -488,11 +490,22 @@ export default function PetHome() {
                               key: n.key,
                               kind: n.kind,
                               index: (n.unitIndex ?? 1) - 1,
-                              subtitle: c.home.unitKicker(n.unitIndex ?? 1, n.done ?? 0, n.total ?? 0),
+                              // Le premier univers est fait pendant l'inscription (le test) : on le dit, sinon on ne comprend pas.
+                              subtitle:
+                                n.unitIndex === 1 && n.done === n.total
+                                  ? c.home.unitSignup
+                                  : c.home.unitKicker(n.unitIndex ?? 1, n.done ?? 0, n.total ?? 0),
                               title: n.title,
                               accessibilityLabel: `${c.home.unitKicker(n.unitIndex ?? 1, n.done ?? 0, n.total ?? 0)}, ${n.title}`,
                             }
-                          : { key: n.key, kind: n.kind, accessibilityLabel: nodeLabel(n) },
+                          : {
+                              key: n.key,
+                              kind: n.kind,
+                              accessibilityLabel:
+                                n.kind === 'done' && firstUnitDone && n.unitTitle === firstUnit
+                                  ? c.home.nodeSignup(n.title)
+                                  : nodeLabel(n),
+                            },
                       )}
                       onCurrentY={(y) => {
                         // Une seule fois par ouverture : l'écran descend jusqu'à l'étape du jour si elle est loin.

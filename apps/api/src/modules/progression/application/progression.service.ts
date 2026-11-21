@@ -18,7 +18,9 @@ import {
   weeklySparks,
 } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
-import { CLOCK, PETS } from '../../../shared/tokens';
+import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
+import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
+import type { ProfilesRepository } from '../../me/ports';
 import type { PetsRepository } from '../../pets/ports';
 import { RITUAL_STATES } from '../../rituels/tokens';
 import type { RitualStatesRepository } from '../../rituels/ports';
@@ -44,7 +46,51 @@ export class ProgressionService {
     @Inject(Audience) private readonly audience: Audience,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(LEAGUE_STANDINGS) private readonly standings: LeagueStandingsRepository,
+    @Inject(NOTIFIER) private readonly notifier: Notifier,
+    @Inject(PROFILES) private readonly profiles: ProfilesRepository,
   ) {}
+
+  /**
+   * Après un gain d'étincelles (séance, bonjour…) : prévient chaque personne du groupe que tu viens de dépasser
+   * (« Léa vient de te dépasser », façon Duolingo ; une notification de ligue par jour au plus). Ne lève jamais.
+   */
+  async afterSparks(userId: string, gained: number): Promise<void> {
+    if (gained <= 0) return;
+    try {
+      const p = await this.get(userId);
+      const me = p.league.rows.find((r) => r.me);
+      if (!me) return;
+      const before = me.sparks - gained;
+      const passed = p.league.rows.filter((r) => !r.me && r.sparks >= before && r.sparks < me.sparks);
+      if (passed.length === 0) return;
+      const name = (await this.profiles.findById(userId))?.displayName ?? '';
+      for (const r of passed) {
+        await this.notifier.notify(r.userId, 'league', {
+          step: 'passed',
+          name,
+          count: String(r.rank),
+          tier: p.league.tier,
+          about: userId,
+        });
+      }
+    } catch {
+      // Une notification manquée ne casse jamais la séance.
+    }
+  }
+
+  /** Dimanche après-midi : « dernières heures », ton rang et ce qui manque pour la zone de montée. */
+  async remindEnding(userId: string): Promise<boolean> {
+    const p = await this.get(userId);
+    const me = p.league.rows.find((r) => r.me);
+    if (!me || me.sparks === 0 || p.league.toPromote == null) return false;
+    await this.notifier.notify(userId, 'league', {
+      step: 'ending',
+      count: String(me.rank),
+      more: String(p.league.toPromote),
+      tier: p.league.tier,
+    });
+    return true;
+  }
 
   /** Le groupe d'une ligue : les voisins de la même ligue (au moins 5), sinon tous les voisins ; toi compris. */
   private groupOf(

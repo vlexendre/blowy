@@ -29,4 +29,8 @@ export interface LeagueStanding {
 export interface LeagueStandingsRepository {
   find(userIds: readonly string[]): Promise<Map<string, LeagueStanding>>;
   save(standing: LeagueStanding): Promise<void>;
+  /** Ligues pas encore soldées (semaine avant `week`), par lots, dans l'ordre des personnes. */
+  listStale(week: Day, after: string | null, limit: number): Promise<LeagueStanding[]>;
+  /** Ligues de la semaine `week`, par lots, dans l'ordre des personnes. */
+  listWeek(week: Day, after: string | null, limit: number): Promise<LeagueStanding[]>;
 }

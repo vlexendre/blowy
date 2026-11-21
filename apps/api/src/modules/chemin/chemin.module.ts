@@ -1,3 +1,4 @@
+import { ProgressionModule } from '../progression/progression.module';
 import { Module } from '@nestjs/common';
 import { EncountersModule } from '../encounters/encounters.module';
 import { DAILY_PUSH_SOURCE } from '../notifications/ports';
@@ -17,9 +18,17 @@ import { CheminController } from './interface/chemin.controller';
  * (port `DAILY_PUSH_SOURCE` : séance du jour pour les apps qui ont Ton chemin, défi du jour sinon).
  */
 @Module({
-  imports: [RituelsModule, EncountersModule],
+  imports: [RituelsModule, EncountersModule, ProgressionModule],
   controllers: [CheminController, CheminAdminController],
-  providers: [CheminSeedOnBoot, CheminContentService, CheminService, ProfilService, CheminAdmin, CheminDailyPush, { provide: DAILY_PUSH_SOURCE, useExisting: CheminDailyPush }],
+  providers: [
+    CheminSeedOnBoot,
+    CheminContentService,
+    CheminService,
+    ProfilService,
+    CheminAdmin,
+    CheminDailyPush,
+    { provide: DAILY_PUSH_SOURCE, useExisting: CheminDailyPush },
+  ],
   exports: [CheminService],
 })
 export class CheminModule {}

@@ -3,6 +3,7 @@
  * réglages par type, et ouverture du bon écran quand on touche une notification (même app fermée).
  * Sur le web : rien n'est enregistré (`push.web.ts`), l'écran des réglages reste utilisable.
  */
+import { newClientId } from '../chat/outbox';
 import type { ApiClient } from '@blowy/api-client';
 import { type NotificationSettings, type NotificationSettingsBody, PushDataZ } from '@blowy/contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -23,6 +24,8 @@ import {
   getPermission,
   getPushToken,
   MUTE_ACTION,
+  REPLY_ACTION,
+  registerReplyCategory,
   onTap,
   type PushPermission,
   pushPlatform,
@@ -92,7 +95,10 @@ const isOpenNow = (data: unknown): boolean => {
   const parsed = PushDataZ.safeParse(data);
   if (!parsed.success) return false;
   const open = openConversation(currentPath);
-  return (parsed.data.linkId !== undefined && open.linkId === parsed.data.linkId) || (parsed.data.groupId !== undefined && open.groupId === parsed.data.groupId);
+  return (
+    (parsed.data.linkId !== undefined && open.linkId === parsed.data.linkId) ||
+    (parsed.data.groupId !== undefined && open.groupId === parsed.data.groupId)
+  );
 };
 
 /** La présence est renouvelée toutes les 2 minutes au premier plan (l'API la garde 150 s). */
@@ -114,12 +120,16 @@ export function useNotificationsBridge(gate: Gate): void {
   useEffect(() => {
     setForegroundHandler(isOpenNow);
     void registerMuteCategory(moi.notifications.mute);
+    void registerReplyCategory({ ...moi.notifications.reply, mute: moi.notifications.mute });
   }, []);
 
   // Présence : au premier plan, à chaque changement d'écran, toutes les 2 minutes ; « en arrière-plan » en partant.
   useEffect(() => {
     if (!ready || !pushPlatform()) return;
-    const send = (foreground: boolean) => void api.notifications.presence({ foreground, ...(foreground ? openConversation(pathname) : {}) }).catch(() => undefined);
+    const send = (foreground: boolean) =>
+      void api.notifications
+        .presence({ foreground, ...(foreground ? openConversation(pathname) : {}) })
+        .catch(() => undefined);
     if (AppState.currentState === 'active') send(true);
     const timer = setInterval(() => {
       if (AppState.currentState === 'active') send(true);
@@ -148,7 +158,7 @@ export function useNotificationsBridge(gate: Gate): void {
   const handled = useRef(new Set<string>());
   useEffect(() => {
     if (!ready) return;
-    const open = (tap: { data: unknown; id: string; action?: string }) => {
+    const open = (tap: { data: unknown; id: string; action?: string; text?: string }) => {
       if (handled.current.has(tap.id)) return;
       handled.current.add(tap.id);
       const parsed = PushDataZ.safeParse(tap.data);
@@ -159,12 +169,27 @@ export function useNotificationsBridge(gate: Gate): void {
         if (path) router.push(path);
         return;
       }
+      // « Répondre » depuis la notification d'un message : la réponse part, puis la conversation s'ouvre.
+      const linkId = parsed.data.linkId;
+      if (tap.action === REPLY_ACTION && linkId) {
+        const body = tap.text?.trim();
+        if (body)
+          void api.links.send(linkId, { body, clientId: newClientId() }).then(
+            () => void qc.invalidateQueries(),
+            () => undefined,
+          );
+        router.push(`/link/${linkId}`);
+        return;
+      }
       if (tap.action === MUTE_ACTION) {
         // Désinscription en un geste : toute la catégorie du type (la même ligne que dans Moi › Notifications).
         const category = categoryOf(parsed.data.kind);
         if (category) {
           const kinds = Object.fromEntries(NOTIFICATION_CATEGORIES[category].map((k) => [k, false]));
-          void api.notifications.updateSettings({ kinds }).then((s) => qc.setQueryData(notificationKeys.settings, s), () => undefined);
+          void api.notifications.updateSettings({ kinds }).then(
+            (s) => qc.setQueryData(notificationKeys.settings, s),
+            () => undefined,
+          );
         }
         router.push('/moi/notifications');
         return;
@@ -205,8 +230,14 @@ export function useUpdateNotificationSettings() {
       const before = qc.getQueryData<NotificationSettings>(notificationKeys.settings);
       if (before) {
         const kinds = { ...before.kinds };
-        for (const [k, v] of Object.entries(body.kinds ?? {})) if (typeof v === 'boolean') kinds[k as keyof typeof kinds] = v;
-        qc.setQueryData<NotificationSettings>(notificationKeys.settings, { ...before, kinds, morningHour: body.morningHour ?? before.morningHour, marketing: body.marketing ?? before.marketing });
+        for (const [k, v] of Object.entries(body.kinds ?? {}))
+          if (typeof v === 'boolean') kinds[k as keyof typeof kinds] = v;
+        qc.setQueryData<NotificationSettings>(notificationKeys.settings, {
+          ...before,
+          kinds,
+          morningHour: body.morningHour ?? before.morningHour,
+          marketing: body.marketing ?? before.marketing,
+        });
       }
       return { before };
     },
@@ -264,7 +295,10 @@ const PUSH_INTRO_DELAY_MS = 1600;
 export function usePushIntroOnce(permission: PushPermission | null, when: boolean): void {
   const seen = usePushIntro((s) => s.seenAt !== null);
   const [hydrated, setHydrated] = useState(() => usePushIntro.persist.hasHydrated());
-  useEffect(() => (hydrated ? undefined : usePushIntro.persist.onFinishHydration(() => setHydrated(true))), [hydrated]);
+  useEffect(
+    () => (hydrated ? undefined : usePushIntro.persist.onFinishHydration(() => setHydrated(true))),
+    [hydrated],
+  );
   useEffect(() => {
     if (!hydrated || seen || !when || permission !== 'undetermined') return;
     const id = setTimeout(() => {

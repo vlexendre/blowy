@@ -9,11 +9,16 @@ const usHour = (h: number): string => `${h % 12 === 0 ? 12 : h % 12} ${h % 24 < 
 export const moi = messages({
   fr: {
     tab: {
-      title: (name: string, pet: string) => [{ text: up(name) }, { text: '.\n', dim: true }, { text: `ET ${up(pet)}.`, dim: true }],
+      title: (name: string, pet: string) => [
+        { text: up(name) },
+        { text: '.\n', dim: true },
+        { text: `ET ${up(pet)}.`, dim: true },
+      ],
       /** Lu sur tout l'en-tête (photo, noms). Ce que les autres voient de ta photo s'explique sur Mon compte. */
       heroLabel: (name: string, pet: string) => `${name} et ${pet}. Touche pour changer ton nom ou ta photo.`,
       /** Sous les noms : depuis combien de jours vous êtes ensemble (1 le premier jour). */
-      together: (n: number) => (n <= 1 ? 'Premier jour ensemble' : `${n} ${plural(n, { one: 'jour', other: 'jours' })} ensemble`),
+      together: (n: number) =>
+        n <= 1 ? 'Premier jour ensemble' : `${n} ${plural(n, { one: 'jour', other: 'jours' })} ensemble`,
       wordsTitle: 'Décris-moi en 3 mots',
       /** Puce une fois des mots reçus. */
       wordsCount: (n: number) => `${n} ${plural(n, { one: 'réponse', other: 'réponses' })}`,
@@ -35,7 +40,10 @@ export const moi = messages({
       plusCta: 'Essayer',
       plusSoonCta: 'Voir',
       rows: {
-        discreet: { title: 'Mode discret', subtitle: (on: boolean) => (on ? 'Invisible sur la carte' : 'Visible, position arrondie') },
+        discreet: {
+          title: 'Mode discret',
+          subtitle: (on: boolean) => (on ? 'Invisible sur la carte' : 'Visible, position arrondie'),
+        },
         ia: { title: 'L’IA et toi' },
         settings: { title: 'Réglages' },
       },
@@ -45,16 +53,34 @@ export const moi = messages({
     },
     reglages: {
       title: 'RÉGLAGES',
-      sections: { account: 'Compte', privacy: 'Confidentialité', app: 'L’app', help: 'Aide et infos légales' },
+      sections: {
+        account: 'Compte',
+        privacy: 'Confidentialité',
+        app: 'L’app',
+        help: 'Aide et infos légales',
+      },
       rows: {
         account: { title: 'Mon compte', subtitle: (name: string) => name },
         identity: { title: 'Qui tu es' },
-        plus: { title: 'Minimoa+', subtitle: (member: boolean) => (member ? 'Abonnement actif' : 'Pas encore de Minimoa+') },
+        plus: {
+          title: 'Minimoa+',
+          subtitle: (member: boolean) => (member ? 'Abonnement actif' : 'Pas encore de Minimoa+'),
+        },
         notifications: { title: 'Notifications' },
-        location: { title: 'Ma position', subtitle: (on: boolean) => (on ? 'Activée, arrondie à 300 m environ' : 'Désactivée') },
+        location: {
+          title: 'Ma position',
+          subtitle: (on: boolean) => (on ? 'Activée, arrondie à 300 m environ' : 'Désactivée'),
+        },
         /** Statistiques d’usage (Amplitude, États-Unis) : seulement avec l’accord de la personne. */
-        analytics: { title: 'Statistiques d’usage', subtitle: (on: boolean) => (on ? 'Tu participes' : 'Désactivées') },
-        blocked: { title: 'Personnes bloquées', subtitle: (n: number | null) => (n === null ? ' ' : n === 0 ? 'Personne' : n === 1 ? '1 personne' : `${n} personnes`) },
+        analytics: {
+          title: 'Statistiques d’usage',
+          subtitle: (on: boolean) => (on ? 'Tu participes' : 'Désactivées'),
+        },
+        blocked: {
+          title: 'Personnes bloquées',
+          subtitle: (n: number | null) =>
+            n === null ? ' ' : n === 0 ? 'Personne' : n === 1 ? '1 personne' : `${n} personnes`,
+        },
         language: { title: 'Langue', subtitle: (name: string) => name },
         rules: { title: 'Règles de la communauté' },
         safety: { title: 'Sécurité et signalement' },
@@ -66,9 +92,16 @@ export const moi = messages({
         signOut: { title: 'Se déconnecter' },
         delete: { title: 'Supprimer mon compte' },
       },
-      languageNames: { fr: 'Français', en: 'English', es: 'Español', pt: 'Português', nl: 'Nederlands' } as Record<string, string>,
+      languageNames: {
+        fr: 'Français',
+        en: 'English',
+        es: 'Español',
+        pt: 'Português',
+        nl: 'Nederlands',
+      } as Record<string, string>,
       languageTitle: 'Langue',
-      languageText: 'Minimoa suit la langue de ton téléphone. Pour la changer, va dans Réglages › Minimoa › Langue (ou dans la langue du téléphone).',
+      languageText:
+        'Minimoa suit la langue de ton téléphone. Pour la changer, va dans Réglages › Minimoa › Langue (ou dans la langue du téléphone).',
       languageWeb: 'Ici, Minimoa suit la langue de ton navigateur.',
       languageOpen: 'Ouvrir les Réglages',
       signOutConfirmTitle: 'Se déconnecter ?',
@@ -78,12 +111,19 @@ export const moi = messages({
     },
     notifications: {
       title: 'NOTIFS',
-      banner: (cap: number) => `${cap} notifications par jour au plus, hors messages. Plusieurs d’un coup arrivent en une seule. Rien quand tu es dans l’app. Pas de pub, sauf si tu le demandes.`,
+      banner: (cap: number) =>
+        `${cap} notifications par jour au plus, hors messages. Plusieurs d’un coup arrivent en une seule. Rien quand tu es dans l’app. Pas de pub, sauf si tu le demandes.`,
       /** Action sur la notification elle-même (appui long) : coupe sa catégorie. */
       mute: 'Ne plus recevoir ce genre',
+      reply: { action: 'Répondre', send: 'Envoyer', placeholder: 'Ta réponse…' },
       sections: { pet: 'Ton minimoa', links: 'Tes liens', plus: 'Minimoa+' },
       morning: { title: 'Heure du défi', value: (h: number) => `${h} h` },
-      quiet: { title: 'Heures calmes', value: (start: number, end: number) => `${start} h – ${end} h`, text: (start: number, end: number) => `Rien entre ${start} h et ${end} h. Ce qui peut attendre arrive le matin.` },
+      quiet: {
+        title: 'Heures calmes',
+        value: (start: number, end: number) => `${start} h – ${end} h`,
+        text: (start: number, end: number) =>
+          `Rien entre ${start} h et ${end} h. Ce qui peut attendre arrive le matin.`,
+      },
       morningTitle: [{ text: 'HEURE ' }, { text: 'DU DÉFI', dim: true }],
       morningText: 'Ton défi du jour arrive à cette heure-là (heure de ton téléphone).',
       hour: (h: number) => `${h} h`,
@@ -98,16 +138,30 @@ export const moi = messages({
         messages: { title: 'Messages' },
         your_turn: { title: 'À toi d’écrire', subtitle: 'Le soir, 1 par jour au plus' },
         link_in_danger: { title: 'Lien en danger', subtitle: 'Quand il reste 2 vies' },
-        trial_reminder: { title: 'Fin de l’essai', subtitle: 'Toujours envoyé, 2 jours avant le premier paiement' },
+        trial_reminder: {
+          title: 'Fin de l’essai',
+          subtitle: 'Toujours envoyé, 2 jours avant le premier paiement',
+        },
         marketing: { title: 'Offres Minimoa+', subtitle: 'Une relance au plus, seulement si tu le veux' },
         first_steps: { title: 'Premiers pas', subtitle: 'Tes 7 premiers jours, 3 idées' },
-        minimoa_news: { title: 'Nouvelles de ton minimoa', subtitle: 'Quand tu t’absentes, vos anniversaires' },
+        minimoa_news: {
+          title: 'Nouvelles de ton minimoa',
+          subtitle: 'Quand tu t’absentes, vos anniversaires',
+        },
         plus_account: { title: 'Ton abonnement Minimoa+', subtitle: 'Bienvenue, paiement, fin' },
       },
       /** Accord du téléphone. */
       permission: {
-        undetermined: { title: 'Notifications pas encore activées', text: 'Le téléphone n’a pas encore donné son accord. Tes réglages sont gardés.', action: 'Activer les notifications' },
-        denied: { title: 'Notifications coupées sur ce téléphone', text: 'Pour les recevoir, autorise-les dans Réglages › Minimoa › Notifications. Tes choix ci-dessous sont gardés.', action: 'Ouvrir les Réglages' },
+        undetermined: {
+          title: 'Notifications pas encore activées',
+          text: 'Le téléphone n’a pas encore donné son accord. Tes réglages sont gardés.',
+          action: 'Activer les notifications',
+        },
+        denied: {
+          title: 'Notifications coupées sur ce téléphone',
+          text: 'Pour les recevoir, autorise-les dans Réglages › Minimoa › Notifications. Tes choix ci-dessous sont gardés.',
+          action: 'Ouvrir les Réglages',
+        },
         web: 'Sur le web, pas de notifications : elles arrivent sur ton téléphone.',
       },
       loadError: 'Impossible de charger tes réglages de notifications',
@@ -135,7 +189,8 @@ export const moi = messages({
        */
       photoCheck: (provider: string | null, country: string | null): string =>
         `Avant d’être montrée, chaque photo de profil est vérifiée automatiquement par ${provider ? `${provider}${country ? ` (${country})` : ''}, notre prestataire d’IA` : 'notre prestataire d’IA'} : ni nudité, ni personne qui semble mineure, ni violence, ni haine, ni pub. Une photo refusée est effacée.`,
-      photoCheckAccept: 'En choisissant une photo, tu acceptes cette vérification. Détails dans Moi › L’IA et toi.',
+      photoCheckAccept:
+        'En choisissant une photo, tu acceptes cette vérification. Détails dans Moi › L’IA et toi.',
       photoSaved: 'Photo enregistrée.',
       nameLabel: 'Prénom',
       cityLabel: 'Ville',
@@ -159,26 +214,66 @@ export const moi = messages({
       text: 'C’est immédiat et définitif : on ne peut rien récupérer ensuite.',
       erasedTitle: 'Ce qui est effacé tout de suite',
       items: (links: number | null) => [
-        { key: 'account', title: 'Ton compte', subtitle: 'Prénom, photo, date de naissance, sexe, ce que tu cherches' },
-        { key: 'pet', title: 'Ton minimoa', subtitle: 'Sa vision, son style, ses objets, tes habitudes, ta série' },
+        {
+          key: 'account',
+          title: 'Ton compte',
+          subtitle: 'Prénom, photo, date de naissance, sexe, ce que tu cherches',
+        },
+        {
+          key: 'pet',
+          title: 'Ton minimoa',
+          subtitle: 'Sa vision, son style, ses objets, tes habitudes, ta série',
+        },
         { key: 'place', title: 'Ta position', subtitle: 'Arrondie, et ta zone ou ta ville choisie' },
         {
           key: 'links',
-          title: links === null ? 'Tes liens' : links === 0 ? 'Tes liens (tu n’en as pas encore)' : links === 1 ? 'Ton lien' : `Tes ${links} liens`,
+          title:
+            links === null
+              ? 'Tes liens'
+              : links === 0
+                ? 'Tes liens (tu n’en as pas encore)'
+                : links === 1
+                  ? 'Ton lien'
+                  : `Tes ${links} liens`,
           subtitle: 'Messages, anciennes photos, étapes. Ils disparaissent aussi pour les autres',
         },
-        { key: 'photos', title: 'Tes photos de preuve et de défi', subtitle: 'Et les « 3 mots » reçus, tes invitations' },
-        { key: 'settings', title: 'Tes réglages', subtitle: 'Et l’autorisation de t’envoyer des notifications' },
+        {
+          key: 'photos',
+          title: 'Tes photos de preuve et de défi',
+          subtitle: 'Et les « 3 mots » reçus, tes invitations',
+        },
+        {
+          key: 'settings',
+          title: 'Tes réglages',
+          subtitle: 'Et l’autorisation de t’envoyer des notifications',
+        },
       ],
       keptTitle: 'Ce qui est gardé, et pourquoi',
       kept: [
         { key: 'backups', title: 'Sauvegardes techniques', subtitle: 'Écrasées au fil de leur rotation' },
-        { key: 'moderation', title: 'Signalements et modération', subtitle: 'Sécurité des autres, détachés de ton compte, 1 an' },
-        { key: 'purchases', title: 'Références des achats Minimoa+', subtitle: 'Obligations comptables, jusqu’à 10 ans' },
-        { key: 'stats', title: 'Statistiques', subtitle: 'Jours d’activité 40 jours au plus, puis seulement des chiffres anonymes' },
-        { key: 'ban', title: 'En cas d’exclusion définitive', subtitle: 'Une empreinte de ton identifiant, pour empêcher la réinscription, 3 ans' },
+        {
+          key: 'moderation',
+          title: 'Signalements et modération',
+          subtitle: 'Sécurité des autres, détachés de ton compte, 1 an',
+        },
+        {
+          key: 'purchases',
+          title: 'Références des achats Minimoa+',
+          subtitle: 'Obligations comptables, jusqu’à 10 ans',
+        },
+        {
+          key: 'stats',
+          title: 'Statistiques',
+          subtitle: 'Jours d’activité 40 jours au plus, puis seulement des chiffres anonymes',
+        },
+        {
+          key: 'ban',
+          title: 'En cas d’exclusion définitive',
+          subtitle: 'Une empreinte de ton identifiant, pour empêcher la réinscription, 3 ans',
+        },
       ],
-      plusNote: 'Tu as Minimoa+ ? Supprimer ton compte n’annule pas l’abonnement. Annule-le d’abord dans les réglages de ton store.',
+      plusNote:
+        'Tu as Minimoa+ ? Supprimer ton compte n’annule pas l’abonnement. Annule-le d’abord dans les réglages de ton store.',
       details: 'Tout le détail',
       confirmLabel: 'Écris « supprimer » pour confirmer',
       confirmWord: 'supprimer',
@@ -189,9 +284,15 @@ export const moi = messages({
     /** Qui tu es, ce que tu cherches (données sensibles : accord explicite). */
     identite: {
       title: [{ text: 'QUI ' }, { text: 'TU ES.', dim: true }],
-      intro: 'Personne d’autre ne voit cette réponse. Elle sert à accorder les phrases et, sans ton nom, à nos statistiques.',
+      intro:
+        'Personne d’autre ne voit cette réponse. Elle sert à accorder les phrases et, sans ton nom, à nos statistiques.',
       genderTitle: 'Tu es',
-      gender: { femme: 'Une femme', homme: 'Un homme', non_binaire: 'Non-binaire', non_dit: 'Je préfère ne pas dire' } as Record<string, string>,
+      gender: {
+        femme: 'Une femme',
+        homme: 'Un homme',
+        non_binaire: 'Non-binaire',
+        non_dit: 'Je préfère ne pas dire',
+      } as Record<string, string>,
       save: 'Enregistrer',
       saved: 'C’est enregistré.',
       error: 'Ce n’est pas passé. Réessaie.',
@@ -203,14 +304,22 @@ export const moi = messages({
       allTitle: 'Pour tous mes chats',
       allOn: 'Activer la lecture partout',
       allOff: 'Couper la lecture partout',
-      allDone: (n: number) => (n === 0 ? 'Rien à changer.' : n === 1 ? 'C’est fait pour ton chat.' : `C’est fait pour tes ${n} chats.`),
+      allDone: (n: number) =>
+        n === 0
+          ? 'Rien à changer.'
+          : n === 1
+            ? 'C’est fait pour ton chat.'
+            : `C’est fait pour tes ${n} chats.`,
       allNote: 'Pour tes chats actuels.',
       /** Réglage par défaut des nouveaux chats. */
       defaultTitle: 'Pour mes prochains chats',
       defaults: {
         ask: { title: 'Me demander à chaque fois', subtitle: 'Après vos premiers messages' },
         on: { title: 'Toujours activer la lecture', subtitle: 'Il faut encore l’accord de l’autre' },
-        off: { title: 'Ne jamais activer la lecture', subtitle: 'Les minimoas réagissent seulement au rythme' },
+        off: {
+          title: 'Ne jamais activer la lecture',
+          subtitle: 'Les minimoas réagissent seulement au rythme',
+        },
       },
       defaultA11y: (title: string, on: boolean) => (on ? `${title}, choisi` : title),
       perLink: 'Chat par chat',
@@ -221,13 +330,13 @@ export const moi = messages({
           ? 'Minimoas coupés ici'
           : on === null
             ? theirs === 'agreed'
-              ? 'Pas encore choisi · activé de son côté'
+              ? 'Pas encore choisi · activé de son côté'
               : 'Pas encore choisi'
             : !on
               ? 'Sans lecture'
               : both
                 ? 'Lecture activée, vous deux'
-                : 'Oui · pas encore activé de son côté',
+                : 'Oui · pas encore activé de son côté',
       readA11y: (name: string) => `Lecture par une IA dans le chat avec ${name}`,
       empty: 'Pas encore de chat. Ton réglage pour les prochains chats s’appliquera au premier.',
       more: 'Voir plus',
@@ -243,11 +352,13 @@ export const moi = messages({
       off: 'Position désactivée',
       offSub: 'Choisis ta ville à la main pour avoir des rencontres autour',
       zone: (km: string) => `Ta zone : ${km} km autour de ton domicile approximatif`,
-      city: (name: string, active: boolean) => (active ? `Ville choisie : ${name}` : `Ville choisie : ${name} (avec Minimoa+)`),
+      city: (name: string, active: boolean) =>
+        active ? `Ville choisie : ${name}` : `Ville choisie : ${name} (avec Minimoa+)`,
       enable: 'Activer la localisation',
       forget: 'Oublier ma position',
       forgetTitle: [{ text: 'OUBLIER ' }, { text: 'TA POSITION ?', dim: true }],
-      forgetText: 'On efface ta position et ta zone, et on retire ton accord. Plus de rencontres près de chez toi, jusqu’à ce que tu la réactives ou que tu choisisses ta ville à la main.',
+      forgetText:
+        'On efface ta position et ta zone, et on retire ton accord. Plus de rencontres près de chez toi, jusqu’à ce que tu la réactives ou que tu choisisses ta ville à la main.',
       forgetConfirm: 'Oublier ma position',
       forgotten: 'C’est oublié.',
       error: 'Ce n’est pas passé. Réessaie.',
@@ -255,9 +366,14 @@ export const moi = messages({
   } as const,
   en: {
     tab: {
-      title: (name: string, pet: string) => [{ text: up(name) }, { text: '.\n', dim: true }, { text: `AND ${up(pet)}.`, dim: true }],
+      title: (name: string, pet: string) => [
+        { text: up(name) },
+        { text: '.\n', dim: true },
+        { text: `AND ${up(pet)}.`, dim: true },
+      ],
       heroLabel: (name: string, pet: string) => `${name} and ${pet}. Tap to change your name or photo.`,
-      together: (n: number) => (n <= 1 ? 'First day together' : `${n} ${plural(n, { one: 'day', other: 'days' })} together`),
+      together: (n: number) =>
+        n <= 1 ? 'First day together' : `${n} ${plural(n, { one: 'day', other: 'days' })} together`,
       wordsTitle: 'Describe me in 3 words',
       wordsCount: (n: number) => `${n} ${plural(n, { one: 'answer', other: 'answers' })}`,
       wordsLead: (pet: string) => `Your friends shape ${pet}’s personality.`,
@@ -275,7 +391,10 @@ export const moi = messages({
       plusCta: 'Try it',
       plusSoonCta: 'See',
       rows: {
-        discreet: { title: 'Discreet mode', subtitle: (on: boolean) => (on ? 'Hidden from the map' : 'Visible, location rounded') },
+        discreet: {
+          title: 'Discreet mode',
+          subtitle: (on: boolean) => (on ? 'Hidden from the map' : 'Visible, location rounded'),
+        },
         ia: { title: 'AI and you' },
         settings: { title: 'Settings' },
       },
@@ -289,11 +408,24 @@ export const moi = messages({
       rows: {
         account: { title: 'My account', subtitle: (name: string) => name },
         identity: { title: 'Who you are' },
-        plus: { title: 'Minimoa+', subtitle: (member: boolean) => (member ? 'Subscription active' : 'No Minimoa+ yet') },
+        plus: {
+          title: 'Minimoa+',
+          subtitle: (member: boolean) => (member ? 'Subscription active' : 'No Minimoa+ yet'),
+        },
         notifications: { title: 'Notifications' },
-        location: { title: 'My location', subtitle: (on: boolean) => (on ? 'On, rounded to about 300 m' : 'Off') },
-        analytics: { title: 'Usage statistics', subtitle: (on: boolean) => (on ? 'You’re taking part' : 'Off') },
-        blocked: { title: 'Blocked people', subtitle: (n: number | null) => (n === null ? ' ' : n === 0 ? 'No one' : n === 1 ? '1 person' : `${n} people`) },
+        location: {
+          title: 'My location',
+          subtitle: (on: boolean) => (on ? 'On, rounded to about 300 m' : 'Off'),
+        },
+        analytics: {
+          title: 'Usage statistics',
+          subtitle: (on: boolean) => (on ? 'You’re taking part' : 'Off'),
+        },
+        blocked: {
+          title: 'Blocked people',
+          subtitle: (n: number | null) =>
+            n === null ? ' ' : n === 0 ? 'No one' : n === 1 ? '1 person' : `${n} people`,
+        },
         language: { title: 'Language', subtitle: (name: string) => name },
         rules: { title: 'Community rules' },
         safety: { title: 'Safety and reporting' },
@@ -305,9 +437,16 @@ export const moi = messages({
         signOut: { title: 'Sign out' },
         delete: { title: 'Delete my account' },
       },
-      languageNames: { fr: 'Français', en: 'English', es: 'Español', pt: 'Português', nl: 'Nederlands' } as Record<string, string>,
+      languageNames: {
+        fr: 'Français',
+        en: 'English',
+        es: 'Español',
+        pt: 'Português',
+        nl: 'Nederlands',
+      } as Record<string, string>,
       languageTitle: 'Language',
-      languageText: 'Minimoa follows your phone’s language. To change it, go to Settings › Minimoa › Language (or change your phone’s language).',
+      languageText:
+        'Minimoa follows your phone’s language. To change it, go to Settings › Minimoa › Language (or change your phone’s language).',
       languageWeb: 'Here, Minimoa follows your browser’s language.',
       languageOpen: 'Open Settings',
       signOutConfirmTitle: 'Sign out?',
@@ -317,19 +456,29 @@ export const moi = messages({
     },
     notifications: {
       title: 'NOTIFS',
-      banner: (cap: number) => `${cap} notifications a day at most, messages aside. Several at once arrive as one. Nothing while you’re in the app. No ads, unless you ask for them.`,
+      banner: (cap: number) =>
+        `${cap} notifications a day at most, messages aside. Several at once arrive as one. Nothing while you’re in the app. No ads, unless you ask for them.`,
       /** Action sur la notification elle-même (appui long) : coupe sa catégorie. */
       mute: 'Stop this kind',
+      reply: { action: 'Reply', send: 'Send', placeholder: 'Your reply…' },
       sections: { pet: 'Your minimoa', links: 'Your links', plus: 'Minimoa+' },
       morning: { title: 'Challenge time', value: (h: number) => usHour(h) },
-      quiet: { title: 'Quiet hours', value: (start: number, end: number) => `${usHour(start)} – ${usHour(end)}`, text: (start: number, end: number) => `Nothing between ${usHour(start)} and ${usHour(end)}. Whatever can wait arrives in the morning.` },
+      quiet: {
+        title: 'Quiet hours',
+        value: (start: number, end: number) => `${usHour(start)} – ${usHour(end)}`,
+        text: (start: number, end: number) =>
+          `Nothing between ${usHour(start)} and ${usHour(end)}. Whatever can wait arrives in the morning.`,
+      },
       morningTitle: [{ text: 'CHALLENGE ' }, { text: 'TIME', dim: true }],
       morningText: 'Your daily challenge arrives at this time (your phone’s time).',
       hour: (h: number) => usHour(h),
       rows: {
         daily_challenge: { title: 'Daily challenge' },
         needs_out: { title: (pet: string) => `${pet} needs to get out`, subtitle: '1 a day at most' },
-        streak_in_danger: { title: 'Streak in danger', subtitle: 'In the evening, if the challenge isn’t done' },
+        streak_in_danger: {
+          title: 'Streak in danger',
+          subtitle: 'In the evening, if the challenge isn’t done',
+        },
         habit_proof: { title: 'Habit proof' },
         weekly_review: { title: 'Weekly review', subtitle: 'Sunday evening' },
         unlocked: { title: 'Item unlocked, 3 words received' },
@@ -344,8 +493,16 @@ export const moi = messages({
         plus_account: { title: 'Your Minimoa+ subscription', subtitle: 'Welcome, payment, end' },
       },
       permission: {
-        undetermined: { title: 'Notifications not on yet', text: 'Your phone hasn’t given permission yet. Your settings are kept.', action: 'Turn on notifications' },
-        denied: { title: 'Notifications off on this phone', text: 'To get them, allow them in Settings › Minimoa › Notifications. Your choices below are kept.', action: 'Open Settings' },
+        undetermined: {
+          title: 'Notifications not on yet',
+          text: 'Your phone hasn’t given permission yet. Your settings are kept.',
+          action: 'Turn on notifications',
+        },
+        denied: {
+          title: 'Notifications off on this phone',
+          text: 'To get them, allow them in Settings › Minimoa › Notifications. Your choices below are kept.',
+          action: 'Open Settings',
+        },
         web: 'No notifications on the web: they arrive on your phone.',
       },
       loadError: 'Couldn’t load your notification settings',
@@ -392,26 +549,62 @@ export const moi = messages({
       text: 'It’s immediate and permanent: nothing can be recovered afterwards.',
       erasedTitle: 'What is erased right away',
       items: (links: number | null) => [
-        { key: 'account', title: 'Your account', subtitle: 'First name, photo, date of birth, gender, what you’re looking for' },
-        { key: 'pet', title: 'Your minimoa', subtitle: 'Its vision, its style, its items, your habits, your streak' },
+        {
+          key: 'account',
+          title: 'Your account',
+          subtitle: 'First name, photo, date of birth, gender, what you’re looking for',
+        },
+        {
+          key: 'pet',
+          title: 'Your minimoa',
+          subtitle: 'Its vision, its style, its items, your habits, your streak',
+        },
         { key: 'place', title: 'Your location', subtitle: 'Rounded, and your area or chosen city' },
         {
           key: 'links',
-          title: links === null ? 'Your links' : links === 0 ? 'Your links (you don’t have any yet)' : links === 1 ? 'Your link' : `Your ${links} links`,
+          title:
+            links === null
+              ? 'Your links'
+              : links === 0
+                ? 'Your links (you don’t have any yet)'
+                : links === 1
+                  ? 'Your link'
+                  : `Your ${links} links`,
           subtitle: 'Messages, old photos, milestones. They disappear for the others too',
         },
-        { key: 'photos', title: 'Your proof and challenge photos', subtitle: 'And the “3 words” received, your invitations' },
+        {
+          key: 'photos',
+          title: 'Your proof and challenge photos',
+          subtitle: 'And the “3 words” received, your invitations',
+        },
         { key: 'settings', title: 'Your settings', subtitle: 'And permission to send you notifications' },
       ],
       keptTitle: 'What is kept, and why',
       kept: [
         { key: 'backups', title: 'Technical backups', subtitle: 'Overwritten as they rotate' },
-        { key: 'moderation', title: 'Reports and moderation', subtitle: 'For others’ safety, detached from your account, 1 year' },
-        { key: 'purchases', title: 'Minimoa+ purchase references', subtitle: 'Accounting obligations, up to 10 years' },
-        { key: 'stats', title: 'Statistics', subtitle: 'Activity days for 40 days at most, then only anonymous figures' },
-        { key: 'ban', title: 'If permanently banned', subtitle: 'A fingerprint of your identifier, to prevent signing up again, 3 years' },
+        {
+          key: 'moderation',
+          title: 'Reports and moderation',
+          subtitle: 'For others’ safety, detached from your account, 1 year',
+        },
+        {
+          key: 'purchases',
+          title: 'Minimoa+ purchase references',
+          subtitle: 'Accounting obligations, up to 10 years',
+        },
+        {
+          key: 'stats',
+          title: 'Statistics',
+          subtitle: 'Activity days for 40 days at most, then only anonymous figures',
+        },
+        {
+          key: 'ban',
+          title: 'If permanently banned',
+          subtitle: 'A fingerprint of your identifier, to prevent signing up again, 3 years',
+        },
       ],
-      plusNote: 'Have Minimoa+? Deleting your account doesn’t cancel the subscription. Cancel it first in your store settings.',
+      plusNote:
+        'Have Minimoa+? Deleting your account doesn’t cancel the subscription. Cancel it first in your store settings.',
       details: 'Full details',
       confirmLabel: 'Type “delete” to confirm',
       confirmWord: 'delete',
@@ -421,9 +614,15 @@ export const moi = messages({
     },
     identite: {
       title: [{ text: 'WHO ' }, { text: 'YOU ARE.', dim: true }],
-      intro: 'No one else sees this answer. It helps us word things for you and, without your name, feeds our statistics.',
+      intro:
+        'No one else sees this answer. It helps us word things for you and, without your name, feeds our statistics.',
       genderTitle: 'You are',
-      gender: { femme: 'A woman', homme: 'A man', non_binaire: 'Non-binary', non_dit: 'I’d rather not say' } as Record<string, string>,
+      gender: {
+        femme: 'A woman',
+        homme: 'A man',
+        non_binaire: 'Non-binary',
+        non_dit: 'I’d rather not say',
+      } as Record<string, string>,
       save: 'Save',
       saved: 'Saved.',
       error: 'That didn’t go through. Try again.',
@@ -434,7 +633,8 @@ export const moi = messages({
       allTitle: 'For all my chats',
       allOn: 'Turn on reading everywhere',
       allOff: 'Turn off reading everywhere',
-      allDone: (n: number) => (n === 0 ? 'Nothing to change.' : n === 1 ? 'Done for your chat.' : `Done for your ${n} chats.`),
+      allDone: (n: number) =>
+        n === 0 ? 'Nothing to change.' : n === 1 ? 'Done for your chat.' : `Done for your ${n} chats.`,
       allNote: 'For your current chats.',
       defaultTitle: 'For my next chats',
       defaults: {
@@ -471,11 +671,13 @@ export const moi = messages({
       off: 'Location off',
       offSub: 'Pick your city by hand to get encounters around it',
       zone: (km: string) => `Your area: ${km} km around your approximate home`,
-      city: (name: string, active: boolean) => (active ? `Chosen city: ${name}` : `Chosen city: ${name} (with Minimoa+)`),
+      city: (name: string, active: boolean) =>
+        active ? `Chosen city: ${name}` : `Chosen city: ${name} (with Minimoa+)`,
       enable: 'Turn on location',
       forget: 'Forget my location',
       forgetTitle: [{ text: 'FORGET ' }, { text: 'YOUR LOCATION?', dim: true }],
-      forgetText: 'We erase your location and your area, and withdraw your consent. No more encounters near you, until you turn it back on or pick your city by hand.',
+      forgetText:
+        'We erase your location and your area, and withdraw your consent. No more encounters near you, until you turn it back on or pick your city by hand.',
       forgetConfirm: 'Forget my location',
       forgotten: 'Forgotten.',
       error: 'That didn’t go through. Try again.',
@@ -483,9 +685,14 @@ export const moi = messages({
   },
   es: {
     tab: {
-      title: (name: string, pet: string) => [{ text: up(name) }, { text: '.\n', dim: true }, { text: `Y ${up(pet)}.`, dim: true }],
+      title: (name: string, pet: string) => [
+        { text: up(name) },
+        { text: '.\n', dim: true },
+        { text: `Y ${up(pet)}.`, dim: true },
+      ],
       heroLabel: (name: string, pet: string) => `${name} y ${pet}. Toca para cambiar tu nombre o tu foto.`,
-      together: (n: number) => (n <= 1 ? 'Primer día en equipo' : `${n} ${plural(n, { one: 'día', other: 'días' })} en equipo`),
+      together: (n: number) =>
+        n <= 1 ? 'Primer día en equipo' : `${n} ${plural(n, { one: 'día', other: 'días' })} en equipo`,
       wordsTitle: 'Descríbeme en 3 palabras',
       wordsCount: (n: number) => `${n} ${plural(n, { one: 'respuesta', other: 'respuestas' })}`,
       wordsLead: (pet: string) => `Tu gente moldea el carácter de ${pet}.`,
@@ -503,7 +710,10 @@ export const moi = messages({
       plusCta: 'Probar',
       plusSoonCta: 'Ver',
       rows: {
-        discreet: { title: 'Modo discreto', subtitle: (on: boolean) => (on ? 'Fuera del mapa' : 'Visible, ubicación redondeada') },
+        discreet: {
+          title: 'Modo discreto',
+          subtitle: (on: boolean) => (on ? 'Fuera del mapa' : 'Visible, ubicación redondeada'),
+        },
         ia: { title: 'La IA y tú' },
         settings: { title: 'Ajustes' },
       },
@@ -517,11 +727,24 @@ export const moi = messages({
       rows: {
         account: { title: 'Mi cuenta', subtitle: (name: string) => name },
         identity: { title: 'Quién eres' },
-        plus: { title: 'Minimoa+', subtitle: (member: boolean) => (member ? 'Suscripción activa' : 'Aún sin Minimoa+') },
+        plus: {
+          title: 'Minimoa+',
+          subtitle: (member: boolean) => (member ? 'Suscripción activa' : 'Aún sin Minimoa+'),
+        },
         notifications: { title: 'Notificaciones' },
-        location: { title: 'Mi ubicación', subtitle: (on: boolean) => (on ? 'Activada, redondeada a unos 300 m' : 'Desactivada') },
-        analytics: { title: 'Estadísticas de uso', subtitle: (on: boolean) => (on ? 'Participas' : 'Desactivadas') },
-        blocked: { title: 'Personas bloqueadas', subtitle: (n: number | null) => (n === null ? ' ' : n === 0 ? 'Ninguna' : n === 1 ? '1 persona' : `${n} personas`) },
+        location: {
+          title: 'Mi ubicación',
+          subtitle: (on: boolean) => (on ? 'Activada, redondeada a unos 300 m' : 'Desactivada'),
+        },
+        analytics: {
+          title: 'Estadísticas de uso',
+          subtitle: (on: boolean) => (on ? 'Participas' : 'Desactivadas'),
+        },
+        blocked: {
+          title: 'Personas bloqueadas',
+          subtitle: (n: number | null) =>
+            n === null ? ' ' : n === 0 ? 'Ninguna' : n === 1 ? '1 persona' : `${n} personas`,
+        },
         language: { title: 'Idioma', subtitle: (name: string) => name },
         rules: { title: 'Normas de la comunidad' },
         safety: { title: 'Seguridad y reportes' },
@@ -533,9 +756,16 @@ export const moi = messages({
         signOut: { title: 'Cerrar sesión' },
         delete: { title: 'Eliminar mi cuenta' },
       },
-      languageNames: { fr: 'Français', en: 'English', es: 'Español', pt: 'Português', nl: 'Nederlands' } as Record<string, string>,
+      languageNames: {
+        fr: 'Français',
+        en: 'English',
+        es: 'Español',
+        pt: 'Português',
+        nl: 'Nederlands',
+      } as Record<string, string>,
       languageTitle: 'Idioma',
-      languageText: 'Minimoa sigue el idioma de tu teléfono. Para cambiarlo, ve a Ajustes › Minimoa › Idioma (o cambia el idioma del teléfono).',
+      languageText:
+        'Minimoa sigue el idioma de tu teléfono. Para cambiarlo, ve a Ajustes › Minimoa › Idioma (o cambia el idioma del teléfono).',
       languageWeb: 'Aquí, Minimoa sigue el idioma de tu navegador.',
       languageOpen: 'Abrir Ajustes',
       signOutConfirmTitle: '¿Cerrar sesión?',
@@ -545,12 +775,19 @@ export const moi = messages({
     },
     notifications: {
       title: 'AVISOS',
-      banner: (cap: number) => `${cap} notificaciones al día como máximo, sin contar los mensajes. Varias a la vez llegan en una sola. Nada mientras estás en la app. Sin publicidad, salvo si la pides.`,
+      banner: (cap: number) =>
+        `${cap} notificaciones al día como máximo, sin contar los mensajes. Varias a la vez llegan en una sola. Nada mientras estás en la app. Sin publicidad, salvo si la pides.`,
       /** Action sur la notification elle-même (appui long) : coupe sa catégorie. */
       mute: 'No recibir más de este tipo',
+      reply: { action: 'Responder', send: 'Enviar', placeholder: 'Tu respuesta…' },
       sections: { pet: 'Tu minimoa', links: 'Tus vínculos', plus: 'Minimoa+' },
       morning: { title: 'Hora del reto', value: (h: number) => `${h}:00` },
-      quiet: { title: 'Horas de calma', value: (start: number, end: number) => `${start}:00 – ${end}:00`, text: (start: number, end: number) => `Nada entre las ${start}:00 y las ${end}:00. Lo que puede esperar llega por la mañana.` },
+      quiet: {
+        title: 'Horas de calma',
+        value: (start: number, end: number) => `${start}:00 – ${end}:00`,
+        text: (start: number, end: number) =>
+          `Nada entre las ${start}:00 y las ${end}:00. Lo que puede esperar llega por la mañana.`,
+      },
       morningTitle: [{ text: 'HORA ' }, { text: 'DEL RETO', dim: true }],
       morningText: 'Tu reto del día llega a esta hora (la de tu teléfono).',
       hour: (h: number) => `${h}:00`,
@@ -565,15 +802,26 @@ export const moi = messages({
         messages: { title: 'Mensajes' },
         your_turn: { title: 'Te toca escribir', subtitle: 'Por la noche, 1 al día como máximo' },
         link_in_danger: { title: 'Vínculo en peligro', subtitle: 'Cuando quedan 2 vidas' },
-        trial_reminder: { title: 'Fin de la prueba', subtitle: 'Siempre se envía, 2 días antes del primer pago' },
+        trial_reminder: {
+          title: 'Fin de la prueba',
+          subtitle: 'Siempre se envía, 2 días antes del primer pago',
+        },
         marketing: { title: 'Ofertas de Minimoa+', subtitle: 'Un recordatorio como máximo, solo si quieres' },
         first_steps: { title: 'Primeros pasos', subtitle: 'Tus 7 primeros días, 3 ideas' },
         minimoa_news: { title: 'Noticias de tu minimoa', subtitle: 'Cuando no estás, vuestros aniversarios' },
         plus_account: { title: 'Tu suscripción a Minimoa+', subtitle: 'Bienvenida, pago, final' },
       },
       permission: {
-        undetermined: { title: 'Notificaciones aún no activadas', text: 'El teléfono aún no ha dado permiso. Tus ajustes se conservan.', action: 'Activar las notificaciones' },
-        denied: { title: 'Notificaciones desactivadas en este teléfono', text: 'Para recibirlas, permítelas en Ajustes › Minimoa › Notificaciones. Tus elecciones de abajo se conservan.', action: 'Abrir Ajustes' },
+        undetermined: {
+          title: 'Notificaciones aún no activadas',
+          text: 'El teléfono aún no ha dado permiso. Tus ajustes se conservan.',
+          action: 'Activar las notificaciones',
+        },
+        denied: {
+          title: 'Notificaciones desactivadas en este teléfono',
+          text: 'Para recibirlas, permítelas en Ajustes › Minimoa › Notificaciones. Tus elecciones de abajo se conservan.',
+          action: 'Abrir Ajustes',
+        },
         web: 'En la web no hay notificaciones: llegan a tu teléfono.',
       },
       loadError: 'No se pudieron cargar tus ajustes de notificaciones',
@@ -582,7 +830,8 @@ export const moi = messages({
     compte: {
       title: [{ text: 'MI ' }, { text: 'CUENTA.', dim: true }],
       photoLabel: 'Tu foto de perfil',
-      photoHint: 'En un vínculo, tu foto queda oculta hasta el nivel 4, luego borrosa y nítida en el nivel 5.',
+      photoHint:
+        'En un vínculo, tu foto queda oculta hasta el nivel 4, luego borrosa y nítida en el nivel 5.',
       photoChange: 'Cambiar la foto',
       photoAdd: 'Añadir una foto',
       sheetTitle: [{ text: 'TU ' }, { text: 'FOTO', dim: true }],
@@ -620,26 +869,66 @@ export const moi = messages({
       text: 'Es inmediato y definitivo: después no se puede recuperar nada.',
       erasedTitle: 'Lo que se borra al momento',
       items: (links: number | null) => [
-        { key: 'account', title: 'Tu cuenta', subtitle: 'Nombre, foto, fecha de nacimiento, género, lo que buscas' },
-        { key: 'pet', title: 'Tu minimoa', subtitle: 'Su visión, su estilo, sus objetos, tus hábitos, tu racha' },
+        {
+          key: 'account',
+          title: 'Tu cuenta',
+          subtitle: 'Nombre, foto, fecha de nacimiento, género, lo que buscas',
+        },
+        {
+          key: 'pet',
+          title: 'Tu minimoa',
+          subtitle: 'Su visión, su estilo, sus objetos, tus hábitos, tu racha',
+        },
         { key: 'place', title: 'Tu ubicación', subtitle: 'Redondeada, y tu zona o la ciudad elegida' },
         {
           key: 'links',
-          title: links === null ? 'Tus vínculos' : links === 0 ? 'Tus vínculos (aún no tienes)' : links === 1 ? 'Tu vínculo' : `Tus ${links} vínculos`,
+          title:
+            links === null
+              ? 'Tus vínculos'
+              : links === 0
+                ? 'Tus vínculos (aún no tienes)'
+                : links === 1
+                  ? 'Tu vínculo'
+                  : `Tus ${links} vínculos`,
           subtitle: 'Mensajes, fotos antiguas, etapas. También desaparecen para las demás personas',
         },
-        { key: 'photos', title: 'Tus fotos de prueba y de reto', subtitle: 'Y las «3 palabras» recibidas, tus invitaciones' },
+        {
+          key: 'photos',
+          title: 'Tus fotos de prueba y de reto',
+          subtitle: 'Y las «3 palabras» recibidas, tus invitaciones',
+        },
         { key: 'settings', title: 'Tus ajustes', subtitle: 'Y el permiso para enviarte notificaciones' },
       ],
       keptTitle: 'Lo que se conserva, y por qué',
       kept: [
-        { key: 'backups', title: 'Copias de seguridad técnicas', subtitle: 'Se sobrescriben a medida que rotan' },
-        { key: 'moderation', title: 'Reportes y moderación', subtitle: 'Seguridad de los demás, desvinculados de tu cuenta, 1 año' },
-        { key: 'purchases', title: 'Referencias de compras de Minimoa+', subtitle: 'Obligaciones contables, hasta 10 años' },
-        { key: 'stats', title: 'Estadísticas', subtitle: 'Días de actividad durante 40 días como máximo, luego solo cifras anónimas' },
-        { key: 'ban', title: 'En caso de expulsión definitiva', subtitle: 'Una huella de tu identificador, para impedir que vuelvas a registrarte, 3 años' },
+        {
+          key: 'backups',
+          title: 'Copias de seguridad técnicas',
+          subtitle: 'Se sobrescriben a medida que rotan',
+        },
+        {
+          key: 'moderation',
+          title: 'Reportes y moderación',
+          subtitle: 'Seguridad de los demás, desvinculados de tu cuenta, 1 año',
+        },
+        {
+          key: 'purchases',
+          title: 'Referencias de compras de Minimoa+',
+          subtitle: 'Obligaciones contables, hasta 10 años',
+        },
+        {
+          key: 'stats',
+          title: 'Estadísticas',
+          subtitle: 'Días de actividad durante 40 días como máximo, luego solo cifras anónimas',
+        },
+        {
+          key: 'ban',
+          title: 'En caso de expulsión definitiva',
+          subtitle: 'Una huella de tu identificador, para impedir que vuelvas a registrarte, 3 años',
+        },
       ],
-      plusNote: '¿Tienes Minimoa+? Eliminar tu cuenta no cancela la suscripción. Cancélala antes en los ajustes de tu tienda de apps.',
+      plusNote:
+        '¿Tienes Minimoa+? Eliminar tu cuenta no cancela la suscripción. Cancélala antes en los ajustes de tu tienda de apps.',
       details: 'Todos los detalles',
       confirmLabel: 'Escribe «eliminar» para confirmar',
       confirmWord: 'eliminar',
@@ -649,9 +938,15 @@ export const moi = messages({
     },
     identite: {
       title: [{ text: 'QUIÉN ' }, { text: 'ERES.', dim: true }],
-      intro: 'Nadie más ve esta respuesta. Sirve para adaptar los textos y, sin tu nombre, para nuestras estadísticas.',
+      intro:
+        'Nadie más ve esta respuesta. Sirve para adaptar los textos y, sin tu nombre, para nuestras estadísticas.',
       genderTitle: 'Eres',
-      gender: { femme: 'Una mujer', homme: 'Un hombre', non_binaire: 'Persona no binaria', non_dit: 'Prefiero no decirlo' } as Record<string, string>,
+      gender: {
+        femme: 'Una mujer',
+        homme: 'Un hombre',
+        non_binaire: 'Persona no binaria',
+        non_dit: 'Prefiero no decirlo',
+      } as Record<string, string>,
       save: 'Guardar',
       saved: 'Guardado.',
       error: 'No se ha guardado. Inténtalo de nuevo.',
@@ -662,7 +957,8 @@ export const moi = messages({
       allTitle: 'Para todos mis chats',
       allOn: 'Activar la lectura en todos',
       allOff: 'Desactivar la lectura en todos',
-      allDone: (n: number) => (n === 0 ? 'Nada que cambiar.' : n === 1 ? 'Hecho en tu chat.' : `Hecho en tus ${n} chats.`),
+      allDone: (n: number) =>
+        n === 0 ? 'Nada que cambiar.' : n === 1 ? 'Hecho en tu chat.' : `Hecho en tus ${n} chats.`,
       allNote: 'Para tus chats actuales.',
       defaultTitle: 'Para mis próximos chats',
       defaults: {
@@ -699,11 +995,13 @@ export const moi = messages({
       off: 'Ubicación desactivada',
       offSub: 'Elige tu ciudad a mano para tener encuentros cerca',
       zone: (km: string) => `Tu zona: ${km} km alrededor de tu domicilio aproximado`,
-      city: (name: string, active: boolean) => (active ? `Ciudad elegida: ${name}` : `Ciudad elegida: ${name} (con Minimoa+)`),
+      city: (name: string, active: boolean) =>
+        active ? `Ciudad elegida: ${name}` : `Ciudad elegida: ${name} (con Minimoa+)`,
       enable: 'Activar la ubicación',
       forget: 'Olvidar mi ubicación',
       forgetTitle: [{ text: '¿OLVIDAR ' }, { text: 'TU UBICACIÓN?', dim: true }],
-      forgetText: 'Borramos tu ubicación y tu zona, y retiramos tu consentimiento. No más encuentros cerca de ti, hasta que la vuelvas a activar o elijas tu ciudad a mano.',
+      forgetText:
+        'Borramos tu ubicación y tu zona, y retiramos tu consentimiento. No más encuentros cerca de ti, hasta que la vuelvas a activar o elijas tu ciudad a mano.',
       forgetConfirm: 'Olvidar mi ubicación',
       forgotten: 'Olvidada.',
       error: 'No se ha guardado. Inténtalo de nuevo.',
@@ -711,9 +1009,14 @@ export const moi = messages({
   },
   pt: {
     tab: {
-      title: (name: string, pet: string) => [{ text: up(name) }, { text: '.\n', dim: true }, { text: `E ${up(pet)}.`, dim: true }],
+      title: (name: string, pet: string) => [
+        { text: up(name) },
+        { text: '.\n', dim: true },
+        { text: `E ${up(pet)}.`, dim: true },
+      ],
       heroLabel: (name: string, pet: string) => `${name} e ${pet}. Toque para trocar seu nome ou sua foto.`,
-      together: (n: number) => (n <= 1 ? 'Primeiro dia em equipe' : `${n} ${plural(n, { one: 'dia', other: 'dias' })} em equipe`),
+      together: (n: number) =>
+        n <= 1 ? 'Primeiro dia em equipe' : `${n} ${plural(n, { one: 'dia', other: 'dias' })} em equipe`,
       wordsTitle: 'Me descreva em 3 palavras',
       wordsCount: (n: number) => `${n} ${plural(n, { one: 'resposta', other: 'respostas' })}`,
       wordsLead: (pet: string) => `Sua galera molda a personalidade de ${pet}.`,
@@ -731,7 +1034,10 @@ export const moi = messages({
       plusCta: 'Testar',
       plusSoonCta: 'Ver',
       rows: {
-        discreet: { title: 'Modo discreto', subtitle: (on: boolean) => (on ? 'Fora do mapa' : 'Visível, localização arredondada') },
+        discreet: {
+          title: 'Modo discreto',
+          subtitle: (on: boolean) => (on ? 'Fora do mapa' : 'Visível, localização arredondada'),
+        },
         ia: { title: 'A IA e você' },
         settings: { title: 'Ajustes' },
       },
@@ -745,11 +1051,24 @@ export const moi = messages({
       rows: {
         account: { title: 'Minha conta', subtitle: (name: string) => name },
         identity: { title: 'Quem você é' },
-        plus: { title: 'Minimoa+', subtitle: (member: boolean) => (member ? 'Assinatura ativa' : 'Ainda sem Minimoa+') },
+        plus: {
+          title: 'Minimoa+',
+          subtitle: (member: boolean) => (member ? 'Assinatura ativa' : 'Ainda sem Minimoa+'),
+        },
         notifications: { title: 'Notificações' },
-        location: { title: 'Minha localização', subtitle: (on: boolean) => (on ? 'Ativada, arredondada para cerca de 300 m' : 'Desativada') },
-        analytics: { title: 'Estatísticas de uso', subtitle: (on: boolean) => (on ? 'Você participa' : 'Desativadas') },
-        blocked: { title: 'Pessoas bloqueadas', subtitle: (n: number | null) => (n === null ? ' ' : n === 0 ? 'Ninguém' : n === 1 ? '1 pessoa' : `${n} pessoas`) },
+        location: {
+          title: 'Minha localização',
+          subtitle: (on: boolean) => (on ? 'Ativada, arredondada para cerca de 300 m' : 'Desativada'),
+        },
+        analytics: {
+          title: 'Estatísticas de uso',
+          subtitle: (on: boolean) => (on ? 'Você participa' : 'Desativadas'),
+        },
+        blocked: {
+          title: 'Pessoas bloqueadas',
+          subtitle: (n: number | null) =>
+            n === null ? ' ' : n === 0 ? 'Ninguém' : n === 1 ? '1 pessoa' : `${n} pessoas`,
+        },
         language: { title: 'Idioma', subtitle: (name: string) => name },
         rules: { title: 'Regras da comunidade' },
         safety: { title: 'Segurança e denúncias' },
@@ -761,24 +1080,39 @@ export const moi = messages({
         signOut: { title: 'Sair' },
         delete: { title: 'Excluir minha conta' },
       },
-      languageNames: { fr: 'Français', en: 'English', es: 'Español', pt: 'Português', nl: 'Nederlands' } as Record<string, string>,
+      languageNames: {
+        fr: 'Français',
+        en: 'English',
+        es: 'Español',
+        pt: 'Português',
+        nl: 'Nederlands',
+      } as Record<string, string>,
       languageTitle: 'Idioma',
-      languageText: 'O Minimoa segue o idioma do seu celular. Para mudar, vá em Ajustes › Minimoa › Idioma (ou mude o idioma do celular).',
+      languageText:
+        'O Minimoa segue o idioma do seu celular. Para mudar, vá em Ajustes › Minimoa › Idioma (ou mude o idioma do celular).',
       languageWeb: 'Aqui, o Minimoa segue o idioma do seu navegador.',
       languageOpen: 'Abrir Ajustes',
       signOutConfirmTitle: 'Sair?',
-      signOutConfirmText: 'Seu minimoa vai te esperar. Este celular não vai mais receber as notificações dele.',
+      signOutConfirmText:
+        'Seu minimoa vai te esperar. Este celular não vai mais receber as notificações dele.',
       signOutConfirm: 'Sair',
       version: (v: string) => `Minimoa ${v}`,
     },
     notifications: {
       title: 'AVISOS',
-      banner: (cap: number) => `No máximo ${cap} notificações por dia, fora as mensagens. Várias ao mesmo tempo chegam como uma só. Nada enquanto você está no app. Sem anúncios, a não ser que você peça.`,
+      banner: (cap: number) =>
+        `No máximo ${cap} notificações por dia, fora as mensagens. Várias ao mesmo tempo chegam como uma só. Nada enquanto você está no app. Sem anúncios, a não ser que você peça.`,
       /** Action sur la notification elle-même (appui long) : coupe sa catégorie. */
       mute: 'Não receber mais deste tipo',
+      reply: { action: 'Responder', send: 'Enviar', placeholder: 'Sua resposta…' },
       sections: { pet: 'Seu minimoa', links: 'Seus vínculos', plus: 'Minimoa+' },
       morning: { title: 'Hora do desafio', value: (h: number) => `${h}h` },
-      quiet: { title: 'Horas de silêncio', value: (start: number, end: number) => `${start}h – ${end}h`, text: (start: number, end: number) => `Nada entre ${start}h e ${end}h. O que pode esperar chega de manhã.` },
+      quiet: {
+        title: 'Horas de silêncio',
+        value: (start: number, end: number) => `${start}h – ${end}h`,
+        text: (start: number, end: number) =>
+          `Nada entre ${start}h e ${end}h. O que pode esperar chega de manhã.`,
+      },
       morningTitle: [{ text: 'HORA ' }, { text: 'DO DESAFIO', dim: true }],
       morningText: 'Seu desafio do dia chega neste horário (o do seu celular).',
       hour: (h: number) => `${h}h`,
@@ -793,15 +1127,29 @@ export const moi = messages({
         messages: { title: 'Mensagens' },
         your_turn: { title: 'Sua vez de escrever', subtitle: 'À noite, no máximo 1 por dia' },
         link_in_danger: { title: 'Vínculo em perigo', subtitle: 'Quando restam 2 vidas' },
-        trial_reminder: { title: 'Fim do teste gratuito', subtitle: 'Sempre enviado, 2 dias antes da primeira cobrança' },
+        trial_reminder: {
+          title: 'Fim do teste gratuito',
+          subtitle: 'Sempre enviado, 2 dias antes da primeira cobrança',
+        },
         marketing: { title: 'Ofertas do Minimoa+', subtitle: 'No máximo um lembrete, só se você quiser' },
         first_steps: { title: 'Primeiros passos', subtitle: 'Seus 7 primeiros dias, 3 ideias' },
-        minimoa_news: { title: 'Notícias do seu minimoa', subtitle: 'Quando você some, os aniversários de vocês' },
+        minimoa_news: {
+          title: 'Notícias do seu minimoa',
+          subtitle: 'Quando você some, os aniversários de vocês',
+        },
         plus_account: { title: 'Sua assinatura do Minimoa+', subtitle: 'Boas-vindas, pagamento, fim' },
       },
       permission: {
-        undetermined: { title: 'Notificações ainda não ativadas', text: 'O celular ainda não deu permissão. Seus ajustes ficam guardados.', action: 'Ativar notificações' },
-        denied: { title: 'Notificações desativadas neste celular', text: 'Para recebê-las, permita em Ajustes › Minimoa › Notificações. Suas escolhas abaixo ficam guardadas.', action: 'Abrir Ajustes' },
+        undetermined: {
+          title: 'Notificações ainda não ativadas',
+          text: 'O celular ainda não deu permissão. Seus ajustes ficam guardados.',
+          action: 'Ativar notificações',
+        },
+        denied: {
+          title: 'Notificações desativadas neste celular',
+          text: 'Para recebê-las, permita em Ajustes › Minimoa › Notificações. Suas escolhas abaixo ficam guardadas.',
+          action: 'Abrir Ajustes',
+        },
         web: 'Na web não há notificações: elas chegam no seu celular.',
       },
       loadError: 'Não foi possível carregar seus ajustes de notificação',
@@ -848,26 +1196,62 @@ export const moi = messages({
       text: 'É imediato e definitivo: depois não dá para recuperar nada.',
       erasedTitle: 'O que é apagado na hora',
       items: (links: number | null) => [
-        { key: 'account', title: 'Sua conta', subtitle: 'Nome, foto, data de nascimento, gênero, o que você procura' },
-        { key: 'pet', title: 'Seu minimoa', subtitle: 'A visão, o estilo e os itens dele, seus hábitos, sua sequência' },
+        {
+          key: 'account',
+          title: 'Sua conta',
+          subtitle: 'Nome, foto, data de nascimento, gênero, o que você procura',
+        },
+        {
+          key: 'pet',
+          title: 'Seu minimoa',
+          subtitle: 'A visão, o estilo e os itens dele, seus hábitos, sua sequência',
+        },
         { key: 'place', title: 'Sua localização', subtitle: 'Arredondada, e sua área ou a cidade escolhida' },
         {
           key: 'links',
-          title: links === null ? 'Seus vínculos' : links === 0 ? 'Seus vínculos (você ainda não tem)' : links === 1 ? 'Seu vínculo' : `Seus ${links} vínculos`,
+          title:
+            links === null
+              ? 'Seus vínculos'
+              : links === 0
+                ? 'Seus vínculos (você ainda não tem)'
+                : links === 1
+                  ? 'Seu vínculo'
+                  : `Seus ${links} vínculos`,
           subtitle: 'Mensagens, fotos antigas, etapas. Também somem para as outras pessoas',
         },
-        { key: 'photos', title: 'Suas fotos de prova e de desafio', subtitle: 'E as “3 palavras” recebidas, seus convites' },
+        {
+          key: 'photos',
+          title: 'Suas fotos de prova e de desafio',
+          subtitle: 'E as “3 palavras” recebidas, seus convites',
+        },
         { key: 'settings', title: 'Seus ajustes', subtitle: 'E a permissão para te enviar notificações' },
       ],
       keptTitle: 'O que é mantido, e por quê',
       kept: [
         { key: 'backups', title: 'Backups técnicos', subtitle: 'Sobrescritos conforme o rodízio' },
-        { key: 'moderation', title: 'Denúncias e moderação', subtitle: 'Segurança das outras pessoas, desvinculadas da sua conta, 1 ano' },
-        { key: 'purchases', title: 'Referências das compras do Minimoa+', subtitle: 'Obrigações contábeis, até 10 anos' },
-        { key: 'stats', title: 'Estatísticas', subtitle: 'Dias de atividade por no máximo 40 dias, depois só números anônimos' },
-        { key: 'ban', title: 'Em caso de banimento definitivo', subtitle: 'Uma impressão digital do seu identificador, para impedir um novo cadastro, 3 anos' },
+        {
+          key: 'moderation',
+          title: 'Denúncias e moderação',
+          subtitle: 'Segurança das outras pessoas, desvinculadas da sua conta, 1 ano',
+        },
+        {
+          key: 'purchases',
+          title: 'Referências das compras do Minimoa+',
+          subtitle: 'Obrigações contábeis, até 10 anos',
+        },
+        {
+          key: 'stats',
+          title: 'Estatísticas',
+          subtitle: 'Dias de atividade por no máximo 40 dias, depois só números anônimos',
+        },
+        {
+          key: 'ban',
+          title: 'Em caso de banimento definitivo',
+          subtitle: 'Uma impressão digital do seu identificador, para impedir um novo cadastro, 3 anos',
+        },
       ],
-      plusNote: 'Tem Minimoa+? Excluir sua conta não cancela a assinatura. Cancele antes nos ajustes da sua loja de apps.',
+      plusNote:
+        'Tem Minimoa+? Excluir sua conta não cancela a assinatura. Cancele antes nos ajustes da sua loja de apps.',
       details: 'Todos os detalhes',
       confirmLabel: 'Digite “excluir” para confirmar',
       confirmWord: 'excluir',
@@ -877,9 +1261,15 @@ export const moi = messages({
     },
     identite: {
       title: [{ text: 'QUEM ' }, { text: 'VOCÊ É.', dim: true }],
-      intro: 'Ninguém mais vê esta resposta. Ela serve para ajustar os textos e, sem o seu nome, para as nossas estatísticas.',
+      intro:
+        'Ninguém mais vê esta resposta. Ela serve para ajustar os textos e, sem o seu nome, para as nossas estatísticas.',
       genderTitle: 'Você é',
-      gender: { femme: 'Uma mulher', homme: 'Um homem', non_binaire: 'Pessoa não binária', non_dit: 'Prefiro não dizer' } as Record<string, string>,
+      gender: {
+        femme: 'Uma mulher',
+        homme: 'Um homem',
+        non_binaire: 'Pessoa não binária',
+        non_dit: 'Prefiro não dizer',
+      } as Record<string, string>,
       save: 'Salvar',
       saved: 'Salvo.',
       error: 'Não deu certo. Tente de novo.',
@@ -890,7 +1280,8 @@ export const moi = messages({
       allTitle: 'Para todos os meus chats',
       allOn: 'Ativar a leitura em todos',
       allOff: 'Desativar a leitura em todos',
-      allDone: (n: number) => (n === 0 ? 'Nada para mudar.' : n === 1 ? 'Feito no seu chat.' : `Feito nos seus ${n} chats.`),
+      allDone: (n: number) =>
+        n === 0 ? 'Nada para mudar.' : n === 1 ? 'Feito no seu chat.' : `Feito nos seus ${n} chats.`,
       allNote: 'Para seus chats atuais.',
       defaultTitle: 'Para meus próximos chats',
       defaults: {
@@ -927,11 +1318,13 @@ export const moi = messages({
       off: 'Localização desativada',
       offSub: 'Escolha sua cidade manualmente para ter encontros por perto',
       zone: (km: string) => `Sua área: ${km} km ao redor da sua casa aproximada`,
-      city: (name: string, active: boolean) => (active ? `Cidade escolhida: ${name}` : `Cidade escolhida: ${name} (com Minimoa+)`),
+      city: (name: string, active: boolean) =>
+        active ? `Cidade escolhida: ${name}` : `Cidade escolhida: ${name} (com Minimoa+)`,
       enable: 'Ativar a localização',
       forget: 'Esquecer minha localização',
       forgetTitle: [{ text: 'ESQUECER ' }, { text: 'SUA LOCALIZAÇÃO?', dim: true }],
-      forgetText: 'Apagamos sua localização e sua área, e retiramos seu consentimento. Sem encontros perto de você, até você ativá-la de novo ou escolher sua cidade manualmente.',
+      forgetText:
+        'Apagamos sua localização e sua área, e retiramos seu consentimento. Sem encontros perto de você, até você ativá-la de novo ou escolher sua cidade manualmente.',
       forgetConfirm: 'Esquecer minha localização',
       forgotten: 'Esquecida.',
       error: 'Não deu certo. Tente de novo.',
@@ -939,9 +1332,14 @@ export const moi = messages({
   },
   nl: {
     tab: {
-      title: (name: string, pet: string) => [{ text: up(name) }, { text: '.\n', dim: true }, { text: `EN ${up(pet)}.`, dim: true }],
+      title: (name: string, pet: string) => [
+        { text: up(name) },
+        { text: '.\n', dim: true },
+        { text: `EN ${up(pet)}.`, dim: true },
+      ],
       heroLabel: (name: string, pet: string) => `${name} en ${pet}. Tik om je naam of foto te wijzigen.`,
-      together: (n: number) => (n <= 1 ? 'Eerste dag samen' : `${n} ${plural(n, { one: 'dag', other: 'dagen' })} samen`),
+      together: (n: number) =>
+        n <= 1 ? 'Eerste dag samen' : `${n} ${plural(n, { one: 'dag', other: 'dagen' })} samen`,
       wordsTitle: 'Beschrijf me in 3 woorden',
       wordsCount: (n: number) => `${n} ${plural(n, { one: 'antwoord', other: 'antwoorden' })}`,
       wordsLead: (pet: string) => `Je vrienden vormen het karakter van ${pet}.`,
@@ -959,7 +1357,10 @@ export const moi = messages({
       plusCta: 'Proberen',
       plusSoonCta: 'Bekijken',
       rows: {
-        discreet: { title: 'Discrete modus', subtitle: (on: boolean) => (on ? 'Niet op de kaart' : 'Zichtbaar, locatie afgerond') },
+        discreet: {
+          title: 'Discrete modus',
+          subtitle: (on: boolean) => (on ? 'Niet op de kaart' : 'Zichtbaar, locatie afgerond'),
+        },
         ia: { title: 'AI en jij' },
         settings: { title: 'Instellingen' },
       },
@@ -973,11 +1374,21 @@ export const moi = messages({
       rows: {
         account: { title: 'Mijn account', subtitle: (name: string) => name },
         identity: { title: 'Wie je bent' },
-        plus: { title: 'Minimoa+', subtitle: (member: boolean) => (member ? 'Abonnement actief' : 'Nog geen Minimoa+') },
+        plus: {
+          title: 'Minimoa+',
+          subtitle: (member: boolean) => (member ? 'Abonnement actief' : 'Nog geen Minimoa+'),
+        },
         notifications: { title: 'Meldingen' },
-        location: { title: 'Mijn locatie', subtitle: (on: boolean) => (on ? 'Aan, afgerond op ongeveer 300 m' : 'Uit') },
+        location: {
+          title: 'Mijn locatie',
+          subtitle: (on: boolean) => (on ? 'Aan, afgerond op ongeveer 300 m' : 'Uit'),
+        },
         analytics: { title: 'Gebruiksstatistieken', subtitle: (on: boolean) => (on ? 'Je doet mee' : 'Uit') },
-        blocked: { title: 'Geblokkeerde personen', subtitle: (n: number | null) => (n === null ? ' ' : n === 0 ? 'Niemand' : n === 1 ? '1 persoon' : `${n} personen`) },
+        blocked: {
+          title: 'Geblokkeerde personen',
+          subtitle: (n: number | null) =>
+            n === null ? ' ' : n === 0 ? 'Niemand' : n === 1 ? '1 persoon' : `${n} personen`,
+        },
         language: { title: 'Taal', subtitle: (name: string) => name },
         rules: { title: 'Communityregels' },
         safety: { title: 'Veiligheid en melden' },
@@ -989,9 +1400,16 @@ export const moi = messages({
         signOut: { title: 'Uitloggen' },
         delete: { title: 'Mijn account verwijderen' },
       },
-      languageNames: { fr: 'Français', en: 'English', es: 'Español', pt: 'Português', nl: 'Nederlands' } as Record<string, string>,
+      languageNames: {
+        fr: 'Français',
+        en: 'English',
+        es: 'Español',
+        pt: 'Português',
+        nl: 'Nederlands',
+      } as Record<string, string>,
       languageTitle: 'Taal',
-      languageText: 'Minimoa volgt de taal van je telefoon. Wil je die wijzigen, ga dan naar Instellingen › Minimoa › Taal (of wijzig de taal van je telefoon).',
+      languageText:
+        'Minimoa volgt de taal van je telefoon. Wil je die wijzigen, ga dan naar Instellingen › Minimoa › Taal (of wijzig de taal van je telefoon).',
       languageWeb: 'Hier volgt Minimoa de taal van je browser.',
       languageOpen: 'Instellingen openen',
       signOutConfirmTitle: 'Uitloggen?',
@@ -1001,19 +1419,29 @@ export const moi = messages({
     },
     notifications: {
       title: 'MELDINGEN',
-      banner: (cap: number) => `Hooguit ${cap} meldingen per dag, berichten niet meegeteld. Meerdere tegelijk komen als één. Niets terwijl je in de app bent. Geen reclame, tenzij je erom vraagt.`,
+      banner: (cap: number) =>
+        `Hooguit ${cap} meldingen per dag, berichten niet meegeteld. Meerdere tegelijk komen als één. Niets terwijl je in de app bent. Geen reclame, tenzij je erom vraagt.`,
       /** Action sur la notification elle-même (appui long) : coupe sa catégorie. */
       mute: 'Dit soort niet meer ontvangen',
+      reply: { action: 'Antwoorden', send: 'Versturen', placeholder: 'Je antwoord…' },
       sections: { pet: 'Je minimoa', links: 'Je banden', plus: 'Minimoa+' },
       morning: { title: 'Tijd van de uitdaging', value: (h: number) => `${h}:00` },
-      quiet: { title: 'Rustige uren', value: (start: number, end: number) => `${start}:00 – ${end}:00`, text: (start: number, end: number) => `Niets tussen ${start}:00 en ${end}:00. Wat kan wachten, komt ’s ochtends.` },
+      quiet: {
+        title: 'Rustige uren',
+        value: (start: number, end: number) => `${start}:00 – ${end}:00`,
+        text: (start: number, end: number) =>
+          `Niets tussen ${start}:00 en ${end}:00. Wat kan wachten, komt ’s ochtends.`,
+      },
       morningTitle: [{ text: 'TIJD VAN ' }, { text: 'DE UITDAGING', dim: true }],
       morningText: 'Je uitdaging van de dag komt op dit tijdstip (tijd van je telefoon).',
       hour: (h: number) => `${h}:00`,
       rows: {
         daily_challenge: { title: 'Uitdaging van de dag' },
         needs_out: { title: (pet: string) => `${pet} moet eruit`, subtitle: 'Hooguit 1 per dag' },
-        streak_in_danger: { title: 'Reeks in gevaar', subtitle: '’s Avonds, als de uitdaging nog niet gedaan is' },
+        streak_in_danger: {
+          title: 'Reeks in gevaar',
+          subtitle: '’s Avonds, als de uitdaging nog niet gedaan is',
+        },
         habit_proof: { title: 'Bewijs van gewoonte' },
         weekly_review: { title: 'Weekoverzicht', subtitle: 'Zondagavond' },
         unlocked: { title: 'Item ontgrendeld, 3 woorden ontvangen' },
@@ -1021,15 +1449,29 @@ export const moi = messages({
         messages: { title: 'Berichten' },
         your_turn: { title: 'Jouw beurt om te schrijven', subtitle: '’s Avonds, hooguit 1 per dag' },
         link_in_danger: { title: 'Band in gevaar', subtitle: 'Als er nog 2 levens over zijn' },
-        trial_reminder: { title: 'Einde van de proefperiode', subtitle: 'Altijd verstuurd, 2 dagen voor de eerste betaling' },
-        marketing: { title: 'Minimoa+-aanbiedingen', subtitle: 'Hooguit één herinnering, alleen als je dat wilt' },
+        trial_reminder: {
+          title: 'Einde van de proefperiode',
+          subtitle: 'Altijd verstuurd, 2 dagen voor de eerste betaling',
+        },
+        marketing: {
+          title: 'Minimoa+-aanbiedingen',
+          subtitle: 'Hooguit één herinnering, alleen als je dat wilt',
+        },
         first_steps: { title: 'Eerste stappen', subtitle: 'Je eerste 7 dagen, 3 ideeën' },
         minimoa_news: { title: 'Nieuws van je minimoa', subtitle: 'Als je weg bent, jullie verjaardagen' },
         plus_account: { title: 'Je Minimoa+-abonnement', subtitle: 'Welkom, betaling, einde' },
       },
       permission: {
-        undetermined: { title: 'Meldingen nog niet aan', text: 'Je telefoon heeft nog geen toestemming gegeven. Je instellingen blijven bewaard.', action: 'Meldingen aanzetten' },
-        denied: { title: 'Meldingen uit op deze telefoon', text: 'Sta ze toe via Instellingen › Minimoa › Meldingen om ze te krijgen. Je keuzes hieronder blijven bewaard.', action: 'Instellingen openen' },
+        undetermined: {
+          title: 'Meldingen nog niet aan',
+          text: 'Je telefoon heeft nog geen toestemming gegeven. Je instellingen blijven bewaard.',
+          action: 'Meldingen aanzetten',
+        },
+        denied: {
+          title: 'Meldingen uit op deze telefoon',
+          text: 'Sta ze toe via Instellingen › Minimoa › Meldingen om ze te krijgen. Je keuzes hieronder blijven bewaard.',
+          action: 'Instellingen openen',
+        },
         web: 'Op het web zijn er geen meldingen: die komen op je telefoon.',
       },
       loadError: 'Je meldingsinstellingen konden niet worden geladen',
@@ -1046,13 +1488,15 @@ export const moi = messages({
       library: 'Kiezen uit mijn fotobibliotheek',
       accessTitle: 'Geen toegang',
       accessCamera: 'Minimoa heeft geen toegang tot de camera. Sta het toe in Instellingen › Minimoa.',
-      accessLibrary: 'Minimoa heeft geen toegang tot je foto’s. Sta het toe in Instellingen › Minimoa › Foto’s.',
+      accessLibrary:
+        'Minimoa heeft geen toegang tot je foto’s. Sta het toe in Instellingen › Minimoa › Foto’s.',
       openSettings: 'Open Instellingen',
       photoError: 'De foto is niet gelukt. Probeer het opnieuw.',
       photoRefusedTitle: 'Foto geweigerd',
       photoCheck: (provider: string | null, country: string | null): string =>
         `Voordat hij wordt getoond, wordt elke profielfoto automatisch gecontroleerd door ${provider ? `${provider}${country ? ` (${country})` : ''}, onze AI-leverancier` : 'onze AI-leverancier'}: geen naakt, niemand die minderjarig lijkt, geen geweld, geen haat, geen reclame. Een geweigerde foto wordt gewist.`,
-      photoCheckAccept: 'Door een foto te kiezen, ga je akkoord met deze controle. Details onder Ik › AI en jij.',
+      photoCheckAccept:
+        'Door een foto te kiezen, ga je akkoord met deze controle. Details onder Ik › AI en jij.',
       photoSaved: 'Foto opgeslagen.',
       nameLabel: 'Voornaam',
       cityLabel: 'Stad',
@@ -1076,26 +1520,66 @@ export const moi = messages({
       text: 'Het gebeurt meteen en is definitief: daarna valt er niets meer terug te halen.',
       erasedTitle: 'Wat meteen wordt gewist',
       items: (links: number | null) => [
-        { key: 'account', title: 'Je account', subtitle: 'Voornaam, foto, geboortedatum, geslacht, wat je zoekt' },
-        { key: 'pet', title: 'Je minimoa', subtitle: 'Zijn visie, zijn stijl, zijn items, je gewoontes, je reeks' },
+        {
+          key: 'account',
+          title: 'Je account',
+          subtitle: 'Voornaam, foto, geboortedatum, geslacht, wat je zoekt',
+        },
+        {
+          key: 'pet',
+          title: 'Je minimoa',
+          subtitle: 'Zijn visie, zijn stijl, zijn items, je gewoontes, je reeks',
+        },
         { key: 'place', title: 'Je locatie', subtitle: 'Afgerond, en je gebied of gekozen stad' },
         {
           key: 'links',
-          title: links === null ? 'Je banden' : links === 0 ? 'Je banden (je hebt er nog geen)' : links === 1 ? 'Je band' : `Je ${links} banden`,
+          title:
+            links === null
+              ? 'Je banden'
+              : links === 0
+                ? 'Je banden (je hebt er nog geen)'
+                : links === 1
+                  ? 'Je band'
+                  : `Je ${links} banden`,
           subtitle: 'Berichten, oude foto’s, mijlpalen. Ze verdwijnen ook voor de anderen',
         },
-        { key: 'photos', title: 'Je bewijs- en uitdagingsfoto’s', subtitle: 'En de ontvangen “3 woorden”, je uitnodigingen' },
-        { key: 'settings', title: 'Je instellingen', subtitle: 'En de toestemming om je meldingen te sturen' },
+        {
+          key: 'photos',
+          title: 'Je bewijs- en uitdagingsfoto’s',
+          subtitle: 'En de ontvangen “3 woorden”, je uitnodigingen',
+        },
+        {
+          key: 'settings',
+          title: 'Je instellingen',
+          subtitle: 'En de toestemming om je meldingen te sturen',
+        },
       ],
       keptTitle: 'Wat bewaard blijft, en waarom',
       kept: [
         { key: 'backups', title: 'Technische back-ups', subtitle: 'Worden gaandeweg overschreven' },
-        { key: 'moderation', title: 'Meldingen en moderatie', subtitle: 'Voor de veiligheid van anderen, losgekoppeld van je account, 1 jaar' },
-        { key: 'purchases', title: 'Referenties van Minimoa+-aankopen', subtitle: 'Boekhoudkundige verplichtingen, tot 10 jaar' },
-        { key: 'stats', title: 'Statistieken', subtitle: 'Activiteitsdagen hooguit 40 dagen, daarna alleen anonieme cijfers' },
-        { key: 'ban', title: 'Bij een definitieve uitsluiting', subtitle: 'Een vingerafdruk van je ID, om opnieuw aanmelden te voorkomen, 3 jaar' },
+        {
+          key: 'moderation',
+          title: 'Meldingen en moderatie',
+          subtitle: 'Voor de veiligheid van anderen, losgekoppeld van je account, 1 jaar',
+        },
+        {
+          key: 'purchases',
+          title: 'Referenties van Minimoa+-aankopen',
+          subtitle: 'Boekhoudkundige verplichtingen, tot 10 jaar',
+        },
+        {
+          key: 'stats',
+          title: 'Statistieken',
+          subtitle: 'Activiteitsdagen hooguit 40 dagen, daarna alleen anonieme cijfers',
+        },
+        {
+          key: 'ban',
+          title: 'Bij een definitieve uitsluiting',
+          subtitle: 'Een vingerafdruk van je ID, om opnieuw aanmelden te voorkomen, 3 jaar',
+        },
       ],
-      plusNote: 'Heb je Minimoa+? Je account verwijderen zegt je abonnement niet op. Zeg het eerst op in de instellingen van je store.',
+      plusNote:
+        'Heb je Minimoa+? Je account verwijderen zegt je abonnement niet op. Zeg het eerst op in de instellingen van je store.',
       details: 'Alle details',
       confirmLabel: 'Typ “verwijderen” om te bevestigen',
       confirmWord: 'verwijderen',
@@ -1105,9 +1589,15 @@ export const moi = messages({
     },
     identite: {
       title: [{ text: 'WIE ' }, { text: 'JE BENT.', dim: true }],
-      intro: 'Niemand anders ziet dit antwoord. Het helpt ons de teksten goed te formuleren en, zonder je naam, voor onze statistieken.',
+      intro:
+        'Niemand anders ziet dit antwoord. Het helpt ons de teksten goed te formuleren en, zonder je naam, voor onze statistieken.',
       genderTitle: 'Je bent',
-      gender: { femme: 'Een vrouw', homme: 'Een man', non_binaire: 'Non-binair', non_dit: 'Zeg ik liever niet' } as Record<string, string>,
+      gender: {
+        femme: 'Een vrouw',
+        homme: 'Een man',
+        non_binaire: 'Non-binair',
+        non_dit: 'Zeg ik liever niet',
+      } as Record<string, string>,
       save: 'Opslaan',
       saved: 'Opgeslagen.',
       error: 'Dat is niet gelukt. Probeer het opnieuw.',
@@ -1118,7 +1608,8 @@ export const moi = messages({
       allTitle: 'Voor al mijn chats',
       allOn: 'Overal meelezen aanzetten',
       allOff: 'Overal meelezen uitzetten',
-      allDone: (n: number) => (n === 0 ? 'Niets te wijzigen.' : n === 1 ? 'Gedaan voor je chat.' : `Gedaan voor je ${n} chats.`),
+      allDone: (n: number) =>
+        n === 0 ? 'Niets te wijzigen.' : n === 1 ? 'Gedaan voor je chat.' : `Gedaan voor je ${n} chats.`,
       allNote: 'Voor je huidige chats.',
       defaultTitle: 'Voor mijn volgende chats',
       defaults: {
@@ -1155,11 +1646,13 @@ export const moi = messages({
       off: 'Locatie uit',
       offSub: 'Kies zelf je stad om ontmoetingen in de buurt te krijgen',
       zone: (km: string) => `Je gebied: ${km} km rond je geschatte woonplek`,
-      city: (name: string, active: boolean) => (active ? `Gekozen stad: ${name}` : `Gekozen stad: ${name} (met Minimoa+)`),
+      city: (name: string, active: boolean) =>
+        active ? `Gekozen stad: ${name}` : `Gekozen stad: ${name} (met Minimoa+)`,
       enable: 'Locatie aanzetten',
       forget: 'Mijn locatie vergeten',
       forgetTitle: [{ text: 'JE LOCATIE ' }, { text: 'VERGETEN?', dim: true }],
-      forgetText: 'We wissen je locatie en je gebied, en trekken je toestemming in. Geen ontmoetingen meer bij jou in de buurt, tot je hem weer aanzet of zelf je stad kiest.',
+      forgetText:
+        'We wissen je locatie en je gebied, en trekken je toestemming in. Geen ontmoetingen meer bij jou in de buurt, tot je hem weer aanzet of zelf je stad kiest.',
       forgetConfirm: 'Mijn locatie vergeten',
       forgotten: 'Vergeten.',
       error: 'Dat is niet gelukt. Probeer het opnieuw.',

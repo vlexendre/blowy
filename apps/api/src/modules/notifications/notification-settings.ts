@@ -7,6 +7,8 @@ import {
   MANDATORY_KINDS,
   NOTIFICATION_DAILY_CAP,
   NOTIFICATION_KINDS,
+  PUBLIC_NOTIFICATION_KINDS,
+  type PublicNotificationKind,
   type NotificationKindKey,
   QUIET_END_HOUR,
   QUIET_START_HOUR,
@@ -24,15 +26,15 @@ import { type DevicesRepository, NOTIFICATION_SETTINGS, type NotificationSetting
 const TTL_MS = 60_000;
 
 export interface SettingsView {
-  kinds: Record<NotificationKindKey, boolean>;
+  kinds: Record<PublicNotificationKind, boolean>;
   morningHour: number;
   timeZone: string;
   quietHours: { start: typeof QUIET_START_HOUR; end: typeof QUIET_END_HOUR };
   dailyCap: typeof NOTIFICATION_DAILY_CAP;
-  labels: Record<NotificationKindKey, string>;
+  labels: Record<PublicNotificationKind, string>;
   hasDevice: boolean;
   marketing: boolean;
-  mandatory: NotificationKindKey[];
+  mandatory: PublicNotificationKind[];
 }
 
 @Injectable()
@@ -59,8 +61,8 @@ export class NotificationSettings {
   async view(userId: string): Promise<SettingsView> {
     const [s, devices, profile] = await Promise.all([this.resolve(userId), this.devices.forUser(userId), this.profiles.findById(userId)]);
     const lang = profile?.locale ?? 'fr';
-    const kinds = Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, isMandatory(k) || !s.disabledKinds.includes(k)])) as Record<NotificationKindKey, boolean>;
-    const labels = Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, notificationKindLabel(lang, k)])) as Record<NotificationKindKey, string>;
+    const kinds = Object.fromEntries(PUBLIC_NOTIFICATION_KINDS.map((k) => [k, isMandatory(k) || !s.disabledKinds.includes(k)])) as Record<PublicNotificationKind, boolean>;
+    const labels = Object.fromEntries(PUBLIC_NOTIFICATION_KINDS.map((k) => [k, notificationKindLabel(lang, k)])) as Record<PublicNotificationKind, string>;
     return {
       kinds,
       morningHour: s.morningHour,
@@ -70,7 +72,7 @@ export class NotificationSettings {
       labels,
       hasDevice: devices.some((d) => d.kind === 'expo'),
       marketing: s.marketingOptInAt !== null,
-      mandatory: [...MANDATORY_KINDS],
+      mandatory: MANDATORY_KINDS.filter((k): k is PublicNotificationKind => k !== 'league'),
     };
   }
 

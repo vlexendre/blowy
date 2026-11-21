@@ -13,6 +13,22 @@ export class MemoryLeagueStandings implements LeagueStandingsRepository {
     return out;
   }
 
+  async listStale(week: string, after: string | null, limit: number): Promise<LeagueStanding[]> {
+    return this.page((s) => s.week < week, after, limit);
+  }
+
+  async listWeek(week: string, after: string | null, limit: number): Promise<LeagueStanding[]> {
+    return this.page((s) => s.week === week, after, limit);
+  }
+
+  private page(keep: (s: LeagueStanding) => boolean, after: string | null, limit: number): LeagueStanding[] {
+    return [...this.db.leagueStandings.values()]
+      .filter((s) => keep(s) && (after === null || s.userId > after))
+      .sort((a, b) => (a.userId < b.userId ? -1 : 1))
+      .slice(0, limit)
+      .map((s) => ({ ...s }));
+  }
+
   async save(standing: LeagueStanding): Promise<void> {
     this.db.leagueStandings.set(standing.userId, { ...standing });
   }

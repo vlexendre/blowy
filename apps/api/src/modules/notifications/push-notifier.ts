@@ -50,6 +50,8 @@ import {
 
 /** Catégorie iOS/Android enregistrée par l'app : une action « Ne plus recevoir » (coupe la catégorie du type). */
 export const MUTE_CATEGORY = 'minimoa_mute';
+/** Message d'une personne : « Répondre » (champ de texte dans la notification) et « Ne plus recevoir ce genre ». */
+export const REPLY_CATEGORY = 'minimoa_reply';
 
 /** Les deux listes de types (contrat de l'interface et domaine) doivent rester identiques. */
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : never) : never;
@@ -61,7 +63,10 @@ void kindsMatch;
  * d'une rafale, conversation ouverte au premier plan. `your_turn` n'en a pas : un seul rappel par jour qui résume
  * tous les liens.
  */
-export function conversationKey(kind: NotificationKind, vars: Readonly<Record<string, string>>): string | null {
+export function conversationKey(
+  kind: NotificationKind,
+  vars: Readonly<Record<string, string>>,
+): string | null {
   switch (kind) {
     case 'message':
     case 'link_in_danger':
@@ -78,7 +83,8 @@ export function conversationKey(kind: NotificationKind, vars: Readonly<Record<st
 }
 
 /** Plusieurs personnes ou conversations dans un paquet. */
-const grouped = (vars: Readonly<Record<string, string>>): boolean => Number(vars.others) > 0 || vars.multi === '1';
+const grouped = (vars: Readonly<Record<string, string>>): boolean =>
+  Number(vars.others) > 0 || vars.multi === '1';
 
 /** Lien profond (routes expo-router de l'app) ; `vars.path` (commençant par « / ») le remplace. */
 /** Où mène chaque premier pas (docs/FIDELISATION.md). */
@@ -139,18 +145,33 @@ export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, s
     case 'needs_out':
     case 'minimoa_news':
       return 'blowy://pet';
+    case 'league':
+      return 'blowy://moi/ligue';
   }
 }
 
 /** État compact pour les widgets et les activités en direct, quand le type s'y prête. */
-export function widgetState(kind: NotificationKind, vars: Readonly<Record<string, string>>, endsAt: string): WidgetState | undefined {
-  const num = (v: string | undefined): number | undefined => (v !== undefined && /^\d+$/.test(v) ? Number(v) : undefined);
+export function widgetState(
+  kind: NotificationKind,
+  vars: Readonly<Record<string, string>>,
+  endsAt: string,
+): WidgetState | undefined {
+  const num = (v: string | undefined): number | undefined =>
+    v !== undefined && /^\d+$/.test(v) ? Number(v) : undefined;
   switch (kind) {
     case 'daily_challenge':
     case 'streak_in_danger':
-      return { challengePending: true, endsAt, ...(num(vars.count) !== undefined ? { streak: num(vars.count) } : {}) };
+      return {
+        challengePending: true,
+        endsAt,
+        ...(num(vars.count) !== undefined ? { streak: num(vars.count) } : {}),
+      };
     case 'your_turn':
-      return { writeTo: vars.name ?? '', endsAt, ...(num(vars.count) !== undefined ? { streak: num(vars.count) } : {}) };
+      return {
+        writeTo: vars.name ?? '',
+        endsAt,
+        ...(num(vars.count) !== undefined ? { streak: num(vars.count) } : {}),
+      };
     case 'link_in_danger':
       return num(vars.lives) !== undefined ? { livesLeft: num(vars.lives) } : undefined;
     default:
@@ -192,7 +213,9 @@ export class PushNotifier implements Notifier {
     try {
       await this.process(userId, kind, vars, null);
     } catch (err) {
-      this.logger.warn(`notification ${kind} non envoyée : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+      this.logger.warn(
+        `notification ${kind} non envoyée : ${err instanceof Error ? err.message : 'erreur inconnue'}`,
+      );
     }
   }
 
@@ -205,7 +228,9 @@ export class PushNotifier implements Notifier {
       }
       return await this.process(entry.userId, entry.kind, entry.vars ?? {}, entry);
     } catch (err) {
-      this.logger.warn(`report ${entry.kind} non envoyé : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+      this.logger.warn(
+        `report ${entry.kind} non envoyé : ${err instanceof Error ? err.message : 'erreur inconnue'}`,
+      );
       await this.log.close(entry.id, 'dropped');
       return false;
     }
@@ -220,21 +245,30 @@ export class PushNotifier implements Notifier {
     const ready: ReadyPush[] = [];
     for (const entry of entries) {
       try {
-        if (this.clock.now().getTime() - new Date(entry.createdAt).getTime() > DEFERRED_MAX_HOURS * 3_600_000) {
+        if (
+          this.clock.now().getTime() - new Date(entry.createdAt).getTime() >
+          DEFERRED_MAX_HOURS * 3_600_000
+        ) {
           await this.log.close(entry.id, 'dropped');
           continue;
         }
         const r = await this.prepare(entry.userId, entry.kind, entry.vars ?? {}, entry);
         if (r) ready.push(r);
       } catch (err) {
-        this.logger.warn(`report ${entry.kind} non envoyé : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+        this.logger.warn(
+          `report ${entry.kind} non envoyé : ${err instanceof Error ? err.message : 'erreur inconnue'}`,
+        );
         await this.log.close(entry.id, 'dropped');
       }
     }
     const lead = ready[pickDigestLead(ready)];
     if (!lead) return 0;
     const others = ready.filter((r) => r !== lead).length;
-    const text = notificationDigestText(lead.locale, { title: lead.content.title, body: lead.content.body }, others);
+    const text = notificationDigestText(
+      lead.locale,
+      { title: lead.content.title, body: lead.content.body },
+      others,
+    );
     try {
       await this.send({ ...lead, content: { ...lead.content, title: text.title, body: text.body } });
     } catch (err) {
@@ -244,7 +278,12 @@ export class PushNotifier implements Notifier {
     return ready.length;
   }
 
-  private async process(userId: string, kind: NotificationKind, input: Record<string, string>, queued: NotificationLogRecord | null): Promise<boolean> {
+  private async process(
+    userId: string,
+    kind: NotificationKind,
+    input: Record<string, string>,
+    queued: NotificationLogRecord | null,
+  ): Promise<boolean> {
     const ready = await this.prepare(userId, kind, input, queued);
     return ready ? this.send(ready) : false;
   }
@@ -256,7 +295,12 @@ export class PushNotifier implements Notifier {
   }
 
   /** Décision, journal, texte : rend le push prêt à partir, ou null (rien à envoyer : abandonné, reporté, regroupé). */
-  private async prepare(userId: string, kind: NotificationKind, input: Record<string, string>, queued: NotificationLogRecord | null): Promise<ReadyPush | null> {
+  private async prepare(
+    userId: string,
+    kind: NotificationKind,
+    input: Record<string, string>,
+    queued: NotificationLogRecord | null,
+  ): Promise<ReadyPush | null> {
     const drop = async (): Promise<null> => {
       if (queued) await this.log.close(queued.id, 'dropped');
       return null;
@@ -267,11 +311,17 @@ export class PushNotifier implements Notifier {
     if (devices.length === 0 || !(await this.audience.canNotify(userId))) return drop();
     // Jamais une notification au sujet d'une personne bloquée (dans un sens ou l'autre), suspendue ou supprimée.
     const about = input.about;
-    if (about && about !== userId && !(await this.audience.visibleIds(userId, [about], 'group')).has(about)) return drop();
+    if (about && about !== userId && !(await this.audience.visibleIds(userId, [about], 'group')).has(about))
+      return drop();
 
     const now = this.clock.now();
     const local = localTimeOf(now, settings.timeZone);
-    const log = await this.log.forUserDays(userId, [addDays(local.day, -3), addDays(local.day, -2), addDays(local.day, -1), local.day]);
+    const log = await this.log.forUserDays(userId, [
+      addDays(local.day, -3),
+      addDays(local.day, -2),
+      addDays(local.day, -1),
+      local.day,
+    ]);
     // La clé d'une ligne est celle que la décision a donnée (`vars.key`), jamais le lien seul : un nouveau lien est
     // regroupé tous liens confondus (clé nulle), il ne doit pas être relu sous la clé de son lien.
     const keyOfRow = (l: NotificationLogRecord): string | null => l.vars?.key ?? null;
@@ -280,7 +330,16 @@ export class PushNotifier implements Notifier {
     void _bucket;
     const history: NotificationHistoryEntry[] = log
       .filter((l) => l.id !== queued?.id)
-      .map((l) => ({ id: l.id, kind: l.kind, key: keyOfRow(l), localDay: l.localDay, status: l.status, at: l.createdAt, sendAfter: l.sendAfter, link: l.linkId }));
+      .map((l) => ({
+        id: l.id,
+        kind: l.kind,
+        key: keyOfRow(l),
+        localDay: l.localDay,
+        status: l.status,
+        at: l.createdAt,
+        sendAfter: l.sendAfter,
+        link: l.linkId,
+      }));
     const lastOpenAt = await this.lastOpenAt(userId, devices, now);
     const decision = decideNotification({
       kind,
@@ -298,7 +357,10 @@ export class PushNotifier implements Notifier {
       link: vars.linkId ?? null,
     });
 
-    const linkColumn = kind === 'message' || kind === 'link_in_danger' || kind === 'new_encounter' ? (vars.linkId ?? null) : null;
+    const linkColumn =
+      kind === 'message' || kind === 'link_in_danger' || kind === 'new_encounter'
+        ? (vars.linkId ?? null)
+        : null;
     if (decision.action === 'defer') {
       await this.log.add({
         userId,
@@ -315,14 +377,27 @@ export class PushNotifier implements Notifier {
     if (decision.action === 'merge') {
       const pending = log.find((l) => l.id === decision.into);
       const { key: bucket, ...prev } = pending?.vars ?? {};
-      await this.log.merge(decision.into, { ...mergeNotificationVars(prev, vars), ...(bucket ? { key: bucket } : {}) });
+      await this.log.merge(decision.into, {
+        ...mergeNotificationVars(prev, vars),
+        ...(bucket ? { key: bucket } : {}),
+      });
       return null;
     }
     if (decision.action === 'skip') return drop();
     if (queued) {
-      if (!(await this.log.close(queued.id, 'sent', { at: now.toISOString(), localDay: local.day }))) return null; // déjà envoyé par un autre tick
+      if (!(await this.log.close(queued.id, 'sent', { at: now.toISOString(), localDay: local.day })))
+        return null; // déjà envoyé par un autre tick
     } else {
-      await this.log.add({ userId, kind, linkId: linkColumn, localDay: local.day, status: 'sent', sendAfter: null, vars: key ? { key } : null, createdAt: now.toISOString() });
+      await this.log.add({
+        userId,
+        kind,
+        linkId: linkColumn,
+        localDay: local.day,
+        status: 'sent',
+        sendAfter: null,
+        vars: key ? { key } : null,
+        createdAt: now.toISOString(),
+      });
     }
 
     const profile = await this.profiles.findById(userId);
@@ -332,7 +407,8 @@ export class PushNotifier implements Notifier {
     const state = widgetState(kind, vars, endsAt);
     const single = !grouped(vars);
     const data: PushData = {
-      kind,
+      // `league` : inconnu des builds déjà servis ; ils suivent l'adresse (`url`).
+      kind: kind === 'league' ? 'minimoa_news' : kind,
       url: deepLink(kind, vars),
       ...(vars.linkId && single ? { linkId: vars.linkId } : {}),
       ...(vars.groupId ? { groupId: vars.groupId } : {}),
@@ -343,25 +419,69 @@ export class PushNotifier implements Notifier {
     // son activité.
     let liveStarted = false;
     if (kind === 'your_turn' && vars.linkId) {
-      liveStarted = await this.live.startLinkStreak(userId, { linkId: vars.linkId, otherName: vars.name ?? '', streak: Number(vars.count ?? 0) || 0, alert: text });
+      liveStarted = await this.live.startLinkStreak(userId, {
+        linkId: vars.linkId,
+        otherName: vars.name ?? '',
+        streak: Number(vars.count ?? 0) || 0,
+        alert: text,
+      });
     }
-    if (kind === 'streak_in_danger') await this.live.updateChallenge(userId, { streak: Number(vars.streak ?? vars.count ?? 0) || 0, title: null });
-    const content: Omit<PushMessage, 'to'> = { title: text.title, body: text.body, data, ...(categoryOf(kind) ? { categoryId: MUTE_CATEGORY } : {}) };
-    return { kind, step: vars.step ?? null, at: queued?.createdAt ?? now.toISOString(), devices, content, locale: lang, liveStarted };
+    if (kind === 'streak_in_danger')
+      await this.live.updateChallenge(userId, {
+        streak: Number(vars.streak ?? vars.count ?? 0) || 0,
+        title: null,
+      });
+    const content: Omit<PushMessage, 'to'> = {
+      title: text.title,
+      body: text.body,
+      data,
+      ...(kind === 'message' && single && vars.linkId
+        ? { categoryId: REPLY_CATEGORY }
+        : kind !== 'league' && categoryOf(kind)
+          ? { categoryId: MUTE_CATEGORY }
+          : {}),
+    };
+    return {
+      kind,
+      step: vars.step ?? null,
+      at: queued?.createdAt ?? now.toISOString(),
+      devices,
+      content,
+      locale: lang,
+      liveStarted,
+    };
   }
 
   /**
    * Dernière ouverture : la plus récente entre l'appareil vu (chaque retour au premier plan) et le dernier jour
    * d'activité du compte (`profiles.last_active_on`, compté jusqu'à la fin de ce jour).
    */
-  private async lastOpenAt(userId: string, devices: readonly PushDeviceRecord[], now: Date): Promise<string | null> {
-    const seen = devices.map((d) => d.lastSeenAt).sort().at(-1) ?? null;
+  private async lastOpenAt(
+    userId: string,
+    devices: readonly PushDeviceRecord[],
+    now: Date,
+  ): Promise<string | null> {
+    const seen =
+      devices
+        .map((d) => d.lastSeenAt)
+        .sort()
+        .at(-1) ?? null;
     const day = this.activity ? await this.activity.lastActiveOn(userId) : null;
-    const dayEnd = day ? new Date(Math.min(now.getTime(), Date.parse(`${day}T23:59:59Z`))).toISOString() : null;
-    return [seen, dayEnd].filter((x): x is string => x !== null).sort().at(-1) ?? null;
+    const dayEnd = day
+      ? new Date(Math.min(now.getTime(), Date.parse(`${day}T23:59:59Z`))).toISOString()
+      : null;
+    return (
+      [seen, dayEnd]
+        .filter((x): x is string => x !== null)
+        .sort()
+        .at(-1) ?? null
+    );
   }
 
-  private async deliver(devices: readonly PushDeviceRecord[], content: Omit<PushMessage, 'to'>): Promise<boolean> {
+  private async deliver(
+    devices: readonly PushDeviceRecord[],
+    content: Omit<PushMessage, 'to'>,
+  ): Promise<boolean> {
     const messages: PushMessage[] = devices.map((d) => ({ ...content, to: d.token, sound: 'default' }));
     const tickets = await this.pusher.send(messages);
     const now = this.clock.now().toISOString();

@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
+import { LeagueJobs } from './application/league.jobs';
 import { ProgressionService } from './application/progression.service';
 import { ProgressionController } from './interface/progression.controller';
 
 /** Étincelles, ligue de la semaine et trophées (maquette V7). Lecteur des compteurs : CoreModule (`progressionProviders`). */
 @Module({
   controllers: [ProgressionController],
-  providers: [ProgressionService],
+  providers: [ProgressionService, LeagueJobs],
+  exports: [ProgressionService],
 })
 export class ProgressionModule {}

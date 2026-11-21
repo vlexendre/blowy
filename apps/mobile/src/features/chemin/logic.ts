@@ -21,8 +21,8 @@ export interface PathNode {
 }
 
 /**
- * Tout le chemin, de la première case à la dernière (façon Duolingo) : un bandeau par univers (à partir du deuxième,
- * le premier est le bandeau du haut), ses étapes, son coffre. L'écran défile jusqu'à l'étape du jour.
+ * Tout le chemin, de la première case à la dernière (façon Duolingo) : un bandeau par univers, ses étapes, son coffre.
+ * Le premier univers est fait pendant l'inscription (le test) : son bandeau le dit. L'écran défile jusqu'à l'étape du jour.
  */
 export function pathAll(map: Pick<CheminMap, 'units' | 'currentStepId'>): PathNode[] {
   const all: PathNode[] = [];

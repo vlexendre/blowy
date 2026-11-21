@@ -3,7 +3,8 @@
  * (appareils, réglages, données des push pour l'app, les widgets et les activités en direct), le minuteur
  * et l'usage de l'IA. Ne dépend que de zod et du domaine (pas de `../index`, pour éviter un import circulaire).
  */
-import { CHAT_MAX_INTERVENTIONS_PER_DAY, CHAT_READING_DEFAULTS, LINK_HEALTH_KEYS, NOTIFICATION_KINDS, PET_ROLES, THEIR_CONSENT_STATES } from '@blowy/domain';
+import type { PublicNotificationKind } from '@blowy/domain';
+import { CHAT_MAX_INTERVENTIONS_PER_DAY, CHAT_READING_DEFAULTS, LINK_HEALTH_KEYS, PUBLIC_NOTIFICATION_KINDS, PET_ROLES, THEIR_CONSENT_STATES } from '@blowy/domain';
 import { z } from 'zod';
 
 const Iso = z.string();
@@ -97,7 +98,7 @@ export type LinkHealthDto = z.infer<typeof LinkHealthZ>;
 
 // ── Notifications ──────────────────────────────────────────────────────────
 
-export const NotificationKindZ = z.enum(NOTIFICATION_KINDS);
+export const NotificationKindZ = z.enum(PUBLIC_NOTIFICATION_KINDS as [PublicNotificationKind, ...PublicNotificationKind[]]);
 export type NotificationKindDto = z.infer<typeof NotificationKindZ>;
 
 /**

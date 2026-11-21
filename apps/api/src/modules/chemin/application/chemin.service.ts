@@ -1,3 +1,4 @@
+import { ProgressionService } from '../../progression/application/progression.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { cheminText, notificationTexts } from '@blowy/content';
 import type {
@@ -132,6 +133,7 @@ export class CheminService {
     @Inject(PLACES) private readonly places: PlacesRepository,
     @Inject(ListEncounters) private readonly listEncounters: ListEncounters,
     @Inject(ENV) private readonly env: Env,
+    @Inject(ProgressionService) private readonly progression: ProgressionService,
   ) {}
 
   // ── Entrée : avancement, bonus du jour, règles de la série ─────────────────
@@ -625,6 +627,8 @@ export class CheminService {
       sparks,
     };
     await this.sessions.saveResult(record.id, result);
+    // Ligue (façon Duolingo) : ceux que tu viens de dépasser le savent. En arrière-plan, sans retarder la réponse.
+    void this.progression.afterSparks(userId, sparks.total);
     return result;
   }
 

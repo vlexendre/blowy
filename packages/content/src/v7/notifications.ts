@@ -6,7 +6,14 @@
  * (regroupement : « Léa et 4 autres »). Les dates et les prix sont mis en forme dans la langue de la personne.
  * Pas d'emoji, pas de fausse urgence, pas de culpabilisation.
  */
-import { FIRST_STEPS, type FirstStep, type FirstStepVariant, LEGACY_FIRST_STEP_TOPIC, type Locale, type NotificationKindKey } from '@blowy/domain';
+import {
+  FIRST_STEPS,
+  type FirstStep,
+  type FirstStepVariant,
+  LEGACY_FIRST_STEP_TOPIC,
+  type Locale,
+  type NotificationKindKey,
+} from '@blowy/domain';
 import { defineMessages, formatDate, formatPrice } from '../i18n/core';
 import { labels } from '../labels';
 import { habitById } from './rituels';
@@ -44,6 +51,10 @@ export interface NotificationVars {
   others: string;
   /** Regroupement : nombre d'événements du paquet. */
   n: string;
+  /** Message d'une personne : son texte (une ligne, 160 caractères au plus), montré dans la notification. */
+  text: string;
+  /** Ligue (identifiant `plume`…), en nom propre : « Plume ». */
+  tier: string;
 }
 
 type Template = (v: NotificationVars) => string;
@@ -51,7 +62,8 @@ type Template = (v: NotificationVars) => string;
 /** Un paquet de plusieurs personnes ou événements (« Léa et 4 autres »). */
 const many = (v: NotificationVars): boolean => Number(v.others) > 0;
 /** « 1 autre », « 4 autres » (les deux formes de la langue). */
-const others = (v: NotificationVars, one: string, more: string): string => `${v.others} ${Number(v.others) === 1 ? one : more}`;
+const others = (v: NotificationVars, one: string, more: string): string =>
+  `${v.others} ${Number(v.others) === 1 ? one : more}`;
 /** Personnes en tout dans le paquet. */
 const total = (v: NotificationVars): number => Number(v.others) + 1;
 
@@ -61,33 +73,61 @@ const total = (v: NotificationVars): number => Number(v.others) + 1;
  */
 const FIRST_STEP_VARIANTS: readonly string[] = [...FIRST_STEPS.map((s) => s.topic), 'people_none'];
 export const firstStepOf = (step: string): FirstStepVariant =>
-  FIRST_STEP_VARIANTS.includes(step) ? (step as FirstStepVariant) : (LEGACY_FIRST_STEP_TOPIC[step as FirstStep] ?? 'week');
+  FIRST_STEP_VARIANTS.includes(step)
+    ? (step as FirstStepVariant)
+    : (LEGACY_FIRST_STEP_TOPIC[step as FirstStep] ?? 'week');
 
 /** Texte d'une variante (`v.step`), ou le repli. */
-const pick = (texts: Readonly<Record<string, string>>, key: string, fallback: string): string => texts[key] ?? fallback;
+const pick = (texts: Readonly<Record<string, string>>, key: string, fallback: string): string =>
+  texts[key] ?? fallback;
 
 const fr = {
   /** Quand le nom du minimoa n'est pas passé. */
   yourMinimoa: 'Ton minimoa',
   /** Paquet du matin : ajouté au texte du plus important quand d’autres nouvelles partent avec lui. */
-  digestMore: (n: number): string => (n === 1 ? 'Et 1 autre nouvelle t’attend dans l’app.' : `Et ${n} autres nouvelles t’attendent dans l’app.`),
+  digestMore: (n: number): string =>
+    n === 1 ? 'Et 1 autre nouvelle t’attend dans l’app.' : `Et ${n} autres nouvelles t’attendent dans l’app.`,
   texts: {
     daily_challenge: {
       title: (v) => (v.step === 'chemin' ? 'Ta séance du jour t’attend' : 'Ton défi du jour'),
-      body: (v) => (v.step === 'chemin' ? `${v.minimoa} a 5 questions pour toi. 2 minutes.` : `${v.minimoa} a préparé quelque chose pour toi.`),
+      body: (v) =>
+        v.step === 'chemin'
+          ? `${v.minimoa} a 5 questions pour toi. 2 minutes.`
+          : `${v.minimoa} a préparé quelque chose pour toi.`,
     },
-    needs_out: { title: (v) => `${v.minimoa} a envie de sortir`, body: () => 'Un tour dehors ou un mot à quelqu’un, et il repart de plus belle.' },
+    needs_out: {
+      title: (v) => `${v.minimoa} a envie de sortir`,
+      body: () => 'Un tour dehors ou un mot à quelqu’un, et il repart de plus belle.',
+    },
     new_encounter: {
-      title: (v) => (many(v) ? 'Nouveaux liens' : v.step === 'invite' ? `${v.name} a accepté ton invitation` : `${v.name} t’a répondu`),
-      body: (v) => (many(v) ? `${v.name} et ${others(v, 'autre', 'autres')} t’ont répondu. Dis-leur bonjour.` : 'Vous pouvez vous écrire. Dis-lui bonjour.'),
+      title: (v) =>
+        many(v)
+          ? 'Nouveaux liens'
+          : v.step === 'invite'
+            ? `${v.name} a accepté ton invitation`
+            : `${v.name} t’a répondu`,
+      body: (v) =>
+        many(v)
+          ? `${v.name} et ${others(v, 'autre', 'autres')} t’ont répondu. Dis-leur bonjour.`
+          : 'Vous pouvez vous écrire. Dis-lui bonjour.',
     },
     waved: {
-      title: (v) => (many(v) ? `${v.name} et ${others(v, 'autre', 'autres')} t’ont fait signe` : `${v.name} te fait signe`),
+      title: (v) =>
+        many(v) ? `${v.name} et ${others(v, 'autre', 'autres')} t’ont fait signe` : `${v.name} te fait signe`,
       body: () => 'Viens voir qui c’est et réponds quand tu veux.',
     },
     message: {
       title: (v) => (many(v) ? 'Messages' : v.name),
-      body: (v) => (many(v) ? `${v.name} et ${others(v, 'autre', 'autres')} t’ont écrit.` : Number(v.n) > 1 ? `${v.n} messages de ${v.name}.` : `${v.name} t’a écrit.`),
+      body: (v) =>
+        !many(v) && v.text
+          ? Number(v.n) > 1
+            ? `(${v.n}) ${v.text}`
+            : v.text
+          : many(v)
+            ? `${v.name} et ${others(v, 'autre', 'autres')} t’ont écrit.`
+            : Number(v.n) > 1
+              ? `${v.n} messages de ${v.name}.`
+              : `${v.name} t’a écrit.`,
     },
     your_turn: {
       title: (v) => `Série avec ${v.name}`,
@@ -98,39 +138,77 @@ const fr = {
             ? `${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'} d’affilée. À toi d’écrire avant minuit.`
             : `${v.name} t’a écrit aujourd’hui. À toi avant minuit.`,
     },
-    link_in_danger: { title: (v) => `Lien avec ${v.name}`, body: () => 'Votre lien s’essouffle un peu. Un petit mot suffit à le raviver.' },
-    streak_in_danger: { title: (v) => `Ta série de ${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'}`, body: (v) => (v.step === 'chemin' ? 'Ta séance du jour est encore possible ce soir.' : 'Le défi du jour est encore possible ce soir.') },
-    habit_proof: { title: (v) => `${v.minimoa} voudrait voir`, body: () => 'C’est l’heure de ton habitude. Une photo ?' },
-    weekly_review: { title: () => 'Ton bilan de la semaine', body: (v) => `${v.minimoa} a fait le point. Viens voir.` },
+    link_in_danger: {
+      title: (v) => `Lien avec ${v.name}`,
+      body: () => 'Votre lien s’essouffle un peu. Un petit mot suffit à le raviver.',
+    },
+    streak_in_danger: {
+      title: (v) => `Ta série de ${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'}`,
+      body: (v) =>
+        v.step === 'chemin'
+          ? 'Ta séance du jour est encore possible ce soir.'
+          : 'Le défi du jour est encore possible ce soir.',
+    },
+    habit_proof: {
+      title: (v) => `${v.minimoa} voudrait voir`,
+      body: () => 'C’est l’heure de ton habitude. Une photo ?',
+    },
+    weekly_review: {
+      title: () => 'Ton bilan de la semaine',
+      body: (v) => `${v.minimoa} a fait le point. Viens voir.`,
+    },
     item_unlocked: {
       title: (v) => (many(v) ? 'Nouveaux objets' : 'Nouvel objet'),
-      body: (v) => (many(v) ? `${v.minimoa} a gagné : ${v.item}, et ${others(v, 'autre objet', 'autres objets')}.` : `${v.minimoa} a gagné : ${v.item}.`),
+      body: (v) =>
+        many(v)
+          ? `${v.minimoa} a gagné : ${v.item}, et ${others(v, 'autre objet', 'autres objets')}.`
+          : `${v.minimoa} a gagné : ${v.item}.`,
     },
     words_received: {
       title: (v) => (many(v) ? `${total(v)} personnes t’ont décrit` : '3 mots pour toi'),
-      body: (v) => (many(v) ? 'Leurs 3 mots sur toi t’attendent.' : 'Quelqu’un vient de choisir ses 3 mots sur toi. Viens voir.'),
+      body: (v) =>
+        many(v)
+          ? 'Leurs 3 mots sur toi t’attendent.'
+          : 'Quelqu’un vient de choisir ses 3 mots sur toi. Viens voir.',
     },
     trial_reminder: {
       title: (v) => `Ton essai Minimoa+ se termine le ${v.endsOn}`,
-      body: (v) => `Ensuite, premier paiement de ${v.price}. Pour l’éviter, annule dans Réglages › Abonnements de ton compte Apple.`,
+      body: (v) =>
+        `Ensuite, premier paiement de ${v.price}. Pour l’éviter, annule dans Réglages › Abonnements de ton compte Apple.`,
     },
     group_invite: {
       title: (v) => `${v.name} t’invite dans « ${v.group} »`,
-      body: (v) => (v.habit ? `Un groupe pour tenir une habitude ensemble : ${v.habit}. À toi de dire oui.` : 'Un groupe entre potes. À toi de dire oui.'),
+      body: (v) =>
+        v.habit
+          ? `Un groupe pour tenir une habitude ensemble : ${v.habit}. À toi de dire oui.`
+          : 'Un groupe entre potes. À toi de dire oui.',
     },
     together_proposal: {
       title: (v) => (v.group ? `« ${v.group} » démarre` : `${v.habit}, à plusieurs ?`),
-      body: (v) => (v.group ? `Vous êtes ${v.count} à tenir la même habitude : ${v.habit}. Dis bonjour.` : 'Des personnes près de toi tiennent aussi cette habitude. La tenir ensemble ?'),
+      body: (v) =>
+        v.group
+          ? `Vous êtes ${v.count} à tenir la même habitude : ${v.habit}. Dis bonjour.`
+          : 'Des personnes près de toi tiennent aussi cette habitude. La tenir ensemble ?',
     },
     group_message: { title: (v) => v.group, body: (v) => `${v.name} a écrit dans le groupe.` },
     group_life_lost: {
       title: (v) => `« ${v.group} » perd une vie`,
-      body: (v) => `Il lui reste ${v.count} ${Number(v.count) > 1 ? 'vies' : 'vie'}. Aujourd’hui, on s’y remet ensemble.`,
+      body: (v) =>
+        `Il lui reste ${v.count} ${Number(v.count) > 1 ? 'vies' : 'vie'}. Aujourd’hui, on s’y remet ensemble.`,
     },
-    group_asleep: { title: (v) => `« ${v.group} » s’est endormi`, body: () => 'Plus de vies pour l’instant. N’importe qui peut le réveiller.' },
+    group_asleep: {
+      title: (v) => `« ${v.group} » s’est endormi`,
+      body: () => 'Plus de vies pour l’instant. N’importe qui peut le réveiller.',
+    },
     group_joined: {
-      title: (v) => (many(v) ? `« ${v.group} » : ${v.name} et ${others(v, 'autre', 'autres')} arrivent` : `« ${v.group} » : ${v.name} arrive`),
-      body: (v) => (Number(v.count) >= 3 ? `Vous êtes ${v.count}. Dis bonjour.` : `Vous êtes ${v.count}. Encore une personne et la série démarre.`),
+      title: (v) =>
+        many(v)
+          ? `« ${v.group} » : ${v.name} et ${others(v, 'autre', 'autres')} arrivent`
+          : `« ${v.group} » : ${v.name} arrive`,
+      body: (v) =>
+        Number(v.count) >= 3
+          ? `Vous êtes ${v.count}. Dis bonjour.`
+          : `Vous êtes ${v.count}. Encore une personne et la série démarre.`,
     },
     first_steps: {
       title: (v) => {
@@ -190,6 +268,28 @@ const fr = {
               ? 'Il va bien et il a gardé quelques histoires pour toi. Passe quand tu veux.'
               : `${v.minimoa} va bien. Tes liens ont peut-être des nouvelles pour toi.`,
     },
+    league: {
+      title: (v) =>
+        v.step === 'passed'
+          ? `${v.name} vient de te dépasser`
+          : v.step === 'ending'
+            ? 'Dernières heures dans ta ligue'
+            : v.step === 'up'
+              ? `Tu montes en Ligue ${v.tier} !`
+              : v.step === 'down'
+                ? `Tu redescends en Ligue ${v.tier}`
+                : `Tu restes en Ligue ${v.tier}`,
+      body: (v) =>
+        v.step === 'passed'
+          ? `Tu es ${v.count}${v.count === '1' ? 'er' : 'e'} en Ligue ${v.tier}. Une séance et tu reprends ta place.`
+          : v.step === 'ending'
+            ? Number(v.more) > 0
+              ? `Tu es ${v.count}${v.count === '1' ? 'er' : 'e'}. Encore ${v.more} étincelles pour entrer dans la zone de montée.`
+              : `Tu es ${v.count}${v.count === '1' ? 'er' : 'e'}, dans la zone de montée. Garde ta place jusqu’à minuit !`
+            : v.step === 'down'
+              ? 'Une séance aujourd’hui et tu repars vers le haut.'
+              : `${v.count}${v.count === '1' ? 'er' : 'e'} la semaine dernière. Nouvelle semaine, nouvelles étincelles.`,
+    },
     plus_account: {
       title: (v) =>
         pick(
@@ -212,9 +312,11 @@ const fr = {
             renewed: `Ton abonnement annuel est renouvelé. Merci de rester : ${v.minimoa} garde ses objets premium.`,
             recovered: 'Le paiement est passé. Merci, tout est rentré dans l’ordre.',
             billing_grace: `Minimoa+ reste ouvert jusqu’au ${v.endsOn}. Mets à jour ton moyen de paiement : Moi › Minimoa+ › Gérer mon abonnement.`,
-            billing_retry: 'Minimoa+ est en pause. Mets à jour ton moyen de paiement : Moi › Minimoa+ › Gérer mon abonnement.',
+            billing_retry:
+              'Minimoa+ est en pause. Mets à jour ton moyen de paiement : Moi › Minimoa+ › Gérer mon abonnement.',
             goodbye: `Merci pour ce bout de chemin. ${v.minimoa}, tes liens et tes habitudes restent là, gratuitement.`,
-            winback: 'Ça fait un mois que Minimoa+ s’est arrêté. Si l’envie revient, il est toujours là ; le reste continue comme avant.',
+            winback:
+              'Ça fait un mois que Minimoa+ s’est arrêté. Si l’envie revient, il est toujours là ; le reste continue comme avant.',
           },
           v.step,
           '',
@@ -245,6 +347,7 @@ const fr = {
     first_steps: 'Premiers pas',
     minimoa_news: 'Nouvelles de ton minimoa',
     plus_account: 'Ton abonnement Minimoa+',
+    league: 'Ta ligue de la semaine',
   } as Record<NotificationKindKey, string>,
 };
 
@@ -252,24 +355,49 @@ export const notificationTexts = defineMessages({
   fr,
   en: {
     yourMinimoa: 'Your minimoa',
-    digestMore: (n: number): string => (n === 1 ? 'And 1 more update is waiting in the app.' : `And ${n} more updates are waiting in the app.`),
+    digestMore: (n: number): string =>
+      n === 1 ? 'And 1 more update is waiting in the app.' : `And ${n} more updates are waiting in the app.`,
     texts: {
       daily_challenge: {
         title: (v) => (v.step === 'chemin' ? 'Your session is waiting' : 'Your daily challenge'),
-        body: (v) => (v.step === 'chemin' ? `${v.minimoa} has 5 questions for you. 2 minutes.` : `${v.minimoa} has something for you.`),
+        body: (v) =>
+          v.step === 'chemin'
+            ? `${v.minimoa} has 5 questions for you. 2 minutes.`
+            : `${v.minimoa} has something for you.`,
       },
-      needs_out: { title: (v) => `${v.minimoa} wants to go out`, body: () => 'A walk outside or a word to someone, and it’s back to its old self.' },
+      needs_out: {
+        title: (v) => `${v.minimoa} wants to go out`,
+        body: () => 'A walk outside or a word to someone, and it’s back to its old self.',
+      },
       new_encounter: {
-        title: (v) => (many(v) ? 'New links' : v.step === 'invite' ? `${v.name} accepted your invite` : `${v.name} waved back`),
-        body: (v) => (many(v) ? `${v.name} and ${others(v, 'other', 'others')} waved back. Say hi.` : 'You can now write to each other. Say hi.'),
+        title: (v) =>
+          many(v)
+            ? 'New links'
+            : v.step === 'invite'
+              ? `${v.name} accepted your invite`
+              : `${v.name} waved back`,
+        body: (v) =>
+          many(v)
+            ? `${v.name} and ${others(v, 'other', 'others')} waved back. Say hi.`
+            : 'You can now write to each other. Say hi.',
       },
       waved: {
-        title: (v) => (many(v) ? `${v.name} and ${others(v, 'other', 'others')} waved at you` : `${v.name} waved at you`),
+        title: (v) =>
+          many(v) ? `${v.name} and ${others(v, 'other', 'others')} waved at you` : `${v.name} waved at you`,
         body: () => 'Come and see who it is, and wave back whenever you like.',
       },
       message: {
         title: (v) => (many(v) ? 'Messages' : v.name),
-        body: (v) => (many(v) ? `${v.name} and ${others(v, 'other', 'others')} wrote to you.` : Number(v.n) > 1 ? `${v.n} messages from ${v.name}.` : `${v.name} wrote to you.`),
+        body: (v) =>
+          !many(v) && v.text
+            ? Number(v.n) > 1
+              ? `(${v.n}) ${v.text}`
+              : v.text
+            : many(v)
+              ? `${v.name} and ${others(v, 'other', 'others')} wrote to you.`
+              : Number(v.n) > 1
+                ? `${v.n} messages from ${v.name}.`
+                : `${v.name} wrote to you.`,
       },
       your_turn: {
         title: (v) => `Streak with ${v.name}`,
@@ -280,39 +408,77 @@ export const notificationTexts = defineMessages({
               ? `${v.count} ${Number(v.count) > 1 ? 'days' : 'day'} in a row. Your turn to write before midnight.`
               : `${v.name} wrote to you today. Your turn before midnight.`,
       },
-      link_in_danger: { title: (v) => `Your link with ${v.name}`, body: () => 'Your link is running a little low. One short message is enough to perk it up.' },
-      streak_in_danger: { title: (v) => `Your ${v.count}-day streak`, body: (v) => (v.step === 'chemin' ? 'Today’s session is still doable tonight.' : 'Today’s challenge is still doable tonight.') },
-      habit_proof: { title: (v) => `${v.minimoa} would like to see`, body: () => 'Time for your habit. A photo?' },
-      weekly_review: { title: () => 'Your weekly review', body: (v) => `${v.minimoa} took stock. Come and see.` },
+      link_in_danger: {
+        title: (v) => `Your link with ${v.name}`,
+        body: () => 'Your link is running a little low. One short message is enough to perk it up.',
+      },
+      streak_in_danger: {
+        title: (v) => `Your ${v.count}-day streak`,
+        body: (v) =>
+          v.step === 'chemin'
+            ? 'Today’s session is still doable tonight.'
+            : 'Today’s challenge is still doable tonight.',
+      },
+      habit_proof: {
+        title: (v) => `${v.minimoa} would like to see`,
+        body: () => 'Time for your habit. A photo?',
+      },
+      weekly_review: {
+        title: () => 'Your weekly review',
+        body: (v) => `${v.minimoa} took stock. Come and see.`,
+      },
       item_unlocked: {
         title: (v) => (many(v) ? 'New items' : 'New item'),
-        body: (v) => (many(v) ? `${v.minimoa} won: ${v.item}, and ${others(v, 'other item', 'other items')}.` : `${v.minimoa} won: ${v.item}.`),
+        body: (v) =>
+          many(v)
+            ? `${v.minimoa} won: ${v.item}, and ${others(v, 'other item', 'other items')}.`
+            : `${v.minimoa} won: ${v.item}.`,
       },
       words_received: {
         title: (v) => (many(v) ? `${total(v)} people described you` : '3 words for you'),
-        body: (v) => (many(v) ? 'Their 3 words about you are waiting.' : 'Someone just picked their 3 words about you. Come and see.'),
+        body: (v) =>
+          many(v)
+            ? 'Their 3 words about you are waiting.'
+            : 'Someone just picked their 3 words about you. Come and see.',
       },
       trial_reminder: {
         title: (v) => `Your Minimoa+ trial ends on ${v.endsOn}`,
-        body: (v) => `After that, the first payment of ${v.price} is charged. To avoid it, cancel in your Apple account settings, under Subscriptions.`,
+        body: (v) =>
+          `After that, the first payment of ${v.price} is charged. To avoid it, cancel in your Apple account settings, under Subscriptions.`,
       },
       group_invite: {
         title: (v) => `${v.name} invites you to “${v.group}”`,
-        body: (v) => (v.habit ? `A group to keep a habit together: ${v.habit}. Your call.` : 'A group with friends. Your call.'),
+        body: (v) =>
+          v.habit
+            ? `A group to keep a habit together: ${v.habit}. Your call.`
+            : 'A group with friends. Your call.',
       },
       together_proposal: {
         title: (v) => (v.group ? `“${v.group}” is starting` : `${v.habit}, together?`),
-        body: (v) => (v.group ? `${v.count} of you keep the same habit: ${v.habit}. Say hi.` : 'People near you keep this habit too. Keep it together?'),
+        body: (v) =>
+          v.group
+            ? `${v.count} of you keep the same habit: ${v.habit}. Say hi.`
+            : 'People near you keep this habit too. Keep it together?',
       },
       group_message: { title: (v) => v.group, body: (v) => `${v.name} wrote in the group.` },
       group_life_lost: {
         title: (v) => `“${v.group}” lost a life`,
-        body: (v) => `${v.count} ${Number(v.count) === 1 ? 'life' : 'lives'} left. Today you pick it up together.`,
+        body: (v) =>
+          `${v.count} ${Number(v.count) === 1 ? 'life' : 'lives'} left. Today you pick it up together.`,
       },
-      group_asleep: { title: (v) => `“${v.group}” fell asleep`, body: () => 'No lives left for now. Anyone can wake it up.' },
+      group_asleep: {
+        title: (v) => `“${v.group}” fell asleep`,
+        body: () => 'No lives left for now. Anyone can wake it up.',
+      },
       group_joined: {
-        title: (v) => (many(v) ? `${v.name} and ${others(v, 'other', 'others')} joined “${v.group}”` : `${v.name} joined “${v.group}”`),
-        body: (v) => (Number(v.count) >= 3 ? `There are ${v.count} of you now. Say hi.` : `There are ${v.count} of you. One more and the streak starts.`),
+        title: (v) =>
+          many(v)
+            ? `${v.name} and ${others(v, 'other', 'others')} joined “${v.group}”`
+            : `${v.name} joined “${v.group}”`,
+        body: (v) =>
+          Number(v.count) >= 3
+            ? `There are ${v.count} of you now. Say hi.`
+            : `There are ${v.count} of you. One more and the streak starts.`,
       },
       first_steps: {
         title: (v) => {
@@ -372,6 +538,28 @@ export const notificationTexts = defineMessages({
                 ? 'It’s doing well and saved a few stories for you. Drop by whenever you like.'
                 : `${v.minimoa} is doing well. Your links may have news for you.`,
       },
+      league: {
+        title: (v) =>
+          v.step === 'passed'
+            ? `${v.name} just passed you`
+            : v.step === 'ending'
+              ? 'Last hours in your league'
+              : v.step === 'up'
+                ? `You’re moving up to the ${v.tier} League!`
+                : v.step === 'down'
+                  ? `You dropped to the ${v.tier} League`
+                  : `You stay in the ${v.tier} League`,
+        body: (v) =>
+          v.step === 'passed'
+            ? `You’re #${v.count} in the ${v.tier} League. One session and you’re back on top.`
+            : v.step === 'ending'
+              ? Number(v.more) > 0
+                ? `You’re #${v.count}. ${v.more} more sparks to reach the promotion zone.`
+                : `You’re #${v.count}, in the promotion zone. Hold on until midnight!`
+              : v.step === 'down'
+                ? 'One session today and you’re climbing again.'
+                : `#${v.count} last week. New week, new sparks.`,
+      },
       plus_account: {
         title: (v) =>
           pick(
@@ -394,9 +582,11 @@ export const notificationTexts = defineMessages({
               renewed: `Your yearly subscription has renewed. Thanks for staying: ${v.minimoa} keeps its premium items.`,
               recovered: 'The payment went through. Thanks, everything’s back in order.',
               billing_grace: `Minimoa+ stays open until ${v.endsOn}. Update your payment method: Me › Minimoa+ › Manage my subscription.`,
-              billing_retry: 'Minimoa+ is paused. Update your payment method: Me › Minimoa+ › Manage my subscription.',
+              billing_retry:
+                'Minimoa+ is paused. Update your payment method: Me › Minimoa+ › Manage my subscription.',
               goodbye: `Thanks for coming along. ${v.minimoa}, your links and your habits stay, for free.`,
-              winback: 'It’s been a month since Minimoa+ stopped. If you feel like it again, it’s still here; everything else carries on as before.',
+              winback:
+                'It’s been a month since Minimoa+ stopped. If you feel like it again, it’s still here; everything else carries on as before.',
             },
             v.step,
             '',
@@ -426,28 +616,56 @@ export const notificationTexts = defineMessages({
       first_steps: 'First steps',
       minimoa_news: 'News from your minimoa',
       plus_account: 'Your Minimoa+ subscription',
+      league: 'Your weekly league',
     },
   },
   es: {
     yourMinimoa: 'Tu minimoa',
-    digestMore: (n: number): string => (n === 1 ? 'Y 1 novedad más te espera en la app.' : `Y ${n} novedades más te esperan en la app.`),
+    digestMore: (n: number): string =>
+      n === 1 ? 'Y 1 novedad más te espera en la app.' : `Y ${n} novedades más te esperan en la app.`,
     texts: {
       daily_challenge: {
         title: (v) => (v.step === 'chemin' ? 'Tu sesión del día te espera' : 'Tu reto del día'),
-        body: (v) => (v.step === 'chemin' ? `${v.minimoa} tiene 5 preguntas para ti. 2 minutos.` : `${v.minimoa} te ha preparado algo.`),
+        body: (v) =>
+          v.step === 'chemin'
+            ? `${v.minimoa} tiene 5 preguntas para ti. 2 minutos.`
+            : `${v.minimoa} te ha preparado algo.`,
       },
-      needs_out: { title: (v) => `${v.minimoa} quiere salir`, body: () => 'Una vuelta fuera o un mensaje a alguien, y recupera la chispa.' },
+      needs_out: {
+        title: (v) => `${v.minimoa} quiere salir`,
+        body: () => 'Una vuelta fuera o un mensaje a alguien, y recupera la chispa.',
+      },
       new_encounter: {
-        title: (v) => (many(v) ? 'Nuevos vínculos' : v.step === 'invite' ? `${v.name} aceptó tu invitación` : `${v.name} te ha respondido`),
-        body: (v) => (many(v) ? `${v.name} y ${others(v, 'persona más', 'personas más')} te han respondido. Salúdalos.` : 'Ya podéis escribiros. Salúdale.'),
+        title: (v) =>
+          many(v)
+            ? 'Nuevos vínculos'
+            : v.step === 'invite'
+              ? `${v.name} aceptó tu invitación`
+              : `${v.name} te ha respondido`,
+        body: (v) =>
+          many(v)
+            ? `${v.name} y ${others(v, 'persona más', 'personas más')} te han respondido. Salúdalos.`
+            : 'Ya podéis escribiros. Salúdale.',
       },
       waved: {
-        title: (v) => (many(v) ? `${v.name} y ${others(v, 'persona más', 'personas más')} te han saludado` : `${v.name} te saluda`),
+        title: (v) =>
+          many(v)
+            ? `${v.name} y ${others(v, 'persona más', 'personas más')} te han saludado`
+            : `${v.name} te saluda`,
         body: () => 'Ven a ver quién es y responde cuando quieras.',
       },
       message: {
         title: (v) => (many(v) ? 'Mensajes' : v.name),
-        body: (v) => (many(v) ? `${v.name} y ${others(v, 'persona más', 'personas más')} te han escrito.` : Number(v.n) > 1 ? `${v.n} mensajes de ${v.name}.` : `${v.name} te ha escrito.`),
+        body: (v) =>
+          !many(v) && v.text
+            ? Number(v.n) > 1
+              ? `(${v.n}) ${v.text}`
+              : v.text
+            : many(v)
+              ? `${v.name} y ${others(v, 'persona más', 'personas más')} te han escrito.`
+              : Number(v.n) > 1
+                ? `${v.n} mensajes de ${v.name}.`
+                : `${v.name} te ha escrito.`,
       },
       your_turn: {
         title: (v) => `Racha con ${v.name}`,
@@ -458,39 +676,77 @@ export const notificationTexts = defineMessages({
               ? `${v.count} ${Number(v.count) === 1 ? 'día seguido' : 'días seguidos'}. Te toca escribir antes de medianoche.`
               : `${v.name} te escribió hoy. Te toca antes de medianoche.`,
       },
-      link_in_danger: { title: (v) => `Vínculo con ${v.name}`, body: () => 'Vuestro vínculo anda un poco flojo. Un mensajito basta para animarlo.' },
-      streak_in_danger: { title: (v) => `Tu racha de ${v.count} ${Number(v.count) !== 1 ? 'días' : 'día'}`, body: (v) => (v.step === 'chemin' ? 'Tu sesión del día aún es posible esta noche.' : 'El reto del día aún es posible esta noche.') },
-      habit_proof: { title: (v) => `${v.minimoa} quiere ver algo`, body: () => 'Es la hora de tu hábito. ¿Una foto?' },
-      weekly_review: { title: () => 'Tu resumen de la semana', body: (v) => `${v.minimoa} ha hecho balance. Ven a verlo.` },
+      link_in_danger: {
+        title: (v) => `Vínculo con ${v.name}`,
+        body: () => 'Vuestro vínculo anda un poco flojo. Un mensajito basta para animarlo.',
+      },
+      streak_in_danger: {
+        title: (v) => `Tu racha de ${v.count} ${Number(v.count) !== 1 ? 'días' : 'día'}`,
+        body: (v) =>
+          v.step === 'chemin'
+            ? 'Tu sesión del día aún es posible esta noche.'
+            : 'El reto del día aún es posible esta noche.',
+      },
+      habit_proof: {
+        title: (v) => `${v.minimoa} quiere ver algo`,
+        body: () => 'Es la hora de tu hábito. ¿Una foto?',
+      },
+      weekly_review: {
+        title: () => 'Tu resumen de la semana',
+        body: (v) => `${v.minimoa} ha hecho balance. Ven a verlo.`,
+      },
       item_unlocked: {
         title: (v) => (many(v) ? 'Nuevos objetos' : 'Nuevo objeto'),
-        body: (v) => (many(v) ? `${v.minimoa} ha ganado: ${v.item}, y ${others(v, 'objeto más', 'objetos más')}.` : `${v.minimoa} ha ganado: ${v.item}.`),
+        body: (v) =>
+          many(v)
+            ? `${v.minimoa} ha ganado: ${v.item}, y ${others(v, 'objeto más', 'objetos más')}.`
+            : `${v.minimoa} ha ganado: ${v.item}.`,
       },
       words_received: {
         title: (v) => (many(v) ? `${total(v)} personas te han descrito` : '3 palabras para ti'),
-        body: (v) => (many(v) ? 'Sus 3 palabras sobre ti te esperan.' : 'Alguien acaba de elegir sus 3 palabras sobre ti. Ven a verlo.'),
+        body: (v) =>
+          many(v)
+            ? 'Sus 3 palabras sobre ti te esperan.'
+            : 'Alguien acaba de elegir sus 3 palabras sobre ti. Ven a verlo.',
       },
       trial_reminder: {
         title: (v) => `Tu prueba de Minimoa+ termina el ${v.endsOn}`,
-        body: (v) => `Después, primer pago de ${v.price}. Para evitarlo, cancela en los ajustes de tu cuenta de Apple, en Suscripciones.`,
+        body: (v) =>
+          `Después, primer pago de ${v.price}. Para evitarlo, cancela en los ajustes de tu cuenta de Apple, en Suscripciones.`,
       },
       group_invite: {
         title: (v) => `${v.name} te invita a «${v.group}»`,
-        body: (v) => (v.habit ? `Un grupo para mantener un hábito juntos: ${v.habit}. Tú decides.` : 'Un grupo entre amigos. Tú decides.'),
+        body: (v) =>
+          v.habit
+            ? `Un grupo para mantener un hábito juntos: ${v.habit}. Tú decides.`
+            : 'Un grupo entre amigos. Tú decides.',
       },
       together_proposal: {
         title: (v) => (v.group ? `«${v.group}» empieza` : `${v.habit}, ¿en grupo?`),
-        body: (v) => (v.group ? `Sois ${v.count} con el mismo hábito: ${v.habit}. Saluda.` : 'Hay gente cerca de ti con este hábito. ¿Lo mantenéis juntos?'),
+        body: (v) =>
+          v.group
+            ? `Sois ${v.count} con el mismo hábito: ${v.habit}. Saluda.`
+            : 'Hay gente cerca de ti con este hábito. ¿Lo mantenéis juntos?',
       },
       group_message: { title: (v) => v.group, body: (v) => `${v.name} ha escrito en el grupo.` },
       group_life_lost: {
         title: (v) => `«${v.group}» pierde una vida`,
-        body: (v) => `Le ${Number(v.count) === 1 ? 'queda' : 'quedan'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoy volvéis a empezar juntos.`,
+        body: (v) =>
+          `Le ${Number(v.count) === 1 ? 'queda' : 'quedan'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoy volvéis a empezar juntos.`,
       },
-      group_asleep: { title: (v) => `«${v.group}» se ha dormido`, body: () => 'Sin vidas por ahora. Cualquiera puede despertarlo.' },
+      group_asleep: {
+        title: (v) => `«${v.group}» se ha dormido`,
+        body: () => 'Sin vidas por ahora. Cualquiera puede despertarlo.',
+      },
       group_joined: {
-        title: (v) => (many(v) ? `${v.name} y ${others(v, 'persona más', 'personas más')} se unen a «${v.group}»` : `${v.name} se une a «${v.group}»`),
-        body: (v) => (Number(v.count) >= 3 ? `Ya sois ${v.count}. Saluda.` : `Sois ${v.count}. Una persona más y empieza la racha.`),
+        title: (v) =>
+          many(v)
+            ? `${v.name} y ${others(v, 'persona más', 'personas más')} se unen a «${v.group}»`
+            : `${v.name} se une a «${v.group}»`,
+        body: (v) =>
+          Number(v.count) >= 3
+            ? `Ya sois ${v.count}. Saluda.`
+            : `Sois ${v.count}. Una persona más y empieza la racha.`,
       },
       first_steps: {
         title: (v) => {
@@ -550,6 +806,28 @@ export const notificationTexts = defineMessages({
                 ? 'Está bien y te ha guardado algunas historias. Pásate cuando quieras.'
                 : `${v.minimoa} está bien. Puede que tus vínculos tengan novedades para ti.`,
       },
+      league: {
+        title: (v) =>
+          v.step === 'passed'
+            ? `${v.name} acaba de adelantarte`
+            : v.step === 'ending'
+              ? 'Últimas horas en tu liga'
+              : v.step === 'up'
+                ? `¡Subes a la Liga ${v.tier}!`
+                : v.step === 'down'
+                  ? `Bajas a la Liga ${v.tier}`
+                  : `Te quedas en la Liga ${v.tier}`,
+        body: (v) =>
+          v.step === 'passed'
+            ? `Vas ${v.count}.º en la Liga ${v.tier}. Una sesión y recuperas tu sitio.`
+            : v.step === 'ending'
+              ? Number(v.more) > 0
+                ? `Vas ${v.count}.º. Te faltan ${v.more} chispas para entrar en la zona de ascenso.`
+                : `Vas ${v.count}.º, en la zona de ascenso. ¡Aguanta hasta medianoche!`
+              : v.step === 'down'
+                ? 'Una sesión hoy y vuelves a subir.'
+                : `${v.count}.º la semana pasada. Nueva semana, nuevas chispas.`,
+      },
       plus_account: {
         title: (v) =>
           pick(
@@ -572,9 +850,11 @@ export const notificationTexts = defineMessages({
               renewed: `Tu suscripción anual se ha renovado. Gracias por quedarte: ${v.minimoa} conserva sus objetos premium.`,
               recovered: 'El pago se ha realizado. Gracias, todo vuelve a estar en orden.',
               billing_grace: `Minimoa+ sigue abierto hasta el ${v.endsOn}. Actualiza tu método de pago: Yo › Minimoa+ › Gestionar mi suscripción.`,
-              billing_retry: 'Minimoa+ está en pausa. Actualiza tu método de pago: Yo › Minimoa+ › Gestionar mi suscripción.',
+              billing_retry:
+                'Minimoa+ está en pausa. Actualiza tu método de pago: Yo › Minimoa+ › Gestionar mi suscripción.',
               goodbye: `Gracias por este tramo del camino. ${v.minimoa}, tus vínculos y tus hábitos siguen aquí, gratis.`,
-              winback: 'Hace un mes que Minimoa+ terminó. Si te apetece volver, sigue aquí; todo lo demás continúa igual.',
+              winback:
+                'Hace un mes que Minimoa+ terminó. Si te apetece volver, sigue aquí; todo lo demás continúa igual.',
             },
             v.step,
             '',
@@ -604,28 +884,56 @@ export const notificationTexts = defineMessages({
       first_steps: 'Primeros pasos',
       minimoa_news: 'Noticias de tu minimoa',
       plus_account: 'Tu suscripción a Minimoa+',
+      league: 'Tu liga de la semana',
     },
   },
   pt: {
     yourMinimoa: 'Seu minimoa',
-    digestMore: (n: number): string => (n === 1 ? 'E mais 1 novidade te espera no app.' : `E mais ${n} novidades te esperam no app.`),
+    digestMore: (n: number): string =>
+      n === 1 ? 'E mais 1 novidade te espera no app.' : `E mais ${n} novidades te esperam no app.`,
     texts: {
       daily_challenge: {
         title: (v) => (v.step === 'chemin' ? 'Sua sessão do dia está esperando' : 'Seu desafio do dia'),
-        body: (v) => (v.step === 'chemin' ? `${v.minimoa} tem 5 perguntas para você. 2 minutos.` : `${v.minimoa} preparou algo para você.`),
+        body: (v) =>
+          v.step === 'chemin'
+            ? `${v.minimoa} tem 5 perguntas para você. 2 minutos.`
+            : `${v.minimoa} preparou algo para você.`,
       },
-      needs_out: { title: (v) => `${v.minimoa} quer sair`, body: () => 'Uma volta lá fora ou uma mensagem para alguém, e ele se anima de novo.' },
+      needs_out: {
+        title: (v) => `${v.minimoa} quer sair`,
+        body: () => 'Uma volta lá fora ou uma mensagem para alguém, e ele se anima de novo.',
+      },
       new_encounter: {
-        title: (v) => (many(v) ? 'Novos vínculos' : v.step === 'invite' ? `${v.name} aceitou seu convite` : `${v.name} respondeu seu aceno`),
-        body: (v) => (many(v) ? `${v.name} e mais ${others(v, 'pessoa', 'pessoas')} responderam. Dê um oi.` : 'Agora vocês podem conversar. Dê um oi.'),
+        title: (v) =>
+          many(v)
+            ? 'Novos vínculos'
+            : v.step === 'invite'
+              ? `${v.name} aceitou seu convite`
+              : `${v.name} respondeu seu aceno`,
+        body: (v) =>
+          many(v)
+            ? `${v.name} e mais ${others(v, 'pessoa', 'pessoas')} responderam. Dê um oi.`
+            : 'Agora vocês podem conversar. Dê um oi.',
       },
       waved: {
-        title: (v) => (many(v) ? `${v.name} e mais ${others(v, 'pessoa', 'pessoas')} acenaram para você` : `${v.name} acenou para você`),
+        title: (v) =>
+          many(v)
+            ? `${v.name} e mais ${others(v, 'pessoa', 'pessoas')} acenaram para você`
+            : `${v.name} acenou para você`,
         body: () => 'Venha ver quem é e responda quando quiser.',
       },
       message: {
         title: (v) => (many(v) ? 'Mensagens' : v.name),
-        body: (v) => (many(v) ? `${v.name} e mais ${others(v, 'pessoa', 'pessoas')} mandaram mensagem.` : Number(v.n) > 1 ? `${v.n} mensagens de ${v.name}.` : `${v.name} mandou uma mensagem.`),
+        body: (v) =>
+          !many(v) && v.text
+            ? Number(v.n) > 1
+              ? `(${v.n}) ${v.text}`
+              : v.text
+            : many(v)
+              ? `${v.name} e mais ${others(v, 'pessoa', 'pessoas')} mandaram mensagem.`
+              : Number(v.n) > 1
+                ? `${v.n} mensagens de ${v.name}.`
+                : `${v.name} mandou uma mensagem.`,
       },
       your_turn: {
         title: (v) => `Sequência com ${v.name}`,
@@ -636,39 +944,74 @@ export const notificationTexts = defineMessages({
               ? `${v.count} ${Number(v.count) === 1 ? 'dia seguido' : 'dias seguidos'}. Sua vez de escrever antes da meia-noite.`
               : `${v.name} escreveu hoje. Sua vez, antes da meia-noite.`,
       },
-      link_in_danger: { title: (v) => `Vínculo com ${v.name}`, body: () => 'O vínculo de vocês está meio parado. Uma mensagenzinha basta para animar.' },
-      streak_in_danger: { title: (v) => `Sua sequência de ${v.count} ${Number(v.count) > 1 ? 'dias' : 'dia'}`, body: (v) => (v.step === 'chemin' ? 'Ainda dá para fazer a sessão do dia hoje à noite.' : 'Ainda dá para fazer o desafio do dia hoje à noite.') },
+      link_in_danger: {
+        title: (v) => `Vínculo com ${v.name}`,
+        body: () => 'O vínculo de vocês está meio parado. Uma mensagenzinha basta para animar.',
+      },
+      streak_in_danger: {
+        title: (v) => `Sua sequência de ${v.count} ${Number(v.count) > 1 ? 'dias' : 'dia'}`,
+        body: (v) =>
+          v.step === 'chemin'
+            ? 'Ainda dá para fazer a sessão do dia hoje à noite.'
+            : 'Ainda dá para fazer o desafio do dia hoje à noite.',
+      },
       habit_proof: { title: (v) => `${v.minimoa} quer ver`, body: () => 'Hora do seu hábito. Uma foto?' },
-      weekly_review: { title: () => 'Seu resumo da semana', body: (v) => `${v.minimoa} fez um balanço. Venha ver.` },
+      weekly_review: {
+        title: () => 'Seu resumo da semana',
+        body: (v) => `${v.minimoa} fez um balanço. Venha ver.`,
+      },
       item_unlocked: {
         title: (v) => (many(v) ? 'Novos itens' : 'Novo item'),
-        body: (v) => (many(v) ? `${v.minimoa} ganhou: ${v.item}, e mais ${others(v, 'item', 'itens')}.` : `${v.minimoa} ganhou: ${v.item}.`),
+        body: (v) =>
+          many(v)
+            ? `${v.minimoa} ganhou: ${v.item}, e mais ${others(v, 'item', 'itens')}.`
+            : `${v.minimoa} ganhou: ${v.item}.`,
       },
       words_received: {
         title: (v) => (many(v) ? `${total(v)} pessoas descreveram você` : '3 palavras para você'),
-        body: (v) => (many(v) ? 'As 3 palavras delas sobre você estão te esperando.' : 'Alguém acabou de escolher 3 palavras sobre você. Venha ver.'),
+        body: (v) =>
+          many(v)
+            ? 'As 3 palavras delas sobre você estão te esperando.'
+            : 'Alguém acabou de escolher 3 palavras sobre você. Venha ver.',
       },
       trial_reminder: {
         title: (v) => `Seu teste do Minimoa+ termina em ${v.endsOn}`,
-        body: (v) => `Depois, primeira cobrança de ${v.price}. Para evitar, cancele nos ajustes da sua conta Apple, em Assinaturas.`,
+        body: (v) =>
+          `Depois, primeira cobrança de ${v.price}. Para evitar, cancele nos ajustes da sua conta Apple, em Assinaturas.`,
       },
       group_invite: {
         title: (v) => `${v.name} te convida para «${v.group}»`,
-        body: (v) => (v.habit ? `Um grupo para manter um hábito juntos: ${v.habit}. Você decide.` : 'Um grupo entre amigos. Você decide.'),
+        body: (v) =>
+          v.habit
+            ? `Um grupo para manter um hábito juntos: ${v.habit}. Você decide.`
+            : 'Um grupo entre amigos. Você decide.',
       },
       together_proposal: {
         title: (v) => (v.group ? `«${v.group}» começou` : `${v.habit}, em grupo?`),
-        body: (v) => (v.group ? `Vocês são ${v.count} com o mesmo hábito: ${v.habit}. Diga oi.` : 'Tem gente perto de você com este hábito. Manter juntos?'),
+        body: (v) =>
+          v.group
+            ? `Vocês são ${v.count} com o mesmo hábito: ${v.habit}. Diga oi.`
+            : 'Tem gente perto de você com este hábito. Manter juntos?',
       },
       group_message: { title: (v) => v.group, body: (v) => `${v.name} escreveu no grupo.` },
       group_life_lost: {
         title: (v) => `«${v.group}» perdeu uma vida`,
-        body: (v) => `${Number(v.count) === 1 ? 'Resta' : 'Restam'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoje vocês recomeçam juntos.`,
+        body: (v) =>
+          `${Number(v.count) === 1 ? 'Resta' : 'Restam'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoje vocês recomeçam juntos.`,
       },
-      group_asleep: { title: (v) => `«${v.group}» adormeceu`, body: () => 'Sem vidas por enquanto. Qualquer pessoa pode acordá-lo.' },
+      group_asleep: {
+        title: (v) => `«${v.group}» adormeceu`,
+        body: () => 'Sem vidas por enquanto. Qualquer pessoa pode acordá-lo.',
+      },
       group_joined: {
-        title: (v) => (many(v) ? `${v.name} e mais ${others(v, 'pessoa', 'pessoas')} entraram em “${v.group}”` : `${v.name} entrou em “${v.group}”`),
-        body: (v) => (Number(v.count) >= 3 ? `Agora vocês são ${v.count}. Dê um oi.` : `Vocês são ${v.count}. Mais uma pessoa e a sequência começa.`),
+        title: (v) =>
+          many(v)
+            ? `${v.name} e mais ${others(v, 'pessoa', 'pessoas')} entraram em “${v.group}”`
+            : `${v.name} entrou em “${v.group}”`,
+        body: (v) =>
+          Number(v.count) >= 3
+            ? `Agora vocês são ${v.count}. Dê um oi.`
+            : `Vocês são ${v.count}. Mais uma pessoa e a sequência começa.`,
       },
       first_steps: {
         title: (v) => {
@@ -728,6 +1071,28 @@ export const notificationTexts = defineMessages({
                 ? 'Ele está bem e guardou umas histórias para você. Passe quando quiser.'
                 : `${v.minimoa} está bem. Seus vínculos talvez tenham novidades para você.`,
       },
+      league: {
+        title: (v) =>
+          v.step === 'passed'
+            ? `${v.name} acabou de te passar`
+            : v.step === 'ending'
+              ? 'Últimas horas na sua liga'
+              : v.step === 'up'
+                ? `Você sobe para a Liga ${v.tier}!`
+                : v.step === 'down'
+                  ? `Você desce para a Liga ${v.tier}`
+                  : `Você continua na Liga ${v.tier}`,
+        body: (v) =>
+          v.step === 'passed'
+            ? `Você está em ${v.count}º na Liga ${v.tier}. Uma sessão e você recupera seu lugar.`
+            : v.step === 'ending'
+              ? Number(v.more) > 0
+                ? `Você está em ${v.count}º. Faltam ${v.more} faíscas para entrar na zona de subida.`
+                : `Você está em ${v.count}º, na zona de subida. Segure até meia-noite!`
+              : v.step === 'down'
+                ? 'Uma sessão hoje e você volta a subir.'
+                : `${v.count}º na semana passada. Nova semana, novas faíscas.`,
+      },
       plus_account: {
         title: (v) =>
           pick(
@@ -750,9 +1115,11 @@ export const notificationTexts = defineMessages({
               renewed: `Sua assinatura anual foi renovada. Obrigado por ficar: ${v.minimoa} continua com os itens premium.`,
               recovered: 'O pagamento foi aprovado. Obrigado, tudo voltou ao normal.',
               billing_grace: `O Minimoa+ continua aberto até ${v.endsOn}. Atualize sua forma de pagamento: Eu › Minimoa+ › Gerenciar minha assinatura.`,
-              billing_retry: 'O Minimoa+ está pausado. Atualize sua forma de pagamento: Eu › Minimoa+ › Gerenciar minha assinatura.',
+              billing_retry:
+                'O Minimoa+ está pausado. Atualize sua forma de pagamento: Eu › Minimoa+ › Gerenciar minha assinatura.',
               goodbye: `Obrigado por esse pedaço do caminho. ${v.minimoa}, seus vínculos e seus hábitos continuam aqui, de graça.`,
-              winback: 'Faz um mês que o Minimoa+ terminou. Se der vontade de voltar, ele continua aqui; o resto segue igual.',
+              winback:
+                'Faz um mês que o Minimoa+ terminou. Se der vontade de voltar, ele continua aqui; o resto segue igual.',
             },
             v.step,
             '',
@@ -782,28 +1149,56 @@ export const notificationTexts = defineMessages({
       first_steps: 'Primeiros passos',
       minimoa_news: 'Notícias do seu minimoa',
       plus_account: 'Sua assinatura do Minimoa+',
+      league: 'Sua liga da semana',
     },
   },
   nl: {
     yourMinimoa: 'Je minimoa',
-    digestMore: (n: number): string => (n === 1 ? 'En er wacht nog 1 update in de app.' : `En er wachten nog ${n} updates in de app.`),
+    digestMore: (n: number): string =>
+      n === 1 ? 'En er wacht nog 1 update in de app.' : `En er wachten nog ${n} updates in de app.`,
     texts: {
       daily_challenge: {
         title: (v) => (v.step === 'chemin' ? 'Je sessie van vandaag wacht' : 'Je uitdaging van de dag'),
-        body: (v) => (v.step === 'chemin' ? `${v.minimoa} heeft 5 vragen voor je. 2 minuten.` : `${v.minimoa} heeft iets voor je klaargezet.`),
+        body: (v) =>
+          v.step === 'chemin'
+            ? `${v.minimoa} heeft 5 vragen voor je. 2 minuten.`
+            : `${v.minimoa} heeft iets voor je klaargezet.`,
       },
-      needs_out: { title: (v) => `${v.minimoa} wil naar buiten`, body: () => 'Even naar buiten of iemand een berichtje sturen, en hij leeft weer op.' },
+      needs_out: {
+        title: (v) => `${v.minimoa} wil naar buiten`,
+        body: () => 'Even naar buiten of iemand een berichtje sturen, en hij leeft weer op.',
+      },
       new_encounter: {
-        title: (v) => (many(v) ? 'Nieuwe banden' : v.step === 'invite' ? `${v.name} nam je uitnodiging aan` : `${v.name} zwaaide terug`),
-        body: (v) => (many(v) ? `${v.name} en ${others(v, 'ander', 'anderen')} zwaaiden terug. Zeg hallo.` : 'Jullie kunnen elkaar nu schrijven. Zeg hallo.'),
+        title: (v) =>
+          many(v)
+            ? 'Nieuwe banden'
+            : v.step === 'invite'
+              ? `${v.name} nam je uitnodiging aan`
+              : `${v.name} zwaaide terug`,
+        body: (v) =>
+          many(v)
+            ? `${v.name} en ${others(v, 'ander', 'anderen')} zwaaiden terug. Zeg hallo.`
+            : 'Jullie kunnen elkaar nu schrijven. Zeg hallo.',
       },
       waved: {
-        title: (v) => (many(v) ? `${v.name} en ${others(v, 'ander', 'anderen')} zwaaiden naar je` : `${v.name} zwaait naar je`),
+        title: (v) =>
+          many(v)
+            ? `${v.name} en ${others(v, 'ander', 'anderen')} zwaaiden naar je`
+            : `${v.name} zwaait naar je`,
         body: () => 'Kom kijken wie het is en zwaai terug wanneer je wilt.',
       },
       message: {
         title: (v) => (many(v) ? 'Berichten' : v.name),
-        body: (v) => (many(v) ? `${v.name} en ${others(v, 'ander', 'anderen')} schreven je.` : Number(v.n) > 1 ? `${v.n} berichten van ${v.name}.` : `${v.name} schreef je.`),
+        body: (v) =>
+          !many(v) && v.text
+            ? Number(v.n) > 1
+              ? `(${v.n}) ${v.text}`
+              : v.text
+            : many(v)
+              ? `${v.name} en ${others(v, 'ander', 'anderen')} schreven je.`
+              : Number(v.n) > 1
+                ? `${v.n} berichten van ${v.name}.`
+                : `${v.name} schreef je.`,
       },
       your_turn: {
         title: (v) => `Reeks met ${v.name}`,
@@ -814,39 +1209,77 @@ export const notificationTexts = defineMessages({
               ? `${v.count} ${Number(v.count) === 1 ? 'dag' : 'dagen'} op rij. Jouw beurt om te schrijven voor middernacht.`
               : `${v.name} schreef je vandaag. Jouw beurt, voor middernacht.`,
       },
-      link_in_danger: { title: (v) => `Band met ${v.name}`, body: () => 'Jullie band zakt een beetje in. Eén berichtje is genoeg om hem op te vrolijken.' },
-      streak_in_danger: { title: (v) => `Je reeks van ${v.count} ${Number(v.count) === 1 ? 'dag' : 'dagen'}`, body: (v) => (v.step === 'chemin' ? 'Je sessie van vandaag kan vanavond nog.' : 'De uitdaging van vandaag kan vanavond nog.') },
-      habit_proof: { title: (v) => `${v.minimoa} wil iets zien`, body: () => 'Tijd voor je gewoonte. Een foto?' },
-      weekly_review: { title: () => 'Je weekoverzicht', body: (v) => `${v.minimoa} heeft de balans opgemaakt. Kom kijken.` },
+      link_in_danger: {
+        title: (v) => `Band met ${v.name}`,
+        body: () => 'Jullie band zakt een beetje in. Eén berichtje is genoeg om hem op te vrolijken.',
+      },
+      streak_in_danger: {
+        title: (v) => `Je reeks van ${v.count} ${Number(v.count) === 1 ? 'dag' : 'dagen'}`,
+        body: (v) =>
+          v.step === 'chemin'
+            ? 'Je sessie van vandaag kan vanavond nog.'
+            : 'De uitdaging van vandaag kan vanavond nog.',
+      },
+      habit_proof: {
+        title: (v) => `${v.minimoa} wil iets zien`,
+        body: () => 'Tijd voor je gewoonte. Een foto?',
+      },
+      weekly_review: {
+        title: () => 'Je weekoverzicht',
+        body: (v) => `${v.minimoa} heeft de balans opgemaakt. Kom kijken.`,
+      },
       item_unlocked: {
         title: (v) => (many(v) ? 'Nieuwe items' : 'Nieuw item'),
-        body: (v) => (many(v) ? `${v.minimoa} won: ${v.item}, en ${others(v, 'ander item', 'andere items')}.` : `${v.minimoa} won: ${v.item}.`),
+        body: (v) =>
+          many(v)
+            ? `${v.minimoa} won: ${v.item}, en ${others(v, 'ander item', 'andere items')}.`
+            : `${v.minimoa} won: ${v.item}.`,
       },
       words_received: {
         title: (v) => (many(v) ? `${total(v)} mensen beschreven je` : '3 woorden voor jou'),
-        body: (v) => (many(v) ? 'Hun 3 woorden over jou wachten op je.' : 'Iemand koos net 3 woorden over jou. Kom kijken.'),
+        body: (v) =>
+          many(v)
+            ? 'Hun 3 woorden over jou wachten op je.'
+            : 'Iemand koos net 3 woorden over jou. Kom kijken.',
       },
       trial_reminder: {
         title: (v) => `Je Minimoa+-proefperiode eindigt op ${v.endsOn}`,
-        body: (v) => `Daarna volgt de eerste betaling van ${v.price}. Wil je dat niet, zeg dan op in je Apple-accountinstellingen, onder Abonnementen.`,
+        body: (v) =>
+          `Daarna volgt de eerste betaling van ${v.price}. Wil je dat niet, zeg dan op in je Apple-accountinstellingen, onder Abonnementen.`,
       },
       group_invite: {
         title: (v) => `${v.name} nodigt je uit voor “${v.group}”`,
-        body: (v) => (v.habit ? `Een groep om samen een gewoonte vol te houden: ${v.habit}. Jij beslist.` : 'Een groep met vrienden. Jij beslist.'),
+        body: (v) =>
+          v.habit
+            ? `Een groep om samen een gewoonte vol te houden: ${v.habit}. Jij beslist.`
+            : 'Een groep met vrienden. Jij beslist.',
       },
       together_proposal: {
         title: (v) => (v.group ? `“${v.group}” gaat van start` : `${v.habit}, samen?`),
-        body: (v) => (v.group ? `Jullie zijn met ${v.count} met dezelfde gewoonte: ${v.habit}. Zeg hallo.` : 'Mensen bij jou in de buurt hebben deze gewoonte ook. Samen volhouden?'),
+        body: (v) =>
+          v.group
+            ? `Jullie zijn met ${v.count} met dezelfde gewoonte: ${v.habit}. Zeg hallo.`
+            : 'Mensen bij jou in de buurt hebben deze gewoonte ook. Samen volhouden?',
       },
       group_message: { title: (v) => v.group, body: (v) => `${v.name} schreef in de groep.` },
       group_life_lost: {
         title: (v) => `“${v.group}” verliest een leven`,
-        body: (v) => `Nog ${v.count} ${Number(v.count) === 1 ? 'leven' : 'levens'}. Vandaag pakken jullie het samen weer op.`,
+        body: (v) =>
+          `Nog ${v.count} ${Number(v.count) === 1 ? 'leven' : 'levens'}. Vandaag pakken jullie het samen weer op.`,
       },
-      group_asleep: { title: (v) => `“${v.group}” is in slaap gevallen`, body: () => 'Even geen levens meer. Iedereen kan de groep wakker maken.' },
+      group_asleep: {
+        title: (v) => `“${v.group}” is in slaap gevallen`,
+        body: () => 'Even geen levens meer. Iedereen kan de groep wakker maken.',
+      },
       group_joined: {
-        title: (v) => (many(v) ? `${v.name} en ${others(v, 'ander', 'anderen')} komen bij “${v.group}”` : `${v.name} komt bij “${v.group}”`),
-        body: (v) => (Number(v.count) >= 3 ? `Jullie zijn nu met ${v.count}. Zeg hallo.` : `Jullie zijn met ${v.count}. Nog één persoon en de reeks begint.`),
+        title: (v) =>
+          many(v)
+            ? `${v.name} en ${others(v, 'ander', 'anderen')} komen bij “${v.group}”`
+            : `${v.name} komt bij “${v.group}”`,
+        body: (v) =>
+          Number(v.count) >= 3
+            ? `Jullie zijn nu met ${v.count}. Zeg hallo.`
+            : `Jullie zijn met ${v.count}. Nog één persoon en de reeks begint.`,
       },
       first_steps: {
         title: (v) => {
@@ -906,6 +1339,28 @@ export const notificationTexts = defineMessages({
                 ? 'Het gaat goed met hem en hij heeft wat verhalen voor je bewaard. Kom langs wanneer je wilt.'
                 : `Het gaat goed met ${v.minimoa}. Misschien hebben je banden nieuws voor je.`,
       },
+      league: {
+        title: (v) =>
+          v.step === 'passed'
+            ? `${v.name} is je net voorbij`
+            : v.step === 'ending'
+              ? 'Laatste uren in je competitie'
+              : v.step === 'up'
+                ? `Je promoveert naar de ${v.tier}-competitie!`
+                : v.step === 'down'
+                  ? `Je degradeert naar de ${v.tier}-competitie`
+                  : `Je blijft in de ${v.tier}-competitie`,
+        body: (v) =>
+          v.step === 'passed'
+            ? `Je staat ${v.count}e in de ${v.tier}-competitie. Eén sessie en je pakt je plek terug.`
+            : v.step === 'ending'
+              ? Number(v.more) > 0
+                ? `Je staat ${v.count}e. Nog ${v.more} vonken tot de promotiezone.`
+                : `Je staat ${v.count}e, in de promotiezone. Hou vol tot middernacht!`
+              : v.step === 'down'
+                ? 'Eén sessie vandaag en je klimt weer.'
+                : `${v.count}e vorige week. Nieuwe week, nieuwe vonken.`,
+      },
       plus_account: {
         title: (v) =>
           pick(
@@ -928,9 +1383,11 @@ export const notificationTexts = defineMessages({
               renewed: `Je jaarabonnement is verlengd. Bedankt dat je blijft: ${v.minimoa} houdt zijn premium items.`,
               recovered: 'De betaling is gelukt. Bedankt, alles is weer in orde.',
               billing_grace: `Minimoa+ blijft open tot ${v.endsOn}. Werk je betaalmethode bij: Ik › Minimoa+ › Mijn abonnement beheren.`,
-              billing_retry: 'Minimoa+ is gepauzeerd. Werk je betaalmethode bij: Ik › Minimoa+ › Mijn abonnement beheren.',
+              billing_retry:
+                'Minimoa+ is gepauzeerd. Werk je betaalmethode bij: Ik › Minimoa+ › Mijn abonnement beheren.',
               goodbye: `Bedankt voor dit stukje van de weg. ${v.minimoa}, je banden en je gewoonten blijven, gratis.`,
-              winback: 'Minimoa+ is een maand geleden gestopt. Heb je weer zin, dan is het er nog; al de rest gaat gewoon door.',
+              winback:
+                'Minimoa+ is een maand geleden gestopt. Heb je weer zin, dan is het er nog; al de rest gaat gewoon door.',
             },
             v.step,
             '',
@@ -960,6 +1417,7 @@ export const notificationTexts = defineMessages({
       first_steps: 'Eerste stappen',
       minimoa_news: 'Nieuws van je minimoa',
       plus_account: 'Je Minimoa+-abonnement',
+      league: 'Je weekcompetitie',
     },
   },
 });
@@ -978,27 +1436,53 @@ export function notificationVars(locale: Locale, vars: Readonly<Record<string, s
     more: vars.more ?? '',
     days: vars.days ?? '',
     item: labels.in(locale).itemLabel[item] ?? item,
-    endsOn: vars.endsOn && isIsoDate(vars.endsOn) ? formatDate(locale, vars.endsOn, { day: 'numeric', month: 'long' }) : (vars.endsOn ?? ''),
-    price: vars.price && Number.isFinite(amount) && /^\d+$/.test(vars.price) ? formatPrice(locale, amount, vars.currency ?? 'EUR') : (vars.price ?? ''),
+    endsOn:
+      vars.endsOn && isIsoDate(vars.endsOn)
+        ? formatDate(locale, vars.endsOn, { day: 'numeric', month: 'long' })
+        : (vars.endsOn ?? ''),
+    price:
+      vars.price && Number.isFinite(amount) && /^\d+$/.test(vars.price)
+        ? formatPrice(locale, amount, vars.currency ?? 'EUR')
+        : (vars.price ?? ''),
     group: vars.group ?? '',
     habit: vars.habit ? (habitById(vars.habit, locale)?.label ?? vars.habit) : '',
     step: vars.step ?? '',
     others: vars.others ?? '',
     n: vars.n ?? '',
+    text: vars.text ?? '',
+    tier: vars.tier ? (TIER_NAMES[vars.tier] ?? vars.tier) : '',
   };
 }
 
+/** Noms des ligues : des noms propres, les mêmes dans toutes les langues. */
+const TIER_NAMES: Readonly<Record<string, string>> = {
+  plume: 'Plume',
+  pompon: 'Pompon',
+  houppette: 'Houppette',
+  couronne: 'Couronne',
+  etoile: 'Étoile',
+};
+
 /** Titre et corps d'une notification dans la langue de la personne, variables remplies. */
-export function notificationText(locale: Locale, kind: NotificationKindKey, vars: Readonly<Record<string, string>> = {}): NotificationText {
+export function notificationText(
+  locale: Locale,
+  kind: NotificationKindKey,
+  vars: Readonly<Record<string, string>> = {},
+): NotificationText {
   const t = notificationTexts.in(locale).texts[kind];
   const v = notificationVars(locale, vars);
   return { title: t.title(v), body: t.body(v) };
 }
 
 /** Paquet du matin : texte du plus important, plus « Et 2 autres nouvelles t’attendent dans l’app. ». */
-export function notificationDigestText(locale: Locale, lead: NotificationText, others: number): NotificationText {
+export function notificationDigestText(
+  locale: Locale,
+  lead: NotificationText,
+  others: number,
+): NotificationText {
   if (others <= 0) return lead;
   return { title: lead.title, body: `${lead.body} ${notificationTexts.in(locale).digestMore(others)}` };
 }
 
-export const notificationKindLabel = (locale: Locale, kind: NotificationKindKey): string => notificationTexts.in(locale).kindLabels[kind] ?? kind;
+export const notificationKindLabel = (locale: Locale, kind: NotificationKindKey): string =>
+  notificationTexts.in(locale).kindLabels[kind] ?? kind;

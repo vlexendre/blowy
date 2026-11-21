@@ -32,6 +32,12 @@ const TOGETHER_EVENTS_PER_DAY = 3;
  * écrire dans la journée en fait un jour « à deux » (série +1, une vie rendue s'il en manque, un palier fêté par les
  * minimoas).
  */
+/** Le texte montré dans la notification : une ligne, 160 caractères au plus. */
+export function pushExcerpt(body: string): string {
+  const flat = body.replace(/\s+/g, ' ').trim();
+  return flat.length > 160 ? `${flat.slice(0, 159).trimEnd()}…` : flat;
+}
+
 @Injectable()
 export class SendMessage {
   constructor(
@@ -65,29 +71,59 @@ export class SendMessage {
       const streak = effect.state.streak;
       // Un palier de série (3, 7, 14…) : le minimoa de l'autre le remarque. Les autres jours, le chiffre parle seul.
       if ((LINK_STREAK_MILESTONES as readonly number[]).includes(streak)) {
-        draft.pet(other, streakMilestoneLine(draft.localeOf(other), draft.pair(other), streak, draft.seed('streak', String(streak))));
+        draft.pet(
+          other,
+          streakMilestoneLine(
+            draft.localeOf(other),
+            draft.pair(other),
+            streak,
+            draft.seed('streak', String(streak)),
+          ),
+        );
       }
-      if (effect.lifeGained) draft.pet(userId, lifeGainedLine(draft.localeOf(userId), draft.pair(userId), effect.state.lives, draft.seed('life-gained')));
+      if (effect.lifeGained)
+        draft.pet(
+          userId,
+          lifeGainedLine(
+            draft.localeOf(userId),
+            draft.pair(userId),
+            effect.state.lives,
+            draft.seed('life-gained'),
+          ),
+        );
     }
     // Les minimoas réagissent (règles tout de suite ; IA éventuelle après la réponse), dans leurs plafonds.
-    const followUp = await this.minimoas.onUserMessage(draft, userId, input.body, { firstToday: firstInLinkToday, tone: input.tone });
+    const followUp = await this.minimoas.onUserMessage(draft, userId, input.body, {
+      firstToday: firstInLinkToday,
+      tone: input.tone,
+    });
     if (effect.leveledUp) draft.announceLevel(effect.state.level, userId);
     const messages = await this.session.commit(draft);
     this.minimoas.later(followUp);
 
     await this.character.apply(userId, 'message_sent', { maxPerDay: TALK_EVENTS_PER_DAY });
-    if (input.tone) await this.character.apply(userId, input.tone === 'sweet' ? 'sweet_word' : 'tease', { maxPerDay: TONE_EVENTS_PER_DAY });
+    if (input.tone)
+      await this.character.apply(userId, input.tone === 'sweet' ? 'sweet_word' : 'tease', {
+        maxPerDay: TONE_EVENTS_PER_DAY,
+      });
     if (effect.duoDay) {
       // Ce que faisait la photo du jour : un peu plus tendre et joueur, et de la sociabilité, pour les deux.
-      for (const person of [userId, other]) await this.character.apply(person, 'wrote_together', { maxPerDay: TOGETHER_EVENTS_PER_DAY });
+      for (const person of [userId, other])
+        await this.character.apply(person, 'wrote_together', { maxPerDay: TOGETHER_EVENTS_PER_DAY });
       // Meilleure série des deux minimoas : elle reste acquise même quand la série du lien retombe (objets à gagner).
       await this.pets.raiseBestStreak([link.userA, link.userB], effect.state.streak);
     }
     // Premier message du jour ici : l'activité en direct « à toi d'écrire » de ce lien (s'il y en a une) est finie.
     if (effect.firstToday) await this.live.endLinkStreak(userId, link.id, effect.state.streak);
-    // Push : jamais le contenu du message, seulement le prénom (un envoi par lien toutes les 5 minutes au plus).
+    // Push : le prénom et le texte du message (21 nov. 2026), pour le lire et y répondre depuis la notification
+    // (un envoi par lien toutes les 5 minutes au plus ; un paquet montre le dernier).
     const me = await this.profiles.findById(userId);
-    await this.notifier.notify(other, 'message', { linkId: link.id, name: me?.displayName ?? '', about: userId });
+    await this.notifier.notify(other, 'message', {
+      linkId: link.id,
+      name: me?.displayName ?? '',
+      about: userId,
+      text: pushExcerpt(input.body),
+    });
     return { link: draft.link, messages };
   }
 }

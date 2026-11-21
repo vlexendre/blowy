@@ -399,7 +399,7 @@ describe('notifications', () => {
   const sentTo = (token: string) => pusher.outbox.filter((m) => m.to === token);
   const tick = () => fetch(`${world.baseUrl}/internal/tick`, { method: 'POST', headers: { 'x-tick-secret': SECRET } });
 
-  it('message : push à l’autre, sans contenu, lien profond ; délai de 5 min par lien ; réglage coupé', async () => {
+  it('message : push à l’autre avec le texte et « Répondre », lien profond ; délai de 5 min par lien ; réglage coupé', async () => {
     const { a, b, linkId } = await pair(world, ['Alice', 'Bob']);
     const token = 'ExponentPushToken[bob-1]';
     const settings = await b.api.notifications.registerDevice({ token, platform: 'ios', timeZone: 'Europe/Paris' });
@@ -409,8 +409,7 @@ describe('notifications', () => {
 
     await a.api.links.send(linkId, { body: 'mon secret' });
     const [push] = sentTo(token);
-    expect(push).toMatchObject({ title: 'Alice', body: 'Alice t’a écrit.', data: { kind: 'message', url: `blowy://link/${linkId}`, linkId } });
-    expect(JSON.stringify(push)).not.toContain('mon secret');
+    expect(push).toMatchObject({ title: 'Alice', body: 'mon secret', categoryId: 'minimoa_reply', data: { kind: 'message', url: `blowy://link/${linkId}`, linkId } });
 
     await a.api.links.send(linkId, { body: 'encore' });
     expect(sentTo(token)).toHaveLength(1);
