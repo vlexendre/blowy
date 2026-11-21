@@ -188,7 +188,8 @@ describe('vision', () => {
     expect(pinIds).not.toContain(hidden.id);
     const pin = map.pins.find((p) => p.user.id === near.id);
     expect(pin?.position).not.toEqual(NEAR);
-    expect(distanceKm({ lat: pin?.position.latitude ?? 0, lng: pin?.position.longitude ?? 0 }, { lat: NEAR.latitude, lng: NEAR.longitude })).toBeLessThan(0.4);
+    // Maille de ~600 m et décalage stable : au plus ~0,65 km de la vraie position.
+    expect(distanceKm({ lat: pin?.position.latitude ?? 0, lng: pin?.position.longitude ?? 0 }, { lat: NEAR.latitude, lng: NEAR.longitude })).toBeLessThan(0.7);
     expect(pin?.explanation.common).toHaveLength(3);
     expect(pin?.user.avatarUrl).toBeNull();
     expect(map.beyond.count).toBeGreaterThanOrEqual(1);

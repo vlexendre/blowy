@@ -43,7 +43,7 @@ import {
   useTabBarSpace,
 } from '@blowy/ui';
 import { useFocusEffect, useIsFocused, useLocalSearchParams, useRouter } from 'expo-router';
-import { type ComponentRef, useCallback, useEffect, useRef, useState } from 'react';
+import { type ComponentRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform, RefreshControl, type ScrollView, useWindowDimensions, View } from 'react-native';
@@ -125,18 +125,52 @@ export default function PetHome() {
   // Le chemin entier défile : une fois par ouverture, l'écran descend jusqu'à l'étape du jour.
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const scrolledTo = useRef(false);
-  const blockTop = useRef(0);
-  const pathTop = useRef(0);
+  // Où est le chemin dans l'écran qui défile (bloc de la séance, puis le chemin dedans) : relu à chaque mise en page,
+  // car la place réservée à la carte du haut arrive après le premier rendu.
+  const [blockY, setBlockY] = useState(0);
+  const [pathInBlock, setPathInBlock] = useState(0);
+  const [geo, setGeo] = useState<{ kind: string; y: number; size: number }[]>([]);
   // Hauteur de la carte du haut (grande), mesurée : décide de la place visible du chemin.
   const [fixedHeight, setFixedHeight] = useState(0);
   const [compact, setCompact] = useState(false);
   const collapse = useSharedValue(0);
   const insets = useSafeAreaInsets();
   const tabBar = useTabBarSpace();
-  const [snaps, setSnaps] = useState<number[] | undefined>(undefined);
   const winHeight = useWindowDimensions().height;
   // Un chapitre = exactement ce qu'on voit du chemin sous la carte repliée.
-  const chapterPage = fixedHeight > 0 ? Math.max(320, winHeight - tabBar - (insets.top + 14 + fixedHeight - (256 - COMPACT_STAGE))) : 420;
+  // Ce qu'on voit du chemin : sous la carte (repliée en défilant) et ses pastilles, au-dessus de la barre d'onglets,
+  // avec une marge pour que le titre d'un chapitre ne passe jamais dessous.
+  const viewBottom = winHeight - tabBar - 16;
+  const viewTopCompact = insets.top + 14 + Math.max(0, fixedHeight - (256 - COMPACT_STAGE)) + 8;
+  const viewTopOpen = insets.top + 14 + fixedHeight + 8;
+  const pathAt = (y: number) => insets.top + blockY + pathInBlock + y;
+  // Arrêts du défilement : chaque chapitre calé en haut et en bas de ce qu'on voit (titre en bas, toujours visible),
+  // et l'étape du jour au milieu.
+  const snaps = useMemo(() => {
+    if (geo.length === 0 || fixedHeight === 0) return undefined;
+    const out: number[] = [];
+    let start: number | null = null;
+    for (const n of geo) {
+      if (n.kind === 'gap') start = n.y - n.size / 2;
+      if (n.kind === 'unit' && start !== null) {
+        out.push(pathAt(start) - viewTopCompact, pathAt(n.y + n.size / 2) - viewBottom);
+        start = null;
+      }
+      if (n.kind === 'current') out.push(pathAt(n.y) - (viewTopCompact + viewBottom) / 2);
+    }
+    return [...new Set(out.filter((x) => x > 0).map(Math.round))].sort((x, y) => x - y);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geo, fixedHeight, blockY, pathInBlock, viewBottom, viewTopCompact]);
+  // À l'ouverture, une fois tout mesuré : l'étape du jour au milieu de ce qu'on voit.
+  const nowNode = geo.find((n) => n.kind === 'current');
+  useEffect(() => {
+    if (scrolledTo.current || !nowNode || fixedHeight === 0 || blockY === 0) return;
+    scrolledTo.current = true;
+    const y = Math.max(0, pathAt(nowNode.y) - (viewTopOpen + viewBottom) / 2);
+    setTimeout(() => scrollRef.current?.scrollTo({ y, animated: false }), 60);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nowNode?.y, fixedHeight, blockY, pathInBlock]);
+  const chapterPage = fixedHeight > 0 ? Math.max(320, viewBottom - viewTopCompact) : 420;
   const location = useLocation(me.data);
   const push = usePushPermission();
   const [locationDenied, setLocationDenied] = useState(false);
@@ -480,7 +514,7 @@ export default function PetHome() {
           >
             {/* Ton chemin : la séance du jour, le chemin, la série. */}
             {view && cm ? (
-              <View onLayout={(e) => (blockTop.current = e.nativeEvent.layout.y)}>
+              <View onLayout={(e) => setBlockY(e.nativeEvent.layout.y)}>
                 <Appear once="home:chemin" delay={60}>
                   <SessionBanner
                     tone={view.kind === 'todo' || view.kind === 'bonus' ? 'unit' : 'calm'}
@@ -502,13 +536,8 @@ export default function PetHome() {
                     }
                     note={view.kind === 'todo' ? null : view.kind === 'bonus' ? c.home.note : c.home.doneNote}
                     progress={view.kind === 'todo' && step.steps > 0 ? step.step / step.steps : null}
-                    onPress={
-                      view.kind === 'todo' || view.kind === 'bonus'
-                        ? openSeance
-                        : lastResult
-                          ? () => router.push({ pathname: '/chemin/fin', params: { id: lastResult } })
-                          : undefined
-                    }
+                    // Séance déjà faite : le bandeau ne s'ouvre plus (pas d'aller-retour vers une séance finie).
+                    onPress={view.kind === 'todo' || view.kind === 'bonus' ? openSeance : undefined}
                     accessibilityLabel={
                       view.kind === 'todo' || view.kind === 'bonus'
                         ? c.home.startA11y(view.unitTitle)
@@ -526,7 +555,7 @@ export default function PetHome() {
                       ) : undefined
                     }
                   />
-                  <View onLayout={(e) => (pathTop.current = blockTop.current + e.nativeEvent.layout.y)}>
+                  <View onLayout={(e) => setPathInBlock(e.nativeEvent.layout.y)}>
                     <CheminPath
                       nodes={chaptersBottomUp(cm, chapterPage).map((n) =>
                         n.kind === 'gap'
@@ -555,35 +584,7 @@ export default function PetHome() {
                       )}
                       onStart={view.kind === 'todo' || view.kind === 'bonus' ? openSeance : undefined}
                       pet={{ species: p.species, outfit: p.outfit, id: p.id }}
-                      onCurrentY={(y) => {
-                        // Une fois par ouverture : l'étape du jour au milieu de ce qu'on voit du chemin.
-                        if (scrolledTo.current) return;
-                        scrolledTo.current = true;
-                        setTimeout(() => {
-                          const top = insets.top + 6 + fixedHeight + 8;
-                          const bottom = winHeight - tabBar;
-                          scrollRef.current?.scrollTo({ y: Math.max(0, insets.top + pathTop.current + y - (top + bottom) / 2), animated: false });
-                        }, 150);
-                      }}
-                      onGeometry={(geo) => {
-                        // Arrêts du défilement : chaque chapitre calé en haut et en bas de ce qu'on voit (carte repliée),
-                        // et l'étape du jour au milieu.
-                        const top = insets.top + 6 + fixedHeight - (256 - COMPACT_STAGE) + 8;
-                        const bottom = winHeight - tabBar;
-                        const at = (y: number) => insets.top + pathTop.current + y;
-                        const out: number[] = [];
-                        let start: number | null = null;
-                        for (const n of geo) {
-                          if (n.kind === 'gap') start = n.y - n.size / 2;
-                          if (n.kind === 'unit' && start !== null) {
-                            out.push(at(start) - top, at(n.y + n.size / 2) - bottom);
-                            start = null;
-                          }
-                          if (n.kind === 'current') out.push(at(n.y) - (top + bottom) / 2);
-                        }
-                        const next = [...new Set(out.filter((x) => x > 0).map(Math.round))].sort((x, y) => x - y);
-                        setSnaps((prev) => (prev && prev.join() === next.join() ? prev : next));
-                      }}
+                      onGeometry={(g) => setGeo(g.map((n) => ({ kind: n.kind, y: n.y, size: n.size })))}
                     />
                   </View>
                 </Appear>
