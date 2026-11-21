@@ -6,6 +6,7 @@ import { Avatar } from '../atoms/Avatar';
 import { AnimatedMascot } from '../molecules/AnimatedMascot';
 import { Button } from '../atoms/Button';
 import { Icon } from '../atoms/Icon';
+import { IconButton } from '../atoms/IconButton';
 import { Panel } from '../atoms/Panel';
 import { PetImage } from '../atoms/PetImage';
 import { Pressable } from '../atoms/Pressable';
@@ -135,6 +136,9 @@ export interface PersonOfDayCardProps {
   onSecondary?: () => void;
   /** Sous tout le reste (« Plus tard »). */
   footer?: ReactNode;
+  /** Croix en haut à droite : fermer la carte. */
+  onClose?: () => void;
+  closeLabel?: string;
   /** Toucher la carte (hors boutons) : passer à la personne suivante, par exemple. */
   onPress?: () => void;
   pressLabel?: string;
@@ -149,9 +153,12 @@ export function PersonOfDayCard(p: PersonOfDayCardProps) {
   return (
     <Appear delay={150} distance={16}>
       <View style={styles.card}>
-        <Text variant="label" color={color.accent}>
-          {p.kicker}
-        </Text>
+        <View style={[layout.row, styles.top]}>
+          <Text variant="label" color={color.accent} style={layout.shrink}>
+            {p.kicker}
+          </Text>
+          {p.onClose ? <IconButton glyph="close" label={p.closeLabel ?? ''} variant="plain" size={32} onPress={p.onClose} /> : null}
+        </View>
         <Pressable
           onPress={p.onPress}
           disabled={!p.onPress}
@@ -261,6 +268,7 @@ const styles = StyleSheet.create({
   revelationPet: { position: 'absolute', right: -6, bottom: -10 },
   card: { borderRadius: radius.lg, backgroundColor: color.panel, borderWidth: 1, borderColor: color.line, padding: space.lg, gap: space.md },
   body: { gap: space.md },
+  top: { justifyContent: 'space-between', alignItems: 'center', gap: space.sm, minHeight: 20 },
   who: { gap: space.md },
   together: { gap: space.sm },
   point: { borderRadius: radius.pill, backgroundColor: color.card, paddingHorizontal: space.md, paddingVertical: 6 },

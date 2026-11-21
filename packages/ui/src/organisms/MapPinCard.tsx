@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { IconButton } from '../atoms/IconButton';
 import { Avatar } from '../atoms/Avatar';
 import { Button } from '../atoms/Button';
 import { Panel } from '../atoms/Panel';
@@ -35,10 +36,13 @@ export interface MapPinCardProps {
   /** Bouton secondaire (« Voir de plus près »). */
   secondaryLabel?: string;
   onSecondary?: () => void;
+  /** Croix en haut à droite : fermer la fiche. */
+  onClose?: () => void;
+  closeLabel?: string;
 }
 
 /** Fiche flottante du minimoa choisi sur la carte : qui, pourquoi, et une action. Saluer lance une onde. */
-export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, actionLabel, onAction, actionLoading, actionDone, actionDisabled, actionNote, secondaryLabel, onSecondary }: MapPinCardProps) {
+export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, actionLabel, onAction, actionLoading, actionDone, actionDisabled, actionNote, secondaryLabel, onSecondary, onClose, closeLabel }: MapPinCardProps) {
   const anchor = useRippleAnchor();
   const ripple = useRipple();
   const act = () => {
@@ -56,6 +60,7 @@ export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, ac
               {owner}
             </Text>
           </View>
+          {onClose ? <IconButton glyph="close" label={closeLabel ?? ''} variant="plain" size={32} onPress={onClose} /> : null}
         </View>
         {why}
         {compat && why ? <CompatPill inline value={compat} label={compatLabel} /> : null}

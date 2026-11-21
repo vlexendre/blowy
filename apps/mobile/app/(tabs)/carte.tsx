@@ -46,6 +46,7 @@ import { useMe } from '@/features/me';
 import { openPlus } from '@/features/plus';
 import { distanceBand, useCheminResults } from '@/features/chemin';
 import { chats as chatsText } from '@/locales/chats';
+import { common } from '@/locales/common';
 import { chemin } from '@/locales/chemin';
 import { formatNumber } from '@/locales/runtime';
 import { carte as t, rencontres as listText } from '@/locales/rencontres';
@@ -135,6 +136,8 @@ export default function CarteScreen() {
     return list.sort((a, b) => Number(b.user.id === dayPerson) - Number(a.user.id === dayPerson));
   }, [encounters.data, dayPerson]);
   const [showing, setShowing] = useState(0);
+  // « Aujourd'hui, … te présente » fermée : elle ne revient qu'à la prochaine ouverture de l'app.
+  const [todayClosed, setTodayClosed] = useState(false);
   const known = useMemo(() => {
     const ids = new Set<string>();
     for (const s of encounters.data?.suggestions ?? []) ids.add(s.user.id);
@@ -231,7 +234,7 @@ export default function CarteScreen() {
   const bandOf = (pos: { latitude: number; longitude: number }) => chemin.carte.band[distanceBand(from, pos)];
   const hotIds = new Set(presented.map((x) => x.user.id));
   // « Aujourd'hui, Nino te présente » : un présenté du jour à la fois, « Voir les autres » passe au suivant.
-  const today = presented.length > 0 ? presented[showing % presented.length] : null;
+  const today = presented.length > 0 && !todayClosed ? presented[showing % presented.length] : null;
   const todayPin = today ? pins.find((x) => x.user.id === today.user.id) : undefined;
   // Les silhouettes et leur nombre viennent du serveur : rien à zéro.
   const beyond = data.beyond.count > 0 ? data.beyond : null;
@@ -256,10 +259,14 @@ export default function CarteScreen() {
       actionLabel={current.relation === 'waved' ? t.waved : current.relation === 'waved_you' ? t.wavedYou(current.user.displayName) : t.wave(current.user.pet.name)}
       actionLoading={wave.isPending && wave.variables === current.user.id}
       actionDone={current.relation === 'waved'}
-      actionDisabled={current.relation === 'none' && !!waveBlock}
+      actionDisabled={plus && current.relation === 'none' && !!waveBlock}
       actionNote={waveBlock ?? undefined}
+      onClose={() => setSelected(null)}
+      closeLabel={common.close}
       onAction={() => {
         if (current.relation === 'waved') return;
+        // Dire bonjour depuis la carte : Minimoa+. Gratuit : l'avantage.
+        if (!plus && current.relation === 'none') return openPlus('map');
         if (current.relation === 'waved_you') return router.push(`/rencontre/${current.user.id}`);
         const id = current.user.id;
         wave.mutate(id, { onSuccess: () => markWaved(id) });
@@ -280,6 +287,8 @@ export default function CarteScreen() {
           key={today.user.id}
           onPress={presented.length > 1 ? () => setShowing((n) => n + 1) : undefined}
           pressLabel={chemin.carte.nextA11y}
+          onClose={() => setTodayClosed(true)}
+          closeLabel={common.close}
           kicker={`${chemin.carte.sheetKicker(petName)} · ${chemin.carte.sheetCount((showing % presented.length) + 1, presented.length)}`}
           person={{ name: today.user.displayName, pet: today.user.pet, face: today.user.face, avatarUrl: today.user.avatarUrl }}
           line={todayPin ? bandOf(todayPin.position) : null}
@@ -364,8 +373,8 @@ export default function CarteScreen() {
               online: p.activeToday ?? false,
               accessibilityLabel: hotIds.has(p.user.id) ? chemin.carte.pinA11yHot(p.user.displayName, bandOf(p.position)) : t.pinA11y(p.user.pet.name, p.user.displayName),
               selected: p.user.id === selected,
-              // Dire bonjour depuis la carte : Minimoa+. Gratuit : l'avantage.
-              onPress: plus ? () => setSelected((s) => (s === p.user.id ? null : p.user.id)) : () => openPlus('map'),
+              // Toucher quelqu'un ouvre sa fiche (dire bonjour depuis la fiche : Minimoa+).
+              onPress: () => setSelected((s) => (s === p.user.id ? null : p.user.id)),
             }))}
           />
         )}
