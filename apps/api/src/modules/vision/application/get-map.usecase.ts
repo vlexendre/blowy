@@ -1,9 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { textOf, visionText } from '@blowy/content';
-import { BLUR_GRID_METERS, type GeoPoint, MATCH_RADIUS_KM, ZONE_RADIUS_KM, entitlements, farSummary, snapToGrid } from '@blowy/domain';
+import { BLUR_GRID_METERS, type GeoPoint, MATCH_RADIUS_KM, ZONE_RADIUS_KM, dayOf, entitlements, farSummary, snapToGrid } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
-import { CLOCK, ENCOUNTERS, LINKS, PETS, PROFILES } from '../../../shared/tokens';
+import { CLOCK, ENCOUNTERS, LINKS, PETS, PROFILES, STORAGE } from '../../../shared/tokens';
+import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/ports';
+import { RITUAL_STATES } from '../../rituels/tokens';
+import type { RitualStatesRepository } from '../../rituels/ports';
 import type { EncountersRepository } from '../../encounters/ports';
 import type { LinksRepository } from '../../links/ports';
 import type { Profile, ProfilesRepository } from '../../me/ports';
@@ -34,6 +37,10 @@ export interface MapPinResult {
   pet: PetRecord;
   match: CachedMatch;
   relation: PinRelation;
+  /** Sa photo (lien de lecture d'une heure), montrée floue sur la carte ; null sans photo. */
+  avatarUrl: string | null;
+  /** Venu dans l'app aujourd'hui (pastille verte, jamais l'heure). */
+  activeToday: boolean;
 }
 
 export interface MapResult {
@@ -66,6 +73,8 @@ export class GetMap {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(LINKS) private readonly links: LinksRepository,
     @Inject(ENCOUNTERS) private readonly encounters: EncountersRepository,
+    @Inject(STORAGE) private readonly storage: Storage,
+    @Inject(RITUAL_STATES) private readonly states: RitualStatesRepository,
   ) {}
 
   /** Liens et coucous de la personne : qui écarter de la carte, et où en est chaque coucou en attente. */
@@ -125,10 +134,20 @@ export class GetMap {
 
     const now = this.clock.now();
     const pets = new Map((await this.pets.findByOwners(shownInside.map((m) => m.userId))).map((p) => [p.ownerId, livePet(p, now)]));
+    const today = dayOf(now);
+    const seen = new Map((await this.states.findMany(shownInside.map((m) => m.userId))).map((s) => [s.userId, s.lastSeenOn]));
+    const photos = new Map(
+      await Promise.all(
+        shownInside.map(async (m): Promise<[string, string | null]> => {
+          const path = visible.get(m.userId)?.avatarPath;
+          return [m.userId, path ? await this.storage.signedUrl(path, MEDIA_URL_SECONDS) : null];
+        }),
+      ),
+    );
     const pins = shownInside.flatMap((m): MapPinResult[] => {
       const p = visible.get(m.userId);
       const pet = pets.get(m.userId);
-      return p && pet ? [{ profile: p, pet, match: m, relation: relationOf(m.userId) }] : [];
+      return p && pet ? [{ profile: p, pet, match: m, relation: relationOf(m.userId), avatarUrl: photos.get(m.userId) ?? null, activeToday: seen.get(m.userId) === today }] : [];
     });
 
     const blurred = new Map<string, GeoPoint>();

@@ -38,6 +38,8 @@ export interface BottomTabBarProps<K extends string = string> {
    */
   peek?: { species: Species; mood?: Mood | PetPose; seed?: string };
   accessibilityLabel?: string;
+  /** Pictogrammes seuls, sans libellés (lus par le lecteur d'écran). */
+  iconOnly?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -114,8 +116,7 @@ export function BottomTabBar<K extends string>({
   floating = true,
   peek,
   accessibilityLabel,
-  style,
-}: BottomTabBarProps<K>) {
+  style, iconOnly = false }: BottomTabBarProps<K>) {
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
   const bottom = Math.max(insets.bottom, space.lg);
@@ -162,6 +163,7 @@ export function BottomTabBar<K extends string>({
             index={i}
             onPress={() => onPress(it.key)}
             onLongPress={onLongPress ? () => onLongPress(it.key) : undefined}
+            iconOnly={iconOnly}
           />
         ))}
       </View>

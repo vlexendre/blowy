@@ -109,9 +109,10 @@ describe('vie sociale et sécurité', () => {
     await upload(ticket.uploadUrl, 'image/webp');
     expect((await bob.api.me.setAvatar(ticket.path)).avatarUrl).toBeTruthy();
     expect(await errorCode(alice.api.me.setAvatar(ticket.path))).toBe('forbidden');
-    // Visages cachés au niveau 1 : l'avatar n'est pas transmis.
+    // Lien noué : visage net dès le niveau 1, l'avatar est transmis.
     const aliceSeesBob = (await alice.api.links.list()).find((l) => l.other.id === bob.id);
-    expect(aliceSeesBob?.other).toMatchObject({ face: 'hidden', avatarUrl: null });
+    expect(aliceSeesBob?.other.face).toBe('clear');
+    expect(aliceSeesBob?.other.avatarUrl).toBeTruthy();
   });
 
   it('blocage : le lien et les suggestions disparaissent ; signalement', async () => {

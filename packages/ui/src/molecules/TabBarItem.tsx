@@ -28,6 +28,8 @@ export interface TabBarItemProps {
    */
   indicator?: Indicator;
   index?: number;
+  /** Sans libellé (pictogramme seul, plus grand) ; le libellé reste lu par le lecteur d'écran. */
+  iconOnly?: boolean;
 }
 
 const SW = 2.2;
@@ -52,6 +54,14 @@ function NavIcon({ glyph, color: c, active }: { glyph: GlyphName; color: string;
         </>
       );
       break;
+    case 'pin':
+      body = (
+        <>
+          <Path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" {...common} fill={active ? c : 'none'} strokeLinejoin="round" />
+          <Circle cx={12} cy={10} r={2.4} stroke={active ? 'none' : c} strokeWidth={SW} fill={active ? color.accent : 'none'} />
+        </>
+      );
+      break;
     case 'person':
       body = (
         <>
@@ -71,13 +81,17 @@ function NavIcon({ glyph, color: c, active }: { glyph: GlyphName; color: string;
 }
 
 /** Picto + libellé d'un onglet dans une encre donnée. */
-function Face({ glyph, label, ink, active }: { glyph: GlyphName; label: string; ink: string; active: boolean }) {
+function Face({ glyph, label, ink, active, iconOnly = false }: { glyph: GlyphName; label: string; ink: string; active: boolean; iconOnly?: boolean }) {
   return (
     <View style={styles.face}>
-      <NavIcon glyph={glyph} color={ink} active={active} />
-      <Text variant="bodyHeavy" size={10} tabLabel color={ink} numberOfLines={1} style={styles.label}>
-        {label}
-      </Text>
+      <View style={iconOnly ? styles.big : null}>
+        <NavIcon glyph={glyph} color={ink} active={active} />
+      </View>
+      {iconOnly ? null : (
+        <Text variant="bodyHeavy" size={10} tabLabel color={ink} numberOfLines={1} style={styles.label}>
+          {label}
+        </Text>
+      )}
     </View>
   );
 }
@@ -86,7 +100,7 @@ function Face({ glyph, label, ink, active }: { glyph: GlyphName; label: string; 
  * Onglet de la barre flottante : pictogramme + libellé, pilule jaune quand actif. Devenu actif, son picto rebondit ;
  * ses pastilles font « pop » quand leur nombre change.
  */
-export function TabBarItem({ label, glyph, active, badge, onPress, onLongPress, accessibilityLabel, indicator, index = 0 }: TabBarItemProps) {
+export function TabBarItem({ label, glyph, active, badge, onPress, onLongPress, accessibilityLabel, indicator, index = 0, iconOnly = false }: TabBarItemProps) {
   const reduced = useReducedMotion();
   const still = useIndicator(index);
   const ink = useActiveInk(indicator ?? still, index);
@@ -118,14 +132,14 @@ export function TabBarItem({ label, glyph, active, badge, onPress, onLongPress, 
         {sliding ? (
           <>
             <Animated.View style={ink.off}>
-              <Face glyph={glyph} label={label} ink={color.mute} active={false} />
+              <Face glyph={glyph} label={label} ink={color.mute} active={false} iconOnly={iconOnly} />
             </Animated.View>
             <Animated.View style={[StyleSheet.absoluteFill, ink.on]}>
-              <Face glyph={glyph} label={label} ink={color.dark} active />
+              <Face glyph={glyph} label={label} ink={color.dark} active iconOnly={iconOnly} />
             </Animated.View>
           </>
         ) : (
-          <Face glyph={glyph} label={label} ink={active ? color.dark : color.mute} active={!!active} />
+          <Face glyph={glyph} label={label} ink={active ? color.dark : color.mute} active={!!active} iconOnly={iconOnly} />
         )}
       </Animated.View>
       {badge && !active ? (
@@ -141,6 +155,7 @@ const styles = StyleSheet.create({
   base: { flex: 1, height: ITEM_HEIGHT, minWidth: 0, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', gap: 2 },
   active: { backgroundColor: color.accent },
   label: { letterSpacing: 0.4 },
+  big: { transform: [{ scale: 1.25 }] },
   face: { alignItems: 'center', justifyContent: 'center', gap: 2 },
   badge: { position: 'absolute', top: 5, left: '50%', marginLeft: 6 },
 });

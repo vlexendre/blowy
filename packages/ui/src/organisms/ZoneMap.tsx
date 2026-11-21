@@ -27,6 +27,10 @@ export interface ZoneMapPin {
   selected?: boolean;
   /** Présenté aujourd'hui : anneau jaune. */
   hot?: boolean;
+  /** Sa photo, floue tant que le lien n'est pas noué ; pastille verte si venu aujourd'hui. */
+  photo?: string | null;
+  blurred?: boolean;
+  online?: boolean;
   onPress?: () => void;
 }
 
@@ -157,6 +161,9 @@ export function ZoneMap({ center, radiusKm, me, pins, blurred = [], land = false
                   label={p.label}
                   selected={p.selected}
                   hot={p.hot}
+                  photo={p.photo}
+                  blurred={p.blurred}
+                  online={p.online}
                   onPress={p.onPress}
                   accessibilityLabel={p.accessibilityLabel}
                   landDelay={land ? 260 + rank * 110 : null}

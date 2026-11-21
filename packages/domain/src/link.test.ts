@@ -248,8 +248,8 @@ describe('lien : expérience (rééquilibrage de la photo du jour)', () => {
     expect(levelForXp(0)).toBe(1);
     expect(levelForXp(40)).toBe(2);
     expect(levelForXp(5000)).toBe(7);
-    expect(faceVisibility(3)).toBe('hidden');
-    expect(faceVisibility(4)).toBe('blurred');
+    // Lien noué : visage net dès le niveau 1 (règle du 21 nov. 2026).
+    expect(faceVisibility(1)).toBe('clear');
     expect(faceVisibility(6)).toBe('clear');
   });
 });

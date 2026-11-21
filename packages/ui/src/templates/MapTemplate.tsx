@@ -1,3 +1,4 @@
+import { useTabBarSpace } from '../organisms/BottomTabBar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { type ReactNode, useState } from 'react';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
@@ -33,8 +34,11 @@ export interface MapTemplateProps {
   title: TitleContent;
   /** « Ta zone : 1,5 km. Positions arrondies, jamais en direct. ». */
   subtitle?: string;
-  onBack: () => void;
+  /** Retour (écran poussé) ; absent quand la carte est un onglet. */
+  onBack?: () => void;
   backLabel: string;
+  /** Onglet : le pied flotte au-dessus de la barre d'onglets. */
+  inTabs?: boolean;
   /** Sous le titre : où l'on est (`MapZoneBar`), à la place du sous-titre. */
   zone?: ReactNode;
   /** À droite du titre (interrupteur « discret »). */
@@ -49,15 +53,16 @@ export interface MapTemplateProps {
  * Écran de carte (maquette V6-GCarte) : la carte en plein écran, l'en-tête sur un fondu nuit (le titre reste lisible
  * sur la carte), et un pied flottant. Rien d'autre ne bouge ici : la vedette est la carte (les minimoas qui se posent).
  */
-export function MapTemplate({ map, title, subtitle, zone, onBack, backLabel, right, badge, bottom }: MapTemplateProps) {
+export function MapTemplate({ map, title, subtitle, zone, onBack, backLabel, right, badge, bottom, inTabs = false }: MapTemplateProps) {
   const insets = useSafeAreaInsets();
+  const tabSpace = useTabBarSpace();
   const [head, setHead] = useState<number | null>(null);
   const [foot, setFoot] = useState<number | null>(null);
-  const footGap = space.md + insets.bottom;
+  const footGap = inTabs ? tabSpace + space.xs : space.md + insets.bottom;
   const frame: MapFrame = {
     // Le fondu sous l'en-tête laisse voir la carte : on n'en garde que le haut.
     top: Math.round((head ?? insets.top + 220) - space.xxl + space.sm),
-    bottom: Math.round(bottom || badge ? footGap + (foot ?? 120) + space.sm : insets.bottom + space.md),
+    bottom: Math.round(bottom || badge ? footGap + (foot ?? 120) + space.sm : inTabs ? tabSpace : insets.bottom + space.md),
     safeTop: insets.top,
     safeBottom: insets.bottom,
     measured: head !== null && (foot !== null || !(bottom || badge)),
@@ -75,7 +80,7 @@ export function MapTemplate({ map, title, subtitle, zone, onBack, backLabel, rig
         style={[styles.head, { paddingTop: insets.top + space.sm }]}
       >
         <View style={[layout.row, styles.topRow]}>
-          <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} variant="back" />
+          {onBack ? <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} variant="back" /> : null}
           <View style={layout.grow} />
           {right}
         </View>

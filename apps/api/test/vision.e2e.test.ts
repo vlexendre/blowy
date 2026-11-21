@@ -179,6 +179,8 @@ describe('vision', () => {
     world.clock.advanceDays(1);
 
     const map = await ana.api.vision.map();
+    // Sans photo : visage caché ; activité du jour toujours renseignée (pastille verte).
+    expect(map.pins.every((p) => typeof p.activeToday === 'boolean' && (p.user.avatarUrl ? p.user.face === 'blurred' : p.user.face === 'hidden'))).toBe(true);
     expect(map).toMatchObject({ status: 'ok', scope: 'zone', radiusKm: ZONE_RADIUS_KM, canChangeCity: false, discreet: false });
     const pinIds = map.pins.map((p) => p.user.id);
     expect(pinIds).toContain(near.id);

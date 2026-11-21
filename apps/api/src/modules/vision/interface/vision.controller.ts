@@ -36,8 +36,9 @@ export const toMapDto = (r: MapResult, locale: Locale = 'fr'): MapDto => ({
   center: r.center ? latLng(r.center) : null,
   radiusKm: r.radiusKm,
   pins: r.pins.map((p) => ({
-    // Sur la carte comme dans les rencontres : visage caché, humeur selon la forme du minimoa.
-    user: toPerson(p.profile, toPublicPet(p.pet, moodForShape(shapeOf(p.pet.needs))), 'hidden', null),
+    // Sur la carte : la photo, floutée (nette seulement une fois le lien noué des deux côtés), et l'activité du jour.
+    user: toPerson(p.profile, toPublicPet(p.pet, moodForShape(shapeOf(p.pet.needs))), p.avatarUrl ? 'blurred' : 'hidden', p.avatarUrl),
+    activeToday: p.activeToday,
     position: latLng(p.match.shown),
     compatibility: p.match.score,
     explanation: toExplanation(p.match, p.profile.displayName, locale),

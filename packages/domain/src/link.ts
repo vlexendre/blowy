@@ -70,9 +70,12 @@ export const LEVEL_XP = [0, 40, 120, 260, 480, 800, 1200] as const;
 export const LEVEL_KEYS = ['rendezvous', 'jouent', 'emmenagent', 'visage_flou', 'revelation', 'irl', 'oeuf'] as const;
 export type LevelKey = (typeof LEVEL_KEYS)[number];
 
-/** Les visages sont cachés avant le niveau 4, flous au niveau 4, nets à partir du 5. */
+/**
+ * Visage d'une personne. Lien noué (bonjour accepté des deux côtés) : net, dès le premier jour. Sur la carte, avant le
+ * lien : flou. Ailleurs, sans lien : caché. (Avant le 21 nov. 2026, le visage d'un lien ne se révélait qu'au niveau 5.)
+ */
 export type FaceVisibility = 'hidden' | 'blurred' | 'clear';
-export const faceVisibility = (level: number): FaceVisibility => (level >= 5 ? 'clear' : level >= 4 ? 'blurred' : 'hidden');
+export const faceVisibility = (_level: number): FaceVisibility => 'clear';
 
 export const levelForXp = (xp: number): number => {
   let level = 1;

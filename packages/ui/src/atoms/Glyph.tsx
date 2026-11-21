@@ -29,6 +29,7 @@ export const GLYPHS = [
   'dot',
   'more',
   'copy',
+  'pin',
 ] as const;
 export type GlyphName = (typeof GLYPHS)[number];
 
@@ -205,6 +206,14 @@ function draw(name: GlyphName, s: number, c: string, sw: number, filled: boolean
             strokeWidth={1.6}
             strokeLinejoin="round"
           />
+        </Svg>
+      );
+    case 'pin':
+      // Épingle de carte (onglet Carte).
+      return (
+        <Svg width={s} height={s} viewBox="0 0 24 24">
+          <Path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" stroke={c} strokeWidth={2.2} fill={filled ? c : 'none'} strokeLinejoin="round" />
+          <Path d="M12 7.6a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8z" stroke={filled ? 'none' : c} strokeWidth={2.2} fill={filled ? 'white' : 'none'} />
         </Svg>
       );
     case 'heart':

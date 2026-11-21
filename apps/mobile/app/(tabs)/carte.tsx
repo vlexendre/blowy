@@ -18,7 +18,6 @@ import {
   ChoiceGrid,
   DotNote,
   EmptyState,
-  Header,
   MapPinCard,
   MapPlusStrip,
   MapTemplate,
@@ -73,7 +72,6 @@ export default function CarteScreen() {
   const [home, setHome] = useState<{ center: { latitude: number; longitude: number }; radiusKm: number } | null>(null);
   const markWaved = useMarkWaved();
   const land = useFirstTime('carte:land');
-  const back = () => (router.canGoBack() ? router.back() : router.replace('/rencontres'));
 
   // Minimoa+ : la carte a bougé → on relit ce qu'il y a là (après un court repos du doigt).
   const pan = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -115,7 +113,7 @@ export default function CarteScreen() {
     const failed = me.isError || map.isError;
     return (
       <ScreenMotion>
-        <ScreenTemplate header={<Header onBack={back} backLabel={t.back} />}>
+        <ScreenTemplate>
           {failed ? (
             <Banner
               tone="error"
@@ -143,7 +141,7 @@ export default function CarteScreen() {
     const web = Platform.OS === 'web';
     return (
       <ScreenMotion>
-        <ScreenTemplate header={<Header onBack={back} backLabel={t.back} />}>
+        <ScreenTemplate>
           <Stack top={6} gap={16}>
             <EmptyState
               peek
@@ -287,8 +285,8 @@ export default function CarteScreen() {
       <MapTemplate
         title={t.title}
         zone={zoneBar}
-        onBack={back}
         backLabel={t.back}
+        inTabs
         right={
           <PillToggle
             label={t.discreet}
@@ -321,6 +319,10 @@ export default function CarteScreen() {
               pet: p.user.pet,
               label: chemin.carte.pin(p.user.displayName, bandOf(p.position)),
               hot: hotIds.has(p.user.id),
+              // Sa photo, floutée sur la carte (nette une fois le lien noué) ; pastille verte s'il est venu aujourd'hui.
+              photo: p.user.face === 'hidden' ? null : p.user.avatarUrl,
+              blurred: p.user.face !== 'clear',
+              online: p.activeToday ?? false,
               accessibilityLabel: hotIds.has(p.user.id) ? chemin.carte.pinA11yHot(p.user.displayName, bandOf(p.position)) : t.pinA11y(p.user.pet.name, p.user.displayName),
               selected: p.user.id === selected,
               onPress: () => setSelected((s) => (s === p.user.id ? null : p.user.id)),

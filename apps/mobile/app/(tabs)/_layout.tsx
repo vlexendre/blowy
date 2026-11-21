@@ -14,11 +14,14 @@ import { tabs } from '@/locales/chats';
 /** Onglet de départ quand on arrive directement sur un autre (lien profond, rechargement web). */
 export const unstable_settings = { initialRouteName: 'pet' };
 
-type TabKey = 'chats' | 'pet' | 'rencontres' | 'moi';
-const KEYS: readonly TabKey[] = ['pet', 'chats', 'rencontres', 'moi'];
+type TabKey = 'chats' | 'pet' | 'carte' | 'rencontres' | 'moi';
+const KEYS: readonly TabKey[] = ['pet', 'carte', 'rencontres', 'chats', 'moi'];
 const isTab = (name: string | undefined): name is TabKey => KEYS.includes(name as TabKey);
 
-/** Onglets principaux : Mon pet · Chats · Rencontres · Moi, sur la barre flottante du design system. L'app s'ouvre sur le pet. */
+/**
+ * Onglets principaux (maquette V7) : Mon minimoa · Carte · Rencontres · Chats · Moi, pictogrammes seuls sur la barre
+ * flottante du design system. La carte est un onglet : elle se voit, et ses limites (ta zone) donnent envie de Minimoa+.
+ */
 export default function TabsLayout() {
   const gate = useGate();
   // Widgets iOS et activités en direct (no-op ailleurs).
@@ -33,9 +36,10 @@ export default function TabsLayout() {
   const focused = useIsFocused();
   const items: BottomTabItem<TabKey>[] = [
     { key: 'pet', label: tabs.pet, glyph: 'heart' },
+    { key: 'carte', label: tabs.carte, glyph: 'pin' },
+    { key: 'rencontres', label: tabs.rencontres, glyph: 'people', badge: encounters.data?.incoming.length ?? 0 },
     // Groupes hors de l'interface V1 (Ton chemin) : leurs non-lus ne comptent plus dans la pastille (rien à ouvrir).
     { key: 'chats', label: tabs.chats, glyph: 'chat', badge: totalUnread(links.data) + (GROUPS_IN_V1 ? (groups.data?.groups.reduce((n, g) => n + g.unread, 0) ?? 0) + (groups.data?.invitations.length ?? 0) : 0) },
-    { key: 'rencontres', label: tabs.rencontres, glyph: 'people', badge: encounters.data?.incoming.length ?? 0 },
     { key: 'moi', label: tabs.moi, glyph: 'person' },
   ];
   // Session expirée ou fermée pendant qu'on est dans les onglets : retour à l'accueil.
@@ -52,6 +56,7 @@ export default function TabsLayout() {
               items={items}
               activeKey={isTab(current) ? current : 'pet'}
               accessibilityLabel={tabs.a11y}
+              iconOnly
               // Rarement, le pet passe la tête au-dessus de l'onglet choisi (budget dans @blowy/ui : ~1 sur 10, 3 min de pause).
               peek={pet && focused ? { species: pet.species, mood: 'joie', seed: pet.id } : undefined}
               onPress={(key) => {

@@ -6,6 +6,7 @@ export const tabs = messages({
   fr: {
     chats: 'Chats',
     pet: 'Mon minimoa',
+    carte: 'Carte',
     rencontres: 'Rencontres',
     moi: 'Moi',
     a11y: 'Navigation principale',
@@ -13,6 +14,7 @@ export const tabs = messages({
   en: {
     chats: 'Chats',
     pet: 'My minimoa',
+    carte: 'Map',
     rencontres: 'Encounters',
     moi: 'Me',
     a11y: 'Main navigation',
@@ -20,6 +22,7 @@ export const tabs = messages({
   es: {
     chats: 'Chats',
     pet: 'Mi minimoa',
+    carte: 'Mapa',
     rencontres: 'Encuentros',
     moi: 'Yo',
     a11y: 'Navegación principal',
@@ -27,6 +30,7 @@ export const tabs = messages({
   pt: {
     chats: 'Chats',
     pet: 'Meu minimoa',
+    carte: 'Mapa',
     rencontres: 'Encontros',
     moi: 'Eu',
     a11y: 'Navegação principal',
@@ -34,6 +38,7 @@ export const tabs = messages({
   nl: {
     chats: 'Chats',
     pet: 'Mijn minimoa',
+    carte: 'Kaart',
     rencontres: 'Ontmoetingen',
     moi: 'Ik',
     a11y: 'Hoofdnavigatie',

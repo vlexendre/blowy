@@ -412,6 +412,8 @@ export const MapPinZ = z.object({
   relation: MapPinRelationZ.optional(),
   /** Coucou reçu (relation `waved_you`) : à accepter ou refuser comme dans les rencontres. */
   encounterId: Uuid.nullable().optional(),
+  /** Venu dans l'app aujourd'hui : pastille verte sur la carte. */
+  activeToday: z.boolean().optional(),
 });
 export type MapPin = z.infer<typeof MapPinZ>;
 export const MapZ = z.object({

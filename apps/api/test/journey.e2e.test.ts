@@ -60,7 +60,7 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     expect(await errorCode(alice.api.encounters.accept(encounterId))).toBe('forbidden');
 
     link = await bob.api.encounters.accept(encounterId);
-    expect(link).toMatchObject({ status: 'active', lives: 7, level: 1, other: { id: alice.id, face: 'hidden', avatarUrl: null } });
+    expect(link).toMatchObject({ status: 'active', lives: 7, level: 1, other: { id: alice.id, face: 'clear', avatarUrl: null } });
     expect(world.outbox.at(-1)?.to).toBe('alice@example.com');
     expect((await bob.api.encounters.list()).incoming).toHaveLength(0);
     expect((await alice.api.encounters.list()).suggestions.some((s) => s.user.id === bob.id)).toBe(false);

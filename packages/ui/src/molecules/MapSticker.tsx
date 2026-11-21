@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Image, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
 import { PetBadge } from '../atoms/PetBadge';
@@ -28,6 +28,11 @@ export interface MapStickerProps {
   floatDelay?: number;
   /** Diamètre du visage. Défaut 56. */
   size?: number;
+  /** Sa photo (à la place du minimoa). Floue tant que le lien n'est pas noué des deux côtés (`blurred`). */
+  photo?: string | null;
+  blurred?: boolean;
+  /** Venu dans l'app aujourd'hui : pastille verte, comme un statut en ligne. */
+  online?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -36,7 +41,7 @@ export interface MapStickerProps {
  * prénom en puce dessous.
  * Il se pose en rebondissant, flotte doucement au repos, sautille quand on le touche. Animations réduites : posé, fixe.
  */
-export function MapSticker({ pet, label, selected, me, hot, onPress, accessibilityLabel, landDelay = null, floatDelay = 0, size = 56, style }: MapStickerProps) {
+export function MapSticker({ pet, label, selected, me, hot, onPress, accessibilityLabel, landDelay = null, floatDelay = 0, size = 56, photo = null, blurred = false, online = false, style }: MapStickerProps) {
   const reduced = useReducedMotion();
   const land = useSharedValue(landDelay === null ? 1 : 0);
   const o = useSharedValue(landDelay === null ? 1 : 0);
@@ -71,7 +76,12 @@ export function MapSticker({ pet, label, selected, me, hot, onPress, accessibili
     <Animated.View style={[styles.col, body]}>
       <View style={[styles.face, { width: size + 8, height: size + 8, borderRadius: (size + 8) / 2 }, hot ? styles.faceHot : null, selected ? styles.faceOn : null]}>
         {/* Le médaillon (tête et épaules, objets de la tête compris), cadré pareil pour les 4 espèces, habillé ou non. */}
-        <PetBadge species={pet.species} outfit={pet.outfit} size={size} background={me ? color.accent : tint} roomy style={styles.badge} />
+        {photo ? (
+          <Image source={{ uri: photo }} blurRadius={blurred ? 14 : 0} style={{ width: size, height: size, borderRadius: size / 2 }} accessibilityIgnoresInvertColors />
+        ) : (
+          <PetBadge species={pet.species} outfit={pet.outfit} size={size} background={me ? color.accent : tint} roomy style={styles.badge} />
+        )}
+        {online ? <View style={[styles.online, { top: size * 0.02, right: size * 0.02 }]} /> : null}
       </View>
       {/* La pointe de l'épingle, sous le visage (blanche, jaune pour un présenté du jour). */}
       {me ? null : <View style={[styles.tail, hot ? styles.tailHot : null]} />}
@@ -130,6 +140,7 @@ const styles = StyleSheet.create({
   faceOn: { borderWidth: 3, borderColor: color.accent, transform: [{ scale: 1.1 }] },
   chip: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 999, backgroundColor: color.white, maxWidth: 160, transform: [{ rotate: '-3deg' }] },
   chipOn: { backgroundColor: color.accent },
+  online: { position: 'absolute', width: 16, height: 16, borderRadius: 8, backgroundColor: color.ok, borderWidth: 3, borderColor: color.white },
   blob: { alignItems: 'center', justifyContent: 'center' },
   ring: { position: 'absolute' },
 });
