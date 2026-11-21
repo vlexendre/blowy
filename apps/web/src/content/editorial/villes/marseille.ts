@@ -48,7 +48,7 @@ export const marseille: CityPage = {
         '**La culture** : concerts au Cours Julien, expositions, cinémas de quartier, et des institutions comme le Mucem dont les esplanades sont aussi des lieux de rendez-vous.',
         '**Les associations de quartier** : comités d’intérêt de quartier, jardins partagés, aide aux devoirs. Marseille a une vie associative très locale.',
         'Tu préfères les sorties en petit comité ? Le guide [rencontrer du monde quand on est réservé](/guides/se-faire-des-amis-timide/) est pour toi.',
-        'Le littoral se partage. Si tu as de la famille ou des amis plus loin sur la côte, voici comment [se faire des amis à Nice](/se-faire-des-amis/nice/) et où [rencontrer des gens à Montpellier](/se-faire-des-amis/montpellier/).',
+        'Le littoral se partage. Si tu as de la famille ou des amis plus loin sur la côte, voici comment [se faire des amis à Nice](/se-faire-des-amis/nice/) et où [rencontrer des gens à Montpellier](/se-faire-des-amis/montpellier/). Et si le travail t’emmène vers la rade, nos idées pour [se faire des amis à Toulon](/se-faire-des-amis/toulon/) sont à une heure de route.',
       ],
     },
   ],

@@ -88,6 +88,11 @@ SEO quand `treg` est disponible.
   du bonjour au café ; cité dans le texte des guides « seul », « application », « nouvelle ville » et de la page Nantes.
   Santé : 92 URLs en 200, aucune erreur ; Lighthouse mobile / 95-100-100, Lyon 99-100-100. Positions non relevées (`treg`
   absent de l'environnement de la routine).
+- 21 novembre 2026 : page ville `/se-faire-des-amis/toulon/` (prochaine grande ville absente par population ; requêtes
+  « se faire des amis / rencontrer des gens à Toulon ») : ville de nouveaux arrivants (Marine, hôpital, université),
+  Mourillon, Haute-Ville et cours Lafayette, Chalucet, mont Faron, bateaux-bus de la rade, stade Mayol ; sans zone de
+  quartier (renvoi à `/quartier/`). Citée dans le texte de Marseille, Nice et du guide « nouvelle ville ». Santé : 93 URLs
+  en 200, aucune erreur ; Lighthouse mobile / 99-100-100, Bordeaux 100-100-100. Positions non relevées (`treg` absent).
 
 ## 6. Blog d'actualité et GEO
 
