@@ -99,14 +99,23 @@ const COMPACT_STAGE = 136;
  * Tout le chemin, façon Duolingo : un chapitre par univers, chacun sur au moins une page, du bas (chapitre 1) vers le
  * haut (on monte en avançant). Un espace vide en haut de chapitre lui fait remplir l'écran.
  */
-function chaptersBottomUp(cm: Parameters<typeof pathChapters>[0], page: number) {
+function chaptersBottomUp(cm: Parameters<typeof pathChapters>[0], page: number, win: { below: number; above: number }) {
   type Gap = { key: string; kind: 'gap'; height: number };
-  return pathChapters(cm)
-    .flatMap((ch, i): (ReturnType<typeof pathChapters>[number]['nodes'][number] | Gap)[] => {
-      const used = cheminStackHeight(ch.nodes.map((n) => n.kind));
-      return [...ch.nodes, { key: `gap:${i}`, kind: 'gap', height: Math.max(0, page - used) }];
-    })
-    .reverse();
+  const all = pathChapters(cm);
+  // Seulement les chapitres autour de celui du jour (des centaines de cases sinon) ; on en ajoute en approchant d'un bord.
+  const at = Math.max(0, all.findIndex((x) => x.current));
+  const from = Math.max(0, at - win.below);
+  const to = Math.min(all.length, at + win.above + 1);
+  return {
+    more: { below: from > 0, above: to < all.length },
+    nodes: all
+      .slice(from, to)
+      .flatMap((ch, i): (ReturnType<typeof pathChapters>[number]['nodes'][number] | Gap)[] => {
+        const used = cheminStackHeight(ch.nodes.map((n) => n.kind));
+        return [...ch.nodes, { key: `gap:${from + i}`, kind: 'gap', height: Math.max(0, page - used) }];
+      })
+      .reverse(),
+  };
 }
 
 /** Les 4 soins, en pastille dans la carte (le câlin se fait aussi en touchant le minimoa). */
@@ -170,6 +179,10 @@ export default function PetHome() {
     setTimeout(() => scrollRef.current?.scrollTo({ y, animated: false }), 60);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nowNode?.y, fixedHeight, blockY, pathInBlock]);
+  // Chapitres montrés : 2 en dessous de celui du jour, 3 au-dessus ; plus en approchant d'un bord.
+  const [win, setWin] = useState({ below: 2, above: 3 });
+  const contentH = useRef(0);
+  const grewTop = useRef<number | null>(null);
   const chapterPage = fixedHeight > 0 ? Math.max(320, viewBottom - viewTopCompact) : 420;
   const location = useLocation(me.data);
   const push = usePushPermission();
@@ -382,6 +395,7 @@ export default function PetHome() {
     }
   };
   const cm = chemin.data;
+  const path = cm ? chaptersBottomUp(cm, chapterPage, win) : { more: { below: false, above: false }, nodes: [] };
   const view = cm ? todayView(cm) : null;
   const step = cm ? stepOf(cm) : { step: 0, steps: 0 };
   const firstUnit = cm?.units[0]?.title ?? null;
@@ -404,6 +418,14 @@ export default function PetHome() {
         species={p.species}
         refreshing={refreshing}
         onRefresh={refresh}
+        onEdge={(edge, y) => {
+          if (edge === 'top' && path.more.above) {
+            // Ajouté au-dessus : on garde sa place (voir onContentSizeChange).
+            grewTop.current = y;
+            setWin((w) => ({ ...w, above: w.above + 4 }));
+          }
+          if (edge === 'bottom' && path.more.below) setWin((w) => ({ ...w, below: w.below + 4 }));
+        }}
         onCollapse={(on) => {
           // En descendant, la carte du minimoa rapetisse ; en remontant (ou tirée vers le bas), elle regrandit.
           collapse.value = withTiming(on ? 1 : 0, { duration: 320, easing: Easing.out(Easing.cubic) });
@@ -417,6 +439,14 @@ export default function PetHome() {
             {...scroll}
             scrollRef={scrollRef}
             snapToOffsets={snaps}
+            onContentSizeChange={(_, h) => {
+              const before = contentH.current;
+              contentH.current = h;
+              if (grewTop.current === null || h <= before) return;
+              const y = grewTop.current + (h - before);
+              grewTop.current = null;
+              scrollRef.current?.scrollTo({ y, animated: false });
+            }}
             // La carte du minimoa reste en haut ; le chemin défile dessous.
             fixed={
               <View
@@ -557,7 +587,7 @@ export default function PetHome() {
                   />
                   <View onLayout={(e) => setPathInBlock(e.nativeEvent.layout.y)}>
                     <CheminPath
-                      nodes={chaptersBottomUp(cm, chapterPage).map((n) =>
+                      nodes={path.nodes.map((n) =>
                         n.kind === 'gap'
                           ? { key: n.key, kind: n.kind, height: n.height, accessibilityLabel: '' }
                           : n.kind === 'unit'

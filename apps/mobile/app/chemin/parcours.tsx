@@ -45,6 +45,8 @@ export default function Parcours() {
   const page = Math.max(420, height - CHROME);
   const nodes = cm
     ? pathChapters(cm)
+        // Jusqu'à 5 chapitres après celui du jour (des centaines de cases sinon).
+        .filter((_, i, all) => i <= Math.max(0, all.findIndex((x) => x.current)) + 5)
         .flatMap((ch, ci) => {
           const own = ch.nodes.map((n) =>
             n.kind === 'unit'

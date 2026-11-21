@@ -56,11 +56,12 @@ export class SupabaseCheminContentRepository implements CheminContentRepository 
   constructor(private readonly client: Db) {}
 
   async load(): Promise<CheminContent> {
+    // Lu par pages : le serveur rend 1 000 lignes au plus par requête (3 000 questions et plus).
     const [units, steps, questions, scenes] = await Promise.all([
-      this.client.from('chemin_units').select('*'),
-      this.client.from('chemin_steps').select('*'),
-      this.client.from('chemin_questions').select('*'),
-      this.client.from('chemin_scenes').select('*'),
+      this.all('chemin_units'),
+      this.all('chemin_steps'),
+      this.all('chemin_questions'),
+      this.all('chemin_scenes'),
     ]);
     check(units.error, 'lecture des unités');
     check(steps.error, 'lecture des étapes');
@@ -84,6 +85,26 @@ export class SupabaseCheminContentRepository implements CheminContentRepository 
       questions: (questions.data ?? []).map(questionFromRow),
       scenes: (scenes.data ?? []).map((s) => ({ id: s.id, kind: s.kind, animation: s.animation, minBuild: s.min_build, status: s.status })),
     };
+  }
+
+  /** Toutes les lignes d'une table, par pages de 1 000 (ordre stable par identifiant). */
+  private async all<T extends 'chemin_units' | 'chemin_steps' | 'chemin_questions' | 'chemin_scenes'>(table: T) {
+    const PAGE = 1000;
+    const rows: Row<T>[] = [];
+    for (let from = 0; ; from += PAGE) {
+      const res = await this.client.from(table).select('*').order('id').range(from, from + PAGE - 1);
+      if (res.error) return { data: null, error: res.error };
+      const page = (res.data ?? []) as unknown as Row<T>[];
+      rows.push(...page);
+      if (page.length < PAGE) return { data: rows, error: null };
+    }
+  }
+
+  async insertMissingQuestions(list: readonly ContentQuestion[]): Promise<void> {
+    for (let i = 0; i < list.length; i += 200) {
+      const { error } = await this.client.from('chemin_questions').upsert(list.slice(i, i + 200).map(questionRow), { onConflict: 'id', ignoreDuplicates: true });
+      check(error, 'enregistrement des questions');
+    }
   }
 
   async upsertQuestion(q: ContentQuestion): Promise<void> {

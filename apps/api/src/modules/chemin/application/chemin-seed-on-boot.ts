@@ -36,11 +36,9 @@ export class CheminSeedOnBoot implements OnApplicationBootstrap {
       await this.content.upsertUnit(u);
       added += 1;
     }
-    for (const q of seed.questions) {
-      if (questions.has(q.id)) continue;
-      await this.content.upsertQuestion(q);
-      added += 1;
-    }
+    const missing = seed.questions.filter((q) => !questions.has(q.id));
+    if (missing.length > 0) await this.content.insertMissingQuestions(missing);
+    added += missing.length;
     return added;
   }
 }

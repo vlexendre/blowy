@@ -72,7 +72,7 @@ describe('Ton chemin', () => {
     const a = await person('Alma');
     const map = await a.api.chemin.map();
     expect(map.title).toBe('Ton chemin');
-    expect(map.units).toHaveLength(6);
+    expect(map.units).toHaveLength(65);
     expect(map.units[0]).toMatchObject({ id: 'vision', state: 'done' });
     expect(map.currentStepId).toBe('energie_1');
     expect(map.today).toMatchObject({ state: 'todo', quota: { free: 1, bonus: 0, left: 1, nextSlot: 0 } });
@@ -116,7 +116,7 @@ describe('Ton chemin', () => {
     expect(r.revelation).toMatchObject({ title: 'Ce que Nino a appris', axis: 'rythme' });
     // Rythme : −60, −60, +70 → entre les deux.
     expect(r.revelation.text).toBe('Toi, tu passes du canapé à la fête sans forcer.');
-    expect(r.progress).toMatchObject({ stepId: 'energie_1', stepDone: true, unitDone: false, next: { stepId: 'energie_2' }, stepsDone: 3, stepsTotal: 12 });
+    expect(r.progress).toMatchObject({ stepId: 'energie_1', stepDone: true, unitDone: false, next: { stepId: 'energie_2' }, stepsDone: 3, stepsTotal: 602 });
     expect(r.streak).toMatchObject({ current: 1, doneToday: true });
     expect(r.quota).toMatchObject({ used: 1, left: 0, nextSlot: null });
     expect(r.person?.suggestion.user.id).toBe(b.id);
@@ -224,7 +224,7 @@ describe('Ton chemin', () => {
   it('administration : une question créée en brouillon, publiée, arrive dans le parcours', async () => {
     const admin = createAdminClient({ baseUrl: w.baseUrl, getToken: () => `test:${randomUUID()}:${ADMIN}` });
     const all = await admin.chemin();
-    expect(all.questions).toHaveLength(60);
+    expect(all.questions).toHaveLength(3010);
     expect(all.questions.every((q) => q.status === 'live' && q.warnings.every((x) => x.startsWith('Pas encore traduit')))).toBe(true);
     expect(all.stats.sessionsToday).toBeGreaterThanOrEqual(0);
 

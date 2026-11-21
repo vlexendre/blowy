@@ -12,6 +12,7 @@ import { es } from './texts.es';
 import { fr } from './texts.fr';
 import { nl } from './texts.nl';
 import { pt } from './texts.pt';
+import { SEED_PACKS } from './packs';
 
 export const SEED_TEXTS: Record<Locale, SeedTexts> = { fr, en, es, pt, nl };
 const OPTION_IDS = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -85,6 +86,48 @@ export function buildSeedContent(at: string): CheminContent {
         });
       });
     }
+  });
+  // Univers écrits d'un bloc (forme et 5 langues ensemble), après ceux de départ.
+  SEED_PACKS.forEach((p, pi) => {
+    units.push({
+      id: p.id,
+      position: SEED_UNITS.length + pi,
+      icon: p.icon,
+      minBuild: 0,
+      status: 'live',
+      texts: byLocale((l) => ({ title: p.title[l][0], subtitle: p.title[l][1] })),
+      steps: p.steps.map((s, si) => ({ id: s.id, unitId: p.id, position: si, status: 'live', texts: byLocale((l) => ({ title: s.title[l] })) })),
+      updatedAt: at,
+    });
+    for (const s of p.steps)
+      s.questions.forEach((q, qi) => {
+        questions.push({
+          id: q.id,
+          stepId: s.id,
+          position: qi,
+          format: q.format,
+          axis: q.axis,
+          direction: 1,
+          minBuild: 0,
+          legacyTestId: null,
+          status: 'live',
+          texts: byLocale((l) => ({ text: q.texts[l].t, opener: q.texts[l].o, ...(q.texts[l].m ? { mid: q.texts[l].m } : {}) })),
+          options: q.options.map(([icon, weight, tag], oi) => ({
+            id: OPTION_IDS[oi] ?? `o${oi}`,
+            position: oi,
+            icon,
+            weight,
+            tag,
+            animation: null,
+            reactionMinBuild: 0,
+            texts: byLocale((l) => {
+              const [label, reaction] = q.texts[l].a[oi] ?? ['', ''];
+              return { label, reaction };
+            }),
+          })),
+          updatedAt: at,
+        });
+      });
   });
   return { units, questions, scenes: SEED_SCENES.map((s) => ({ ...s })) };
 }

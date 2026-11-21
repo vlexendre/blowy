@@ -1,0 +1,72 @@
+/** Univers écrits d'un bloc, dans l'ordre du chemin (après les 6 univers de départ). Varié : un thème change de l'un à l'autre. */
+import type { SeedPack } from './pack';
+import { pack as matins } from './matins';
+import { pack as gourmandise } from './gourmandise';
+import { pack as amis } from './amis';
+import { pack as musique } from './musique';
+import { pack as ville } from './ville';
+import { pack as cinema } from './cinema';
+import { pack as cuisine } from './cuisine';
+import { pack as voyages } from './voyages';
+import { pack as rencontres } from './rencontres';
+import { pack as sport } from './sport';
+import { pack as nature } from './nature';
+import { pack as series } from './series';
+import { pack as soirees } from './soirees';
+import { pack as cafe } from './cafe';
+import { pack as voisins } from './voisins';
+import { pack as balades } from './balades';
+import { pack as animaux } from './animaux';
+import { pack as lecture } from './lecture';
+import { pack as week_ends } from './week_ends';
+import { pack as ete } from './ete';
+import { pack as quartier } from './quartier';
+import { pack as concerts } from './concerts';
+import { pack as jardin } from './jardin';
+import { pack as jeux } from './jeux';
+import { pack as hiver } from './hiver';
+import { pack as chez_soi } from './chez_soi';
+import { pack as humour } from './humour';
+import { pack as musees } from './musees';
+import { pack as photo } from './photo';
+import { pack as apprendre } from './apprendre';
+import { pack as deco } from './deco';
+import { pack as rangement } from './rangement';
+import { pack as fetes } from './fetes';
+import { pack as style } from './style';
+import { pack as shopping } from './shopping';
+import { pack as langues } from './langues';
+import { pack as souvenirs } from './souvenirs';
+import { pack as reves } from './reves';
+import { pack as anniversaires } from './anniversaires';
+import { pack as argent } from './argent';
+import { pack as travail } from './travail';
+import { pack as creativite } from './creativite';
+import { pack as cadeaux } from './cadeaux';
+import { pack as rituels } from './rituels';
+import { pack as defis } from './defis';
+import { pack as imprevus } from './imprevus';
+import { pack as numerique } from './numerique';
+import { pack as tablees } from './tablees';
+import { pack as entraide } from './entraide';
+import { pack as transports } from './transports';
+import { pack as decisions } from './decisions';
+import { pack as messages } from './messages';
+import { pack as desaccords } from './desaccords';
+import { pack as sommeil } from './sommeil';
+import { pack as pluie } from './pluie';
+import { pack as brocantes } from './brocantes';
+import { pack as bricolage } from './bricolage';
+import { pack as aventure } from './aventure';
+import { pack as ponctualite } from './ponctualite';
+
+export const SEED_PACKS: readonly SeedPack[] = [
+  matins, gourmandise, amis, musique, ville, cinema, cuisine, voyages,
+  rencontres, sport, nature, series, soirees, cafe, voisins, balades,
+  animaux, lecture, week_ends, ete, quartier, concerts, jardin, jeux,
+  hiver, chez_soi, humour, musees, photo, apprendre, deco, rangement,
+  fetes, style, shopping, langues, souvenirs, reves, anniversaires, argent,
+  travail, creativite, cadeaux, rituels, defis, imprevus, numerique, tablees,
+  entraide, transports, decisions, messages, desaccords, sommeil, pluie, brocantes,
+  bricolage, aventure, ponctualite,
+];

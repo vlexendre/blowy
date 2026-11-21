@@ -61,6 +61,8 @@ export interface ScreenTemplateProps {
   contentStyle?: StyleProp<ViewStyle>;
   /** Arrêts du défilement (le chemin s'arrête sur ses chapitres et sur l'étape du jour). */
   snapToOffsets?: number[];
+  /** Taille du contenu qui défile (pour garder sa place quand on ajoute au-dessus). */
+  onContentSizeChange?: (width: number, height: number) => void;
   /**
    * Petit titre qui apparaît dans la barre du haut quand le grand titre est sorti de l'écran (corps défilant
    * sans `header`, ex. onglets). `compactAfter` : défilement (pt) à partir duquel il apparaît.
@@ -163,6 +165,7 @@ function ScreenBody({
   scrollEventThrottle,
   contentStyle,
   snapToOffsets,
+  onContentSizeChange,
   compactTitle,
   compactAfter = 72,
 }: ScreenTemplateProps) {
@@ -217,6 +220,7 @@ function ScreenBody({
       showsVerticalScrollIndicator={false}
       refreshControl={refresh}
       snapToOffsets={snapToOffsets}
+      onContentSizeChange={onContentSizeChange}
       snapToStart={false}
       snapToEnd={false}
       decelerationRate={snapToOffsets ? 'fast' : 'normal'}

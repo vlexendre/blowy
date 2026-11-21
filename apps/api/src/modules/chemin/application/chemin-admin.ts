@@ -12,13 +12,16 @@ import { CheminContentService } from './chemin-content';
  * Garde-fou éditorial (docs/CHEMIN.md) : jamais de santé mentale, de religion, de politique ni d'orientation
  * sexuelle. Une liste de mots par langue ; un mot trouvé empêche de passer la question en « relue » ou « en ligne ».
  */
+// Bords de mot qui connaissent les accents (« sélection » ne contient pas « élection »). « gauche » et « droite »
+// retirés : trop de fausses alertes (« à gauche, à droite »).
+const words = (w: string): RegExp => new RegExp(`(?<!\\p{L})(?:${w})(?!\\p{L})`, 'iu');
 const FORBIDDEN = [
-  /\b(religion|religieu\w*|dieu|église|mosquée|synagogue|prière|prier)\b/i,
-  /\b(politique\w*|élection\w*|voter|vote|parti politique|gauche|droite)\b/i,
-  /\b(dépression|dépressi\w*|anxiété|anxieu\w*|suicid\w*|thérapie|psychiatr\w*|trouble mental)\b/i,
-  /\b(homosexu\w*|hétéro\w*|bisexu\w*|gay|lesbienne|orientation sexuelle)\b/i,
-  /\b(god|church|mosque|pray\w*|faith|politic\w*|election\w*|depress\w*|anxiety|therap\w*|suicid\w*|homosexual|heterosexual|lesbian|sexual orientation)\b/i,
-  /\b(iglesia|dios|religión|política|elecciones|depresión|ansiedad|terapia|igreja|deus|religião|eleição|depressão|ansiedade|kerk|god|religie|politiek|verkiezing\w*|depressie|angst|therapie)\b/i,
+  words('religion|religieu\\p{L}*|dieu|église|mosquée|synagogue|prière|prier'),
+  words('politique\\p{L}*|élection\\p{L}*|voter|vote|parti politique'),
+  words('dépression|dépressi\\p{L}*|anxiété|anxieu\\p{L}*|suicid\\p{L}*|thérapie|psychiatr\\p{L}*|trouble mental'),
+  words('homosexu\\p{L}*|hétéro\\p{L}*|bisexu\\p{L}*|gay|lesbienne|orientation sexuelle'),
+  words('god|church|mosque|pray\\p{L}*|faith|politic\\p{L}*|election\\p{L}*|depress\\p{L}*|anxiety|therap\\p{L}*|suicid\\p{L}*|homosexual|heterosexual|lesbian|sexual orientation'),
+  words('iglesia|dios|religión|política|elecciones|depresión|ansiedad|terapia|igreja|deus|religião|eleição|depressão|ansiedade|kerk|god|religie|politiek|verkiezing\\p{L}*|depressie|angst|therapie'),
 ];
 
 const allTexts = (q: Pick<ContentQuestion, 'texts' | 'options'>): string[] =>

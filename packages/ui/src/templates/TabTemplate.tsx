@@ -41,6 +41,7 @@ export interface TabTemplateProps {
    */
   fixed?: ReactNode;
   snapToOffsets?: number[];
+  onContentSizeChange?: ScreenTemplateProps['onContentSizeChange'];
 }
 
 /** Grand titre d'onglet (64 dans V6 ; 56 depuis la passe « densité »). */
@@ -70,6 +71,7 @@ export function TabTemplate({
   bottomExtra = 0,
   fixed,
   snapToOffsets,
+  onContentSizeChange,
 }: TabTemplateProps) {
   const barSpace = useTabBarSpace();
   const insets = useSafeAreaInsets();
@@ -88,6 +90,7 @@ export function TabTemplate({
       scrollEventThrottle={scrollEventThrottle}
       scrollRef={scrollRef}
       snapToOffsets={snapToOffsets}
+      onContentSizeChange={onContentSizeChange}
       contentStyle={gutter !== undefined ? { paddingHorizontal: gutter } : undefined}
     >
       {brand || title || right ? (

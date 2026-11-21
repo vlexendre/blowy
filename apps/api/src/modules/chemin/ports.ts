@@ -64,6 +64,8 @@ export interface CheminContentRepository {
   /** Tout le contenu (tous statuts) : l'API filtre ce qui est en ligne. */
   load(): Promise<CheminContent>;
   upsertQuestion(q: ContentQuestion): Promise<void>;
+  /** Ajoute en lot les questions absentes (jamais de réécriture) : contenu de départ au démarrage. */
+  insertMissingQuestions(list: readonly ContentQuestion[]): Promise<void>;
   setQuestionStatus(id: string, status: CheminStatus, at: string): Promise<boolean>;
   /** Unité et ses étapes (une étape absente du corps n'est pas supprimée). */
   upsertUnit(u: ContentUnit): Promise<void>;

@@ -49,6 +49,8 @@ export interface PetRefreshProps {
    * (`false`). Seuls les gestes de la personne comptent (pas un défilement fait par l'app).
    */
   onCollapse?: (collapsed: boolean) => void;
+  /** Près du haut ou du bas du contenu (une fois par taille de contenu) : pour en charger plus. `y` : défilement. */
+  onEdge?: (edge: 'top' | 'bottom', y: number) => void;
 }
 
 /** Distance de tirage à laquelle iOS déclenche le rafraîchissement (≈ la hauteur du pet qui grimpe). */
@@ -72,6 +74,7 @@ export function PetRefresh({
   bottomInset = 0,
   size = 64,
   onCollapse,
+  onEdge,
 }: PetRefreshProps) {
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
@@ -86,6 +89,9 @@ export function PetRefresh({
   const collapsed = useSharedValue(false);
   const tell = (c: boolean) => onCollapse?.(c);
   const watch = !!onCollapse;
+  const edgeAt = useSharedValue({ top: -1, bottom: -1 });
+  const edge = (e: 'top' | 'bottom', y: number) => onEdge?.(e, y);
+  const watchEdge = !!onEdge;
   const onScroll = useAnimatedScrollHandler({
     onBeginDrag: () => {
       dragging.value = true;
@@ -95,6 +101,18 @@ export function PetRefresh({
       dragging.value = false;
     },
     onScroll: (e) => {
+      if (watchEdge && e.contentSize.height > 0) {
+        const y = e.contentOffset.y;
+        const h = e.contentSize.height;
+        if (y < 500 && y > 0 && edgeAt.value.top !== h) {
+          edgeAt.value = { ...edgeAt.value, top: h };
+          runOnJS(edge)('top', y);
+        }
+        if (y + e.layoutMeasurement.height > h - 500 && edgeAt.value.bottom !== h) {
+          edgeAt.value = { ...edgeAt.value, bottom: h };
+          runOnJS(edge)('bottom', y);
+        }
+      }
       if (watch) {
         const y = e.contentOffset.y;
         const d = y - last.value;

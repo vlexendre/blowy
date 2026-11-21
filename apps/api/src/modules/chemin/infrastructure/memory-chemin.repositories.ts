@@ -32,6 +32,12 @@ export class MemoryCheminContentRepository implements CheminContentRepository {
     return clone(this.content());
   }
 
+  async insertMissingQuestions(list: readonly ContentQuestion[]): Promise<void> {
+    const c = this.content();
+    const have = new Set(c.questions.map((x) => x.id));
+    for (const q of list) if (!have.has(q.id)) c.questions.push(clone(q));
+  }
+
   async upsertQuestion(q: ContentQuestion): Promise<void> {
     const c = this.content();
     const i = c.questions.findIndex((x) => x.id === q.id);
