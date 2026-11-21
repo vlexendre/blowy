@@ -29,7 +29,33 @@ const sent = document.querySelector<HTMLElement>('[data-sent]');
 const petImg = document.querySelector<HTMLImageElement>('[data-pet]');
 const errorText = document.querySelector<HTMLElement>('[data-state="error"] .pub-text');
 
-const selected = () => chips.filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.dataset.word ?? '');
+/** Les mots choisis, dans l'ordre où ils ont été choisis (le 1er, le 2e, le 3e ont chacun leur couleur). */
+let order: string[] = [];
+const selected = () => order.filter((w) => chips.some((b) => b.dataset.word === w && b.getAttribute('aria-pressed') === 'true'));
+
+/**
+ * Les lignes `data-fit` d'un même titre tiennent sur la largeur du bloc, à la même taille : la police descend pour
+ * toutes tant que l'une déborde (un prénom long ne casse ni la page ni l'équilibre du titre).
+ */
+function fitLines(): void {
+  const groups = new Map<HTMLElement, HTMLElement[]>();
+  document.querySelectorAll<HTMLElement>('[data-fit]').forEach((el) => {
+    el.style.fontSize = '';
+    const box = el.parentElement;
+    if (box) groups.set(box, [...(groups.get(box) ?? []), el]);
+  });
+  groups.forEach((els, box) => {
+    if (box.clientWidth === 0) return;
+    let size = Math.min(...els.map((el) => parseFloat(getComputedStyle(el).fontSize)));
+    const over = () => els.some((el) => el.scrollWidth > box.clientWidth);
+    els.forEach((el) => (el.style.fontSize = `${size}px`));
+    while (over() && size > 16) {
+      size -= 1;
+      els.forEach((el) => (el.style.fontSize = `${size}px`));
+    }
+  });
+}
+window.addEventListener('resize', fitLines);
 
 /** Humeur du pet du panneau selon le nombre de mots choisis (maquette : neutre → joie → amour). */
 const moodFor = (n: number): Mood => (n === 0 ? 'neutre' : n === MAX ? 'amour' : 'joie');
@@ -70,6 +96,11 @@ function refresh(): void {
       submit.textContent = n === 0 ? c.submitEmpty : left === 0 ? c.submit : fill(left > 1 ? c.submitMorePlural : c.submitMore, { n: left });
     }
   }
+  chips.forEach((b) => {
+    const i = words.indexOf(b.dataset.word ?? '');
+    if (i >= 0) b.dataset.n = String(i + 1);
+    else delete b.dataset.n;
+  });
   drawGauges(words);
   if (page && petImg) setPetImage(petImg, page.pet.species, moodFor(n), fill(c.petAlt, vars(page)));
 }
@@ -86,6 +117,8 @@ chips.forEach((b) => {
     }
     if (formError) formError.hidden = true;
     b.setAttribute('aria-pressed', on ? 'false' : 'true');
+    const w = b.dataset.word ?? '';
+    order = on ? order.filter((x) => x !== w) : [...order.filter((x) => x !== w), w];
     refresh();
   });
 });
@@ -115,6 +148,39 @@ function showSent(words: readonly string[]): void {
   if (list) list.textContent = words.map((w) => wordLabel[w] ?? w).join(', ');
   if (form) form.hidden = true;
   if (sent) sent.hidden = false;
+  form?.closest('.mots')?.classList.add('is-sent');
+  // La carte à partager : les 3 mots en autocollants, le minimoa amoureux.
+  const labelsOf = words.map((w) => wordLabel[w] ?? w);
+  const stickers = document.querySelector<HTMLElement>('[data-stickers]');
+  if (stickers) {
+    stickers.replaceChildren(
+      ...labelsOf.map((t) => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        return li;
+      }),
+    );
+  }
+  const storyPet = document.querySelector<HTMLImageElement>('[data-story-pet]');
+  if (storyPet && page) setPetImage(storyPet, page.pet.species, 'amour', fill(c.petAlt, vars(page)));
+  const shareBtn = document.querySelector<HTMLButtonElement>('[data-share]');
+  if (shareBtn && page) {
+    const text = fill(c.shareText, { ...vars(page), mots: labelsOf.join(', ') });
+    const url = `${location.origin}/`;
+    shareBtn.onclick = async () => {
+      try {
+        if (navigator.share) await navigator.share({ text, url });
+        else {
+          await navigator.clipboard.writeText(`${text} ${url}`);
+          const label = shareBtn.querySelector<HTMLElement>('[data-share-label]');
+          if (label) label.textContent = shareBtn.dataset.copied ?? '';
+        }
+      } catch {
+        // partage annulé : rien à faire
+      }
+    };
+  }
+  fitLines();
   // Boucle « 3 mots » : l'app déjà installée ouvre ton propre lien ; sinon, le store, et le code qui dit qui t'a fait venir.
   const own = document.querySelector<HTMLAnchorElement>('[data-own-link]');
   if (own) own.href = withRef(`${DEEP_LINK_SCHEME}mots`);
@@ -141,6 +207,7 @@ async function load(): Promise<void> {
   });
   refresh();
   showState('form');
+  fitLines();
 }
 
 form?.addEventListener('submit', async (e) => {

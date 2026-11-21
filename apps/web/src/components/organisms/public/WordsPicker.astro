@@ -30,7 +30,7 @@ const hasTpl = (s: string) => /\{\w+\}/.test(s);
 
   <div class="mots-panel">
     <h1 class="pub-title mots-title" tabindex="-1">
-      {c.title.map((l, i) => <span class:list={['ln', { dim: i > 0 }]} data-tpl={hasTpl(l) ? l : undefined}>{l}</span>)}
+      {c.title.map((l, i) => <span class:list={['ln', { dim: i > 0 }]} data-tpl={hasTpl(l) ? l : undefined} data-fit>{l}</span>)}
     </h1>
     <p class="mots-intro" data-tpl={c.intro}>{c.intro}</p>
     <div class="mots-pet" aria-hidden="true"><img class="stk sq" data-pet src="/img/nino_neutre.webp" alt="" width="900" height="1000" /></div>
@@ -77,19 +77,30 @@ const hasTpl = (s: string) => /\{\w+\}/.test(s);
   </form>
 
   <div class="mots-sent" data-sent hidden>
-    <div class="mots-msgs">
-      <div class="mots-msg">
-        <span class="mots-ava sm"><img data-pet-face src="/img/nino_face.webp" alt="" width="30" height="30" /></span>
-        <div>
-          <div class="mots-who" data-tpl="{petNom}">{'{petNom}'}</div>
-          <div class="mots-bub">{c.sentReply}</div>
-        </div>
-      </div>
-      <div class="mots-msg follow">
-        <div class="mots-bub">{c.sentList} <b data-list /></div>
+    <!-- La carte à partager : format story (4:5), faite pour la capture d'écran. -->
+    <figure class="mots-story" data-story>
+      <div class="mots-story-top"><span class="mots-logo sm">minimoa<i>.</i></span><span class="mots-chip dk">{c.anonymous}</span></div>
+      <h2 class="mots-story-title">{c.storyTitle.map((l, i) => <span class:list={['ln', { name: i > 0 }]} data-tpl={hasTpl(l) ? l : undefined} data-fit={i > 0 ? '' : undefined}>{l}</span>)}</h2>
+      <ul class="mots-stickers" data-stickers aria-label={c.sentList}></ul>
+      <img class="mots-story-pet stk" data-story-pet src="/img/nino_amour.webp" alt="" width="900" height="1000" />
+      <figcaption class="mots-story-from">{c.storyFrom}</figcaption>
+    </figure>
+    <div class="mots-share">
+      <p class="mots-hint">{c.storyHint}</p>
+      <button type="button" class="mots-share-btn" data-share data-copied={c.copied}>
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7 8l5-5 5 5M5 13v6h14v-6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span data-share-label>{c.share}</span>
+      </button>
+    </div>
+    <div class="mots-msg">
+      <span class="mots-ava sm"><img data-pet-face src="/img/nino_face.webp" alt="" width="30" height="30" /></span>
+      <div>
+        <div class="mots-who" data-tpl="{petNom}">{'{petNom}'}</div>
+        <div class="mots-bub">{c.sentReply} <span class="sr-only">{c.sentList} <b data-list /></span></div>
       </div>
     </div>
     <div class="mots-you">
+      <div class="mots-egg" aria-hidden="true"><img class="stk bob" src="/img/oeuf.webp" alt="" width="96" /></div>
       <h2 class="mots-title you">{c.youTitle.map((l, i) => <span class:list={['ln', { dim: i > 0 }]}>{l}</span>)}</h2>
       <p class="mots-intro you">{c.youText}</p>
       <StoreButtons class="mots-stores" locale={locale} />
@@ -98,70 +109,93 @@ const hasTpl = (s: string) => /\{\w+\}/.test(s);
         <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </a>
       <p class="mots-code" data-you-code hidden></p>
-      <div class="mots-egg" aria-hidden="true"><img class="stk bob" src="/img/oeuf.webp" alt="" width="130" /></div>
     </div>
   </div>
 </section>
 <style is:global>
 .pub-bare{position:relative;z-index:1;min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
 .pub-bare>.pub-state:not(.mots){padding:calc(env(safe-area-inset-top,0px) + 24px) 16px 24px;max-width:600px;margin:0 auto;width:100%}
-.mots:not([hidden]){display:flex;flex-direction:column;align-items:stretch;gap:0;flex:1;width:100%;max-width:600px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 20px)}
-.mots-top{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
-.mots-logo{font-weight:800;font-size:26px;letter-spacing:-.04em;line-height:1}
+/* Tailles : tout en clamp sur la largeur (360 → 430 px), rien de fixe qui déborde ; 16 px de marge, cibles de 44 px. */
+.mots:not([hidden]){--pad:clamp(14px,4.2vw,20px);display:flex;flex-direction:column;align-items:stretch;flex:1;width:100%;max-width:480px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px calc(env(safe-area-inset-bottom,0px) + 16px)}
+.mots-top{display:flex;align-items:center;justify-content:space-between;padding:0 4px;min-height:44px}
+.mots-logo{font-weight:800;font-size:clamp(22px,6.4vw,26px);letter-spacing:-.04em;line-height:1}
+.mots-logo.sm{font-size:18px}
 .mots-logo i{font-style:normal;color:var(--lime)}
-.mots-chip{display:inline-flex;align-items:center;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800;white-space:nowrap;background:rgba(255,255,255,.12)}
-.mots-panel{position:relative;margin-top:12px;background:var(--g-rose);color:var(--ink);padding:20px 20px 18px;border-radius:32px}
-.mots-title{font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:.92;letter-spacing:-.02em;font-size:44px;margin:0;overflow-wrap:normal}
+.mots-chip{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:800;white-space:nowrap;background:rgba(255,255,255,.12)}
+.mots-chip.dk{background:rgba(20,16,31,.14);color:var(--ink)}
+/* Le panneau du haut : titre sur toute la largeur, puis la phrase à gauche et le minimoa à droite (jamais sur le titre). */
+.mots-panel{position:relative;margin-top:8px;background:var(--g-rose);color:var(--ink);padding:var(--pad);border-radius:28px;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 34%;grid-template-areas:"t t" "i p";column-gap:8px;align-items:end}
+.mots-title{grid-area:t;font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:.9;letter-spacing:-.02em;font-size:clamp(34px,11.4vw,50px);margin:0;white-space:nowrap}
 .mots-title .ln{display:block}
 .mots-title .dim{opacity:.38}
-.mots-intro{margin:8px 0 0;font-size:14.5px;font-weight:600;line-height:1.35;max-width:200px}
-.mots-pet{position:absolute;right:-8px;bottom:-16px;transform:rotate(8deg);pointer-events:none}
-.mots-pet img{width:150px;display:block}
+.mots-intro{grid-area:i;margin:10px 0 0;font-size:clamp(14px,3.9vw,16px);font-weight:700;line-height:1.3;align-self:center}
+.mots-pet{grid-area:p;margin:-6px -10px calc(var(--pad) * -1) 0;transform:rotate(6deg);pointer-events:none}
+.mots-pet img{width:100%;display:block}
 .mots-form{display:flex;flex-direction:column;flex:1}
 .mots-form[hidden]{display:none}
-.mots-words{margin-top:14px;display:flex;flex-wrap:wrap;gap:7px}
-.mots-w{height:44px;padding:0 15px;border-radius:999px;font-weight:800;font-size:15px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.14);transition:all .2s}
-.mots-w[aria-pressed="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime);transform:rotate(var(--rot))}
-.mots-form.full .mots-w[aria-pressed="false"]{opacity:.4}
-.mots-card{margin:14px 0;display:flex;gap:12px;align-items:center;padding:12px 14px;background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:24px}
-.mots-ava{width:48px;height:48px;border-radius:50%;overflow:hidden;flex:0 0 auto;display:block;background:var(--lime)}
+/* Les mots : des autocollants. Choisis, ils prennent une couleur chacun (le 1er, le 2e, le 3e), penchent et se détourent. */
+.mots-words{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.mots-w{min-height:46px;padding:0 16px;border-radius:999px;font-weight:800;font-size:clamp(15px,4.2vw,17px);background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.16);transition:transform .2s,background .2s,color .2s,opacity .2s}
+.mots-w[aria-pressed="true"]{color:var(--ink);border-color:#fff;transform:rotate(var(--rot)) scale(1.06);box-shadow:0 0 0 3px #fff,0 10px 18px rgba(0,0,0,.35)}
+.mots-w[data-n="1"]{background:#A8D52A}
+.mots-w[data-n="2"]{background:#FFB800}
+.mots-w[data-n="3"]{background:#5CE1FF}
+.mots-form.full .mots-w[aria-pressed="false"]{opacity:.35}
+.mots-card{margin:16px 0;display:flex;gap:12px;align-items:center;padding:12px 14px;background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:22px}
+.mots-ava{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:0 0 auto;display:block;background:var(--lime)}
 .mots-ava.sm{width:30px;height:30px}
 .mots-ava img{width:100%;height:100%;object-fit:cover;display:block}
 .mots-body{flex:1 1 auto;min-width:0}
 .mots-head{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:800}
 .mots-count{color:var(--lime);white-space:nowrap}
 .mots-gauges{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
-.mots-gl{font-size:10.5px;font-weight:700;color:var(--mute);margin-bottom:3px}
+.mots-gl{font-size:12px;font-weight:700;color:var(--mute);margin-bottom:3px}
 .mots-gl b{color:var(--lime)}
 .mots-gl b.down{color:var(--rose)}
 .mots-gauge{position:relative;height:6px;border-radius:999px;background:rgba(255,255,255,.12)}
 .mots-gauge::before{content:'';position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:rgba(255,255,255,.35)}
 .mots-gauge b{position:absolute;top:0;bottom:0;left:50%;right:50%;border-radius:999px;background:var(--lime);transition:left .45s,right .45s}
 .mots-gauge u{position:absolute;top:50%;left:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);transition:left .45s}
-.mots-send{margin-top:auto;display:flex;align-items:center;justify-content:center;height:56px;width:100%;padding:0 22px;border-radius:999px;font-weight:800;font-size:17px;white-space:nowrap;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.14);transition:transform .15s}
+/* Le bouton reste sous le pouce. */
+.mots-send{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);margin-top:auto;display:flex;align-items:center;justify-content:center;height:56px;width:100%;padding:0 22px;border-radius:999px;font-weight:800;font-size:17px;white-space:nowrap;background:#221E3C;color:#fff;border:1px solid rgba(255,255,255,.14);transition:transform .15s;box-shadow:0 10px 24px rgba(0,0,0,.4)}
 .mots-send.ready{background:var(--lime);color:var(--ink);border-color:var(--lime)}
 .mots-send:active{transform:scale(.97)}
 .mots-send:disabled{cursor:default}
-.mots-send:disabled:not(.ready){opacity:1}
 .pick-err{color:#FF8A80;font-weight:700;font-size:14px;margin-top:10px}
-.mots-sent{display:flex;flex-direction:column;flex:1}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Envoyé : le panneau du haut s'efface, la carte à partager prend sa place. */
+.mots.is-sent .mots-panel{display:none}
+.mots-sent{display:flex;flex-direction:column;gap:14px;flex:1;margin-top:8px}
 .mots-sent[hidden]{display:none}
-.mots-msgs{margin:22px 0;display:flex;flex-direction:column;gap:10px}
+.mots-story{position:relative;margin:0;aspect-ratio:4/5;max-height:62svh;width:100%;align-self:center;border-radius:28px;overflow:hidden;padding:var(--pad);color:var(--ink);background:radial-gradient(120% 90% at 0% 0%,#FFD23F 0,rgba(255,210,63,0) 55%),radial-gradient(120% 90% at 100% 100%,#FF8A3D 0,rgba(255,138,61,0) 60%),linear-gradient(160deg,#FF8FC6,#FF5FA8);display:flex;flex-direction:column;box-shadow:0 24px 48px rgba(0,0,0,.4)}
+.mots-story-top{display:flex;align-items:center;justify-content:space-between}
+.mots-story-title{margin:14px 0 0;font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:.9;letter-spacing:-.02em;font-size:clamp(26px,8vw,36px);white-space:nowrap}
+.mots-story-title .ln{display:block}
+.mots-story-title .name{font-size:1.5em;color:#fff;text-shadow:0 4px 0 rgba(140,29,79,.35)}
+.mots-stickers{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:10px;position:relative;z-index:1}
+.mots-stickers li{display:inline-block;padding:8px 18px;border-radius:999px;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(20px,6.4vw,28px);line-height:1;color:var(--ink);box-shadow:0 0 0 4px #fff,0 12px 20px rgba(20,16,31,.3)}
+.mots-stickers li:nth-child(1){background:#A8D52A;rotate:-5deg}
+.mots-stickers li:nth-child(2){background:#FFB800;rotate:4deg;margin-left:12%}
+.mots-stickers li:nth-child(3){background:#5CE1FF;rotate:-2deg;margin-left:4%}
+.mots-story-pet{position:absolute;right:-6%;bottom:6%;width:46%;rotate:-8deg;pointer-events:none}
+.mots-story-from{margin-top:auto;font-size:12px;font-weight:800;opacity:.7}
+.mots-share{display:flex;align-items:center;gap:10px}
+.mots-hint{flex:1;margin:0;font-size:14px;font-weight:700;color:var(--mute);line-height:1.3}
+.mots-share-btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 18px;border-radius:999px;background:#fff;color:var(--ink);font-weight:800;font-size:15px}
 .mots-msg{display:flex;gap:8px;align-items:flex-end;max-width:86%}
-.mots-msg.follow{margin-left:38px}
-.mots-who{font-size:11px;font-weight:800;margin:0 0 3px 4px;color:var(--lime)}
-.mots-bub{background:var(--card-2);color:#fff;border:1px solid rgba(255,255,255,.10);border-radius:20px 20px 20px 6px;padding:9px 13px;font-size:15px;font-weight:500;line-height:1.3}
-.mots-bub b{color:var(--lime)}
-.mots-you{position:relative;margin-top:auto;background:var(--g-lime);color:var(--ink);padding:20px;border-radius:32px;overflow:hidden}
-.mots-title.you{font-size:32px}
+.mots-who{font-size:12px;font-weight:800;margin:0 0 3px 4px;color:var(--lime)}
+.mots-bub{background:var(--card-2);color:#fff;border:1px solid rgba(255,255,255,.10);border-radius:20px 20px 20px 6px;padding:9px 13px;font-size:15px;font-weight:600;line-height:1.3}
+/* « Et toi ? » : le titre garde sa place, l'œuf se pose en haut à droite (jamais sur le texte). */
+.mots-you{position:relative;margin-top:4px;background:var(--g-lime);color:var(--ink);padding:var(--pad);border-radius:28px;overflow:hidden}
+.mots-title.you{font-size:clamp(26px,8vw,34px);white-space:normal;padding-right:22%}
 .mots-you .mots-stores{margin:0 0 10px}
-.mots-code{margin:12px 0 0;font-size:13px;font-weight:700;max-width:230px}
+.mots-code{margin:12px 0 0;font-size:13px;font-weight:700}
 .mots-code[hidden]{display:none}
-.mots-intro.you{margin:8px 0 14px;max-width:220px}
-.mots-cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 22px;border-radius:999px;font-weight:800;font-size:17px;white-space:nowrap;background:var(--ink);color:#fff;transition:transform .15s}
+.mots-intro.you{margin:10px 0 14px;font-weight:600}
+.mots-cta{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:8px 20px;border-radius:999px;font-weight:800;font-size:16px;text-align:center;background:var(--ink);color:#fff;transition:transform .15s}
 .mots-cta:active{transform:scale(.97)}
-.mots-egg{position:absolute;right:-14px;bottom:-14px;transform:rotate(-8deg);pointer-events:none}
-.mots-egg img{width:130px;display:block}
+.mots-egg{position:absolute;right:6px;top:6px;rotate:10deg;pointer-events:none}
+.mots-egg img{width:clamp(64px,20vw,96px);display:block}
 @keyframes mots-sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-8px) scale(.97,1.04)}52%{transform:translateY(0) scale(1.04,.96)}}
 @keyframes mots-bob{50%{transform:translateY(-8px)}}
 .mots .sq{animation:mots-sq 2.6s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
