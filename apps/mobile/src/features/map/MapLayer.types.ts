@@ -17,4 +17,8 @@ export interface MapLayerProps extends ZoneMapProps {
   safeBottom?: number;
   /** Faux tant que l'en-tête et le pied ne sont pas mesurés : la caméra attend pour se caler. Défaut vrai. */
   measured?: boolean;
+  /** Plusieurs personnes dans le même coin : libellé lu du groupe. */
+  clusterA11y?: (count: number) => string;
+  /** Toucher un groupe : par défaut on zoome dessus ; donné (gratuit), c'est cette action à la place. */
+  onClusterPress?: () => void;
 }

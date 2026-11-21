@@ -135,6 +135,9 @@ export interface PersonOfDayCardProps {
   onSecondary?: () => void;
   /** Sous tout le reste (« Plus tard »). */
   footer?: ReactNode;
+  /** Toucher la carte (hors boutons) : passer à la personne suivante, par exemple. */
+  onPress?: () => void;
+  pressLabel?: string;
 }
 
 /**
@@ -149,33 +152,42 @@ export function PersonOfDayCard(p: PersonOfDayCardProps) {
         <Text variant="label" color={color.accent}>
           {p.kicker}
         </Text>
-        <View style={[layout.row, styles.who]}>
-          <Avatar size={60} pet={p.person.pet} face={p.person.face} uri={p.person.avatarUrl} name={p.person.name} />
-          <View style={layout.shrink}>
-            <Text variant="bodyHeavy" size={22}>
-              {p.person.name}
-            </Text>
-            {p.line ? (
-              <Text size={14} muted>
-                {p.line}
+        <Pressable
+          onPress={p.onPress}
+          disabled={!p.onPress}
+          accessibilityRole={p.onPress ? 'button' : 'none'}
+          accessibilityLabel={p.onPress ? p.pressLabel : undefined}
+          scaleTo={0.98}
+          style={styles.body}
+        >
+          <View style={[layout.row, styles.who]}>
+            <Avatar size={60} pet={p.person.pet} face={p.person.face} uri={p.person.avatarUrl} name={p.person.name} />
+            <View style={layout.shrink}>
+              <Text variant="bodyHeavy" size={22}>
+                {p.person.name}
               </Text>
-            ) : null}
-          </View>
-        </View>
-        <View style={styles.together}>
-          <Text variant="bodyHeavy" size={13} muted>
-            {p.togetherTitle}
-          </Text>
-          <View style={layout.wrap}>
-            {p.points.map((x) => (
-              <View key={x} style={styles.point}>
-                <Text variant="bodyBold" size={14}>
-                  {x}
+              {p.line ? (
+                <Text size={14} muted>
+                  {p.line}
                 </Text>
-              </View>
-            ))}
+              ) : null}
+            </View>
           </View>
-        </View>
+          <View style={styles.together}>
+            <Text variant="bodyHeavy" size={13} muted>
+              {p.togetherTitle}
+            </Text>
+            <View style={layout.wrap}>
+              {p.points.map((x) => (
+                <View key={x} style={styles.point}>
+                  <Text variant="bodyBold" size={14}>
+                    {x}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </Pressable>
         {p.opener ? (
           <View style={styles.opener}>
             <Text size={14} muted>
@@ -248,6 +260,7 @@ const styles = StyleSheet.create({
   revelationTitle: { lineHeight: 27 },
   revelationPet: { position: 'absolute', right: -6, bottom: -10 },
   card: { borderRadius: radius.lg, backgroundColor: color.panel, borderWidth: 1, borderColor: color.line, padding: space.lg, gap: space.md },
+  body: { gap: space.md },
   who: { gap: space.md },
   together: { gap: space.sm },
   point: { borderRadius: radius.pill, backgroundColor: color.card, paddingHorizontal: space.md, paddingVertical: 6 },

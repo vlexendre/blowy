@@ -354,6 +354,8 @@ export const ZONE_RADIUS_KM = 1.5;
 export const MATCH_RADIUS_KM = 20;
 /** Maille d'arrondi des positions montrées (~300 m). */
 export const GRID_METERS = 300;
+/** Maille des positions montrées sur la carte (~600 m) : approximatives, jamais au coin de rue. */
+export const SHOWN_GRID_METERS = 600;
 /** Maille grossière des silhouettes floues au-delà de la zone (~2 km). */
 export const BLUR_GRID_METERS = 2000;
 /** Maille de l'index géographique (degrés) : la recherche ne lit que les cellules autour du centre. */
@@ -394,13 +396,13 @@ export function unitFromSeed(seed: string): number {
 }
 
 /**
- * Position montrée aux autres : centre de la maille de ~300 m, décalé d'au plus 35 % de la maille dans chaque sens
+ * Position montrée aux autres : centre de la maille de ~600 m, décalé d'au plus 35 % de la maille dans chaque sens
  * par une graine stable (la personne ne « saute » pas d'un affichage à l'autre). Jamais la position exacte.
  */
 export function shownPosition(p: GeoPoint, seed: string): GeoPoint {
-  const center = snapToGrid(p, GRID_METERS);
-  const latStep = GRID_METERS / M_PER_DEG_LAT;
-  const lngStep = GRID_METERS / (M_PER_DEG_LAT * Math.max(0.01, Math.cos(rad(center.lat))));
+  const center = snapToGrid(p, SHOWN_GRID_METERS);
+  const latStep = SHOWN_GRID_METERS / M_PER_DEG_LAT;
+  const lngStep = SHOWN_GRID_METERS / (M_PER_DEG_LAT * Math.max(0.01, Math.cos(rad(center.lat))));
   const jLat = (unitFromSeed(`${seed}|lat`) - 0.5) * 0.7 * latStep;
   const jLng = (unitFromSeed(`${seed}|lng`) - 0.5) * 0.7 * lngStep;
   return { lat: round6(center.lat + jLat), lng: round6(center.lng + jLng) };

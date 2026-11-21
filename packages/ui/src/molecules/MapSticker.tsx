@@ -130,7 +130,43 @@ export function MapBlob({ size = 54, delay = 0, style }: MapBlobProps) {
   );
 }
 
+export interface MapClusterProps {
+  /** Combien de personnes dans ce coin (au moins 2). */
+  count: number;
+  /** Jusqu'à 3 minimoas montrés en pile. */
+  pets: readonly PetLook[];
+  onPress?: () => void;
+  accessibilityLabel: string;
+}
+
+/**
+ * Plusieurs personnes dans le même coin de la carte : leurs minimoas en pile et leur nombre. On zoome pour les séparer.
+ */
+export function MapCluster({ count, pets, onPress, accessibilityLabel }: MapClusterProps) {
+  const shown = pets.slice(0, 3);
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={accessibilityLabel} scaleTo={0.94} style={styles.cluster}>
+      <View style={styles.stack}>
+        {shown.map((pet, i) => (
+          <View key={i} style={[styles.stackFace, { marginLeft: i === 0 ? 0 : -16, zIndex: shown.length - i }]}>
+            <PetBadge species={pet.species} outfit={pet.outfit} size={34} background={petTint[pet.species]} roomy />
+          </View>
+        ))}
+      </View>
+      <View style={styles.count}>
+        <Text variant="bodyHeavy" size={14} color={color.night}>
+          {String(count)}
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
+  cluster: { alignItems: 'center' },
+  stack: { flexDirection: 'row', alignItems: 'center' },
+  stackFace: { width: 42, height: 42, borderRadius: 21, backgroundColor: color.white, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: color.white, shadowColor: color.night, shadowOpacity: 0.45, shadowRadius: 6, shadowOffset: { width: 0, height: 4 } },
+  count: { marginTop: -10, minWidth: 28, height: 24, paddingHorizontal: 8, borderRadius: 12, backgroundColor: color.accent, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: color.white },
   col: { alignItems: 'center', gap: space.xs },
   badge: { alignSelf: 'center' },
   face: { alignItems: 'center', justifyContent: 'center', backgroundColor: color.white, shadowColor: color.night, shadowOpacity: 0.45, shadowRadius: 8, shadowOffset: { width: 0, height: 6 } },

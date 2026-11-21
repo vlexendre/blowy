@@ -8,7 +8,7 @@
  * Ailleurs (Android sans clé Google, module natif absent, erreur du module) : la carte dessinée (`ZoneMap`).
  */
 import { color } from '@blowy/tokens';
-import { alpha, MapBlob, MapSticker, ZoneMap } from '@blowy/ui';
+import { alpha, MapBlob, MapCluster, MapSticker, ZoneMap } from '@blowy/ui';
 import { Component, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
@@ -51,6 +51,43 @@ function zoneEdges(center: { latitude: number; longitude: number }, radiusKm: nu
   ];
 }
 
+type Pin = MapLayerProps['pins'][number];
+type Group = { key: string; position: { latitude: number; longitude: number }; pins: Pin[] };
+
+/**
+ * Regroupe les personnes proches selon le zoom : une grille fixe (accrochée aux degrés, pas à l'écran, donc stable quand
+ * on glisse), dont la maille vaut environ un sixième de la hauteur visible, par paliers. Plus on zoome, plus ça se sépare.
+ * La personne choisie reste seule.
+ */
+export function groupPins(pins: readonly Pin[], latitudeDelta: number): Group[] {
+  const level = Math.round(Math.log2(Math.max(1e-4, latitudeDelta)) * 2) / 2;
+  const cellLat = 2 ** level / 6;
+  const cells = new Map<string, Pin[]>();
+  const out: Group[] = [];
+  for (const p of pins) {
+    if (p.selected) {
+      out.push({ key: p.key, position: p.position, pins: [p] });
+      continue;
+    }
+    const cellLng = cellLat / Math.max(0.2, Math.cos((p.position.latitude * Math.PI) / 180));
+    const k = `${Math.floor(p.position.latitude / cellLat)}:${Math.floor(p.position.longitude / cellLng)}`;
+    const list = cells.get(k);
+    if (list) list.push(p);
+    else cells.set(k, [p]);
+  }
+  for (const [k, list] of cells) {
+    if (list.length === 1) {
+      const only = list[0] as Pin;
+      out.push({ key: only.key, position: only.position, pins: list });
+      continue;
+    }
+    const lat = list.reduce((a, p) => a + p.position.latitude, 0) / list.length;
+    const lng = list.reduce((a, p) => a + p.position.longitude, 0) / list.length;
+    out.push({ key: `g:${level}:${k}`, position: { latitude: lat, longitude: lng }, pins: list });
+  }
+  return out;
+}
+
 /** Marge autour du cercle, en points (le cercle ne touche jamais un bord ni un panneau). */
 const RING_MARGIN = 18;
 
@@ -70,6 +107,8 @@ function NativeMap({
   focusKey = 0,
   measured = true,
   onRegionChange,
+  clusterA11y,
+  onClusterPress,
 }: MapLayerProps & { module: MapsModule }) {
   const { default: MapView, Marker, Circle } = module;
   const ref = useRef<InstanceType<typeof MapView> | null>(null);
@@ -88,6 +127,10 @@ function NativeMap({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Ce qu'on voit (hauteur en degrés) : décide des groupes. Relu à la fin d'un geste, jamais pendant.
+  const [latDelta, setLatDelta] = useState(initial.latitudeDelta);
+  const groups = useMemo(() => groupPins(pins, latDelta), [pins, latDelta]);
 
   // Toute la zone visible, centrée dans la partie de l'écran que ni l'en-tête ni le pied ne couvrent : à l'ouverture,
   // quand la zone change (ville choisie, retour à sa zone) et sur « Recentrer ». Pas quand le pied change de taille.
@@ -132,6 +175,7 @@ function NativeMap({
         touched.current = true;
       }}
       onRegionChangeComplete={(r) => {
+        setLatDelta((d) => (Math.abs(Math.log2(r.latitudeDelta / d)) < 0.25 ? d : r.latitudeDelta));
         if (free || !onRegionChange || !touched.current) return;
         onRegionChange({ lat: r.latitude, lng: r.longitude, radiusKm: Math.min(25, Math.max(0.5, (r.latitudeDelta * KM_PER_DEG) / 2)) });
       }}
@@ -147,11 +191,28 @@ function NativeMap({
           <MapSticker pet={me.pet} label={me.label} me accessibilityLabel={me.accessibilityLabel} size={58} />
         </Marker>
       ) : null}
-      {pins.map((p, i) => (
-        <Marker key={p.key} coordinate={p.position} anchor={{ x: 0.5, y: 0.35 }} zIndex={p.selected ? 10 : 6} onPress={p.onPress}>
-          <MapSticker pet={p.pet} label={p.label} selected={p.selected} hot={p.hot} photo={p.photo} blurred={p.blurred} online={p.online} onPress={p.onPress} accessibilityLabel={p.accessibilityLabel} floatDelay={i * 230} />
-        </Marker>
-      ))}
+      {groups.map((g, i) => {
+        const p = g.pins[0] as Pin;
+        if (g.pins.length === 1)
+          return (
+            <Marker key={g.key} coordinate={g.position} anchor={{ x: 0.5, y: 0.35 }} zIndex={p.selected ? 10 : 6} onPress={p.onPress}>
+              <MapSticker pet={p.pet} label={p.label} selected={p.selected} hot={p.hot} photo={p.photo} blurred={p.blurred} online={p.online} onPress={p.onPress} accessibilityLabel={p.accessibilityLabel} floatDelay={i * 230} />
+            </Marker>
+          );
+        const open = () => {
+          if (onClusterPress) return onClusterPress();
+          // On zoome sur le groupe : il se sépare.
+          ref.current?.animateToRegion(
+            { latitude: g.position.latitude, longitude: g.position.longitude, latitudeDelta: latDelta / 3, longitudeDelta: (latDelta / 3) / Math.max(0.2, Math.cos((g.position.latitude * Math.PI) / 180)) },
+            350,
+          );
+        };
+        return (
+          <Marker key={g.key} coordinate={g.position} anchor={{ x: 0.5, y: 0.5 }} zIndex={7} onPress={open}>
+            <MapCluster count={g.pins.length} pets={g.pins.map((x) => x.pet)} onPress={open} accessibilityLabel={clusterA11y ? clusterA11y(g.pins.length) : String(g.pins.length)} />
+          </Marker>
+        );
+      })}
     </MapView>
   );
 }

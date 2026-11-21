@@ -42,7 +42,7 @@ export { OptionalField, type OptionalFieldProps } from './OptionalField';
 export { AxisCompare, type AxisCompareProps } from './AxisCompare';
 export { MatchWhy, type MatchWhyProps } from './MatchWhy';
 export { MinimoaSwitch, type MinimoaSwitchProps } from './MinimoaSwitch';
-export { MapBlob, type MapBlobProps, MapSticker, type MapStickerProps } from './MapSticker';
+export { MapBlob, type MapBlobProps, MapCluster, type MapClusterProps, MapSticker, type MapStickerProps } from './MapSticker';
 export { MapZoneBar, type MapZoneBarProps } from './MapZoneBar';
 export { PillToggle, type PillToggleProps } from './PillToggle';
 export { ChoiceGrid, type ChoiceGridProps } from './ChoiceGrid';

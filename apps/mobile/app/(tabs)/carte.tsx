@@ -51,6 +51,14 @@ import { formatNumber } from '@/locales/runtime';
 import { carte as t, rencontres as listText } from '@/locales/rencontres';
 import { ui } from '@/locales/ui';
 
+/** Distance à vol d'oiseau, en km (assez précis pour savoir si un cercle en contient un autre). */
+function kmBetween(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  const k = 111.32;
+  const dx = (b.lng - a.lng) * k * Math.cos((((a.lat + b.lat) / 2) * Math.PI) / 180);
+  const dy = (b.lat - a.lat) * k;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 export default function CarteScreen() {
   const router = useRouter();
   const me = useMe();
@@ -78,13 +86,39 @@ export default function CarteScreen() {
   useEffect(() => () => {
     if (pan.current) clearTimeout(pan.current);
   }, []);
+  // Ce qui est déjà chargé (cercles lus) : glisser ou zoomer dedans ne relit rien (pas de saut des épingles).
+  const loaded = useRef<{ lat: number; lng: number; radiusKm: number }[]>([]);
   const onRegionChange = (next: MapAt) => {
     if (pan.current) clearTimeout(pan.current);
+    const r = next.radiusKm ?? 0;
+    if (loaded.current.some((c) => kmBetween(c, next) + r <= c.radiusKm * 1.05)) return;
     pan.current = setTimeout(() => setAt(next), 450);
   };
 
   const m = me.data;
   const data = map.data;
+  // Les épingles restent posées : chaque lecture ajoute ce qu'elle trouve ; dans le cercle relu, ce qui n'y est plus
+  // (mode discret, blocage) disparaît, ailleurs rien ne bouge.
+  const [kept, setKept] = useState<MapPin[]>([]);
+  useEffect(() => {
+    if (!data?.center || data.status !== 'ok') return;
+    const circle = { lat: data.center.latitude, lng: data.center.longitude, radiusKm: data.radiusKm };
+    loaded.current = [...loaded.current.slice(-11), circle];
+    setKept((prev) => {
+      const fresh = new Map(data.pins.map((x) => [x.user.id, x]));
+      const stay = prev.filter((x) => !fresh.has(x.user.id) && kmBetween(circle, { lat: x.position.latitude, lng: x.position.longitude }) > circle.radiusKm);
+      return [...stay, ...data.pins];
+    });
+  }, [data]);
+  // Changement de zone (ville choisie, retour chez soi, mode discret) : on repart de zéro.
+  const zoneKey = `${m?.identity.location.chosenCityActive ?? ''}|${m?.identity.location.chosenCity?.label ?? ''}|${m?.identity.discreet ?? ''}`;
+  const lastZone = useRef(zoneKey);
+  useEffect(() => {
+    if (lastZone.current === zoneKey) return;
+    lastZone.current = zoneKey;
+    loaded.current = [];
+    setKept([]);
+  }, [zoneKey]);
   const homeCenter = !at && data?.center ? data.center : null;
   const homeRadius = data?.radiusKm ?? 0;
   useEffect(() => {
@@ -170,7 +204,7 @@ export default function CarteScreen() {
   // ── La carte ─────────────────────────────────────────────────────────────
   // La zone (cercle, caméra) : celle qu'on vient de lire, ou celle gardée quand Minimoa+ regarde ailleurs.
   const zone = !at || !home ? { center: data.center, radiusKm: data.radiusKm } : home;
-  const pins = data.pins;
+  const pins = kept.length > 0 ? kept : data.pins;
   const current: MapPin | null = pins.find((p) => p.user.id === selected) ?? null;
   const km = formatNumber(zone.radiusKm, { maximumFractionDigits: 1 });
   const chosen = m.identity.location.chosenCity;
@@ -243,6 +277,9 @@ export default function CarteScreen() {
       {card}
       {!current && today ? (
         <PersonOfDayCard
+          key={today.user.id}
+          onPress={presented.length > 1 ? () => setShowing((n) => n + 1) : undefined}
+          pressLabel={chemin.carte.nextA11y}
           kicker={`${chemin.carte.sheetKicker(petName)} · ${chemin.carte.sheetCount((showing % presented.length) + 1, presented.length)}`}
           person={{ name: today.user.displayName, pet: today.user.pet, face: today.user.face, avatarUrl: today.user.avatarUrl }}
           line={todayPin ? bandOf(todayPin.position) : null}
@@ -309,6 +346,8 @@ export default function CarteScreen() {
             safeBottom={frame.safeBottom}
             measured={frame.measured}
             focusKey={focus}
+            clusterA11y={t.cluster}
+            onClusterPress={plus ? undefined : () => openPlus('map')}
             me={{ pet: m.pet, label: t.me, accessibilityLabel: t.meA11y(m.pet.name) }}
             // Toi : au centre de ta zone, même quand Minimoa+ regarde ailleurs (sauf ville choisie : tu y es « sans bouger »).
             mePosition={cityActive ? undefined : (m.identity.location.zone?.center ?? undefined)}
@@ -325,7 +364,8 @@ export default function CarteScreen() {
               online: p.activeToday ?? false,
               accessibilityLabel: hotIds.has(p.user.id) ? chemin.carte.pinA11yHot(p.user.displayName, bandOf(p.position)) : t.pinA11y(p.user.pet.name, p.user.displayName),
               selected: p.user.id === selected,
-              onPress: () => setSelected((s) => (s === p.user.id ? null : p.user.id)),
+              // Dire bonjour depuis la carte : Minimoa+. Gratuit : l'avantage.
+              onPress: plus ? () => setSelected((s) => (s === p.user.id ? null : p.user.id)) : () => openPlus('map'),
             }))}
           />
         )}

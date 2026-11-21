@@ -28,6 +28,7 @@ import {
   readAxis,
   recencyWeight,
   shownPosition,
+  SHOWN_GRID_METERS,
   sideOf,
   snapToGrid,
   testSignals,
@@ -269,10 +270,10 @@ describe('positions : arrondi, décalage, zone du domicile', () => {
     const a = shownPosition(paris, 'u1');
     expect(a).toEqual(shownPosition(paris, 'u1'));
     expect(a).not.toEqual(paris);
-    expect(distanceKm(a, snapToGrid(paris, GRID_METERS))).toBeLessThan(0.16);
+    expect(distanceKm(a, snapToGrid(paris, SHOWN_GRID_METERS))).toBeLessThan(0.31);
     expect(shownPosition(paris, 'u2')).not.toEqual(a);
     // Deux positions exactes différentes dans la même maille donnent la même position montrée.
-    expect(shownPosition({ lat: paris.lat + 0.0002, lng: paris.lng }, 'u1')).toEqual(shownPosition(snapToGrid(paris, GRID_METERS), 'u1'));
+    expect(shownPosition({ lat: paris.lat + 0.0002, lng: paris.lng }, 'u1')).toEqual(shownPosition(snapToGrid(paris, SHOWN_GRID_METERS), 'u1'));
   });
 
   it('cellules de l’index autour d’un centre', () => {

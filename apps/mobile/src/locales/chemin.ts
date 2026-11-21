@@ -137,6 +137,7 @@ export const chemin = messages({
       sheetCount: (i: number, n: number): string => `${i} sur ${n}`,
       together: 'Vous deux :',
       others: 'Voir les autres',
+      nextA11y: 'Toucher la carte pour voir la personne suivante',
     },
     onboarding: {
       visionKicker: (n: number): string => `Ton chemin · Étape 1 · ${n} questions`,
@@ -292,6 +293,7 @@ export const chemin = messages({
       sheetCount: (i: number, n: number): string => `${i} of ${n}`,
       together: 'You two:',
       others: 'See the others',
+      nextA11y: 'Tap the card to see the next person',
     },
     onboarding: {
       visionKicker: (n: number): string => `Your path · Step 1 · ${n} questions`,
@@ -447,6 +449,7 @@ export const chemin = messages({
       sheetCount: (i: number, n: number): string => `${i} de ${n}`,
       together: 'Vosotros dos:',
       others: 'Ver a los demás',
+      nextA11y: 'Toca la tarjeta para ver a la siguiente persona',
     },
     onboarding: {
       visionKicker: (n: number): string => `Tu camino · Etapa 1 · ${n} preguntas`,
@@ -602,6 +605,7 @@ export const chemin = messages({
       sheetCount: (i: number, n: number): string => `${i} de ${n}`,
       together: 'Vocês dois:',
       others: 'Ver os outros',
+      nextA11y: 'Toque no cartão para ver a próxima pessoa',
     },
     onboarding: {
       visionKicker: (n: number): string => `Seu caminho · Etapa 1 · ${n} perguntas`,
@@ -756,6 +760,7 @@ export const chemin = messages({
       sheetCount: (i: number, n: number): string => `${i} van ${n}`,
       together: 'Jullie twee:',
       others: 'De anderen zien',
+      nextA11y: 'Tik op de kaart om de volgende persoon te zien',
     },
     onboarding: {
       visionKicker: (n: number): string => `Jouw pad · Stap 1 · ${n} vragen`,
