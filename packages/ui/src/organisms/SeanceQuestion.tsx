@@ -1,11 +1,13 @@
 import type { Outfit, Species } from '@blowy/domain';
 import { StyleSheet, View } from 'react-native';
 
+import { Icon } from '../atoms/Icon';
 import { PetBadge } from '../atoms/PetBadge';
 import { Text } from '../atoms/Text';
 import { ICON_NAMES, type IconName } from '../assets/pets';
 import { layout } from '../lib/styles';
 import { AnswerSlider, type AnswerSliderProps } from '../molecules/AnswerSlider';
+import { AnswerTile } from '../molecules/AnswerTile';
 import { ChoiceCard } from '../molecules/ChoiceCard';
 import { HostBubble } from '../molecules/HostBubble';
 import { Appear } from '../motion/Appear';
@@ -72,6 +74,18 @@ export function SeanceQuestion({ kicker, text, pet, format, options, picked, onP
       <Appear key={questionKey} replay={questionKey} delay={180} style={styles.answers}>
         {format === 'slider' && slider && low && high ? (
           <AnswerSlider {...slider} low={{ label: low.label, icon: optionIcon(low.icon).emoji ?? null }} high={{ label: high.label, icon: optionIcon(high.icon).emoji ?? null }} />
+        ) : options.length === 2 || options.length === 4 ? (
+          // 2 ou 4 réponses : grandes tuiles en grille, le dessin en grand (façon Duolingo).
+          <View style={styles.grid}>
+            {options.map((o) => {
+              const look = optionIcon(o.icon);
+              return (
+                <View key={o.id} style={styles.cell}>
+                  <AnswerTile label={o.label} emoji={look.emoji} icon={look.icon ? <Icon name={look.icon} size={56} /> : null} selected={picked === o.id} onPress={() => onPick(o.id)} />
+                </View>
+              );
+            })}
+          </View>
         ) : (
           options.map((o) => {
             const look = optionIcon(o.icon);
@@ -96,6 +110,8 @@ export function SeanceQuestion({ kicker, text, pet, format, options, picked, onP
 const styles = StyleSheet.create({
   wrap: { gap: space.md, paddingTop: space.md },
   answers: { gap: space.sm + 2, marginTop: space.sm },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm + 2 },
+  cell: { width: '48%', flexGrow: 1, display: 'flex' },
   reaction: { borderRadius: radius.card, borderWidth: 1, borderColor: alpha(color.lime, 0.5), backgroundColor: color.panel, padding: space.md },
   reactionRow: { gap: space.sm + 2 },
 });

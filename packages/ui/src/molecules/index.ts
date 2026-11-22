@@ -2,6 +2,7 @@ export { AvatarPair, type AvatarPairProps } from './AvatarPair';
 export { Banner, type BannerProps, type BannerTone } from './Banner';
 export { ButtonRow } from './ButtonRow';
 export { ChoiceCard, type ChoiceCardProps } from './ChoiceCard';
+export { AnswerTile, type AnswerTileProps } from './AnswerTile';
 export { DayChip, type DayChipProps } from './DayChip';
 export { DotNote, type DotNoteProps } from './DotNote';
 export { EntryCard, type EntryCardProps, EntryGroup } from './EntryCard';

@@ -7,6 +7,7 @@
 import { ApiError } from '@blowy/api-client';
 import { Banner, Button, EmptyState, type MascotMoment, mascotMomentFor, namedMotion, type PetActorReaction, ScreenTemplate, SeanceBar, SeanceQuestion, Skeleton, Stack } from '@blowy/ui';
 import { router } from 'expo-router';
+import { SPEED_TIERS, TOO_FAST_SECONDS_PER_ANSWER } from '@blowy/domain';
 import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
@@ -46,6 +47,9 @@ export default function Seance() {
   const [reactWith, setReactWith] = useState<PetActorReaction | null>(null);
   const started = useRef<string | null>(null);
   const startedAt = useRef<number>(Date.now());
+  // Combo : réponses rapides d'affilée (au rythme des meilleures étincelles de vitesse, sans aller trop vite).
+  const shownAt = useRef<number>(Date.now());
+  const [combo, setCombo] = useState(0);
   // Minimoa animé (réglé par l'API) : il réfléchit à chaque question, réagit à chaque réponse.
   const [mascotMoment, setMascotMoment] = useState<MascotMoment | null>(null);
   const [mascotKey, setMascotKey] = useState(0);
@@ -64,6 +68,7 @@ export default function Seance() {
     if (!session || started.current === session.id) return;
     started.current = session.id;
     startedAt.current = Date.now();
+    shownAt.current = Date.now();
     setProgress(startSeance(session));
     setDraft(null);
     if (!session.done) trackChemin('Seance Started', { unit: session.step?.unitTitle ?? null, slot: session.slot, review: session.kind === 'review' });
@@ -155,6 +160,9 @@ export default function Seance() {
   const validate = () => {
     if (!draft || answer.isPending) return;
     const next = answerQuestion(progress, q.id, draft);
+    const secs = (Date.now() - shownAt.current) / 1000;
+    shownAt.current = Date.now();
+    setCombo((c) => (secs >= TOO_FAST_SECONDS_PER_ANSWER && secs <= (SPEED_TIERS[0]?.maxSecondsPerAnswer ?? 9) ? c + 1 : 0));
     setProgress(next);
     setDraft(null);
     if (seanceDone(next)) send(next);
@@ -168,6 +176,8 @@ export default function Seance() {
     }
   };
   const skip = () => {
+    shownAt.current = Date.now();
+    setCombo(0);
     setProgress(skipQuestion(progress));
     setDraft(null);
   };
@@ -177,7 +187,7 @@ export default function Seance() {
   return (
     <ScreenMotion>
       <ScreenTemplate
-        header={<SeanceBar step={done} total={total} onClose={close} closeLabel={t.close} accessibilityLabel={t.progress(Math.min(done + 1, total), total)} />}
+        header={<SeanceBar step={done} total={total} onClose={close} closeLabel={t.close} accessibilityLabel={t.progress(Math.min(done + 1, total), total)} combo={combo} comboLabel={t.combo} />}
         footer={
           <Stack gap={4}>
             {sendFailed ? <Banner tone="error" text={errorText(answer.error, t.sendError)} actionLabel={t.retry} onAction={() => send(progress)} /> : null}

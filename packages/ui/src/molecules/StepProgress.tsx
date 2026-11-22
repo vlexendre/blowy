@@ -5,6 +5,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } fro
 import { Text } from '../atoms/Text';
 import { ease, fadeTo, useReducedMotion } from '../lib/motion';
 import { layout } from '../lib/styles';
+import { Burst } from '../motion/Burst';
 import { PopIn } from '../motion/PopIn';
 import { alpha, color, motion, radius, space, veil } from '../theme';
 
@@ -16,6 +17,8 @@ export interface StepProgressProps {
   pending?: boolean;
   /** Affiche « 1 / 4 » à droite. Défaut vrai. */
   showCount?: boolean;
+  /** Série de réponses rapides : la barre passe à l'orange et scintille (le « combo » de Duolingo). */
+  glow?: boolean;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -24,7 +27,7 @@ export interface StepProgressProps {
  * Avancement de l'inscription : segments jaunes + compteur. À l'arrivée sur une étape, son segment se remplit de
  * gauche à droite et le compteur fait « pop » ; revenir en arrière le vide. Animations réduites : fondu.
  */
-export function StepProgress({ step, total, pending, showCount = true, accessibilityLabel, style }: StepProgressProps) {
+export function StepProgress({ step, total, pending, showCount = true, glow = false, accessibilityLabel, style }: StepProgressProps) {
   return (
     <View
       accessible
@@ -33,10 +36,11 @@ export function StepProgress({ step, total, pending, showCount = true, accessibi
       accessibilityValue={{ min: 1, max: total, now: step }}
       style={[layout.row, styles.base, style]}
     >
-      <View style={[layout.row, layout.grow, styles.segments]}>
+      <View style={[layout.row, layout.grow, styles.segments, glow && styles.glow]}>
         {Array.from({ length: total }, (_, i) => (
-          <Segment key={i} done={i < step - 1 || (i === step - 1 && !pending)} current={i === step - 1 && !!pending} before={i < step - 1} />
+          <Segment key={i} done={i < step - 1 || (i === step - 1 && !pending)} current={i === step - 1 && !!pending} before={i < step - 1} hot={glow} />
         ))}
+        <Burst kind="sparkles" trigger={glow ? step : 0} style={styles.spark} />
       </View>
       {showCount ? (
         <PopIn trigger={step} onMount={false} style={styles.count}>
@@ -48,7 +52,7 @@ export function StepProgress({ step, total, pending, showCount = true, accessibi
 }
 
 /** Segment : piste blanche à 16 %, « en cours » jaune à 45 %, rempli en jaune (`scaleX` depuis la gauche). */
-function Segment({ done, current, before }: { done: boolean; current: boolean; before: boolean }) {
+function Segment({ done, current, before, hot }: { done: boolean; current: boolean; before: boolean; hot: boolean }) {
   const reduced = useReducedMotion();
   // Les étapes déjà passées sont pleines d'emblée ; celle où l'on arrive se remplit.
   const fill = useSharedValue(before ? 1 : 0);
@@ -70,7 +74,7 @@ function Segment({ done, current, before }: { done: boolean; current: boolean; b
       <Animated.View style={[styles.layer, { backgroundColor: color.night }, halfStyle]}>
         <View style={[styles.layer, { backgroundColor: CURRENT }]} />
       </Animated.View>
-      <Animated.View style={[styles.layer, { backgroundColor: color.accent }, fillStyle]} />
+      <Animated.View style={[styles.layer, { backgroundColor: hot ? color.orange : color.accent }, fillStyle]} />
     </View>
   );
 }
@@ -82,6 +86,8 @@ const CURRENT = alpha(color.accent, 0.45);
 const styles = StyleSheet.create({
   base: { gap: space.md },
   segments: { gap: 5 },
+  glow: { shadowColor: color.orange, shadowOpacity: 0.9, shadowRadius: 8, shadowOffset: { width: 0, height: 0 } },
+  spark: { position: 'absolute', left: 0, right: 0, top: -14, height: 34 },
   seg: { flex: 1, height: 6, borderRadius: radius.pill, backgroundColor: OFF, overflow: 'hidden' },
   layer: { ...StyleSheet.absoluteFill, borderRadius: radius.pill, transformOrigin: 'left' },
   count: { paddingHorizontal: 11, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: veil.track },

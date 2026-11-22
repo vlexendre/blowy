@@ -5,6 +5,7 @@ import { Button } from '../atoms/Button';
 import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
 import { CountUp } from '../motion/CountUp';
+import { SpeechBubble } from '../molecules/SpeechBubble';
 import { PopIn } from '../motion/PopIn';
 import { alpha, space } from '../theme';
 
@@ -27,15 +28,22 @@ export interface StreakTierProps {
   continueLabel: string;
   onContinue: () => void;
   accessibilityLabel: string;
+  /** Ce que dit le minimoa, dans une bulle au-dessus de lui (« Continue ! Je file me vanter de ta série. »). */
+  line?: string | null;
 }
 
 const ORANGE = color.orange;
 
 /** La série qui monte (maquette V7 « Palier de série ») : fond orange plein, le grand nombre, la semaine cochée. */
-export function StreakTier({ species, count, from, unit, days, shareLabel, onShare, continueLabel, onContinue, accessibilityLabel }: StreakTierProps) {
+export function StreakTier({ species, count, from, unit, days, shareLabel, onShare, continueLabel, onContinue, accessibilityLabel, line }: StreakTierProps) {
   return (
     <View style={styles.wrap}>
-      <View style={styles.stage}>
+      {line ? (
+        <PopIn from={0.7} delay={250} style={styles.say}>
+          <SpeechBubble text={line} tone="light" tail="right" size="md" />
+        </PopIn>
+      ) : null}
+      <View style={[styles.stage, line ? styles.stageSay : null]}>
         <PopIn from={0.6}>
           <PetImage species={species} mood="joie" size={200} />
         </PopIn>
@@ -72,6 +80,8 @@ export function StreakTier({ species, count, from, unit, days, shareLabel, onSha
 const styles = StyleSheet.create({
   wrap: { flex: 1, paddingBottom: space.lg, gap: space.sm },
   stage: { height: 230, alignItems: 'center', justifyContent: 'flex-end', marginTop: space.lg },
+  stageSay: { height: 190, marginTop: 0 },
+  say: { alignSelf: 'center', maxWidth: 300, marginTop: space.md },
   week: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xl },
   day: { alignItems: 'center', gap: space.sm },
   dot: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },

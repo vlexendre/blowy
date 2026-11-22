@@ -43,6 +43,7 @@ export const chemin = messages({
       retry: 'Réessayer',
     },
     seance: {
+      combo: (n: number) => `${n} d’affilée !`,
       close: 'Fermer la séance',
       progress: (i: number, n: number): string => `Question ${i} sur ${n}`,
       kicker: (unit: string): string => `Ton chemin · ${unit}`,
@@ -201,6 +202,7 @@ export const chemin = messages({
       retry: 'Try again',
     },
     seance: {
+      combo: (n: number) => `${n} in a row!`,
       close: 'Close the session',
       progress: (i: number, n: number): string => `Question ${i} of ${n}`,
       kicker: (unit: string): string => `Your path · ${unit}`,
@@ -357,6 +359,7 @@ export const chemin = messages({
       retry: 'Reintentar',
     },
     seance: {
+      combo: (n: number) => `¡${n} seguidas!`,
       close: 'Cerrar la sesión',
       progress: (i: number, n: number): string => `Pregunta ${i} de ${n}`,
       kicker: (unit: string): string => `Tu camino · ${unit}`,
@@ -512,6 +515,7 @@ export const chemin = messages({
       retry: 'Tentar de novo',
     },
     seance: {
+      combo: (n: number) => `${n} seguidas!`,
       close: 'Fechar a sessão',
       progress: (i: number, n: number): string => `Pergunta ${i} de ${n}`,
       kicker: (unit: string): string => `Seu caminho · ${unit}`,
@@ -668,6 +672,7 @@ export const chemin = messages({
       retry: 'Opnieuw proberen',
     },
     seance: {
+      combo: (n: number) => `${n} op rij!`,
       close: 'Sessie sluiten',
       progress: (i: number, n: number): string => `Vraag ${i} van ${n}`,
       kicker: (unit: string): string => `Jouw pad · ${unit}`,

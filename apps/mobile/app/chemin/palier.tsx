@@ -45,6 +45,7 @@ export default function Palier() {
           continueLabel={t.continue}
           onContinue={next}
           accessibilityLabel={t.a11y(s.current)}
+          line={t.lines[s.current % t.lines.length] ?? null}
         />
       </ScreenTemplate>
     </ScreenMotion>
