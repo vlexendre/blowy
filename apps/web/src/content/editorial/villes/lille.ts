@@ -48,7 +48,7 @@ export const lille: CityPage = {
         '**Les clubs sportifs et culturels** : chorales, théâtre, escalade, foot loisir. La métropole en regorge, et le forum des associations de la rentrée est l’endroit pour faire le tour.',
         '**La Belgique à deux pas** : une excursion à Gand, à Bruges ou à [Bruxelles](/se-faire-des-amis/bruxelles/) en petit groupe soude bien plus qu’une soirée de plus en centre-ville.',
         'Tu restes après tes études et ton cercle a fondu ? Notre guide sur [l’amitié une fois la fac terminée](/guides/se-faire-des-amis-adulte/) parle justement de ce moment.',
-        'Paris n’est qu’à une heure de TGV. Si tu y travailles ou y as des proches et que tu fais l’aller-retour, notre page pour [se faire des amis à Paris](/se-faire-des-amis/paris/) peut t’aider à garder une vie sociale des deux côtés. Pour que Minimoa ouvre près de chez toi, passe par [Ouvre ton quartier](/quartier/).',
+        'Paris n’est qu’à une heure de TGV. Si tu y travailles ou y as des proches et que tu fais l’aller-retour, notre page pour [se faire des amis à Paris](/se-faire-des-amis/paris/) peut t’aider à garder une vie sociale des deux côtés. Et pour un week-end en Champagne, vois où [rencontrer des gens à Reims](/se-faire-des-amis/reims/). Pour que Minimoa ouvre près de chez toi, passe par [Ouvre ton quartier](/quartier/).',
       ],
     },
   ],

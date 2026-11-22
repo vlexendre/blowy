@@ -93,6 +93,12 @@ SEO quand `treg` est disponible.
   Mourillon, Haute-Ville et cours Lafayette, Chalucet, mont Faron, bateaux-bus de la rade, stade Mayol ; sans zone de
   quartier (renvoi à `/quartier/`). Citée dans le texte de Marseille, Nice et du guide « nouvelle ville ». Santé : 93 URLs
   en 200, aucune erreur ; Lighthouse mobile / 99-100-100, Bordeaux 100-100-100. Positions non relevées (`treg` absent).
+- 22 novembre 2026 : page ville `/se-faire-des-amis/reims/` (prochaine grande ville absente par population ; requêtes
+  « se faire des amis / rencontrer des gens à Reims ») : ville d'étudiants (université, Sciences Po, NEOMA) et de navetteurs
+  vers Paris, place Drouet-d'Erlon, halles du Boulingrin, Clairmarais, Saint-Remi, Croix-Rouge et Chemin Vert, coulée
+  verte du canal, Flâneries musicales, Stade de Reims ; sans zone de quartier (renvoi à `/quartier/`). Citée dans le texte
+  de Paris, Lille et Strasbourg. Santé : 94 URLs en 200, aucune erreur ; Lighthouse mobile / 92-97 (un premier passage à
+  79, cache froid, non reproduit), Toulouse 100-100-100. Positions non relevées (`treg` absent).
 
 ## 6. Blog d'actualité et GEO
 
