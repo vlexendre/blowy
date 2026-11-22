@@ -51,7 +51,7 @@ export interface OgSpec {
 }
 
 export const CITY_SLUGS = [
-  'paris', 'lyon', 'bordeaux', 'toulouse', 'nantes', 'lille', 'marseille', 'rennes', 'montpellier', 'nice', 'strasbourg', 'toulon',
+  'paris', 'lyon', 'bordeaux', 'toulouse', 'nantes', 'lille', 'marseille', 'rennes', 'montpellier', 'nice', 'strasbourg', 'toulon', 'reims',
   'bruxelles', 'liege', 'geneve', 'lausanne', 'luxembourg',
 ] as const;
 export type CitySlug = (typeof CITY_SLUGS)[number];

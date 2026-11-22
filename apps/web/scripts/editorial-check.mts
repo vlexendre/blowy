@@ -146,7 +146,7 @@ for (const g of GUIDE_LIST) {
 }
 
 // ── Similarité entre villes ───────────────────────────────────────────────
-const NAMES = /\b(paris|lyon|bordeaux|toulouse|nantes|lille|marseille|rennes|montpellier|nice|strasbourg|bruxelles|liège|liege|genève|geneve|lausanne|luxembourg|toulon|parisiens?|lyonnais|bordelais|toulousains?|nantais|lillois|marseillais|rennais|montpelliérains?|niçois|strasbourgeois|bruxellois|liégeois|genevois|lausannois|luxembourgeois|toulonnais)\b/giu;
+const NAMES = /\b(paris|lyon|bordeaux|toulouse|nantes|lille|marseille|rennes|montpellier|nice|strasbourg|bruxelles|liège|liege|genève|geneve|lausanne|luxembourg|toulon|reims|parisiens?|lyonnais|bordelais|toulousains?|nantais|lillois|marseillais|rennais|montpelliérains?|niçois|strasbourgeois|bruxellois|liégeois|genevois|lausannois|luxembourgeois|toulonnais|rémois|rémoises?)\b/giu;
 const norm = (s: string) => plain(s).toLowerCase().replace(NAMES, 'X').replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
 function sentences(c: CityPage): Set<string> {
   return new Set(
