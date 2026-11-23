@@ -31,9 +31,9 @@ export interface PetTipProps {
 }
 
 /** Le pet du conseil : image, ou pet vivant si on veut le faire réagir. */
-function TipPet({ species, mood, size, actor, seed, sad, style }: { species: Species; mood: Mood | PetPose; size: number; actor?: Ref<PetActorHandle>; seed?: string; sad?: boolean; style?: StyleProp<ViewStyle> }) {
+function TipPet({ species, mood, size, actor, seed, style }: { species: Species; mood: Mood | PetPose; size: number; actor?: Ref<PetActorHandle>; seed?: string; style?: StyleProp<ViewStyle> }) {
   if (!actor) return <PetImage species={species} mood={mood} size={size} style={style} />;
-  return <PetActor ref={actor} species={species} mood={mood} size={size} seed={seed} sulking={sad} sleepAfter={null} shadow={false} style={style} />;
+  return <PetActor ref={actor} species={species} mood={mood} size={size} seed={seed} sleepAfter={null} shadow={false} style={style} />;
 }
 
 /** Petit conseil du pet : le pet déborde à gauche, une phrase à droite. */
@@ -41,7 +41,7 @@ export function PetTip({ text, species, mood, tone = 'accent', title, actor, see
   if (tone === 'wine') {
     return (
       <Panel gradient="wine" radius={28} padding="lg" style={[styles.row, styles.wine]}>
-        <TipPet species={species} mood={mood ?? 'triste'} size={110} actor={actor} seed={seed} sad style={styles.winePet} />
+        <TipPet species={species} mood={mood ?? 'triste'} size={110} actor={actor} seed={seed} style={styles.winePet} />
         <View style={styles.texts}>
           {title ? <Title text={title} size={30} /> : null}
           <Text variant="body" size={13} style={styles.wineText}>

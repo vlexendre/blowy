@@ -31,7 +31,8 @@ export function Badge({ count, max = 99, tone = 'heart', size = 'md', popOnMount
         accessibilityLabel={accessibilityLabel ?? String(count)}
         style={[styles.base, tab && styles.tab, { backgroundColor: bg }]}
       >
-        <Text variant="label" size={tab ? 13 : 10} color={ink} style={styles.text}>
+        {/* Pastille d'onglet : taille fixe, comme la barre (le Large Content Viewer de l'onglet la montre en grand). */}
+        <Text variant="label" size={tab ? 13 : 10} color={ink} maxFontSizeMultiplier={tab ? 1 : undefined} style={styles.text}>
           {count > max ? `${max}+` : String(count)}
         </Text>
       </View>

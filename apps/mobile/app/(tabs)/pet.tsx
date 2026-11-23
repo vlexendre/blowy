@@ -4,16 +4,17 @@
  * bulle du minimoa (`StreakLine`), puis la carte de l'état du moment (`homeState` : séance, faite, membre, repos,
  * bonjour, sieste) et le chemin (`homeSteps`), dans une seule liste virtualisée (`HomeTemplate`). Rien d'autre n'y
  * vend ni n'y relance ; un objet gagné s'y fête (`UnlockCelebration`, une feuille à la fois). `blowy://chemin` ouvre
- * la séance s'il y en a une à faire (`?chemin=1`).
+ * la séance s'il y en a une à faire (`?chemin=1`, état `seance`).
  */
 import { ApiError } from '@blowy/api-client';
-import { SESSION_SIZE, currentUnitTitle, hasSessionToDo, useCheminMap, useCheminResults } from '@/features/chemin';
+import { SESSION_SIZE, currentUnitTitle, useCheminMap, useCheminResults } from '@/features/chemin';
 import { Banner, type CheminStep, HomeTemplate, PetHomeSkeleton, PetRefresh, Skeleton, StreakLine } from '@blowy/ui';
 import { useFocusEffect, useIsFocused, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ScreenMotion } from '@/core';
-import { HomeNowCard, HomePanel, homeState, homeSteps, useHomeHello, usePetPlay } from '@/features/home';
+import { useEncounters } from '@/features/encounters';
+import { HOME_STEPS_BEFORE, HOME_STEPS_BEFORE_COMPACT, HomeNowCard, HomePanel, homePerson, homeState, homeSteps, useHomeCompact, useHomeHello, usePetPlay } from '@/features/home';
 import { errorText } from '@/features/links';
 import { usePushIntroOnce, usePushPermission } from '@/features/notifications';
 import { useLivePet, usePetSleep, useUnlocks } from '@/features/pet';
@@ -36,7 +37,16 @@ export default function PetHome() {
   const play = usePetPlay({ petId: p?.id, needs: p?.needs, night: sleep.night && !sleep.firstDay, focused, hello: t.hello });
   const unlocksWaiting = useUnlocks((s) => s.queue.length > 0);
   const push = usePushPermission();
+  const suggestions = useEncounters().data?.suggestions;
+  const compact = useHomeCompact();
   const [refreshing, setRefreshing] = useState(false);
+
+  const cm = chemin.data;
+  // La fin de séance gardée en mémoire ne compte que si elle est du jour (une fin d'hier ne dit rien d'aujourd'hui).
+  const lastToday = last && cm && last.day === cm.today.day ? last : undefined;
+  const person = homePerson({ done: last ? { day: last.day, person: !!last.result.person } : null, today: cm?.today.day ?? null, suggestions });
+  const state = homeState({ today: cm?.today.state ?? null, plus: !!cm?.plus, asleep, hello: !!hello, shape: p?.shape ?? '', person });
+  const openSeance = useCallback(() => router.push('/chemin/seance'), [router]);
 
   // Relue à chaque retour sur l'accueil (une séance vient peut-être de finir ailleurs).
   const { refetch: refetchChemin } = chemin;
@@ -49,11 +59,11 @@ export default function PetHome() {
   // `blowy://chemin` (rappel du matin) : l'accueil, puis la séance du jour s'il y en a une à faire (une fois).
   const opened = useRef(false);
   useEffect(() => {
-    if (!params.chemin || opened.current || !chemin.data) return;
+    if (!params.chemin || opened.current || !cm) return;
     opened.current = true;
     router.setParams({ chemin: undefined });
-    if (hasSessionToDo(chemin.data)) router.push('/chemin/seance');
-  }, [params.chemin, chemin.data, router]);
+    if (state.now === 'seance') openSeance();
+  }, [params.chemin, cm, state.now, router, openSeance]);
 
   // Notifications : l'écran d'avant-demande monte une fois, au premier passage calme (aucune fête en cours).
   usePushIntroOnce(push.permission, focused && !!p && !!chemin.data && !unlocksWaiting);
@@ -72,7 +82,7 @@ export default function PetHome() {
             pet.isPending ? (
               <PetHomeSkeleton />
             ) : (
-              <Banner tone="error" title={t.loadError} text={pet.error?.message ?? ''} actionLabel={t.retry} onAction={() => void pet.refetch()} />
+              <Banner tone="error" title={t.loadError} text={t.loadErrorText} actionLabel={t.retry} onAction={() => void pet.refetch()} />
             )
           }
           steps={[]}
@@ -82,14 +92,11 @@ export default function PetHome() {
     );
   }
 
-  const cm = chemin.data;
-  const state = homeState({ today: cm?.today.state ?? null, plus: !!cm?.plus, asleep, hello: !!hello, shape: p.shape });
-  const progress = last?.result.progress;
-  const path = cm ? homeSteps(cm, progress?.stepDone ? progress.stepId : undefined) : { firstIndex: 0, steps: [] };
+  const progress = lastToday?.result.progress;
+  const path = cm ? homeSteps(cm, progress?.stepDone ? progress.stepId : undefined, compact ? HOME_STEPS_BEFORE_COMPACT : HOME_STEPS_BEFORE) : { firstIndex: 0, steps: [], more: false };
   const steps: CheminStep[] = path.steps.map((s) => ({ key: s.key, kind: s.kind, accessibilityLabel: t.step[s.kind](s.number) }));
   const streak = cm && cm.streak.current > 0 ? cm.streak.current : null;
   const bubble = play.said ?? (state.bubble === 'sleep' ? t.sleepLine : state.bubble === 'rest' ? t.restLine : null);
-  const openSeance = () => router.push('/chemin/seance');
   const toQuartier = () => router.navigate('/(tabs)/quartier');
   const careError = play.care.isError && !(play.care.error instanceof ApiError && play.care.error.code === 'already_done');
 
@@ -115,11 +122,12 @@ export default function PetHome() {
                 />
                 <HomeNowCard
                   card={state.card}
+                  person={state.person}
                   unitTitle={cm ? currentUnitTitle(cm) : ''}
                   questions={SESSION_SIZE}
                   hello={hello}
-                  // La fin de séance gardée en mémoire ; après un redémarrage, les présentés du jour sont dans Quartier.
-                  onReview={() => (lastId ? router.push({ pathname: '/chemin/fin', params: { id: lastId } }) : toQuartier())}
+                  // La fin de séance du jour gardée en mémoire ; sinon (redémarrage), les présentés du jour sont dans Quartier.
+                  onReview={() => (lastToday && lastId ? router.push({ pathname: '/chemin/fin', params: { id: lastId } }) : toQuartier())}
                   onNext={openSeance}
                   onHello={toQuartier}
                 />
@@ -130,6 +138,7 @@ export default function PetHome() {
             firstIndex={path.firstIndex}
             startLabel={t.start}
             onStart={state.now === 'seance' ? openSeance : undefined}
+            endNote={path.more ? t.pathMore : undefined}
             footer={
               cm ? undefined : chemin.isError ? (
                 <Banner tone="info" text={t.pathError} actionLabel={t.retry} onAction={() => void chemin.refetch()} />

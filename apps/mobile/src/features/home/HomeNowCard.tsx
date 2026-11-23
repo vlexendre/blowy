@@ -7,11 +7,13 @@ import type { HomeCard } from './logic';
 
 /**
  * La carte de l'état du moment (V6-GAccueil, sous la ligne de série, au-dessus du chemin) : le bandeau de la séance,
- * la carte « Séance du jour faite » (membre : « Continuer avec l’étape suivante »), « À demain », ou un bonjour reçu.
+ * la carte « Séance du jour faite » (membre : « Continuer avec l’étape suivante » ; la personne du jour seulement s'il y
+ * en a une), « À demain », ou un bonjour reçu.
  * Une seule à la fois ; aucune ne vend rien.
  */
 export function HomeNowCard({
   card,
+  person,
   unitTitle,
   questions,
   hello,
@@ -20,6 +22,8 @@ export function HomeNowCard({
   onHello,
 }: {
   card: HomeCard | null;
+  /** Une personne du jour présentée (`HomeState.person`) : son titre et « Revoir ta personne du jour ». */
+  person: boolean;
   /** Le titre réel de l'univers du jour (« Ta façon de vivre »). */
   unitTitle: string;
   questions: number;
@@ -36,10 +40,10 @@ export function HomeNowCard({
       return (
         <SessionDoneCard
           status={t.done.status}
-          title={t.done.title}
+          title={person ? t.done.title : undefined}
           text={t.done.text}
           links={[
-            { label: t.done.review, onPress: onReview },
+            ...(person ? [{ label: t.done.review, onPress: onReview }] : []),
             ...(card === 'membre' ? [{ label: t.done.next, onPress: onNext }] : []),
           ]}
         />

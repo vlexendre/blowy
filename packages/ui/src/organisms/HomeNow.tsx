@@ -66,29 +66,31 @@ export interface HomeLink {
 export interface SessionDoneCardProps {
   /** « Séance du jour faite » (avec une coche : l'état ne tient pas à la couleur). */
   status: string;
-  /** « Ta personne du jour ». */
-  title: string;
+  /** « Ta personne du jour » ; absent quand personne n'a été présenté (le statut devient l'en-tête). */
+  title?: string;
   /** « Demain, une nouvelle séance ». */
   text: string;
-  /** « Revoir ta personne du jour », et pour un membre « Continuer avec l’étape suivante ». */
+  /** « Revoir ta personne du jour » (s’il y en a une), et pour un membre « Continuer avec l’étape suivante ». */
   links: readonly HomeLink[];
 }
 
 /** `.carte` (états `faite` et `membre`) : carte sombre, un titre et une ligne grise, des liens de 44 pt. */
 export function SessionDoneCard({ status, title, text, links }: SessionDoneCardProps) {
   return (
-    <Appear once={`home:done:${links.length}`} style={styles.card}>
+    <Appear once={`home:done:${title ? 1 : 0}:${links.length}`} style={styles.card}>
       <View style={styles.status}>
         <View style={styles.check}>
           <Glyph name="check" size={12} color={color.dark} />
         </View>
-        <Text variant="bodyHeavy" size={13} muted>
+        <Text variant="bodyHeavy" size={13} muted accessibilityRole={title ? undefined : 'header'}>
           {status}
         </Text>
       </View>
-      <Text variant="bodyHeavy" size={22} style={styles.cardTitle} accessibilityRole="header">
-        {title}
-      </Text>
+      {title ? (
+        <Text variant="bodyHeavy" size={22} style={styles.cardTitle} accessibilityRole="header">
+          {title}
+        </Text>
+      ) : null}
       <Text size={15} muted>
         {text}
       </Text>

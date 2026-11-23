@@ -97,8 +97,6 @@ export interface PetActorProps {
   body?: boolean;
   /** Id du pet : graine de son hasard (règle 8). */
   seed?: string;
-  /** Il boude : mouvements plus lents et lourds, humeurs tristes. */
-  sulking?: boolean;
   /** Vie au repos (respiration, petits sauts, humeurs). Défaut vrai. */
   idle?: boolean;
   /** Répond au toucher (tap, double tap, appui long). Défaut vrai. */
@@ -142,7 +140,6 @@ export interface PetActorProps {
  * doivent pas avoir l'air amoureux (spéc. §27) ; il reste pour le câlin, l'affection pour son propre minimoa.
  */
 const IDLE_MOODS: readonly PetPose[] = ['joie', 'smug', 'surpris', 'salut'];
-const SULK_MOODS: readonly PetPose[] = ['triste', 'colere'];
 /** En pied : les mêmes moments, avec les poses du pack (il réfléchit, fait coucou, sautille de joie). */
 const BODY_IDLE: readonly BodyPose[] = ['joie', 'pense', 'surpris', 'coucou', 'assis', 'assis'];
 /** Plus rares, au repos en pied : il danse (1 fois sur 8), prend un bain moussant (1 sur 25 : petit cadeau). */
@@ -152,7 +149,6 @@ const BATH_CHANCE = 0.04;
 const IDLE_HOLD: Partial<Record<BodyPose, number>> = { assis: 2600, danse: 2000, bain: 3400 };
 /** Images préchargées (les poses les plus fréquentes ; les autres se chargent à la demande). */
 const PRELOAD: readonly BodyPose[] = [...BODY_POSES.slice(0, 12), 'colere', 'rit', 'assis', 'baille'];
-const BODY_SULK: readonly BodyPose[] = ['triste', 'boude'];
 /** Largeur à partir de laquelle le pet vivant passe aux corps entiers du pack. */
 const BODY_MIN = 96;
 /** Pose du pack jouée par chaque réaction (en pied). */
@@ -259,7 +255,6 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     mood = 'debout',
     body: bodyProp,
     seed: seedId,
-    sulking = false,
     idle = true,
     touch = true,
     grabbable = false,
@@ -288,8 +283,8 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
   /** En pied (poses du pack, objets portés qui suivent la pose) ou en bustes (petites tailles). */
   const body = bodyProp ?? (dressed || size >= BODY_MIN);
   const h = Math.round(size / RENDER_RATIO);
-  /** Pose de repos en pied (il boude : bras croisés). */
-  const restBody: BodyPose = sulking && (mood === 'debout' || mood === 'neutre') ? 'boude' : bodyPoseFor(mood);
+  /** Pose de repos en pied. */
+  const restBody: BodyPose = bodyPoseFor(mood);
   const anchorPose = body ? restBody : undefined;
   const head = fitAnchor(species, 'headTop', anchorPose);
   const mouth = fitAnchor(species, 'mouth', anchorPose);
@@ -428,11 +423,11 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
       breath.value = withTiming(0, { duration: motion.fast });
       return;
     }
-    const half = asleep ? 2100 : sulking ? 1800 : motion.breath;
-    amp.value = withTiming(asleep ? 1.6 : sulking ? 0.7 : 1, { duration: motion.slow });
+    const half = asleep ? 2100 : motion.breath;
+    amp.value = withTiming(asleep ? 1.6 : 1, { duration: motion.slow });
     breath.value = withRepeat(withSequence(withTiming(1, { duration: half, easing: ease.inOut }), withTiming(0, { duration: half, easing: ease.inOut })), -1);
     return () => cancelAnimation(breath);
-  }, [active, reduced, asleep, sulking, breath, amp]);
+  }, [active, reduced, asleep, breath, amp]);
 
   // — Suiveurs en retard : chapeaux et signes au-dessus de la tête suivent le corps avec un temps de retard.
   useAnimatedReaction(
@@ -572,11 +567,11 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     if (asleep) {
       express('dodo', 0);
       if (!reduced) {
-        rot.value = withSpring(sulking ? -3 : 4, springs.soft);
+        rot.value = withSpring(4, springs.soft);
         sy.value = withSpring(0.96, springs.soft);
       }
     }
-  }, [asleep, express, reduced, rot, sy, sulking]);
+  }, [asleep, express, reduced, rot, sy]);
 
   const wake = useCallback(() => {
     if (!asleepRef.current) return;
@@ -951,7 +946,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
       }
       if (asleepRef.current) wake();
       if (zone === 1) {
-        express(sulking ? 'triste' : 'joie', 0);
+        express('joie', 0);
         // Il se redresse en le voyant (une fois, à la prise).
         if (before === 0 && !reduced) sy.value = withSequence(withTiming(1.06, { duration: 120, easing: ease.out }), withSpring(1, PLUSH));
       } else {
@@ -959,7 +954,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         if (!reduced) hapticFor('press');
       }
     },
-    [armSleep, express, wake, sulking, reduced, sy],
+    [armSleep, express, wake, reduced, sy],
   );
   const lureRef = useRef(onLureJS);
   lureRef.current = onLureJS;
@@ -993,7 +988,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     let id: ReturnType<typeof setTimeout>;
     const tick = () => {
       if (!busy.current && !asleepRef.current && free.value === 0 && !lureZone.current) {
-        const choices = sulking ? ['sigh', 'turn', 'mood'] : ['hop', 'look', 'wiggle', 'mood', 'mood'];
+        const choices = ['hop', 'look', 'wiggle', 'mood', 'mood'];
         const what = seed.pick(choices, lastIdle.current);
         lastIdle.current = what;
         if (what === 'hop') hop(size * 0.1);
@@ -1004,17 +999,9 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         } else if (what === 'wiggle') {
           const w = (v: number) => withTiming(v, { duration: 110, easing: ease.inOut });
           rot.value = withSequence(w(-4), w(4), w(-3), w(2), withSpring(0, PLUSH));
-        } else if (what === 'sigh') {
-          sy.value = withSequence(
-            withTiming(1.04, { duration: 700, easing: ease.inOut }),
-            withTiming(0.95, { duration: 900, easing: ease.inOut }),
-            withSpring(1, springs.soft),
-          );
-        } else if (what === 'turn') {
-          rot.value = withSequence(withSpring(-5, springs.soft), withDelay(1400, withSpring(0, springs.soft)));
         } else if (body) {
-          const rare = sulking ? null : seed.chance(DANCE_CHANCE) ? 'danse' : seed.chance(BATH_CHANCE) ? 'bain' : null;
-          const pick: BodyPose = rare ?? seed.pick<BodyPose>(sulking ? BODY_SULK : BODY_IDLE, (expr as BodyPose | null) ?? undefined);
+          const rare = seed.chance(DANCE_CHANCE) ? 'danse' : seed.chance(BATH_CHANCE) ? 'bain' : null;
+          const pick: BodyPose = rare ?? seed.pick<BodyPose>(BODY_IDLE, (expr as BodyPose | null) ?? undefined);
           express(pick, IDLE_HOLD[pick] ?? 1500);
           if (pick === 'danse') {
             const w = (v: number) => withTiming(v, { duration: 260, easing: ease.inOut });
@@ -1024,16 +1011,16 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
           setSparkles((n) => n + 1);
           sy.value = withSequence(withTiming(0.95, { duration: 100 }), withSpring(1, PLUSH));
         } else {
-          express(seed.pick(sulking ? SULK_MOODS : IDLE_MOODS, expr ?? undefined), 1300);
+          express(seed.pick(IDLE_MOODS, expr ?? undefined), 1300);
         }
       }
-      id = setTimeout(tick, seed.range(sulking ? 5200 : 3500, sulking ? 9000 : 7000));
+      id = setTimeout(tick, seed.range(3500, 7000));
     };
     id = setTimeout(tick, seed.range(1600, 3000));
     return () => clearTimeout(id);
     // `expr` lu au moment du tirage seulement.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idle, reduced, active, sulking, dressed, body, seed, hop, express, size, rot, sy, x, free]);
+  }, [idle, reduced, active, dressed, body, seed, hop, express, size, rot, sy, x, free]);
 
   // — Toucher.
   const lastTap = useRef(0);
@@ -1112,10 +1099,10 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
       hapticFor('press');
       if (!reduced) squish(tx < size / 2 ? -1 : 1);
       setHearts((n) => n + 1);
-      express(sulking ? 'triste' : 'joie', 900);
+      express('joie', 900);
       onTouch?.('tap');
     },
-    [wake, armSleep, reduced, hop, size, express, later, squish, sulking, onTouch],
+    [wake, armSleep, reduced, hop, size, express, later, squish, onTouch],
   );
 
   // Trampolines stables : les gestes (et leurs worklets) ne sont recréés que si leurs réglages changent, jamais à

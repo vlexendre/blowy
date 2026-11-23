@@ -104,6 +104,9 @@ function Face({ glyph, label, ink, active }: { glyph: GlyphName; label: string; 
         adjustsFontSizeToFit
         minimumFontScale={0.7}
         ellipsizeMode="clip"
+        // Taille fixe, comme la barre d'onglets d'iOS : en très grand texte, l'appui long montre le libellé en grand
+        // (Large Content Viewer, branché sur l'onglet).
+        maxFontSizeMultiplier={1}
         style={styles.label}
       >
         {label}

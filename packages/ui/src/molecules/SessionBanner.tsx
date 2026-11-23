@@ -15,15 +15,15 @@ export interface SessionBannerProps {
 /**
  * Le bandeau de la séance du jour (V6-GAccueil `.bandeau`) : violet en relief (tranche plus foncée dessous), tout le
  * texte en blanc (5,3:1). Il annonce, il ne se touche pas : la seule action est l'étape du jour, sur le chemin.
- * VoiceOver le lit d'un bloc.
+ * VoiceOver : trois éléments dans l'ordre, le titre de l'univers garde son rôle d'en-tête (rotor « En-têtes »).
  */
 export function SessionBanner({ kicker, title, note }: SessionBannerProps) {
   return (
-    <View style={styles.card} accessible accessibilityLabel={`${kicker}. ${title}. ${note}`}>
+    <View style={styles.card}>
       <Text variant="bodyBold" size={15} color={color.white}>
         {kicker}
       </Text>
-      <Text variant="h2" size={30} color={color.white} style={styles.title}>
+      <Text variant="h2" size={30} color={color.white} style={styles.title} accessibilityRole="header">
         {title}
       </Text>
       <Text variant="bodyBold" size={15} color={color.white}>

@@ -100,12 +100,11 @@ function Label({ children }: { children: string }) {
   );
 }
 
-/** Le grand pet : réactions, toucher, sommeil, bouderie, tenue. */
+/** Le grand pet : réactions, toucher, sommeil, tenue. */
 function ActorBench() {
   const actor = useRef<PetActorHandle>(null);
   const [species, setSpecies] = useState<Species>('nino');
   const [dressed, setDressed] = useState(false);
-  const [sulking, setSulking] = useState(false);
   const [sleepy, setSleepy] = useState(0);
   const [log, setLog] = useState('touche, double-touche, appui long, attrape-le et lance-le');
   return (
@@ -117,7 +116,6 @@ function ActorBench() {
       </Row>
       <Row>
         <Chip label="habillé" selected={dressed} onPress={() => setDressed((d) => !d)} />
-        <Chip label="boude" selected={sulking} onPress={() => setSulking((d) => !d)} />
         <Chip label="s'endort (2 s)" onPress={() => setSleepy((n) => n + 1)} />
         <Chip label="réveil" onPress={() => actor.current?.wake()} />
       </Row>
@@ -129,7 +127,6 @@ function ActorBench() {
           outfit={dressed ? LOOK : null}
           size={200}
           seed={`dev-${species}`}
-          sulking={sulking}
           grabbable
           sleepAfter={sleepy ? 2000 : 25_000}
           onTouch={(t) => setLog(`geste : ${t}`)}

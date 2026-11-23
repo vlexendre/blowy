@@ -9,7 +9,7 @@ interface ScrollLock {
 const ScrollLockContext = createContext<ScrollLock>({ locked: false, setLocked: () => undefined });
 
 /**
- * Fourni par `ScreenTemplate` : un pet qu'on attrape bloque le défilement de l'écran le temps du geste,
+ * Fourni par `ScreenTemplate` et `HomeTemplate` : un pet qu'on attrape bloque le défilement de l'écran le temps du geste,
  * pour que le doigt déplace le pet et pas la page.
  */
 export function ScrollLockProvider({ children }: { children?: ReactNode }) {

@@ -609,7 +609,7 @@ Une modale native (`Modal` : `SheetTemplate`, `UnlockSheet`) passe au-dessus du 
 ### Les pets
 ```ts
 PetActor   { species; outfit?; size; mood?: Mood | PetPose /* repos sans tenue, défaut 'debout' */; seed?: string /* id du pet */;
-             sulking?; idle?: true; touch?: true; grabbable?: false; sleepAfter?: number | null /* 25 000 */; shadow?: true;
+             idle?: true; touch?: true; grabbable?: false; sleepAfter?: number | null /* 25 000 */; shadow?: true;
              hiddenItems?: readonly string[]; onTouch?: (t: 'tap' | 'double' | 'snuggle' | 'grab' | 'throw') => void;
              onGrabChange?: (grabbed: boolean) => void; lure?: PetLure /* objet porté : il le suit, ouvre la bouche */;
              accessibilityLabel?; accessibilityHint?; style? }

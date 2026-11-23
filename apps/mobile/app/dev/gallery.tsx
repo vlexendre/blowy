@@ -823,7 +823,7 @@ function GalleryScreen() {
           <StageEcho chips={['plutôt joueur', 'plutôt bavard']} text="ça changera avec toi." />
         </Item>
         <Item name="PromiseStage · HoldButton (maintenir, ou toucher)">
-          <PromiseStage species="gaston" kicker="gaston te demande une seule chose" title={[{ text: 'VIENS ME VOIR\n' }, { text: 'CHAQUE JOUR.', dim: true }]} text="un minimoa en forme rencontre du monde. un minimoa oublié boude, et ne présente plus personne." cheerKey={promised ? 1 : 0} seed="dev-promise" />
+          <PromiseStage species="gaston" kicker="gaston te demande une seule chose" title={[{ text: 'VIENS ME VOIR\n' }, { text: 'CHAQUE JOUR.', dim: true }]} text="Un minimoa en forme rencontre du monde." cheerKey={promised ? 1 : 0} seed="dev-promise" />
           <HoldButton label="promis" doneLabel="promis\u00a0!" done={promised} onDone={() => setPromised(true)} onPressDone={() => setPromised(false)} doneA11yLabel="recommencer" />
         </Item>
         <Item name="PrepChecklist">

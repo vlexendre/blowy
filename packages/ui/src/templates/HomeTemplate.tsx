@@ -4,6 +4,8 @@ import { type LayoutChangeEvent, type ListRenderItem, type RefreshControlProps, 
 import Animated, { type useAnimatedScrollHandler } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Text } from '../atoms/Text';
+import { ScrollLockProvider, useScrollLock } from '../lib/scroll-lock';
 import { useTabBarSpace } from '../organisms/BottomTabBar';
 import { type CheminStep, CheminStepRow } from '../organisms/CheminPath';
 import { alpha, color } from '../theme';
@@ -25,7 +27,9 @@ export interface HomeTemplateProps {
   /** Étiquette de l'étape du jour (« Commencer »). */
   startLabel: string;
   onStart?: () => void;
-  /** Sous le chemin, ou à sa place (chargement, erreur avec « Réessayer »). */
+  /** Sous la dernière étape montrée : la suite se débloque au fil des séances (d'autres univers suivent). */
+  endNote?: string;
+  /** À la place du chemin (chargement, erreur avec « Réessayer »). */
   footer?: ReactNode;
   /** Tirer pour rafraîchir (`PetRefresh`). */
   refreshControl?: ReactElement<RefreshControlProps>;
@@ -37,9 +41,19 @@ export interface HomeTemplateProps {
  * Gabarit de l'accueil (V6-GAccueil) : une seule liste virtualisée (`FlatList`) dont l'en-tête porte le panneau du
  * minimoa et l'état du moment, et dont les lignes sont les étapes du chemin. Tout défile d'un bloc : en très grand
  * texte rien n'est coupé, et à 375×667 l'étape du jour tient dans le premier écran sans défiler. La barre d'état reste
- * opaque ; au-dessus de la barre d'onglets, le chemin s'efface en fondu (rien n'est coupé net).
+ * opaque ; au-dessus de la barre d'onglets, le chemin s'efface en fondu (rien n'est coupé net). Fournit le verrou de
+ * défilement (`useScrollLock`) : attraper le minimoa ou glisser un soin bloque le défilement le temps du geste.
  */
-export function HomeTemplate({ header, steps, firstIndex = 0, startLabel, onStart, footer, refreshControl, onScroll, scrollEventThrottle }: HomeTemplateProps) {
+export function HomeTemplate(props: HomeTemplateProps) {
+  return (
+    <ScrollLockProvider>
+      <HomeList {...props} />
+    </ScrollLockProvider>
+  );
+}
+
+function HomeList({ header, steps, firstIndex = 0, startLabel, onStart, endNote, footer, refreshControl, onScroll, scrollEventThrottle }: HomeTemplateProps) {
+  const { locked } = useScrollLock();
   const insets = useSafeAreaInsets();
   const barSpace = useTabBarSpace();
   const [width, setWidth] = useState(0);
@@ -62,7 +76,18 @@ export function HomeTemplate({ header, steps, firstIndex = 0, startLabel, onStar
         renderItem={renderItem}
         extraData={width}
         ListHeaderComponent={<View style={styles.header}>{header}</View>}
-        ListFooterComponent={footer ? <View style={styles.footer}>{footer}</View> : undefined}
+        // L'en-tête passe devant les lignes du chemin : le minimoa attrapé (sorti de son panneau) reste au-dessus.
+        ListHeaderComponentStyle={styles.headerCell}
+        ListFooterComponent={
+          footer ? (
+            <View style={styles.footer}>{footer}</View>
+          ) : endNote ? (
+            <Text muted center size={15} style={styles.endNote}>
+              {endNote}
+            </Text>
+          ) : undefined
+        }
+        scrollEnabled={!locked}
         contentContainerStyle={{ paddingTop: insets.top + 4, paddingBottom: barSpace + FADE, paddingHorizontal: GUTTER }}
         refreshControl={refreshControl}
         onScroll={onScroll}
@@ -86,6 +111,8 @@ export function HomeTemplate({ header, steps, firstIndex = 0, startLabel, onStar
 const styles = StyleSheet.create({
   fill: { flex: 1, backgroundColor: color.night },
   header: { gap: GAP, paddingBottom: GAP },
+  headerCell: { zIndex: 2, elevation: 2 },
+  endNote: { paddingTop: GAP, paddingHorizontal: GUTTER },
   footer: { paddingTop: GAP },
   status: { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: color.night },
   fade: { position: 'absolute', left: 0, right: 0, bottom: 0 },

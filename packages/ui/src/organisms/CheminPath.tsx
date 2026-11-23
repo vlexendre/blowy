@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
@@ -26,6 +27,8 @@ const NOW = 72;
 /** Hauteur d'une ligne : 44 + 2 d'écart (`.nd` tous les 46 pt) ; l'étape du jour : 72 + 8. */
 const ROW = 46;
 const NOW_ROW = 80;
+/** Écart entre le disque du jour et son étiquette (`.jour` : 12). */
+const TAG_GAP = space.md;
 /** Tranche en relief sous le disque (`box-shadow: 0 4px 0`, `0 6px 0` pour celle du jour). */
 const EDGE = 4;
 const NOW_EDGE = 6;
@@ -71,7 +74,7 @@ const LOOK: Record<CheminStepKind, { bg: string; edge: string; ink: string }> = 
  * cadenas ; celle du jour : 72 pt, jaune (le seul jaune de l'écran), étiquette blanche « Commencer ». Rien ne tient à
  * la seule couleur (coche, cadenas, lecture et étiquette). Elle bat deux fois à l'arrivée ; animations réduites : fixe.
  */
-export function CheminStepRow({ step, index, first, last, width, startLabel, onStart }: CheminStepRowProps) {
+export const CheminStepRow = memo(function CheminStepRow({ step, index, first, last, width, startLabel, onStart }: CheminStepRowProps) {
   const h = cheminRowHeight(step.kind);
   const x = centerX(index, width);
   const up = (centerX(index - 1, width) + x) / 2;
@@ -81,6 +84,8 @@ export function CheminStepRow({ step, index, first, last, width, startLabel, onS
   const size = now ? NOW : NODE;
   // L'étiquette se met du côté où il y a de la place, sa pointe vers le disque.
   const labelLeft = x > width / 2;
+  // Place de l'étiquette de ce côté (jusqu'au bord) : en très grand texte, « Commencer » rétrécit pour y tenir.
+  const tagRoom = Math.max(0, Math.floor(labelLeft ? x - NOW / 2 - TAG_GAP : width - x - NOW / 2 - TAG_GAP));
   return (
     <View style={{ height: h, width }}>
       <Svg width={width} height={h} style={StyleSheet.absoluteFill} pointerEvents="none">
@@ -98,9 +103,9 @@ export function CheminStepRow({ step, index, first, last, width, startLabel, onS
               style={[styles.now, labelLeft && styles.nowReverse]}
             >
               <Disc kind="current" size={size} />
-              <View style={styles.tag}>
+              <View style={[styles.tag, { maxWidth: tagRoom }]}>
                 <View style={[styles.tagTail, labelLeft ? styles.tailRight : styles.tailLeft]} />
-                <Text variant="bodyHeavy" size={17} color={color.dark} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} maxFontSizeMultiplier={1.6}>
+                <Text variant="bodyHeavy" size={17} color={color.dark} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} maxFontSizeMultiplier={1.6}>
                   {startLabel}
                 </Text>
               </View>
@@ -119,7 +124,7 @@ export function CheminStepRow({ step, index, first, last, width, startLabel, onS
       )}
     </View>
   );
-}
+});
 
 /** Un disque en relief : la tranche (plus foncée) dessous, le disque par-dessus. */
 function Disc({ kind, size }: { kind: CheminStepKind; size: number }) {
@@ -155,7 +160,7 @@ const styles = StyleSheet.create({
   // `.nd.lk` : contour de 2 pt.
   lockedRing: { borderWidth: 2, borderColor: extra.relief.lockedRing },
   // `.jour` : le disque et l'étiquette, à 12 l'un de l'autre, une seule cible.
-  now: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  now: { flexDirection: 'row', alignItems: 'center', gap: TAG_GAP },
   nowReverse: { flexDirection: 'row-reverse' },
   // `.etiquette` : 44 pt, blanche, rayon 14, pointe vers le disque.
   tag: {

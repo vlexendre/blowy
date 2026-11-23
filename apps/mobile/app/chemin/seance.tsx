@@ -72,7 +72,7 @@ export default function Seance() {
   const send = (p: SeanceProgress) => {
     if (!session) return;
     answer.mutate(
-      { body: answersBody(session, p), slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation, mascot, seconds: Math.round((Date.now() - startedAt.current) / 1000) },
+      { body: answersBody(session, p), day: session.day, slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation, mascot, seconds: Math.round((Date.now() - startedAt.current) / 1000) },
       {
         onSuccess: (res) => {
           if (!res.alreadyRecorded && res.newItems.length > 0) useUnlocks.getState().push(res.newItems);
@@ -90,7 +90,7 @@ export default function Seance() {
     const o = q?.options[0];
     if (!q || !o) return;
     answer.mutate(
-      { body: { sessionId: session.id, answers: [{ questionId: q.id, optionId: o.id }] }, slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation, mascot },
+      { body: { sessionId: session.id, answers: [{ questionId: q.id, optionId: o.id }] }, day: session.day, slot: session.slot, unitTitle: session.step?.unitTitle ?? null, endScene: session.endScene.animation, mascot },
       { onSuccess: (res) => router.replace({ pathname: '/chemin/fin', params: { id: res.sessionId } }) },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -46,6 +46,8 @@ export function useProfil() {
 /** Une séance finie, telle que la fin de séance l'affiche. */
 export interface CheminDone {
   result: CheminResult;
+  /** Jour de la séance (`CheminSession.day`) : l'accueil ne se sert que d'une fin du jour (`CheminMap.today.day`). */
+  day: string;
   /** La série d'avant (le chiffre défile d'un cran). */
   streakBefore: number;
   /** Durée de la séance en secondes (de la première question à l'envoi), null si inconnue. */
@@ -99,7 +101,7 @@ export function useAnswerSeance() {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (v: { body: CheminAnswersBody; slot: 'daily' | 'bonus'; unitTitle: string | null; endScene?: string | null; mascot?: Mascot | null; seconds?: number | null }) => api.chemin.answer(v.body),
+    mutationFn: (v: { body: CheminAnswersBody; day: string; slot: 'daily' | 'bonus'; unitTitle: string | null; endScene?: string | null; mascot?: Mascot | null; seconds?: number | null }) => api.chemin.answer(v.body),
     onMutate: async (v) => {
       const prev = qc.getQueryData<CheminMap>(keys.chemin);
       const snap = await optimistic(qc, [
@@ -114,7 +116,7 @@ export function useAnswerSeance() {
     onSuccess: (result, v, ctx) => {
       // La série d'avant (le chiffre défile d'un cran) ; déjà comptée aujourd'hui : rien ne bouge.
       const before = ctx?.before ?? result.streak.current;
-      useCheminResults.getState().put(result.sessionId, { result, streakBefore: Math.max(0, Math.min(before, result.streak.current)), unitTitle: v.unitTitle, endScene: v.endScene ?? null, mascot: v.mascot ?? null, seconds: v.seconds ?? null, answers: v.body.answers.length });
+      useCheminResults.getState().put(result.sessionId, { result, day: v.day, streakBefore: Math.max(0, Math.min(before, result.streak.current)), unitTitle: v.unitTitle, endScene: v.endScene ?? null, mascot: v.mascot ?? null, seconds: v.seconds ?? null, answers: v.body.answers.length });
       if (!result.alreadyRecorded) trackChemin('Seance Completed', { unit: v.unitTitle, answers: v.body.answers.length, slot: v.slot });
     },
     onError: (_e, _v, ctx) => rollback(qc, ctx?.snap),

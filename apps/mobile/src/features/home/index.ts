@@ -9,6 +9,7 @@ export { usePetPlay, type PetPlay } from './play';
 export { HomePanel } from './HomePanel';
 export { HomeNowCard } from './HomeNowCard';
 export { useHomeVisit } from './visit';
+export { useHomeCompact } from './compact';
 
 /** Le premier bonjour reçu qui attend une réponse (état `bonjour`), et combien d'autres ; null sinon. */
 export function useHomeHello() {

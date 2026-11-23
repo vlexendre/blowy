@@ -22,7 +22,9 @@ export const accueil = messages({
     /** Retour dans l'app (rare) : il fait coucou. */
     hello: 'Te revoilà !',
     careError: 'Ça n’a pas marché. Réessaie.',
-    loadError: 'Impossible de charger ton minimoa',
+    /** Chargement raté : jamais le message brut de l'erreur. */
+    loadError: 'Ça n’a pas chargé.',
+    loadErrorText: 'Vérifie ta connexion, puis réessaie.',
     retry: 'Réessayer',
     streak: (n: number): string => `${n} ${plural(n, { one: 'jour', other: 'jours' })} d’affilée`,
     streakA11y: (n: number): string => `Ta série : ${n} ${plural(n, { one: 'jour', other: 'jours' })} d’affilée. Ouvrir la série`,
@@ -38,6 +40,8 @@ export const accueil = messages({
       locked: (n: number): string => `Étape ${n}, à venir`,
     },
     pathError: 'Ton chemin ne s’affiche pas pour l’instant.',
+    /** Sous la dernière étape montrée (fin de l'univers en cours), quand d'autres univers suivent. */
+    pathMore: 'La suite se débloque au fil des séances',
     /** États `faite` et `membre` : aucune vente. */
     done: {
       status: 'Séance du jour faite',
@@ -83,7 +87,8 @@ export const accueil = messages({
     restLine: 'Well done. See you tomorrow!',
     hello: 'You’re back!',
     careError: 'That didn’t work. Try again.',
-    loadError: 'Couldn’t load your minimoa',
+    loadError: 'That didn’t load.',
+    loadErrorText: 'Check your connection, then try again.',
     retry: 'Try again',
     streak: (n: number): string => `${n}-day streak`,
     streakA11y: (n: number): string => `Your streak: ${n} ${n === 1 ? 'day' : 'days'} in a row. Open your streak`,
@@ -97,6 +102,7 @@ export const accueil = messages({
       locked: (n: number): string => `Step ${n}, coming up`,
     },
     pathError: 'Your path can’t be shown right now.',
+    pathMore: 'More unlocks as you do your sessions',
     done: {
       status: 'Today’s session done',
       title: 'Your person of the day',
@@ -135,7 +141,8 @@ export const accueil = messages({
     restLine: 'Bien hecho. ¡Hasta mañana!',
     hello: '¡Ya volviste!',
     careError: 'No ha funcionado. Inténtalo de nuevo.',
-    loadError: 'No se pudo cargar tu minimoa',
+    loadError: 'No se ha cargado.',
+    loadErrorText: 'Comprueba tu conexión y vuelve a intentarlo.',
     retry: 'Reintentar',
     streak: (n: number): string => `${n} ${n === 1 ? 'día' : 'días'} seguidos`,
     streakA11y: (n: number): string => `Tu racha: ${n} ${n === 1 ? 'día' : 'días'} seguidos. Abrir la racha`,
@@ -149,6 +156,7 @@ export const accueil = messages({
       locked: (n: number): string => `Etapa ${n}, por venir`,
     },
     pathError: 'Tu camino no se puede mostrar ahora mismo.',
+    pathMore: 'Lo siguiente se desbloquea sesión a sesión',
     done: {
       status: 'Sesión del día hecha',
       title: 'Tu persona del día',
@@ -187,7 +195,8 @@ export const accueil = messages({
     restLine: 'Mandou bem. Até amanhã!',
     hello: 'Você voltou!',
     careError: 'Não deu certo. Tente de novo.',
-    loadError: 'Não foi possível carregar seu minimoa',
+    loadError: 'Não carregou.',
+    loadErrorText: 'Verifique sua conexão e tente de novo.',
     retry: 'Tentar de novo',
     streak: (n: number): string => `${n} ${n === 1 ? 'dia' : 'dias'} seguidos`,
     streakA11y: (n: number): string => `Sua sequência: ${n} ${n === 1 ? 'dia' : 'dias'} seguidos. Abrir a sequência`,
@@ -201,6 +210,7 @@ export const accueil = messages({
       locked: (n: number): string => `Etapa ${n}, por vir`,
     },
     pathError: 'Seu caminho não pode ser exibido agora.',
+    pathMore: 'O resto se desbloqueia a cada sessão',
     done: {
       status: 'Sessão do dia feita',
       title: 'Sua pessoa do dia',
@@ -239,7 +249,8 @@ export const accueil = messages({
     restLine: 'Goed gedaan. Tot morgen!',
     hello: 'Daar ben je weer!',
     careError: 'Dat lukte niet. Probeer het opnieuw.',
-    loadError: 'Je minimoa kon niet worden geladen',
+    loadError: 'Dat is niet geladen.',
+    loadErrorText: 'Controleer je verbinding en probeer het opnieuw.',
     retry: 'Opnieuw',
     streak: (n: number): string => `${n} ${n === 1 ? 'dag' : 'dagen'} op rij`,
     streakA11y: (n: number): string => `Je reeks: ${n} ${n === 1 ? 'dag' : 'dagen'} op rij. Reeks openen`,
@@ -253,6 +264,7 @@ export const accueil = messages({
       locked: (n: number): string => `Stap ${n}, komt nog`,
     },
     pathError: 'Je pad kan nu niet worden getoond.',
+    pathMore: 'De rest komt vrij met elke sessie',
     done: {
       status: 'Sessie van vandaag gedaan',
       title: 'Je persoon van de dag',

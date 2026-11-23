@@ -1,17 +1,15 @@
 import type { Pet } from '@blowy/contract';
 import { CARE_ACTIONS } from '@blowy/domain';
 import { CareBar, formBodyPose, PetStage, usePetLure } from '@blowy/ui';
-import { useWindowDimensions } from 'react-native';
 
 import { careAvailable } from '@/features/pet';
 import { accueil as t } from '@/locales/accueil';
 import { careLabel } from '@/locales/content';
 
-import type { HomeMood } from './logic';
+import { useHomeCompact } from './compact';
+import { type HomeMood, homePanelGradient } from './logic';
 import type { PetPlay } from './play';
 
-/** Sous cette hauteur d'écran (iPhone SE, 375×667), la jumelle compacte de la maquette. */
-const SMALL = 700;
 
 /**
  * Panneau du minimoa de l'accueil (V6-GAccueil `.panneau`) : 184 pt (168 en petit écran), nom en Allo ExtraBold
@@ -34,12 +32,13 @@ export function HomePanel({
   onSleepChange: (asleep: boolean) => void;
   onWardrobe: () => void;
 }) {
-  const small = useWindowDimensions().height < SMALL;
+  const small = useHomeCompact();
   const lure = usePetLure();
   return (
     <PetStage
       pet={pet}
       title={pet.name.toUpperCase()}
+      gradient={homePanelGradient(pet.species)}
       titleSize={small ? 36 : 42}
       moodLabel={t.mood[mood]}
       height={small ? 168 : 184}

@@ -175,7 +175,7 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   (pendant que l'aiguillage cherche la suite : la navigation n'attend pas).
 - **Date / 18+** : date fausse : secousse ; trop jeune : le pet, triste, soupire, se retourne (de dos) et flotte.
 - **Moi** : cascade à la 1re visite (`onceKey`), chiffres qui défilent, pastille du pet en « pop », copie : coche ;
-  supprimer : le pet (vivant, boudeur) fait non quand « supprimer » est écrit, et encore à la confirmation.
+  supprimer : le pet (vivant, triste) fait non quand « supprimer » est écrit, et encore à la confirmation.
 - **Page inconnue** : le pet surpris passe la tête au-dessus du titre (`EmptyState peek`).
 
 ### Détail : rencontres, chat, carte (V7)
