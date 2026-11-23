@@ -47,6 +47,18 @@ const InText = createContext(false);
 /** Vrai quand ce composant est rendu à l'intérieur d'un `Text` (morceau de phrase). */
 export const useInText = (): boolean => useContext(InText);
 
+/**
+ * Jusqu'où un texte suit la taille de texte du système (Dynamic Type), selon sa taille : le texte courant suit
+ * entièrement (jusqu'aux tailles d'accessibilité), les grands titres un peu moins — déjà grands, ils casseraient
+ * l'écran sans rien gagner en lisibilité (comme les styles « Large Title » d'iOS).
+ */
+export function scaleCap(px: number): number | undefined {
+  if (px < 20) return undefined;
+  if (px < 34) return 2;
+  if (px < 60) return 1.5;
+  return 1.2;
+}
+
 export function Text({ variant = 'body', color: tint, dim, muted, center, size, tabLabel, style, children, ...rest }: TextProps) {
   const ink = useInk();
   const mute = useMute();
@@ -65,8 +77,8 @@ export function Text({ variant = 'body', color: tint, dim, muted, center, size, 
   // Un morceau imbriqué ne reçoit pas le recadrage iOS (marges et marge intérieure de `fitLineHeight`) : seul le
   // parent a un cadre. Les espaces normales avant « ? ! : ; » deviennent insécables (voir `lib/runs`).
   const text = (
-    // Grandit avec la taille de texte du système, mais au plus de 30 % : au-delà, les écrans denses débordent.
-    <RNText maxFontSizeMultiplier={1.3} {...rest} style={nested ? inline(composed) : [composed, fitLineHeight(composed, { lines: rest.numberOfLines })]}>
+    // Grandit avec la taille de texte du système (voir `scaleCap`) : les écrans doivent tenir en très grande taille.
+    <RNText maxFontSizeMultiplier={scaleCap(px)} {...rest} style={nested ? inline(composed) : [composed, fitLineHeight(composed, { lines: rest.numberOfLines })]}>
       {frenchChildren(children)}
     </RNText>
   );

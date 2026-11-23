@@ -6,7 +6,7 @@ import { DISPLAY_SCALE, displayLeading, displaySize, displayTracking } from '@bl
 
 import { alpha, opacity, type } from '../theme';
 import type { TitleContent, TitleSegment } from '../types';
-import { fitLineHeight } from './Text';
+import { fitLineHeight, scaleCap } from './Text';
 
 export interface TitleProps {
   /** Texte ou segments `[{ text, dim? }]` ; `\n` dans un segment force un retour à la ligne. */
@@ -72,7 +72,7 @@ export function Title({ text, variant = 'h1', size, color, center, numberOfLines
   const composed = [type[variant], styles.base, { color: ink }, metrics, center && styles.center, style];
   return (
     <RNText
-      maxFontSizeMultiplier={1.2}
+      maxFontSizeMultiplier={Math.min(1.5, scaleCap(fontSize) ?? 1.5)}
       accessibilityRole="header"
       accessibilityLabel={accessibilityLabel ?? segments.map((s) => s.text).join('')}
       numberOfLines={numberOfLines}
