@@ -4,7 +4,8 @@
  * l'accueil, l'état du bandeau, l'ordre des questions quand on en passe une, la réponse à envoyer, la réaction du
  * curseur, et une distance dite à gros grains (« dans ton quartier », jamais au mètre).
  */
-import type { CheminMap, CheminQuestion, LatLng, Profil } from '@blowy/contract';
+import type { CheminMap, CheminQuestion, CheminResult, LatLng, Profil } from '@blowy/contract';
+import { CHEMIN_STREAK_MILESTONES } from '@blowy/domain';
 
 // ── Accueil : la portion du chemin montrée ────────────────────────────────────
 export type PathNodeKind = 'done' | 'current' | 'chest' | 'chestOpen' | 'locked' | 'unit';
@@ -294,4 +295,14 @@ export function profilGauges(p: Pick<Profil, 'gauges'>) {
   return [...p.gauges]
     .map((g) => ({ ...g, foggy: g.confidence < FOGGY_BELOW }))
     .sort((a, b) => Number(a.foggy) - Number(b.foggy));
+}
+
+// ── Fin de séance ─────────────────────────────────────────────────────────────
+/**
+ * Le palier de série à fêter en plein écran (7, 30, 100, 365 jours), ou null. Seulement une séance tout juste
+ * enregistrée (pas une réponse rejouée) et seulement un palier connu : tout autre nombre du serveur ne fête rien.
+ */
+export function milestoneToCelebrate(r: Pick<CheminResult, 'milestone' | 'alreadyRecorded'>): number | null {
+  if (r.alreadyRecorded || r.milestone === null) return null;
+  return (CHEMIN_STREAK_MILESTONES as readonly number[]).includes(r.milestone) ? r.milestone : null;
 }

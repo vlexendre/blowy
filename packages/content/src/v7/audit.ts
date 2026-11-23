@@ -44,7 +44,7 @@ const fr = {
   /** Activité en direct d’un lien sur l’écran verrouillé : jamais de prénom (visible de tous). */
   lockScreen: {
     linkTitle: 'Un lien t’attend',
-    linkBody: 'À toi d’écrire avant minuit.',
+    linkBody: 'À toi d’écrire, quand tu veux.',
   },
   /** Monde d’exemple du compte de revue (lignes de la conversation et du lien en danger). `{other}` : prénom fictif. */
   review: {
@@ -121,7 +121,7 @@ const en: Translation<AuditText> = {
     changeLocked: (day: string) => `You can change your area from ${day}. With Minimoa+, whenever you like.`,
     fromPhone: 'Your area already comes from your location. To pick one by hand, forget your location first (Me › Settings › My location).',
   },
-  lockScreen: { linkTitle: 'A link is waiting', linkBody: 'Your turn to write before midnight.' },
+  lockScreen: { linkTitle: 'A link is waiting', linkBody: 'Your turn to write, whenever you like.' },
   review: {
     activeLines: [
       { who: 'them', text: 'Hi! Your minimoa looks as stubborn as mine.' },
@@ -180,7 +180,7 @@ const es: Translation<AuditText> = {
     changeLocked: (day: string) => `Podrás cambiar de zona a partir del ${day}. Con Minimoa+, cuando quieras.`,
     fromPhone: 'Tu zona ya viene de tu ubicación. Para elegir una a mano, primero olvida tu ubicación (Yo › Ajustes › Mi ubicación).',
   },
-  lockScreen: { linkTitle: 'Un vínculo te espera', linkBody: 'Te toca escribir antes de medianoche.' },
+  lockScreen: { linkTitle: 'Un vínculo te espera', linkBody: 'Te toca escribir, cuando quieras.' },
   review: {
     activeLines: [
       { who: 'them', text: '¡Hola! Tu minimoa parece tan testarudo como el mío.' },
@@ -239,7 +239,7 @@ const pt: Translation<AuditText> = {
     changeLocked: (day: string) => `Você poderá mudar de área a partir de ${day}. Com o Minimoa+, quando quiser.`,
     fromPhone: 'Sua área já vem da sua localização. Para escolher uma manualmente, primeiro esqueça sua localização (Eu › Ajustes › Minha localização).',
   },
-  lockScreen: { linkTitle: 'Um vínculo te espera', linkBody: 'Sua vez de escrever antes da meia-noite.' },
+  lockScreen: { linkTitle: 'Um vínculo te espera', linkBody: 'Sua vez de escrever, quando quiser.' },
   review: {
     activeLines: [
       { who: 'them', text: 'Oi! Seu minimoa parece tão teimoso quanto o meu.' },
@@ -298,7 +298,7 @@ const nl: Translation<AuditText> = {
     changeLocked: (day: string) => `Je kunt vanaf ${day} van gebied wisselen. Met Minimoa+ wanneer je wilt.`,
     fromPhone: 'Je gebied komt al van je locatie. Wil je er zelf een kiezen, vergeet dan eerst je locatie (Ik › Instellingen › Mijn locatie).',
   },
-  lockScreen: { linkTitle: 'Een band wacht op je', linkBody: 'Jouw beurt om te schrijven, vóór middernacht.' },
+  lockScreen: { linkTitle: 'Een band wacht op je', linkBody: 'Jouw beurt om te schrijven, wanneer je wilt.' },
   review: {
     activeLines: [
       { who: 'them', text: 'Hoi! Jouw minimoa lijkt net zo koppig als de mijne.' },

@@ -81,12 +81,10 @@ export async function unregisterDevice(api: ApiClient): Promise<void> {
   await forgetPushToken();
 }
 
-/** Conversation ouverte d'après le chemin (`/link/<id>`, `/groupe/<id>`), pour la présence et le bandeau. */
-export function openConversation(path: string): { linkId?: string; groupId?: string } {
+/** Conversation ouverte d'après le chemin (`/link/<id>`), pour la présence et le bandeau. */
+export function openConversation(path: string): { linkId?: string } {
   const link = /^\/link\/([0-9a-f-]{36})\/?$/i.exec(path);
   if (link?.[1]) return { linkId: link[1] };
-  const group = /^\/groupe\/([0-9a-f-]{36})\/?$/i.exec(path);
-  if (group?.[1]) return { groupId: group[1] };
   return {};
 }
 
@@ -96,10 +94,7 @@ const isOpenNow = (data: unknown): boolean => {
   const parsed = PushDataZ.safeParse(data);
   if (!parsed.success) return false;
   const open = openConversation(currentPath);
-  return (
-    (parsed.data.linkId !== undefined && open.linkId === parsed.data.linkId) ||
-    (parsed.data.groupId !== undefined && open.groupId === parsed.data.groupId)
-  );
+  return parsed.data.linkId !== undefined && open.linkId === parsed.data.linkId;
 };
 
 /** La présence est renouvelée toutes les 2 minutes au premier plan (l'API la garde 150 s). */

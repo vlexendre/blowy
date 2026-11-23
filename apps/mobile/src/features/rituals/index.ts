@@ -1,30 +1,21 @@
 /**
- * Rituels (V7 §5 à §8) : la sortie du jour, le défi du jour, la série, les habitudes et leurs preuves, les souvenirs
- * privés et le bilan de la semaine. Les clés `ritualsToday` / `ritualsStreak` sont celles du pont des widgets
- * (`useWidgetSync`) : chaque réponse de l'API les met à jour, et le widget suit.
+ * Ce qui reste des rituels (V7) sur l'accueil : le jour (série, défi validé par la séance) et la fête d'une série
+ * gagnée, plus la dernière photo gardée (fond de la scène). Défi, habitudes, preuves, souvenirs et bilans sont
+ * supprimés de l'app (docs/ADA-2027.md). La clé `ritualsToday` est celle du pont des widgets (`useWidgetSync`) :
+ * chaque réponse de l'API la met à jour, et le widget suit.
  */
-import type { DailyChallenge, DailyResult, HabitDoneResult, Habits, OutingAnswer, OutingResult, ProofResult, RitualsToday, Streak, WeeklyReview, WeeklyReviews } from '@blowy/contract';
-import { itemById, STREAK_MILESTONES, streakReward } from '@blowy/domain';
-import { type QueryClient, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { DailyChallenge, RitualsToday, Streak } from '@blowy/contract';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
 
-import { keys, optimistic, patch, rollback, useApi, usePorts } from '@/core';
-import { useUnlocks } from '@/features/pet';
-import { maybeAskForReview } from '@/features/review';
+import { keys, useApi } from '@/core';
 
-export { awayFromHome, useAwayFromHome } from './location';
-
-/** Clés propres aux écrans des rituels (l'accueil et la série gardent celles du cœur, partagées avec les widgets). */
+/** Clés propres aux rituels (l'accueil garde celles du cœur, partagées avec les widgets). */
 export const ritualKeys = {
-  habits: ['rituals', 'habits'] as const,
-  catalogue: ['rituals', 'catalogue'] as const,
   memories: ['rituals', 'memories'] as const,
-  reviews: ['rituals', 'reviews'] as const,
-  review: (id: string) => ['rituals', 'review', id] as const,
-  vision: ['vision', 'mine'] as const,
 };
 
-// ── Fête d'un défi relevé ─────────────────────────────────────────────────────
+// ── Fête d'une série ──────────────────────────────────────────────────────────
 
 export interface StreakParty {
   streak: number;
@@ -32,49 +23,18 @@ export interface StreakParty {
   line: string | null;
 }
 
-/**
- * Défi tout juste relevé, à fêter sur l'accueil (le minimoa et sa mèche) : posé par toute réponse qui fait passer le
- * défi à « fait » (question, photo, sortie) ou par une relecture qui le découvre fait (défi « écrire », validé à
- * l'ouverture par le serveur).
- */
+/** Défi du jour tout juste fait (découvert par une relecture), à fêter sur l'accueil (le minimoa et sa mèche). */
 export const useStreakParty = create<{ party: StreakParty | null; push: (p: StreakParty) => void; clear: () => void }>((set) => ({
   party: null,
   push: (party) => set({ party }),
   clear: () => set({ party: null }),
 }));
 
-/** Objets gagnés par une action des rituels (palier de série, habitudes tenues) : fêtés par `UnlockCelebration`. */
-function celebrateItems(ids: readonly string[]): void {
-  const won = ids.filter((id) => itemById(id)?.unlock.kind !== 'start');
-  if (won.length > 0) useUnlocks.getState().push(won);
-}
-
 const justDone = (before: DailyChallenge | undefined, after: DailyChallenge): boolean => after.status === 'done' && !!before && before.status !== 'done';
-
-/** Range une réponse du défi ou de la sortie dans le cache de l'accueil, de la série (widgets) et fête ce qui doit l'être. */
-function applyDaily(qc: QueryClient, result: (DailyResult | OutingResult) & { line?: string | null }): void {
-  const before = qc.getQueryData<RitualsToday>(keys.ritualsToday);
-  if (before) {
-    const next: RitualsToday = { ...before, challenge: { ...result.challenge, present: false }, streak: result.streak };
-    if ('outing' in result) {
-      next.outing = result.outing;
-      next.sociability = result.sociability;
-      next.needsOut = result.outing.canAnswer && before.needsOut;
-    }
-    qc.setQueryData(keys.ritualsToday, next);
-  }
-  qc.setQueryData<Streak>(keys.ritualsStreak, result.streak);
-  if (justDone(before?.challenge, result.challenge) || (!before && result.challenge.status === 'done')) {
-    useStreakParty.getState().push({ streak: result.streak.current, best: result.streak.best, line: result.line ?? null });
-  }
-  celebrateItems(result.newItems);
-  if (result.newItems.length > 0) void qc.invalidateQueries({ queryKey: keys.wardrobe });
-  void qc.invalidateQueries({ queryKey: keys.pet });
-}
 
 // ── Lectures ──────────────────────────────────────────────────────────────────
 
-/** Tout ce que l'accueil montre des rituels, en une requête. Découvre aussi un défi validé par le serveur à l'ouverture. */
+/** Tout ce que l'accueil montre du jour, en une requête. Découvre aussi un défi validé par le serveur à l'ouverture. */
 export function useRitualsToday() {
   const api = useApi();
   const qc = useQueryClient();
@@ -93,195 +53,7 @@ export function useRitualsToday() {
   });
 }
 
-/** La série seule (écran de la série), partagée avec le widget. */
-export function useStreak() {
-  const api = useApi();
-  return useQuery({ queryKey: keys.ritualsStreak, queryFn: api.rituals.streak, staleTime: 30_000 });
-}
-
-/** Ta vision, pour l'instant (cinq axes, confiance, formulations). */
-export function useVision() {
-  const api = useApi();
-  return useQuery({ queryKey: ritualKeys.vision, queryFn: api.vision.mine, staleTime: 5 * 60_000 });
-}
-
-// ── Sortie du jour ────────────────────────────────────────────────────────────
-
-export function useOuting() {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ answer, awayFromHome }: { answer: OutingAnswer; awayFromHome?: boolean }) => api.rituals.outing(answer, awayFromHome),
-    onSuccess: (result) => applyDaily(qc, result),
-  });
-}
-
-// ── Défi du jour ──────────────────────────────────────────────────────────────
-
-/** La carte a été montrée (acceptée ou rangée) : elle ne remonte plus aujourd'hui. Silencieux en cas d'échec. */
-export function useChallengeSeen() {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: api.rituals.seenChallenge,
-    // La carte ne remonte plus, tout de suite (l'appel est silencieux).
-    onMutate: () => optimistic(qc, [patch<RitualsToday>(keys.ritualsToday, (t) => ({ ...t, challenge: { ...t.challenge, present: false } }))]),
-    onError: (_e, _v, snap) => rollback(qc, snap),
-    onSuccess: (r) => applyDaily(qc, r),
-  });
-}
-
-export function useAcceptChallenge() {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useMutation({ mutationFn: api.rituals.acceptChallenge, onSuccess: (r) => applyDaily(qc, r) });
-}
-
-export function useAnswerChallenge() {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useMutation({ mutationFn: (choice: 0 | 1) => api.rituals.answerChallenge(choice), onSuccess: (r) => applyDaily(qc, r) });
-}
-
-/** Défis « écrire » et « sortir » : le serveur vérifie que c'est fait. */
-export function useCompleteChallenge() {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useMutation({ mutationFn: api.rituals.completeChallenge, onSuccess: (r) => applyDaily(qc, r) });
-}
-
-/** Une photo prise dans l'app (JPEG), prête à partir. */
-export interface Shot {
-  uri: string;
-}
-
-/** Photo du défi : ticket → envoi direct du fichier → validation. `keep` la garde dans les souvenirs privés. */
-export function useChallengePhoto() {
-  const api = useApi();
-  const { media } = usePorts();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ shot, keep }: { shot: Shot; keep: boolean }) => {
-      const ticket = await api.rituals.challengePhotoTicket('image/jpeg');
-      await media.upload(ticket, { uri: shot.uri, contentType: 'image/jpeg' });
-      return api.rituals.challengePhoto(ticket.path, keep);
-    },
-    onSuccess: (r) => {
-      applyDaily(qc, r);
-      void qc.invalidateQueries({ queryKey: ritualKeys.memories });
-    },
-  });
-}
-
-// ── Habitudes ─────────────────────────────────────────────────────────────────
-
-export function useHabits() {
-  const api = useApi();
-  return useQuery({ queryKey: ritualKeys.habits, queryFn: api.rituals.habits });
-}
-
-export function useHabitCatalogue() {
-  const api = useApi();
-  return useQuery({ queryKey: ritualKeys.catalogue, queryFn: api.rituals.habitCatalogue, staleTime: 10 * 60_000 });
-}
-
-function useHabitsMutation<V>(run: (v: V) => Promise<Habits>) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: run,
-    onSuccess: (habits) => {
-      qc.setQueryData(ritualKeys.habits, habits);
-      void qc.invalidateQueries({ queryKey: ritualKeys.catalogue });
-      void qc.invalidateQueries({ queryKey: keys.ritualsToday });
-    },
-  });
-}
-
-export function useAddHabit() {
-  const api = useApi();
-  return useHabitsMutation((body: Parameters<typeof api.rituals.addHabit>[0]) => api.rituals.addHabit(body));
-}
-
-/** Rythme ou heure de la preuve : la pastille change à l'appui ; refusé, elle revient. */
-export function useUpdateHabit() {
-  const api = useApi();
-  const qc = useQueryClient();
-  type Vars = { ref: string } & Parameters<typeof api.rituals.updateHabit>[1];
-  return useMutation({
-    mutationFn: ({ ref, ...body }: Vars) => api.rituals.updateHabit(ref, body),
-    onMutate: ({ ref, rhythm, proofHour }: Vars) =>
-      optimistic(qc, [
-        patch<Habits>(ritualKeys.habits, (h) => ({
-          ...h,
-          habits: h.habits.map((x) => (x.ref === ref ? { ...x, rhythm: rhythm ?? x.rhythm, proofHour: proofHour ?? x.proofHour } : x)),
-        })),
-      ]),
-    onError: (_e, _v, snap) => rollback(qc, snap),
-    onSuccess: (habits) => {
-      qc.setQueryData(ritualKeys.habits, habits);
-      void qc.invalidateQueries({ queryKey: ritualKeys.catalogue });
-      void qc.invalidateQueries({ queryKey: keys.ritualsToday });
-    },
-  });
-}
-
-export function useRemoveHabit() {
-  const api = useApi();
-  return useHabitsMutation((ref: string) => api.rituals.removeHabit(ref));
-}
-
-/** Preuve d'une habitude : ticket → envoi → verdict (oui / non / pas sûr), phrase du minimoa. */
-export function useProof(ref: string) {
-  const api = useApi();
-  const { media } = usePorts();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ shot, keep }: { shot: Shot; keep: boolean }): Promise<ProofResult> => {
-      const ticket = await api.rituals.proofTicket(ref, 'image/jpeg');
-      await media.upload(ticket, { uri: shot.uri, contentType: 'image/jpeg' });
-      return api.rituals.proof(ref, ticket.path, keep);
-    },
-    onSuccess: (r) => {
-      const before = qc.getQueryData<Habits>(ritualKeys.habits);
-      if (before) qc.setQueryData<Habits>(ritualKeys.habits, { ...before, habits: before.habits.map((h) => (h.ref === r.habit.ref ? r.habit : h)) });
-      celebrateItems(r.newItems);
-      if (r.newItems.length > 0) void qc.invalidateQueries({ queryKey: keys.wardrobe });
-      void qc.invalidateQueries({ queryKey: keys.ritualsToday });
-      void qc.invalidateQueries({ queryKey: keys.pet });
-      if (r.kept) void qc.invalidateQueries({ queryKey: ritualKeys.memories });
-      // Habitude validée : un bon moment pour une note, une fois le verdict et sa phrase affichés.
-      if (r.verdict === 'yes' && r.counted) maybeAskForReview('proof_validated', 3500);
-    },
-  });
-}
-
-/** Habitude tenue sans photo ni IA (« Sans vérification par IA ») : rien n'est envoyé au prestataire d'IA. */
-export function useHabitDone(ref: string) {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (): Promise<HabitDoneResult> => api.rituals.habitDone(ref),
-    onSuccess: (r) => {
-      const before = qc.getQueryData<Habits>(ritualKeys.habits);
-      if (before) qc.setQueryData<Habits>(ritualKeys.habits, { ...before, habits: before.habits.map((h) => (h.ref === r.habit.ref ? r.habit : h)) });
-      celebrateItems(r.newItems);
-      if (r.newItems.length > 0) void qc.invalidateQueries({ queryKey: keys.wardrobe });
-      void qc.invalidateQueries({ queryKey: keys.ritualsToday });
-      void qc.invalidateQueries({ queryKey: keys.pet });
-    },
-  });
-}
-
-/** Garder (ou non) une photo dans les souvenirs privés. */
-export function useKeepPhoto() {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ photoId, keep }: { photoId: string; keep: boolean }) => api.rituals.keepPhoto(photoId, keep),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ritualKeys.memories }),
-  });
-}
-
+/** Photos gardées (la plus récente sert de fond à la scène de l'accueil). */
 export function usePrivateMemories() {
   const api = useApi();
   return useInfiniteQuery({
@@ -290,72 +62,4 @@ export function usePrivateMemories() {
     initialPageParam: null as string | null,
     getNextPageParam: (last) => last.nextBefore,
   });
-}
-
-// ── Bilans ────────────────────────────────────────────────────────────────────
-
-export function useReviews() {
-  const api = useApi();
-  return useInfiniteQuery({
-    queryKey: ritualKeys.reviews,
-    queryFn: ({ pageParam }) => api.rituals.reviews(pageParam ?? undefined),
-    initialPageParam: null as string | null,
-    getNextPageParam: (last) => last.nextBefore,
-  });
-}
-
-export function useReview(id: string) {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useQuery({
-    queryKey: ritualKeys.review(id),
-    queryFn: () => api.rituals.review(id),
-    // Déjà dans la liste : affiché tout de suite, relu derrière.
-    initialData: () => {
-      const pages = qc.getQueryData<{ pages: WeeklyReviews[] }>(ritualKeys.reviews)?.pages ?? [];
-      for (const p of pages) {
-        const found = p.reviews.find((r) => r.id === id);
-        if (found) return found;
-      }
-      return undefined;
-    },
-  });
-}
-
-/** Marque le bilan comme lu (il ne s'affiche plus sur l'accueil). */
-export function useReadReview() {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => api.rituals.readReview(id),
-    // Le bilan quitte l'accueil tout de suite.
-    onMutate: (id) => optimistic(qc, [patch<RitualsToday>(keys.ritualsToday, (t) => (t.unreadReviewId === id ? { ...t, unreadReviewId: null } : t))]),
-    onError: (_e, _id, snap) => rollback(qc, snap),
-    onSuccess: (review: WeeklyReview) => {
-      qc.setQueryData(ritualKeys.review(review.id), review);
-      const today = qc.getQueryData<RitualsToday>(keys.ritualsToday);
-      if (today?.unreadReviewId === review.id) qc.setQueryData<RitualsToday>(keys.ritualsToday, { ...today, unreadReviewId: null });
-      void qc.invalidateQueries({ queryKey: ritualKeys.reviews });
-    },
-  });
-}
-
-/** Numéro de semaine ISO d'un lundi (« semaine 46 »). */
-export function isoWeek(day: string): number {
-  const d = new Date(`${day}T12:00:00Z`);
-  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-  const dow = t.getUTCDay() || 7;
-  t.setUTCDate(t.getUTCDate() + 4 - dow);
-  const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
-  return Math.ceil(((t.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
-}
-
-/**
- * Le prochain objet de série à gagner, tel que le serveur le dit (`nextMilestone` : le premier palier dont l'objet
- * n'est pas encore gagné, au-delà du record), et les jours qu'il reste depuis la série en cours.
- */
-export function nextStreakItem(streak: Pick<Streak, 'current' | 'nextMilestone'>): { days: number; itemId: string; left: number } | null {
-  const m = streak.nextMilestone;
-  if (!m?.itemId) return null;
-  return { days: m.days, itemId: m.itemId, left: Math.max(1, m.days - streak.current) };
 }

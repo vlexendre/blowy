@@ -7,6 +7,8 @@
  * - un composant du kit d'interface (`packages/ui`) contient un texte écrit en dur ;
  * - un dictionnaire du site (`apps/web/src/content`) n'a pas la même forme dans les cinq langues, renvoie au français
  *   (`TODO` : interdit sur le site, chaque langue est publiée), ou dit « pet » dans une langue.
+ * - un texte vu par les gens (app et `packages/content`, cinq langues) contient une formule punitive : « en danger »,
+ *   « boude », « tu vas perdre », « dernière chance »… (liste `FORBIDDEN`, section 5) ;
  * Affiche ensuite, pour chaque langue, le nombre de textes encore en français (`TODO`) par dictionnaire.
  * `--list` affiche aussi les clés non traduites.
  */
@@ -183,6 +185,36 @@ for (const [name, d] of Object.entries(siteDictionaries)) {
   }
 }
 console.log(`Site : ${siteLeaves} textes français dans ${Object.keys(siteDictionaries).length} dictionnaires, traduits dans les quatre autres langues.`);
+
+// ── 5. Aucun reproche : mots et tournures interdits dans les cinq langues ───
+
+/**
+ * Un texte vu par les gens n'est jamais punitif : ni série « en danger », ni menace de perte, ni compte à rebours de
+ * perte, ni minimoa malheureux comme levier, ni culpabilité (ADA-2027 item 15). Une expression par ligne ; ajoute-en
+ * une ici quand une formule de ce genre est repérée. La liste est vérifiée sur tous les dictionnaires, dans chaque langue.
+ */
+const FORBIDDEN: Record<(typeof LOCALES)[number], RegExp[]> = {
+  fr: [/en danger/i, /\bbou(de|der|dait|dent|dé|dée)\b/i, /tu vas (le |la |l’)?perdre/i, /tu risques de (le |la |l’)?perdre/i, /dernière chance/i, /dernières? (minutes?|heures?) pour/i, /\bil manque toi\b/i, /les autres comptent (sur toi|dessus)/i, /série (perdue|brisée|cassée)/i, /avant minuit/i, /repart(ir)? de zéro/i, /à zéro/i, /plus de vies/i, /fantômes?/i, /jamais plus/i, /tu as (perdu|raté) ta série/i, /avant (qu’elle|qu’il|de) (s’éteigne|disparaisse|perdre)/i, /ne (le|l’)abandonne pas/i, /(il|elle) (est|va être) (triste|déçu)/i, /tu l’as (déçu|abandonné|laissé tomber)/i, /sinon (tu|ta série|il|elle) (perds?|perdra|s’arrête)/i, /\bpar ta faute\b/i],
+  en: [/in danger/i, /at risk/i, /\bsulk/i, /you(’|')?ll lose/i, /you(’|')?re about to lose/i, /(about|going) to lose/i, /last chance/i, /don(’|')?t lose/i, /streak (lost|broken)/i, /before midnight/i, /back to zero/i, /no lives left/i, /ghosts?\b/i, /\bmoping\b/i, /you (lost|broke) your streak/i, /before it (ends|disappears|dies)/i, /\bsad(?!dle)\b/i, /let (him|them|it) down/i, /your fault/i, /others are counting on you/i],
+  es: [/en peligro/i, /\bpor ti\b.*\btriste\b/i, /vas a perder/i, /puedes perder/i, /última oportunidad/i, /\bmalhumorad/i, /\bse (enfada|ha enfadado)\b/i, /racha (perdida|rota)/i, /antes de (la )?medianoche/i, /vuelve a cero/i, /sin vidas/i, /fantasmas?\b/i, /enfurruñ/i, /perdiste tu racha/i, /antes de que (se acabe|desaparezca|se apague)/i, /\btriste\b/i, /(le|lo) has (decepcionado|abandonado)/i, /tu culpa/i, /cuentan contigo/i, /\bse echa de menos\b/i],
+  pt: [/em perigo/i, /\bbirra\b/i, /\bfazendo birra/i, /vai(s)? perder/i, /você vai perder/i, /pode(s)? perder/i, /última chance/i, /sequência (perdida|quebrada)/i, /antes da meia-noite/i, /volta a zero/i, /acabaram as vidas/i, /fantasmas?\b/i, /emburrad/i, /você perdeu sua sequência/i, /antes que (acabe|desapareça|se apague)/i, /\btriste\b/i, /decepcion/i, /sua culpa/i, /contam com você/i, /\bamuado/i],
+  nl: [/in gevaar/i, /\bpruil/i, /je gaat .* verliezen/i, /je verliest/i, /laatste kans/i, /reeks (verloren|verbroken|kwijt)/i, /v[oó]{2}r middernacht/i, /weer bij nul/i, /geen levens meer/i, /\bspoken\b/i, /\bmokt\b/i, /\bik mok\b/i, /je (reeks|serie) (is )?(verloren|kwijt|verbroken)/i, /voordat (het|hij|ze) (afloopt|verdwijnt|uitgaat)/i, /\bverdrietig\b/i, /teleurgesteld/i, /jouw schuld/i, /rekenen op je/i, /\bchagrijnig\b/i],
+};
+for (const [name, m] of Object.entries(all)) {
+  for (const locale of LOCALES) {
+    const found: { at: string; text: string }[] = [];
+    strings((m.dictionaries as Record<string, unknown>)[locale], '', found);
+    const seen = new Set<string>();
+    for (const { at, text } of found) {
+      // Seul cas légitime : l'alerte de sécurité « En danger immédiat ? Appelle le 17 ou le 112. »
+      if (seen.has(at) || /reportEmergency/.test(at)) continue;
+      const hit = FORBIDDEN[locale].find((re) => re.test(text));
+      if (!hit) continue;
+      seen.add(at);
+      problems.push(`${name} [${locale}].${at} : formule punitive (${hit.source}) dans « ${text.slice(0, 90)} »`);
+    }
+  }
+}
 
 // ── Rapport ──────────────────────────────────────────────────────────────────
 

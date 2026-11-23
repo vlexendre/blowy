@@ -73,9 +73,9 @@ const FR: ChatLines = {
     'On vous a trouvés compatibles, on ne se trompe pas souvent. Première question : café ou apéro ?',
   ],
   nudge: {
-    doux: ['Ça fait {days} jours. {other} et moi, on se demandait comment vous alliez.', 'Petit silence de {days} jours. Un mot suffit, vous savez.'],
-    sec: ['{days} jours sans un mot. Je dis ça, je dis rien.', '{days} jours. {other} commence à bâiller.'],
-    joueur: ['{days} jours de silence. Je propose un jeu : le premier qui écrit a gagné.', 'Allô ? {days} jours ! {other} et moi, on s’ennuie.'],
+    doux: ['Ça fait {days} jours. {other} et moi, on se demandait comment vous alliez.', 'Ça fait {days} jours. Un mot suffit, quand ça vous dit.'],
+    sec: ['{days} jours. Juste un coucou, sans pression.', '{days} jours. {other} pense à vous.'],
+    joueur: ['{days} jours déjà. Je propose un jeu : le premier qui écrit a gagné.', 'Coucou ! {other} et moi, on a des histoires à vous raconter.'],
     pose: ['Ça fait {days} jours. Vous en étiez où ?', '{days} jours de calme. On reprend quand vous voulez.'],
   },
   remark: {
@@ -149,9 +149,9 @@ const EN: ChatLines = {
     'We found you compatible, and we’re rarely wrong. First question: coffee or drinks?',
   ],
   nudge: {
-    doux: ['It’s been {days} days. {other} and I were wondering how you were doing.', 'A little {days}-day silence. One word is enough, you know.'],
-    sec: ['{days} days without a word. Just saying.', '{days} days. {other} is starting to yawn.'],
-    joueur: ['{days} days of silence. Let’s play a game: first one to write wins.', 'Hello? {days} days! {other} and I are bored.'],
+    doux: ['It’s been {days} days. {other} and I were wondering how you were doing.', 'It’s been {days} days. One word is enough, whenever you like.'],
+    sec: ['{days} days. Just a quick hello, no pressure.', '{days} days. {other} is thinking of you.'],
+    joueur: ['{days} days already. Let’s play a game: first one to write wins.', 'Hi there! {other} and I have stories to tell you.'],
     pose: ['It’s been {days} days. Where did you leave off?', '{days} quiet days. Pick it up whenever you like.'],
   },
   remark: {
@@ -225,9 +225,9 @@ const ES: ChatLines = {
     'Vimos que son compatibles, y no solemos equivocarnos. Primera pregunta: ¿café o una copa?',
   ],
   nudge: {
-    doux: ['Ya van {days} días. {other} y yo nos preguntábamos cómo estaban.', 'Un pequeño silencio de {days} días. Basta una palabra, ¿saben?'],
-    sec: ['{days} días sin una palabra. Ahí lo dejo.', '{days} días. {other} empieza a bostezar.'],
-    joueur: ['{days} días de silencio. Propongo un juego: quien escriba primero gana.', '¿Hola? ¡{days} días! {other} y yo nos aburrimos.'],
+    doux: ['Ya van {days} días. {other} y yo nos preguntábamos cómo estaban.', 'Ya van {days} días. Basta una palabra, cuando quieran.'],
+    sec: ['{days} días. Solo un saludito, sin presión.', '{days} días. {other} piensa en ustedes.'],
+    joueur: ['Ya van {days} días. Propongo un juego: quien escriba primero gana.', '¡Hola! {other} y yo tenemos historias que contarles.'],
     pose: ['Ya van {days} días. ¿En qué se habían quedado?', '{days} días de calma. Seguimos cuando quieran.'],
   },
   remark: {
@@ -301,9 +301,9 @@ const PT: ChatLines = {
     'A gente achou vocês compatíveis, e raramente erramos. Primeira pergunta: café ou um drink?',
   ],
   nudge: {
-    doux: ['Já faz {days} dias. Eu e {other} estávamos pensando em como vocês estão.', 'Um silenciozinho de {days} dias. Uma palavra basta, sabiam?'],
-    sec: ['{days} dias sem uma palavra. Só comentando.', '{days} dias. {other} começou a bocejar.'],
-    joueur: ['{days} dias de silêncio. Proponho um jogo: quem escrever primeiro ganha.', 'Alô? {days} dias! Eu e {other} estamos entediados.'],
+    doux: ['Já faz {days} dias. Eu e {other} estávamos pensando em como vocês estão.', 'Já faz {days} dias. Uma palavra basta, quando quiserem.'],
+    sec: ['{days} dias. Só um oizinho, sem pressão.', '{days} dias. {other} está pensando em vocês.'],
+    joueur: ['Já faz {days} dias. Proponho um jogo: quem escrever primeiro ganha.', 'Oi! Eu e {other} temos histórias para contar a vocês.'],
     pose: ['Já faz {days} dias. Onde vocês tinham parado?', '{days} dias de calma. A gente retoma quando vocês quiserem.'],
   },
   remark: {
@@ -377,9 +377,9 @@ const NL: ChatLines = {
     'We vonden jullie een goede match, en we zitten er zelden naast. Eerste vraag: koffie of borrel?',
   ],
   nudge: {
-    doux: ['Het is {days} dagen geleden. {other} en ik vroegen ons af hoe het met jullie gaat.', 'Even {days} dagen stil. Eén woordje is genoeg, hoor.'],
-    sec: ['{days} dagen geen woord. Ik zeg het maar even.', '{days} dagen. {other} begint te gapen.'],
-    joueur: ['{days} dagen stilte. Ik stel een spelletje voor: wie het eerst schrijft, wint.', 'Hallo? {days} dagen! {other} en ik vervelen ons.'],
+    doux: ['Het is {days} dagen geleden. {other} en ik vroegen ons af hoe het met jullie gaat.', 'Het is {days} dagen geleden. Eén woordje is genoeg, wanneer jullie willen.'],
+    sec: ['{days} dagen. Gewoon even hoi, zonder druk.', '{days} dagen. {other} denkt aan jullie.'],
+    joueur: ['Al {days} dagen. Ik stel een spelletje voor: wie het eerst schrijft, wint.', 'Hoi! {other} en ik hebben verhalen voor jullie.'],
     pose: ['Het is {days} dagen geleden. Waar waren jullie gebleven?', '{days} dagen rust. We pakken het weer op wanneer jullie willen.'],
   },
   remark: {

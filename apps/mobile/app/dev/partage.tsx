@@ -29,15 +29,6 @@ export default function SharePreview() {
         />
         <ShareCard
           brand={t.brand}
-          title={t.moments.group.title('Marche du matin')}
-          big={{ value: '7', unit: t.moments.group.unit }}
-          pet={{ name: 'Pia', species: 'pia' }}
-          callout={t.moments.group.callout}
-          url="minimoa.app/g/M4RCH3AB"
-          gradient="coral"
-        />
-        <ShareCard
-          brand={t.brand}
           kicker={t.moments.vision.kicker}
           title="SPONTANÉ ET VOYAGEUR"
           pet={{ name: 'Suzie', species: 'suzie' }}

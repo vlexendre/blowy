@@ -1,4 +1,4 @@
-export { config, groupUrl, inviteUrl, quartierUrl, wordsUrl } from './config';
+export { config, inviteUrl, quartierUrl, wordsUrl } from './config';
 export { CoreProvider, keys, useApi, usePorts, useSession } from './CoreProvider';
 export { AuthError, MediaAccessError } from './ports';
 export type { AuthProvider, PickedImage, Ports, PurchaseOutcome, Session, SignedPurchase, StoreProduct } from './ports';

@@ -81,7 +81,7 @@ describe('groupes et habitudes partagées', () => {
     const inv = (await b.api.groups.list()).invitations;
     expect(inv).toHaveLength(1);
     expect(inv[0]?.invitedBy.id).toBe(a.id);
-    expect(inv[0]?.transparency).toContain('tenu, joker ou manqué');
+    expect(inv[0]?.transparency).toContain('tenu, joker ou en pause');
     await b.api.groups.accept(g1);
     const started = await c.api.groups.accept(g1);
     expect(started.status).toBe('active');
@@ -135,7 +135,7 @@ describe('groupes et habitudes partagées', () => {
     expect(lost.habit).toMatchObject({ lives: 4, streak: 0, bestStreak: 1 });
     expect(lost.week.find((d) => d.day === '2026-11-13')?.outcome).toBe('missed');
     expect(
-      (await a.api.groups.messages(g1)).messages.some((m) => m.body === 'Une vie de moins. Il en reste 4.'),
+      (await a.api.groups.messages(g1)).messages.some((m) => m.body === 'Un jour de pause. On repart ensemble.'),
     ).toBe(true);
     // Dernière vie : le prochain jour manqué l'endort.
     const row = db.groups.get(g1);

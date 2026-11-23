@@ -64,7 +64,6 @@ export default function LinkOptionsScreen() {
           )
         ) : (
           <>
-            <SettingsSection tone="raised" rows={[{ key: 'levels', title: t.levels, onPress: () => router.push(`/link/${l.id}/niveaux`), chevron: true }]} />
             {mm ? (
               <SettingsSection
                 tone="raised"

@@ -31,8 +31,6 @@ export function useBlock() {
       void qc.invalidateQueries({ queryKey: keys.blocks });
       void qc.invalidateQueries({ queryKey: keys.links });
       void qc.invalidateQueries({ queryKey: keys.encounters });
-      // Bloquer un membre fait quitter les groupes partagés.
-      void qc.invalidateQueries({ queryKey: keys.groups });
     },
   });
 }

@@ -59,17 +59,11 @@ export const keys = {
   /** Rituels : accueil du jour (défi, série, sortie…) et série seule (lecture légère, widgets). */
   ritualsToday: ['rituals', 'today'] as const,
   ritualsStreak: ['rituals', 'streak'] as const,
-  /** Groupes (spéc. §26) : liste, détail et messages sont rangés sous `groups`. */
-  groups: ['groups'] as const,
-  group: (id: string) => ['groups', id] as const,
-  groupMessages: (id: string) => ['groups', id, 'messages'] as const,
-  together: ['together'] as const,
   /** Ton chemin : la carte, la séance à faire, le dernier résultat (par séance) ; le profil (« ce que Nino sait de toi »). */
   chemin: ['chemin'] as const,
   cheminSession: ['chemin', 'seance'] as const,
   cheminResult: (sessionId: string) => ['chemin', 'result', sessionId] as const,
   profil: ['profil'] as const,
-  progression: ['progression'] as const,
 };
 
 /** Délai de regroupement des événements temps réel : un message déclenche deux événements (message et lien). */
@@ -77,7 +71,7 @@ const REALTIME_COALESCE_MS = 120;
 
 /**
  * Temps réel → cache. Ce qui arrive en rafale (un message = une ligne `messages` et une mise à jour de `links`) est
- * regroupé : une seule relecture par fil, et seulement de ce qui a changé (pas tout le cache des liens ou des groupes).
+ * regroupé : une seule relecture par fil, et seulement de ce qui a changé (pas tout le cache des liens).
  * À la reconnexion (retour au premier plan, réseau revenu), tout ce qui est affiché est relu : rien n'est perdu.
  */
 function RealtimeBridge({ ports, session }: { ports: Ports; session: Session | null | undefined }) {
@@ -86,14 +80,12 @@ function RealtimeBridge({ ports, session }: { ports: Ports; session: Session | n
   useEffect(() => {
     if (!userId) return;
     const links = new Set<string>();
-    const groups = new Set<string>();
     let all = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
     const flush = () => {
       timer = null;
       if (all) {
         void qc.invalidateQueries({ queryKey: keys.links });
-        void qc.invalidateQueries({ queryKey: keys.groups });
       } else {
         for (const id of links) {
           void qc.invalidateQueries({ queryKey: keys.messages(id) });
@@ -101,20 +93,13 @@ function RealtimeBridge({ ports, session }: { ports: Ports; session: Session | n
           void qc.invalidateQueries({ queryKey: keys.memories(id) });
         }
         if (links.size > 0) void qc.invalidateQueries({ queryKey: keys.links, exact: true });
-        for (const id of groups) {
-          void qc.invalidateQueries({ queryKey: keys.groupMessages(id) });
-          void qc.invalidateQueries({ queryKey: keys.group(id), exact: true });
-        }
-        if (groups.size > 0) void qc.invalidateQueries({ queryKey: keys.groups, exact: true });
       }
       links.clear();
-      groups.clear();
       all = false;
     };
-    const off = ports.realtime.subscribe(({ linkId, groupId, resync }) => {
-      if (resync || (!linkId && !groupId)) all = true;
-      else if (groupId) groups.add(groupId);
-      else if (linkId) links.add(linkId);
+    const off = ports.realtime.subscribe(({ linkId, resync }) => {
+      if (resync || !linkId) all = true;
+      else links.add(linkId);
       timer ??= setTimeout(flush, REALTIME_COALESCE_MS);
     });
     return () => {

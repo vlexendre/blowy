@@ -69,10 +69,6 @@ export default function RootLayout() {
                 <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.night }, animation: 'slide_from_right' }}>
                   {/* Minimoa+ : feuille qui monte du bas par-dessus l'écran d'où on vient (Moi, garde-robe, carte). */}
                   <Stack.Screen name="moi/blowy-plus" options={SHEET} />
-                  {/* Défi du jour : la carte monte en plein écran par-dessus l'accueil (elle fait sa montée elle-même). */}
-                  <Stack.Screen name="pet/defi" options={SHEET} />
-                  {/* Preuve en photo : plein écran qui monte du bas, hors des onglets. */}
-                  <Stack.Screen name="pet/preuve" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
                   {/* Avant la demande de notifications : plein écran, on n'en sort que par « Continuer » (HIG Privacy). */}
                   <Stack.Screen name="pet/notifications" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', gestureEnabled: false }} />
                   {/* Build plus servi par l'API : on n'en sort qu'après la mise à jour (docs/VERSIONING.md). */}

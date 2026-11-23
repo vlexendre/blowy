@@ -1,14 +1,13 @@
 /**
  * « Les gens d'abord » (accueil) : ce que ton minimoa a pour toi aujourd'hui, en un seul état, le plus important
  * d'abord. Un signe reçu, puis un message d'un lien, puis la demande de position (tant qu'elle n'a pas été refusée :
- * tout nouveau compte la voit dès l'accueil), puis les personnes à présenter, puis ton groupe d'habitude ; sinon ce
+ * tout nouveau compte la voit dès l'accueil), puis les personnes à présenter ; sinon ce
  * qui lui manque (test de vision, position refusée : réglages ou ville à la main), sinon personne pour l'instant
- * (inviter). Tout vient des requêtes déjà en cache (rencontres, liens, groupes, profil) : aucune requête de plus.
+ * (inviter). Tout vient des requêtes déjà en cache (rencontres, liens, profil) : aucune requête de plus.
  */
 import type { Me, PublicPet } from '@blowy/contract';
 
 import { useEncounters } from '@/features/encounters';
-import { useGroups } from '@/features/groups';
 import { useLinks } from '@/features/links';
 
 export type PeopleToday =
@@ -16,17 +15,13 @@ export type PeopleToday =
   | { kind: 'waved'; name: string; pet: PublicPet; more: number }
   | { kind: 'wrote'; linkId: string; name: string; pet: PublicPet; preview: string | null }
   | { kind: 'present'; count: number; people: PublicPet[]; mutual: string | null }
-  | { kind: 'group'; groupId: string; name: string; upToDate: number; due: number; mineDone: boolean }
   | { kind: 'vision' }
   | { kind: 'location' }
   | { kind: 'empty' };
 
-const DONE_STATUSES: readonly string[] = ['kept', 'joker', 'not_due'];
-
 export function usePeopleToday(me: Me | undefined, opts: { locationRefused?: boolean } = {}): PeopleToday {
   const encounters = useEncounters();
   const links = useLinks();
-  const groups = useGroups();
   if (!me || (encounters.isPending && links.isPending)) return { kind: 'loading' };
   const e = encounters.data;
   const waved = e?.incoming ?? [];
@@ -39,11 +34,6 @@ export function usePeopleToday(me: Me | undefined, opts: { locationRefused?: boo
   if (noPlace && me.visionTestDone && !opts.locationRefused) return { kind: 'location' };
   const fresh = (e?.suggestions ?? []).filter((s) => !s.waved);
   if (fresh.length) return { kind: 'present', count: fresh.length, people: fresh.slice(0, 3).map((s) => s.user.pet), mutual: fresh.find((s) => s.mutualName)?.mutualName ?? null };
-  const group = (groups.data?.groups ?? []).find((g) => g.status === 'active' && g.habit && g.habit.today.due > 0);
-  if (group?.habit) {
-    const t = group.habit.today;
-    return { kind: 'group', groupId: group.id, name: group.name, upToDate: t.upToDate, due: t.due, mineDone: DONE_STATUSES.includes(t.mine) };
-  }
   if (!me.visionTestDone) return { kind: 'vision' };
   if (noPlace) return { kind: 'location' };
   return { kind: 'empty' };

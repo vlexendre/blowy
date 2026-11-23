@@ -14,17 +14,16 @@ import {
   GhostPanel,
   Header,
   LinkTemplate,
+  LevelLadder,
   MemoryRecap,
   ShareCard,
   LinkTodayHero,
   LivesPanel,
   MemoryGrid,
-  MinimoaConsent,
   MinimoaSwitch,
   PetImage,
   Pressable,
   ScreenTemplate,
-  SharedHabitsCard,
   SheetTemplate,
   Skeleton,
   Stagger,
@@ -41,8 +40,7 @@ import { RefreshControl, StyleSheet, View } from 'react-native';
 
 import { inviteUrl, ScreenMotion } from '@/core';
 import { useDraft, useRefusal } from '@/features/chat';
-import { sharedHabitsView } from '@/features/groups';
-import { displayUrl, openLegal, useMe, useStoryShare } from '@/features/me';
+import { displayUrl, useMe, useStoryShare } from '@/features/me';
 import { MEET_LEVEL, useMeetReminders } from '@/features/safety';
 import { home as homeText } from '@/locales/pet';
 import {
@@ -67,6 +65,7 @@ import { croissance } from '@/locales/croissance';
 import {
   chat as chatText,
   ghost as ghostText,
+  levels as levelsText,
   link as t,
   memories as memText,
   minimoas as minimoaText,
@@ -78,10 +77,6 @@ import {
  * Sans photo du jour, il n'y a plus rien à faire ailleurs que dans le chat : la journée et les souvenirs tiennent sur
  * une seule page. Les anciens liens profonds (`?tab=today`, `?tab=memories`) ouvrent « Le lien ».
  */
-/** Messages échangés (les deux personnes, sans les minimoas) avant de proposer l'accord de lecture par l'IA. */
-const CONSENT_AFTER_MESSAGES = 6;
-/** Maquette V7 : la feuille d’accord ne s’ouvre plus d’elle-même dans le chat (l’accord reste dans Options). */
-const SHOW_CONSENT_SHEET: boolean = false;
 
 type Tab = 'chat' | 'lien';
 const TABS = [
@@ -122,7 +117,6 @@ export default function LinkScreen() {
   // (une frappe ne redessine ni l'écran ni le fil).
   const chat = useLinkChat(id);
   const thread = chat.thread;
-  const exchanged = thread.messages.filter((m) => m.author === 'me' || m.author === 'other').length;
   const onReport = useCallback(
     (m: MessageLook) => {
       const found = thread.messages.find((x) => x.id === m.id);
@@ -130,7 +124,6 @@ export default function LinkScreen() {
     },
     [thread.messages],
   );
-  const [consentLater, setConsentLater] = useState(false);
   const [defaultNoticeClosed, setDefaultNoticeClosed] = useState(false);
   const [rolesOpen, setRolesOpen] = useState(false);
   const [reporting, setReporting] = useState<Message | null>(null);
@@ -203,14 +196,8 @@ export default function LinkScreen() {
 
   const mm = minimoas.data;
   const muted = mm?.muted ?? false;
-  // Maquette V7 : plus de demande d'accord dans le chat (trop de friction ; se parler suffit). Sans réponse, les
-  // minimoas parlent sans lire (`consent.mine` null) ; l'accord reste dans Options à tout moment.
-  const askConsent =
-    SHOW_CONSENT_SHEET &&
-    !!mm &&
-    mm.consent.mine === null &&
-    !consentLater &&
-    exchanged >= CONSENT_AFTER_MESSAGES;
+  // Pas de demande d'accord dans le chat (maquette V7) : sans réponse, les minimoas parlent sans lire
+  // (`consent.mine` null) ; l'accord reste dans Options à tout moment.
   const toggleMuted = () =>
     updateMinimoas.mutate(
       { muted: !muted },
@@ -219,11 +206,6 @@ export default function LinkScreen() {
           setNotice({ tone: 'success', text: next.muted ? chatText.mutedNotice : chatText.unmutedNotice }),
         onError: () => setNotice({ tone: 'error', text: chatText.muteError }),
       },
-    );
-  const answerConsent = (consent: boolean) =>
-    updateMinimoas.mutate(
-      { consent },
-      { onError: () => setNotice({ tone: 'error', text: minimoaText.error }) },
     );
 
   return (
@@ -234,7 +216,7 @@ export default function LinkScreen() {
         lives={l.lives}
         ghost={ghost}
         levelLabel={t.level(l.level)}
-        onLevelPress={() => router.push(`/link/${l.id}/niveaux`)}
+        onLevelPress={() => setTab('lien')}
         onBack={goChats}
         backLabel={t.back}
         livesLabel={t.lives(l.lives)}
@@ -329,52 +311,6 @@ export default function LinkScreen() {
         />
       ) : null}
 
-      {/* Accord de lecture : après quelques messages échangés, la phrase de l'API telle quelle et les deux choix. */}
-      <SheetTemplate
-        visible={askConsent && active === 'chat'}
-        onClose={() => setConsentLater(true)}
-        header={<View />}
-        scroll
-        closeLabel={minimoaText.later}
-        footer={
-          <>
-            <Button
-              label={minimoaText.accept}
-              onPress={() => answerConsent(true)}
-              loading={updateMinimoas.isPending && updateMinimoas.variables?.consent === true}
-            />
-            <Button
-              label={minimoaText.decline}
-              variant="ghost"
-              onPress={() => answerConsent(false)}
-              loading={updateMinimoas.isPending && updateMinimoas.variables?.consent === false}
-            />
-          </>
-        }
-      >
-        {mm ? (
-          <MinimoaConsent
-            title={minimoaText.consentTitle}
-            subtitle={minimoaText.consentSubtitle}
-            mine={l.myPet}
-            theirs={l.other.pet}
-            text={mm.consent.text}
-            policy={{ label: minimoaText.policy, onPress: openLegal('confidentialite') }}
-            notes={[
-              { key: 'refuse', icon: 'gel', text: minimoaText.ifRefused(l.myPet.name, l.other.pet.name) },
-              {
-                key: 'other',
-                icon: 'eclair',
-                text: mm.consent.reading
-                  ? minimoaText.bothYes(l.other.displayName)
-                  : mm.consent.theirs === 'agreed'
-                    ? minimoaText.otherAgreed(l.other.displayName)
-                    : minimoaText.otherWaiting(l.other.displayName),
-              },
-            ]}
-          />
-        ) : null}
-      </SheetTemplate>
 
       {/* Les rôles des minimoas, une fois, en lisant à son rythme. */}
       <SheetTemplate
@@ -482,8 +418,6 @@ const HERO_GRADIENT = {
 function SouvenirsBody({ link }: { link: Link }) {
   const memories = useMemories(link.id);
   const stats = memories.data?.stats;
-  // Vos habitudes en commun (série, régularité, moments), quand les deux ont choisi de les montrer.
-  const shared = sharedHabitsView(link.sharedHabits, link.other.displayName);
   return (
     <View style={styles.body}>
       <MemoryRecap
@@ -497,11 +431,17 @@ function SouvenirsBody({ link }: { link: Link }) {
         }
         pets={[link.myPet, link.other.pet]}
       />
-      {shared ? <SharedHabitsCard {...shared} /> : null}
+      {/* Les 7 niveaux du lien (l'ancien écran « niveaux » est fondu ici). */}
+      <LevelLadder level={link.level} labels={LADDER} currentLabel={levelsText.current} animateKey={link.id} />
       <Milestones link={link} />
     </View>
   );
 }
+
+/** Les niveaux, titres seuls. */
+const LADDER = Object.fromEntries(
+  Object.entries(levelLabel).map(([k, v]) => [k, { title: v.title, text: '' }]),
+) as typeof levelLabel;
 
 const MILESTONE_ICON = { met: 'confettis', level: 'etoiles', streak: 'flamme' } as const;
 

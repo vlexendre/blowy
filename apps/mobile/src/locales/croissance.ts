@@ -1,6 +1,5 @@
 /**
- * Croissance (docs/VIRALITE.md) : lien d'invitation d'un groupe, page « rejoindre », résultat « 3 mots », moments à
- * partager (cartes au format story) et leur réglage.
+ * Croissance (docs/VIRALITE.md) : résultat « 3 mots », moments à partager (cartes au format story) et leur réglage.
  */
 import type { TitleSegment } from '@blowy/ui';
 
@@ -19,36 +18,6 @@ export const croissance = messages({
       later: 'Plus tard',
       never: 'Ne plus me proposer',
       close: 'Fermer',
-    },
-    /** Inviter dans un groupe (lien `minimoa.app/g/<code>`). */
-    groupInvite: {
-      row: 'Inviter avec un lien',
-      rowHint: 'Envoie-le sur WhatsApp, en story, où tu veux',
-      missing: (n: number): string => `Il manque ${plural(n, 'personne', 'personnes')} pour lancer la série.`,
-      missingFree: (n: number): string => `Il manque ${plural(n, 'personne', 'personnes')} pour lancer le groupe.`,
-      cta: 'Inviter',
-      message: (group: string, habit: string | null, url: string): string =>
-        habit ? `On tient « ${habit} » ensemble ? Rejoins « ${group} » sur Minimoa : ${url}` : `Rejoins « ${group} » sur Minimoa : ${url}`,
-      reset: 'Changer le lien',
-      resetDone: 'Nouveau lien prêt. L’ancien ne marche plus.',
-      error: 'Le lien n’a pas pu être créé. Réessaie.',
-    },
-    /** Page « rejoindre » d'un lien de groupe. */
-    join: {
-      back: 'Fermer',
-      kicker: 'Un groupe t’attend',
-      habit: (label: string): string => `Habitude : ${label}`,
-      free: 'Un groupe entre potes',
-      members: (n: number): string => plural(n, 'membre', 'membres'),
-      daysKept: (n: number): string => (n === 0 ? 'La série n’a pas encore commencé' : `${plural(n, 'jour tenu', 'jours tenus')} ensemble`),
-      missing: (n: number): string => `Il manque ${plural(n, 'personne', 'personnes')} pour lancer la série.`,
-      cta: 'Rejoindre le groupe',
-      later: 'Plus tard',
-      full: 'Ce groupe est complet (8 membres).',
-      goneTitle: 'Lien introuvable',
-      goneText: 'Ce lien de groupe ne marche plus. Demande-en un nouveau à quelqu’un du groupe.',
-      home: 'Retour à l’accueil',
-      a11y: (name: string, n: number): string => `Groupe ${name}, ${plural(n, 'membre', 'membres')}`,
     },
     /** Ton lien « 3 mots » et ton résultat. */
     words: {
@@ -88,14 +57,6 @@ export const croissance = messages({
         callout: 'Élève ton minimoa toi aussi :',
         message: (n: number, url: string): string => `${n} jours d’affilée avec mon minimoa. Viens : ${url}`,
       },
-      group: {
-        sheetTitle: (n: number): string => `${n} jours ensemble`,
-        text: 'Le groupe tient. Une carte pour le fêter (sans prénoms).',
-        title: (group: string): TitleSegment[] => [{ text: `${group.toUpperCase()}\n` }, { text: 'TIENT BON.', dim: true }],
-        unit: 'JOURS ENSEMBLE',
-        callout: 'Rejoins-nous :',
-        message: (group: string, n: number, url: string): string => `« ${group} » tient depuis ${n} jours. Rejoins-nous : ${url}`,
-      },
       vision: {
         cta: 'Partager mon résultat',
         sheetTitle: 'Ton résultat',
@@ -117,7 +78,7 @@ export const croissance = messages({
     /** Moi › Réglages. */
     settings: {
       title: 'Proposer de partager mes moments',
-      on: 'Séries, groupes : une carte pour ta story, une fois',
+      on: 'Ta série, ton résultat : une carte pour ta story, une fois',
       off: 'Désactivé',
     },
   },
@@ -129,34 +90,6 @@ export const croissance = messages({
       later: 'Later',
       never: 'Don’t suggest this again',
       close: 'Close',
-    },
-    groupInvite: {
-      row: 'Invite with a link',
-      rowHint: 'Send it on WhatsApp, in a story, anywhere',
-      missing: (n: number): string => `${count(n, 'more person', 'more people')} needed to start the streak.`,
-      missingFree: (n: number): string => `${count(n, 'more person', 'more people')} needed to start the group.`,
-      cta: 'Invite',
-      message: (group: string, habit: string | null, url: string): string =>
-        habit ? `Shall we keep up “${habit}” together? Join “${group}” on Minimoa: ${url}` : `Join “${group}” on Minimoa: ${url}`,
-      reset: 'Change the link',
-      resetDone: 'New link ready. The old one no longer works.',
-      error: 'The link couldn’t be created. Try again.',
-    },
-    join: {
-      back: 'Close',
-      kicker: 'A group is waiting for you',
-      habit: (label: string): string => `Habit: ${label}`,
-      free: 'A group of friends',
-      members: (n: number): string => count(n, 'member', 'members'),
-      daysKept: (n: number): string => (n === 0 ? 'The streak hasn’t started yet' : `${count(n, 'day', 'days')} kept together`),
-      missing: (n: number): string => `${count(n, 'more person', 'more people')} needed to start the streak.`,
-      cta: 'Join the group',
-      later: 'Later',
-      full: 'This group is full (8 members).',
-      goneTitle: 'Link not found',
-      goneText: 'This group link no longer works. Ask someone in the group for a new one.',
-      home: 'Back home',
-      a11y: (name: string, n: number): string => `Group ${name}, ${count(n, 'member', 'members')}`,
     },
     words: {
       title: [{ text: 'YOUR\n' }, { text: '3 WORDS', dim: true }] as TitleSegment[],
@@ -193,14 +126,6 @@ export const croissance = messages({
         callout: 'Raise your own minimoa:',
         message: (n: number, url: string): string => `${n} days in a row with my minimoa. Come along: ${url}`,
       },
-      group: {
-        sheetTitle: (n: number): string => `${n} days together`,
-        text: 'The group is holding up. A card to celebrate (no names).',
-        title: (group: string): TitleSegment[] => [{ text: `${group.toUpperCase()}\n` }, { text: 'IS HOLDING UP.', dim: true }],
-        unit: 'DAYS TOGETHER',
-        callout: 'Join us:',
-        message: (group: string, n: number, url: string): string => `“${group}” has kept it up for ${n} days. Join us: ${url}`,
-      },
       vision: {
         cta: 'Share my result',
         sheetTitle: 'Your result',
@@ -220,7 +145,7 @@ export const croissance = messages({
     },
     settings: {
       title: 'Suggest sharing my moments',
-      on: 'Streaks, groups: a card for your story, once',
+      on: 'Your streak, your result: a card for your story, once',
       off: 'Off',
     },
   },
@@ -232,34 +157,6 @@ export const croissance = messages({
       later: 'Más tarde',
       never: 'No volver a proponerlo',
       close: 'Cerrar',
-    },
-    groupInvite: {
-      row: 'Invitar con un enlace',
-      rowHint: 'Envíalo por WhatsApp, en una historia, donde quieras',
-      missing: (n: number): string => `Faltan ${count(n, 'persona', 'personas')} para empezar la racha.`,
-      missingFree: (n: number): string => `Faltan ${count(n, 'persona', 'personas')} para empezar el grupo.`,
-      cta: 'Invitar',
-      message: (group: string, habit: string | null, url: string): string =>
-        habit ? `¿Mantenemos «${habit}» juntos? Únete a «${group}» en Minimoa: ${url}` : `Únete a «${group}» en Minimoa: ${url}`,
-      reset: 'Cambiar el enlace',
-      resetDone: 'Nuevo enlace listo. El anterior ya no funciona.',
-      error: 'No se pudo crear el enlace. Inténtalo de nuevo.',
-    },
-    join: {
-      back: 'Cerrar',
-      kicker: 'Un grupo te espera',
-      habit: (label: string): string => `Hábito: ${label}`,
-      free: 'Un grupo de amigos',
-      members: (n: number): string => count(n, 'miembro', 'miembros'),
-      daysKept: (n: number): string => (n === 0 ? 'La racha aún no ha empezado' : `${count(n, 'día cumplido', 'días cumplidos')} juntos`),
-      missing: (n: number): string => `Faltan ${count(n, 'persona', 'personas')} para empezar la racha.`,
-      cta: 'Unirme al grupo',
-      later: 'Más tarde',
-      full: 'Este grupo está completo (8 miembros).',
-      goneTitle: 'Enlace no encontrado',
-      goneText: 'Este enlace de grupo ya no funciona. Pide uno nuevo a alguien del grupo.',
-      home: 'Volver al inicio',
-      a11y: (name: string, n: number): string => `Grupo ${name}, ${count(n, 'miembro', 'miembros')}`,
     },
     words: {
       title: [{ text: 'TUS\n' }, { text: '3 PALABRAS', dim: true }] as TitleSegment[],
@@ -296,14 +193,6 @@ export const croissance = messages({
         callout: 'Cuida tu propio minimoa:',
         message: (n: number, url: string): string => `${n} días seguidos con mi minimoa. Ven: ${url}`,
       },
-      group: {
-        sheetTitle: (n: number): string => `${n} días juntos`,
-        text: 'El grupo aguanta. Una tarjeta para celebrarlo (sin nombres).',
-        title: (group: string): TitleSegment[] => [{ text: `${group.toUpperCase()}\n` }, { text: 'AGUANTA.', dim: true }],
-        unit: 'DÍAS JUNTOS',
-        callout: 'Únete:',
-        message: (group: string, n: number, url: string): string => `«${group}» lleva ${n} días. Únete: ${url}`,
-      },
       vision: {
         cta: 'Compartir mi resultado',
         sheetTitle: 'Tu resultado',
@@ -323,7 +212,7 @@ export const croissance = messages({
     },
     settings: {
       title: 'Proponer compartir mis momentos',
-      on: 'Rachas, grupos: una tarjeta para tu historia, una vez',
+      on: 'Tu racha, tu resultado: una tarjeta para tu historia, una vez',
       off: 'Desactivado',
     },
   },
@@ -335,34 +224,6 @@ export const croissance = messages({
       later: 'Depois',
       never: 'Não sugerir de novo',
       close: 'Fechar',
-    },
-    groupInvite: {
-      row: 'Convidar com um link',
-      rowHint: 'Mande no WhatsApp, nos stories, onde quiser',
-      missing: (n: number): string => `Falta${n > 1 ? 'm' : ''} ${count(n, 'pessoa', 'pessoas')} para começar a sequência.`,
-      missingFree: (n: number): string => `Falta${n > 1 ? 'm' : ''} ${count(n, 'pessoa', 'pessoas')} para começar o grupo.`,
-      cta: 'Convidar',
-      message: (group: string, habit: string | null, url: string): string =>
-        habit ? `Bora manter “${habit}” juntos? Entre em “${group}” no Minimoa: ${url}` : `Entre em “${group}” no Minimoa: ${url}`,
-      reset: 'Trocar o link',
-      resetDone: 'Novo link pronto. O antigo não funciona mais.',
-      error: 'Não deu para criar o link. Tente de novo.',
-    },
-    join: {
-      back: 'Fechar',
-      kicker: 'Um grupo está te esperando',
-      habit: (label: string): string => `Hábito: ${label}`,
-      free: 'Um grupo de amigos',
-      members: (n: number): string => count(n, 'membro', 'membros'),
-      daysKept: (n: number): string => (n === 0 ? 'A sequência ainda não começou' : `${count(n, 'dia mantido', 'dias mantidos')} juntos`),
-      missing: (n: number): string => `Falta${n > 1 ? 'm' : ''} ${count(n, 'pessoa', 'pessoas')} para começar a sequência.`,
-      cta: 'Entrar no grupo',
-      later: 'Depois',
-      full: 'Este grupo está completo (8 membros).',
-      goneTitle: 'Link não encontrado',
-      goneText: 'Este link de grupo não funciona mais. Peça um novo a alguém do grupo.',
-      home: 'Voltar ao início',
-      a11y: (name: string, n: number): string => `Grupo ${name}, ${count(n, 'membro', 'membros')}`,
     },
     words: {
       title: [{ text: 'SUAS\n' }, { text: '3 PALAVRAS', dim: true }] as TitleSegment[],
@@ -399,14 +260,6 @@ export const croissance = messages({
         callout: 'Cuide do seu minimoa também:',
         message: (n: number, url: string): string => `${n} dias seguidos com meu minimoa. Vem: ${url}`,
       },
-      group: {
-        sheetTitle: (n: number): string => `${n} dias juntos`,
-        text: 'O grupo está firme. Um card para comemorar (sem nomes).',
-        title: (group: string): TitleSegment[] => [{ text: `${group.toUpperCase()}\n` }, { text: 'SEGUE FIRME.', dim: true }],
-        unit: 'DIAS JUNTOS',
-        callout: 'Entre com a gente:',
-        message: (group: string, n: number, url: string): string => `“${group}” está firme há ${n} dias. Entre com a gente: ${url}`,
-      },
       vision: {
         cta: 'Compartilhar meu resultado',
         sheetTitle: 'Seu resultado',
@@ -426,7 +279,7 @@ export const croissance = messages({
     },
     settings: {
       title: 'Sugerir compartilhar meus momentos',
-      on: 'Sequências, grupos: um card para os stories, uma vez',
+      on: 'Sua sequência, seu resultado: um card para os stories, uma vez',
       off: 'Desativado',
     },
   },
@@ -438,34 +291,6 @@ export const croissance = messages({
       later: 'Later',
       never: 'Niet meer voorstellen',
       close: 'Sluiten',
-    },
-    groupInvite: {
-      row: 'Uitnodigen met een link',
-      rowHint: 'Stuur hem via WhatsApp, in een story, waar je wilt',
-      missing: (n: number): string => `Nog ${count(n, 'persoon', 'personen')} nodig om de reeks te starten.`,
-      missingFree: (n: number): string => `Nog ${count(n, 'persoon', 'personen')} nodig om de groep te starten.`,
-      cta: 'Uitnodigen',
-      message: (group: string, habit: string | null, url: string): string =>
-        habit ? `Zullen we „${habit}” samen volhouden? Doe mee met „${group}” op Minimoa: ${url}` : `Doe mee met „${group}” op Minimoa: ${url}`,
-      reset: 'Link vervangen',
-      resetDone: 'Nieuwe link klaar. De oude werkt niet meer.',
-      error: 'De link kon niet worden gemaakt. Probeer het opnieuw.',
-    },
-    join: {
-      back: 'Sluiten',
-      kicker: 'Een groep wacht op je',
-      habit: (label: string): string => `Gewoonte: ${label}`,
-      free: 'Een groep vrienden',
-      members: (n: number): string => count(n, 'lid', 'leden'),
-      daysKept: (n: number): string => (n === 0 ? 'De reeks is nog niet begonnen' : `${count(n, 'dag', 'dagen')} samen volgehouden`),
-      missing: (n: number): string => `Nog ${count(n, 'persoon', 'personen')} nodig om de reeks te starten.`,
-      cta: 'Lid worden',
-      later: 'Later',
-      full: 'Deze groep is vol (8 leden).',
-      goneTitle: 'Link niet gevonden',
-      goneText: 'Deze groepslink werkt niet meer. Vraag iemand uit de groep om een nieuwe.',
-      home: 'Terug naar start',
-      a11y: (name: string, n: number): string => `Groep ${name}, ${count(n, 'lid', 'leden')}`,
     },
     words: {
       title: [{ text: 'JOUW\n' }, { text: '3 WOORDEN', dim: true }] as TitleSegment[],
@@ -502,14 +327,6 @@ export const croissance = messages({
         callout: 'Zorg ook voor je eigen minimoa:',
         message: (n: number, url: string): string => `${n} dagen op rij met mijn minimoa. Kom erbij: ${url}`,
       },
-      group: {
-        sheetTitle: (n: number): string => `${n} dagen samen`,
-        text: 'De groep houdt vol. Een kaart om het te vieren (zonder namen).',
-        title: (group: string): TitleSegment[] => [{ text: `${group.toUpperCase()}\n` }, { text: 'HOUDT VOL.', dim: true }],
-        unit: 'DAGEN SAMEN',
-        callout: 'Doe mee:',
-        message: (group: string, n: number, url: string): string => `„${group}” houdt het al ${n} dagen vol. Doe mee: ${url}`,
-      },
       vision: {
         cta: 'Mijn resultaat delen',
         sheetTitle: 'Je resultaat',
@@ -529,7 +346,7 @@ export const croissance = messages({
     },
     settings: {
       title: 'Voorstellen om mijn momenten te delen',
-      on: 'Reeksen, groepen: één keer een kaart voor je story',
+      on: 'Je reeks, je resultaat: één keer een kaart voor je story',
       off: 'Uit',
     },
   },

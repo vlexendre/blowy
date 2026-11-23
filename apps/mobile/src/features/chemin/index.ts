@@ -57,6 +57,8 @@ export interface CheminDone {
   endScene: string | null;
   /** Minimoa animé réglé par l'API (reçu avec la séance) ; null : l'image habituelle. */
   mascot: Mascot | null;
+  /** Le palier de série a déjà été fêté (revenir sur la fin ne le rejoue pas). */
+  celebrated?: boolean;
 }
 
 /**
@@ -70,6 +72,7 @@ export const useCheminResults = create<{
   last: string | null;
   put: (id: string, v: CheminDone) => void;
   patchPerson: (id: string, waved: boolean) => void;
+  markCelebrated: (id: string) => void;
 }>((set) => ({
   results: {},
   last: null,
@@ -80,6 +83,11 @@ export const useCheminResults = create<{
       if (!r?.result.person) return s;
       const person = { ...r.result.person, suggestion: { ...r.result.person.suggestion, waved } };
       return { results: { ...s.results, [id]: { ...r, result: { ...r.result, person } } } };
+    }),
+  markCelebrated: (id) =>
+    set((s) => {
+      const r = s.results[id];
+      return r && !r.celebrated ? { results: { ...s.results, [id]: { ...r, celebrated: true } } } : s;
     }),
 }));
 

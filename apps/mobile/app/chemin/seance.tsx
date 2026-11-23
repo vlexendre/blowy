@@ -2,7 +2,7 @@
  * La séance du jour (V6-GSeance, docs/CHEMIN.md) : 5 questions posées par le minimoa, en cartes illustrées ou en
  * curseur ; sa réaction à chaque réponse (texte et animation du serveur) ; « Valider », « Passer cette question »
  * (elle revient à la fin : le serveur veut une réponse à chacune). À la fin, toutes les réponses partent en une fois
- * (idempotent), puis la fin de séance. Tout le contenu vient du serveur.
+ * (idempotent), puis la fin de séance (`/chemin/fin`, un seul écran). Tout le contenu vient du serveur.
  */
 import { ApiError } from '@blowy/api-client';
 import { Banner, Button, EmptyState, type MascotMoment, mascotMomentFor, namedMotion, type PetActorReaction, ScreenTemplate, SeanceBar, SeanceQuestion, Skeleton, Stack } from '@blowy/ui';
@@ -81,8 +81,8 @@ export default function Seance() {
       {
         onSuccess: (res) => {
           if (!res.alreadyRecorded && res.newItems.length > 0) useUnlocks.getState().push(res.newItems);
-          // Séance tout juste finie : la célébration d'abord (puis la série si elle monte, puis la suite).
-          router.replace({ pathname: res.alreadyRecorded ? '/chemin/fin' : '/chemin/bravo', params: { id: res.sessionId } });
+          // Séance finie : un seul écran, la personne du jour d'abord (la fête d'un palier s'y joue).
+          router.replace({ pathname: '/chemin/fin', params: { id: res.sessionId } });
         },
       },
     );

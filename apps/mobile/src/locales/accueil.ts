@@ -32,8 +32,6 @@ export const accueil = messages({
     wroteAction: 'Répondre',
     /** Ton groupe d'habitude, aujourd'hui. */
     group: (name: string, up: number, due: number): string => `${name} : ${up}/${due} ont tenu aujourd’hui`,
-    groupMine: { done: 'Toi, c’est fait. Un mot pour les autres ?', todo: 'Il manque toi. Les autres comptent dessus.' },
-    groupAction: 'Ouvrir le groupe',
     /** Test de vision pas passé. */
     visionTitle: 'Dis-lui comment tu vois la vie',
     visionText: '12 situations, 2 minutes : c’est ce qui choisit qui il te présente.',
@@ -59,7 +57,7 @@ export const accueil = messages({
       previewA11y: 'Exemples de notifications de ton minimoa.',
       items: (pet: string) => [
         { title: 'Quelqu’un te fait signe', body: `${pet} a croisé un minimoa compatible.`, time: 'maintenant' },
-        { title: 'Ta série est en jeu', body: `${pet} t’attend avant minuit pour la garder.`, time: '20 h' },
+        { title: 'Ta séance t’attend', body: `${pet} a 5 questions pour toi, quand tu veux.`, time: '20 h' },
         { title: 'Léa t’a écrit', body: 'Dimanche, marché puis café ?', time: '9 h' },
       ],
       line: '3 par jour au plus hors messages, jamais la nuit. Tu choisis quoi recevoir dans Moi › Réglages.',
@@ -72,9 +70,6 @@ export const accueil = messages({
      * plafond de présentations du jour (`encounterQuota`) ; les soins n'y jouent pas.
      */
     rule: (pet: string): string => `Tu sors, tu écris, tu réponds : ${pet} a plus d’énergie pour te présenter du monde.`,
-    /** Tuiles sous les soins. */
-    tiles: { question: 'Question', challenge: 'Défi', habits: 'Habitudes', more: 'Tout sur lui' },
-    moreA11y: (pet: string): string => `Tout sur ${pet} : caractère, série, bilans, souvenirs`,
     /** Touché, le minimoa reçoit un câlin. */
     petA11yCuddle: (pet: string): string => `${pet}. Touche-le pour un câlin`,
     /** La nuit, sa bulle propose une action concrète : voir qui est près de chez toi (les présentations). */
@@ -104,8 +99,6 @@ export const accueil = messages({
     wroteText: (preview: string): string => `“${preview}”`,
     wroteAction: 'Reply',
     group: (name: string, up: number, due: number): string => `${name}: ${up}/${due} kept it up today`,
-    groupMine: { done: 'You’re done. A word for the others?', todo: 'Just you left. The others are counting on it.' },
-    groupAction: 'Open the group',
     visionTitle: 'Tell it how you see life',
     visionText: '12 situations, 2 minutes: that’s what decides who it introduces you to.',
     visionAction: 'Start',
@@ -124,7 +117,7 @@ export const accueil = messages({
       previewA11y: 'Examples of notifications from your minimoa.',
       items: (pet: string) => [
         { title: 'Someone is waving at you', body: `${pet} met a compatible minimoa.`, time: 'now' },
-        { title: 'Your streak is on the line', body: `${pet} is waiting for you before midnight to keep it.`, time: '8 PM' },
+        { title: 'Your session is waiting', body: `${pet} has 5 questions for you, whenever you like.`, time: '8 PM' },
         { title: 'Léa wrote to you', body: 'Sunday: market, then coffee?', time: '9 AM' },
       ],
       line: '3 a day at most besides messages, never at night. You choose what you get in Me › Settings.',
@@ -133,8 +126,6 @@ export const accueil = messages({
       denied: 'Okay. You can turn them on later in Me › Settings › Notifications.',
     },
     rule: (pet: string): string => `You go out, you write, you reply: ${pet} has more energy to introduce you to people.`,
-    tiles: { question: 'Question', challenge: 'Challenge', habits: 'Habits', more: 'All about it' },
-    moreA11y: (pet: string): string => `All about ${pet}: personality, streak, reviews, memories`,
     petA11yCuddle: (pet: string): string => `${pet}. Tap for a cuddle`,
     night: { line: 'Late, huh. Want to see who’s near you?', action: 'See who', actionA11y: 'See who’s near you' },
     asleep: { line: 'Zzz… Just a little nap. Wake me up!', wake: 'Wake it up', wakeA11y: (pet: string): string => `Wake ${pet} up` },
@@ -161,8 +152,6 @@ export const accueil = messages({
     wroteText: (preview: string): string => `«${preview}»`,
     wroteAction: 'Responder',
     group: (name: string, up: number, due: number): string => `${name}: ${up}/${due} cumplieron hoy`,
-    groupMine: { done: 'Lo tuyo está hecho. ¿Unas palabras para el resto?', todo: 'Faltas tú. El resto cuenta contigo.' },
-    groupAction: 'Abrir el grupo',
     visionTitle: 'Cuéntale cómo ves la vida',
     visionText: '12 situaciones, 2 minutos: es lo que decide a quién te presenta.',
     visionAction: 'Empezar',
@@ -181,7 +170,7 @@ export const accueil = messages({
       previewA11y: 'Ejemplos de notificaciones de tu minimoa.',
       items: (pet: string) => [
         { title: 'Alguien te saluda', body: `${pet} se ha cruzado con un minimoa compatible.`, time: 'ahora' },
-        { title: 'Tu racha está en juego', body: `${pet} te espera antes de medianoche para mantenerla.`, time: '20:00' },
+        { title: 'Tu sesión te espera', body: `${pet} tiene 5 preguntas para ti, cuando quieras.`, time: '20:00' },
         { title: 'Léa te ha escrito', body: '¿El domingo, mercado y luego café?', time: '9:00' },
       ],
       line: 'Como mucho 3 al día sin contar los mensajes, nunca de noche. Tú eliges qué recibir en Yo › Ajustes.',
@@ -190,8 +179,6 @@ export const accueil = messages({
       denied: 'Vale. Podrás activarlas más tarde en Yo › Ajustes › Notificaciones.',
     },
     rule: (pet: string): string => `Sales, escribes, respondes: ${pet} tiene más energía para presentarte gente.`,
-    tiles: { question: 'Pregunta', challenge: 'Reto', habits: 'Hábitos', more: 'Todo sobre él' },
-    moreA11y: (pet: string): string => `Todo sobre ${pet}: carácter, racha, balances, recuerdos`,
     petA11yCuddle: (pet: string): string => `${pet}. Tócalo para darle un mimo`,
     night: { line: 'Es tarde, ¿eh? ¿Quieres ver quién está cerca de ti?', action: 'Ver quién', actionA11y: 'Ver quién está cerca de ti' },
     asleep: { line: 'Zzz… Echo una siestecita. ¡Despiértame!', wake: 'Despertarlo', wakeA11y: (pet: string): string => `Despertar a ${pet}` },
@@ -218,8 +205,6 @@ export const accueil = messages({
     wroteText: (preview: string): string => `“${preview}”`,
     wroteAction: 'Responder',
     group: (name: string, up: number, due: number): string => `${name}: ${up}/${due} cumpriram hoje`,
-    groupMine: { done: 'Você já fez. Uma palavra para os outros?', todo: 'Só falta você. Os outros contam com isso.' },
-    groupAction: 'Abrir o grupo',
     visionTitle: 'Conte como você vê a vida',
     visionText: '12 situações, 2 minutos: é isso que decide quem ele te apresenta.',
     visionAction: 'Começar',
@@ -238,7 +223,7 @@ export const accueil = messages({
       previewA11y: 'Exemplos de notificações do seu minimoa.',
       items: (pet: string) => [
         { title: 'Alguém está acenando para você', body: `${pet} cruzou com um minimoa compatível.`, time: 'agora' },
-        { title: 'Sua sequência está em jogo', body: `${pet} te espera antes da meia-noite para mantê-la.`, time: '20h' },
+        { title: 'Sua sessão está esperando', body: `${pet} tem 5 perguntas para você, quando quiser.`, time: '20h' },
         { title: 'Léa te escreveu', body: 'Domingo: feira e depois um café?', time: '9h' },
       ],
       line: 'No máximo 3 por dia fora as mensagens, nunca à noite. Você escolhe o que receber em Eu › Ajustes.',
@@ -247,8 +232,6 @@ export const accueil = messages({
       denied: 'Tudo bem. Você pode ativar depois em Eu › Ajustes › Notificações.',
     },
     rule: (pet: string): string => `Você sai, escreve, responde: ${pet} fica com mais energia para te apresentar gente.`,
-    tiles: { question: 'Pergunta', challenge: 'Desafio', habits: 'Hábitos', more: 'Tudo sobre ele' },
-    moreA11y: (pet: string): string => `Tudo sobre ${pet}: personalidade, sequência, balanços, lembranças`,
     petA11yCuddle: (pet: string): string => `${pet}. Toque para um carinho`,
     night: { line: 'Tarde, hein. Quer ver quem está perto de você?', action: 'Ver quem', actionA11y: 'Ver quem está perto de você' },
     asleep: { line: 'Zzz… Tirando um cochilo. Me acorda!', wake: 'Acordá-lo', wakeA11y: (pet: string): string => `Acordar ${pet}` },
@@ -275,8 +258,6 @@ export const accueil = messages({
     wroteText: (preview: string): string => `“${preview}”`,
     wroteAction: 'Reageren',
     group: (name: string, up: number, due: number): string => `${name}: ${up}/${due} hielden het vandaag vol`,
-    groupMine: { done: 'Jij bent klaar. Een woordje voor de anderen?', todo: 'Alleen jij nog. De anderen rekenen erop.' },
-    groupAction: 'Groep openen',
     visionTitle: 'Vertel hem hoe jij naar het leven kijkt',
     visionText: '12 situaties, 2 minuten: dat bepaalt aan wie hij je voorstelt.',
     visionAction: 'Beginnen',
@@ -295,7 +276,7 @@ export const accueil = messages({
       previewA11y: 'Voorbeelden van meldingen van je minimoa.',
       items: (pet: string) => [
         { title: 'Iemand zwaait naar je', body: `${pet} kwam een minimoa tegen die bij je past.`, time: 'nu' },
-        { title: 'Je reeks staat op het spel', body: `${pet} wacht voor middernacht op je om hem te houden.`, time: '20:00' },
+        { title: 'Je sessie wacht op je', body: `${pet} heeft 5 vragen voor je, wanneer je wilt.`, time: '20:00' },
         { title: 'Léa heeft je geschreven', body: 'Zondag markt en daarna koffie?', time: '9:00' },
       ],
       line: 'Hooguit 3 per dag naast berichten, nooit ’s nachts. Je kiest zelf wat je krijgt in Ik › Instellingen.',
@@ -304,8 +285,6 @@ export const accueil = messages({
       denied: 'Oké. Je kunt ze later aanzetten in Ik › Instellingen › Meldingen.',
     },
     rule: (pet: string): string => `Je gaat eropuit, je schrijft, je antwoordt: ${pet} heeft meer energie om je mensen voor te stellen.`,
-    tiles: { question: 'Vraag', challenge: 'Uitdaging', habits: 'Gewoontes', more: 'Alles over hem' },
-    moreA11y: (pet: string): string => `Alles over ${pet}: karakter, reeks, overzichten, herinneringen`,
     petA11yCuddle: (pet: string): string => `${pet}. Tik voor een knuffel`,
     night: { line: 'Laat, hè. Wil je zien wie er bij jou in de buurt is?', action: 'Bekijk wie', actionA11y: 'Bekijk wie er bij jou in de buurt is' },
     asleep: { line: 'Zzz… Even een dutje. Maak me wakker!', wake: 'Wakker maken', wakeA11y: (pet: string): string => `${pet} wakker maken` },

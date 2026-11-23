@@ -24,7 +24,5 @@ export const config = {
 
 export const inviteUrl = (code: string): string => `${config.webUrl}/i/${code}`;
 export const wordsUrl = (code: string): string => `${config.webUrl}/m/${code}`;
-/** Lien d'invitation d'un groupe (docs/VIRALITE.md). */
-export const groupUrl = (code: string): string => `${config.webUrl}/g/${code}`;
 /** Lien d'un quartier à ouvrir, avec ton code d'invitation (docs/VIRALITE.md, « Ouvre ton quartier »). */
 export const quartierUrl = (zone: string, code: string): string => `${config.webUrl}/quartier/${zone}?ref=${encodeURIComponent(code)}`;

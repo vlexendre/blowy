@@ -9,8 +9,6 @@ import {
   type CareAction,
   canCare,
   earnedItems,
-  type GaugeKey,
-  type Gauges,
   ITEM_SLOTS,
   ITEMS,
   type ItemSlot,
@@ -34,7 +32,6 @@ import {
   CareBar,
   CareButton,
   CareIcon,
-  ChallengeCard,
   ChatThread,
   Chip,
   ChoiceCard,
@@ -43,10 +40,7 @@ import {
   Divider,
   DressedPet,
   EmptyState,
-  EvolutionTimeline,
   FeatureRow,
-  GaugeBar,
-  GaugePanel,
   GhostPanel,
   Glyph,
   GLYPHS,
@@ -154,9 +148,6 @@ const messages: MessageLook[] = [
   { id: 'm7', author: 'me', kind: 'photo', body: null, mediaUrl: photo('brunch'), at: at('10', '12:30') },
   { id: 'm8', author: 'me', kind: 'text', body: 'preuve : brunch réservé', mediaUrl: null, at: at('10', '12:31') },
 ];
-
-const gauges: Gauges = { social: 45, play: 70, tender: -10, talk: 20 };
-const gaugeNames: Record<GaugeKey, string> = { social: 'sociabilité', play: 'jeu', tender: 'tendresse', talk: 'parole' };
 
 const events: PetEventLook[] = [
   { id: 'e1', kind: 'met_new_pet', delta: { social: 12 }, at: '2026-11-10' },
@@ -414,14 +405,12 @@ function GalleryScreen() {
   const [plan, setPlan] = useState<'year' | 'month'>('year');
   const [species, setSpecies] = useState<Species>('nino');
   const [answer, setAnswer] = useState<string | null>(null);
-  const [gauge, setGauge] = useState<GaugeKey | null>('social');
   const [pause, setPause] = useState(false);
   const [sheet, setSheet] = useState(false);
   const [promised, setPromised] = useState(false);
   const [riseUp, setRiseUp] = useState(true);
   const [nav, setNav] = useState<'chats' | 'pet' | 'encounters' | 'me'>('chats');
   const [copied, setCopied] = useState(false);
-  const [picked, setPicked] = useState<0 | 1 | null>(null);
   const noop = () => undefined;
 
   return (
@@ -622,12 +611,6 @@ function GalleryScreen() {
           <LifeSparks lives={7} size={18} />
           <LifeSparks lives={0} ghost />
         </Item>
-        <Item name="GaugeBar">
-          <GaugeBar value={45} low="casanier" high="sociable" caption="sociabilité · +45" selected onPress={noop} />
-          <GaugeBar value={-10} low="piquant" high="tendre" caption="tendresse · −10" />
-          <GaugeBar value={30} target={60} low="piquant" high="tendre" />
-          <GaugeBar value={0} low="posé" high="joueur" compact />
-        </Item>
         <Item name="LevelPill · StreakPill">
           <View style={styles.row}>
             <LevelPill label="niveau 3 ›" onPress={noop} />
@@ -773,44 +756,9 @@ function GalleryScreen() {
           </Panel>
           <LevelLadder level={3} labels={levelLabel} ratio={0.64} currentLabel="vous êtes là" nextLabel="encore 160 xp" />
         </Item>
-        <Item name="GaugePanel">
-          <GaugePanel
-            gauges={gauges}
-            labels={gaugeLabel}
-            names={gaugeNames}
-            title="son caractère"
-            hint="touche une jauge"
-            selected={gauge}
-            onSelect={setGauge}
-            footer={gauge ? gaugeLabel[gauge].hint : undefined}
-          />
-        </Item>
         <Item name="PetHero">
           <PetHero pet={nino} title={[{ text: 'NINO,\n' }, { text: 'PLUTÔT\nJOUEUR.', dim: true }]} moodLabel="d’humeur joueuse" speech="je me sens pousser des antennes." onPetPress={noop} />
           <PetHero pet={lea.pet} title={[{ text: 'SUZIE,\n' }, { text: 'TENDRE.', dim: true }]} formLabel={formLabel.tendre} showForm />
-        </Item>
-        <Item name="EvolutionTimeline">
-          <EvolutionTimeline
-            species="nino"
-            steps={[
-              { form: 'casanier', when: 'septembre', name: 'casanier', caption: 'que du canapé.' },
-              { form: 'equilibre', when: 'octobre', name: 'équilibré', caption: 'chats rouverts.' },
-              { form: 'sociable', when: 'aujourd’hui', name: 'sociable', caption: '3 minimoas croisés.', current: true },
-            ]}
-          />
-        </Item>
-        <Item name="ChallengeCard">
-          <ChallengeCard
-            label="défi du jour"
-            question="plutôt brunch ou grasse mat’ ?"
-            choices={['brunch', 'grasse mat’']}
-            done={picked !== null}
-            picked={picked}
-            doneLabel="fait ! reviens demain"
-            onChoose={setPicked}
-            streak={3}
-            streakUnit="série"
-          />
         </Item>
         <Item name="SuggestionCard">
           <SuggestionCard

@@ -5,17 +5,22 @@
  * filtre (`content_refused`, photo ou prénom) affiche la raison de l'API, sans « réessayer » qui referait la même chose.
  */
 import { ApiError } from '@blowy/api-client';
-import { Appear, Banner, Button, InlineField, PhotoEditCard, SettingsTemplate, SheetTemplate, Skeleton, Stagger, Text } from '@blowy/ui';
+import { cleanPetName, dayOf, nextRenameOn, PET_NAME_MAX, RENAME_COOLDOWN_DAYS } from '@blowy/domain';
+import { Appear, Banner, Button, InlineField, PhotoEditCard, RenameCard, SettingsSection, SettingsTemplate, SheetTemplate, Shake, Skeleton, Stagger, Text } from '@blowy/ui';
 import { space } from '@blowy/tokens';
 import { useEffect, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
 
 import { MediaAccessError, ScreenMotion, useSession } from '@/core';
 import { useAiConsents } from '@/features/ai';
+import { errorText, shortDay } from '@/features/links';
 import { maskEmail, useMe, useSetAvatar, useUpdateMe } from '@/features/me';
+import { usePet, useRenamePet } from '@/features/pet';
+import { openPlus } from '@/features/plus';
 import { errorMessage, goBack } from '@/features/session';
 import { common } from '@/locales/common';
 import { moi } from '@/locales/moi';
+import { pet as petText } from '@/locales/pet';
 
 const t = moi.compte;
 const refusedOf = (e: unknown): string | null => (e instanceof ApiError && e.code === 'content_refused' ? e.message : null);
@@ -32,6 +37,12 @@ export default function Compte() {
   const [name, setName] = useState('');
   const [sheet, setSheet] = useState(false);
   const [saved, setSaved] = useState(false);
+  // Le nom du minimoa (une fois tous les 60 jours, libre avec Minimoa+) : l'ancien écran « caractère » est fondu ici.
+  const minimoa = usePet();
+  const rename = useRenamePet();
+  const [renaming, setRenaming] = useState(false);
+  const [petName, setPetName] = useState('');
+  const [renameFailed, setRenameFailed] = useState(0);
 
   useEffect(() => {
     if (me.data) setName(me.data.displayName);
@@ -57,6 +68,32 @@ export default function Compte() {
     update.mutate({ displayName: name.trim() }, { onSuccess: () => setSaved(true) });
   };
   const back = () => goBack('/moi/reglages');
+  const petNow = minimoa.data?.pet;
+  const renameRule = minimoa.data?.rename;
+  const renameLocked = !!renameRule && !renameRule.allowed;
+  const renameNotice = !renameRule
+    ? null
+    : renameLocked
+      ? renameRule.availableOn
+        ? petText.renameLocked(shortDay(renameRule.availableOn))
+        : null
+      : renameRule.unlimited
+        ? null
+        : petText.renameNext(RENAME_COOLDOWN_DAYS, shortDay(nextRenameOn(dayOf(new Date()))));
+  const startRename = () => {
+    if (!petNow) return;
+    setPetName(petNow.name);
+    rename.reset();
+    setRenaming(true);
+  };
+  const savePetName = () => {
+    const clean = cleanPetName(petName);
+    if (!petNow || !clean || clean === petNow.name) {
+      setRenaming(false);
+      return;
+    }
+    rename.mutate(clean, { onSuccess: () => setRenaming(false), onError: () => setRenameFailed((n) => n + 1) });
+  };
 
   if (!me.data) {
     return (
@@ -143,6 +180,36 @@ export default function Compte() {
       />
       {session?.email ? <InlineField key="email" label={t.emailLabel} value={maskEmail(session.email)} editable={false} /> : null}
       </Stagger>
+      {petNow ? (
+        <SettingsSection
+          rows={[{ key: 'minimoa', title: t.minimoaName, subtitle: petNow.name, onPress: startRename, accessibilityLabel: petText.renameA11y(petNow.name) }]}
+        />
+      ) : null}
+      {petNow && renaming ? (
+        <Shake trigger={renameFailed}>
+          <RenameCard
+            label={petText.renameLabel}
+            hint={petText.renameHint}
+            value={renameLocked ? petNow.name : petName}
+            onChangeText={(v) => {
+              setPetName(v);
+              // Nom refusé par le filtre (raison de l'API) : l'erreur part dès que le nom change.
+              if (rename.isError) rename.reset();
+            }}
+            maxLength={PET_NAME_MAX}
+            locked={renameLocked}
+            notice={renameNotice}
+            noticeAction={renameLocked ? { label: petText.renamePlus, onPress: () => openPlus('rename') } : null}
+            error={rename.isError ? errorText(rename.error, petText.renameError) : null}
+            cancelLabel={renameLocked ? petText.renameClose : petText.renameCancel}
+            saveLabel={petText.renameSave}
+            onCancel={() => setRenaming(false)}
+            onSave={savePetName}
+            saving={rename.isPending}
+            canSave={!!cleanPetName(petName)}
+          />
+        </Shake>
+      ) : null}
       {update.isError ? (
         <Appear key="save-error">
           {refusedOf(update.error) ? (

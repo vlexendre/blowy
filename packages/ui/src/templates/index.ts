@@ -8,5 +8,4 @@ export { WelcomeTemplate, type WelcomeTemplateProps } from './WelcomeTemplate';
 export { PlusTemplate, type PlusTemplateProps, type PlusOfferView, type PlusPerkView } from './PlusTemplate';
 export { StageTemplate, type StageTemplateProps } from './StageTemplate';
 export { type MapFrame, MapTemplate, type MapTemplateProps } from './MapTemplate';
-export { GroupTemplate, type GroupTemplateProps } from './GroupTemplate';
 export { UpdateTemplate, type UpdateTemplateProps } from './UpdateTemplate';

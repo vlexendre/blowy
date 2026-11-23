@@ -1,3 +1,4 @@
+export { useAccessibilityFocus } from './a11y';
 export { haptic, hapticFor, type HapticKind, type HapticMoment } from './haptics';
 export { InkProvider, useInk, useMute } from './ink';
 export {

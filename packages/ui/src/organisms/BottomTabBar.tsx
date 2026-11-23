@@ -28,10 +28,12 @@ export interface BottomTabItem<K extends string = string> {
   label: string;
   glyph: GlyphName;
   badge?: number;
+  /** Ce que VoiceOver lit, pastille comprise (« Chats, 3 non lus ») ; par défaut, le libellé. */
+  accessibilityLabel?: string;
 }
 
 export interface BottomTabBarProps<K extends string = string> {
-  /** Les 4 onglets : Chats · Mon pet · Rencontres · Moi. */
+  /** Les 4 onglets, chacun avec son libellé visible : Minimoa · Quartier · Chats · Moi. */
   items: readonly BottomTabItem<K>[];
   activeKey: K;
   onPress: (key: K) => void;
@@ -45,12 +47,10 @@ export interface BottomTabBarProps<K extends string = string> {
    */
   peek?: { species: Species; mood?: Mood | PetPose; seed?: string };
   accessibilityLabel?: string;
-  /** Pictogrammes seuls, sans libellés (lus par le lecteur d'écran). */
-  iconOnly?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
-/** `.gnav` V7 : onglets de 44 + 2 × 4 de marge intérieure + 2 × 1 de bordure. */
+/** `.gnav` : onglets (pictogramme + libellé) + 2 × 4 de marge intérieure + 2 × 1 de bordure. */
 const BAR_HEIGHT = ITEM_HEIGHT + 2 * 4 + 2;
 const PAD = 4;
 const GAP = 2;
@@ -135,7 +135,6 @@ export function BottomTabBar<K extends string>({
   peek,
   accessibilityLabel,
   style,
-  iconOnly = false,
 }: BottomTabBarProps<K>) {
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
@@ -175,7 +174,7 @@ export function BottomTabBar<K extends string>({
           mood={peek.mood}
           index={peekAt.index}
           step={seg + GAP}
-          offset={28 + 1 + PAD}
+          offset={20 + 1 + PAD}
           show={peekAt.key}
         />
       ) : null}
@@ -208,12 +207,12 @@ export function BottomTabBar<K extends string>({
             label={it.label}
             glyph={it.glyph}
             badge={it.badge}
+            accessibilityLabel={it.accessibilityLabel}
             active={it.key === activeKey}
             indicator={width > 0 ? indicator : undefined}
             index={i}
             onPress={() => onPress(it.key)}
             onLongPress={onLongPress ? () => onLongPress(it.key) : undefined}
-            iconOnly={iconOnly}
           />
         ))}
       </View>
@@ -233,7 +232,8 @@ const styles = StyleSheet.create({
   },
   tint: { backgroundColor: alpha(color.card, 0.62) },
   floating: { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  outer: { paddingHorizontal: 28 },
+  // Assez de place pour quatre libellés à 320 pt (environ 60 pt par onglet).
+  outer: { paddingHorizontal: 20 },
   pill: {
     position: 'absolute',
     top: PAD,

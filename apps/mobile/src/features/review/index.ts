@@ -4,8 +4,8 @@
  * Les règles (3 jours, 5 sessions, 120 jours, ni erreur ni achat juste avant, hors inscription) sont dans `decide.ts`.
  * La mémoire reste sur le téléphone (AsyncStorage, `blowy.review`) : rien n'est envoyé.
  *
- * Les bons moments qui appellent `maybeAskForReview` : une rencontre acceptée (`useAcceptEncounter`), une preuve
- * d'habitude validée (`useProof`), la fête d'un palier de série refermée (accueil). Un délai laisse l'animation de
+ * Les bons moments qui appellent `maybeAskForReview` : une rencontre acceptée (`useAcceptEncounter`), la fête d'un
+ * palier de série refermée (accueil). Un délai laisse l'animation de
  * réussite se jouer d'abord.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';

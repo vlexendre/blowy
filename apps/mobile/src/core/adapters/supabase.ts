@@ -175,11 +175,6 @@ export function supabaseRealtime(sb: SupabaseClient): RealtimePort {
           const row = payload.new as { id?: string };
           onChange({ linkId: row.id ?? null });
         })
-        // Groupes (spéc. §26) : RLS « membres : lire les messages de leurs groupes » (membres actifs seulement).
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'group_messages' }, (payload) => {
-          const row = payload.new as { group_id?: string };
-          onChange({ linkId: null, groupId: row.group_id ?? null });
-        })
         .subscribe((status) => {
           // Rejoint après une coupure (arrière-plan, réseau) : des messages ont pu passer pendant ce temps.
           if (status === 'SUBSCRIBED') {

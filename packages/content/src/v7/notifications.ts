@@ -96,8 +96,8 @@ const fr = {
           : `${v.minimoa} a préparé quelque chose pour toi.`,
     },
     needs_out: {
-      title: (v) => `${v.minimoa} a envie de sortir`,
-      body: () => 'Un tour dehors ou un mot à quelqu’un, et il repart de plus belle.',
+      title: (v) => `${v.minimoa} aimerait prendre l’air`,
+      body: () => 'Un tour dehors ou un mot à quelqu’un, quand tu veux.',
     },
     new_encounter: {
       title: (v) =>
@@ -133,21 +133,21 @@ const fr = {
       title: (v) => `Série avec ${v.name}`,
       body: (v) =>
         Number(v.more) > 0
-          ? `À toi d’écrire avant minuit. Et dans ${v.more} ${Number(v.more) > 1 ? 'autres liens' : 'autre lien'}.`
+          ? `À toi d’écrire, quand tu veux. Et dans ${v.more} ${Number(v.more) > 1 ? 'autres liens' : 'autre lien'}.`
           : Number(v.count) > 0
-            ? `${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'} d’affilée. À toi d’écrire avant minuit.`
-            : `${v.name} t’a écrit aujourd’hui. À toi avant minuit.`,
+            ? `${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'} d’affilée. Un petit mot et ça continue.`
+            : `${v.name} t’a écrit aujourd’hui. Réponds quand tu veux.`,
     },
     link_in_danger: {
       title: (v) => `Lien avec ${v.name}`,
-      body: () => 'Votre lien s’essouffle un peu. Un petit mot suffit à le raviver.',
+      body: () => 'Ça fait un moment. Un petit mot et votre lien repart.',
     },
     streak_in_danger: {
-      title: (v) => `Ta série de ${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'}`,
+      title: (v) => `${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'} d’affilée`,
       body: (v) =>
         v.step === 'chemin'
-          ? 'Ta séance du jour est encore possible ce soir.'
-          : 'Le défi du jour est encore possible ce soir.',
+          ? 'Ta séance du jour t’attend, à ton rythme.'
+          : 'Le défi du jour t’attend, à ton rythme.',
     },
     habit_proof: {
       title: (v) => `${v.minimoa} voudrait voir`,
@@ -192,13 +192,12 @@ const fr = {
     },
     group_message: { title: (v) => v.group, body: (v) => `${v.name} a écrit dans le groupe.` },
     group_life_lost: {
-      title: (v) => `« ${v.group} » perd une vie`,
-      body: (v) =>
-        `Il lui reste ${v.count} ${Number(v.count) > 1 ? 'vies' : 'vie'}. Aujourd’hui, on s’y remet ensemble.`,
+      title: (v) => `« ${v.group} » vous attend`,
+      body: () => 'Aujourd’hui, on s’y remet ensemble.',
     },
     group_asleep: {
-      title: (v) => `« ${v.group} » s’est endormi`,
-      body: () => 'Plus de vies pour l’instant. N’importe qui peut le réveiller.',
+      title: (v) => `« ${v.group} » fait la sieste`,
+      body: () => 'N’importe qui peut le réveiller, quand il veut.',
     },
     group_joined: {
       title: (v) =>
@@ -273,11 +272,11 @@ const fr = {
         v.step === 'passed'
           ? `${v.name} vient de te dépasser`
           : v.step === 'ending'
-            ? 'Dernières heures dans ta ligue'
+            ? 'Ta ligue cette semaine'
             : v.step === 'up'
               ? `Tu montes en Ligue ${v.tier} !`
               : v.step === 'down'
-                ? `Tu redescends en Ligue ${v.tier}`
+                ? `Tu passes en Ligue ${v.tier}`
                 : `Tu restes en Ligue ${v.tier}`,
       body: (v) =>
         v.step === 'passed'
@@ -285,7 +284,7 @@ const fr = {
           : v.step === 'ending'
             ? Number(v.more) > 0
               ? `Tu es ${v.count}${v.count === '1' ? 'er' : 'e'}. Encore ${v.more} étincelles pour entrer dans la zone de montée.`
-              : `Tu es ${v.count}${v.count === '1' ? 'er' : 'e'}, dans la zone de montée. Garde ta place jusqu’à minuit !`
+              : `Tu es ${v.count}${v.count === '1' ? 'er' : 'e'}, dans la zone de montée. Belle semaine !`
             : v.step === 'down'
               ? 'Une séance aujourd’hui et tu repars vers le haut.'
               : `${v.count}${v.count === '1' ? 'er' : 'e'} la semaine dernière. Nouvelle semaine, nouvelles étincelles.`,
@@ -326,13 +325,13 @@ const fr = {
   /** Libellés des réglages par type (écran « Moi › Notifications »). */
   kindLabels: {
     daily_challenge: 'Défi du jour',
-    needs_out: 'Ton minimoa a besoin de sortir',
+    needs_out: 'Ton minimoa aimerait sortir',
     new_encounter: 'Nouveaux liens',
     waved: 'On te fait signe',
     message: 'Messages',
     your_turn: 'À toi d’écrire (série d’un lien)',
-    link_in_danger: 'Lien en danger',
-    streak_in_danger: 'Série en danger',
+    link_in_danger: 'Un mot pour un lien',
+    streak_in_danger: 'Un rappel pour ta série',
     habit_proof: 'Preuve d’habitude',
     weekly_review: 'Bilan de la semaine',
     item_unlocked: 'Objets débloqués',
@@ -341,7 +340,7 @@ const fr = {
     group_invite: 'Invitations à un groupe',
     together_proposal: 'La tenir ensemble',
     group_message: 'Messages de groupe',
-    group_life_lost: 'Vie perdue d’un groupe',
+    group_life_lost: 'Un groupe t’attend',
     group_asleep: 'Groupe endormi',
     group_joined: 'Arrivées dans un groupe',
     first_steps: 'Premiers pas',
@@ -366,8 +365,8 @@ export const notificationTexts = defineMessages({
             : `${v.minimoa} has something for you.`,
       },
       needs_out: {
-        title: (v) => `${v.minimoa} wants to go out`,
-        body: () => 'A walk outside or a word to someone, and it’s back to its old self.',
+        title: (v) => `${v.minimoa} would love some fresh air`,
+        body: () => 'A walk outside or a word to someone, whenever you like.',
       },
       new_encounter: {
         title: (v) =>
@@ -403,21 +402,21 @@ export const notificationTexts = defineMessages({
         title: (v) => `Streak with ${v.name}`,
         body: (v) =>
           Number(v.more) > 0
-            ? `Your turn to write before midnight. And in ${v.more} other ${Number(v.more) > 1 ? 'links' : 'link'}.`
+            ? `Your turn to write, whenever you like. And in ${v.more} other ${Number(v.more) > 1 ? 'links' : 'link'}.`
             : Number(v.count) > 0
-              ? `${v.count} ${Number(v.count) > 1 ? 'days' : 'day'} in a row. Your turn to write before midnight.`
-              : `${v.name} wrote to you today. Your turn before midnight.`,
+              ? `${v.count} ${Number(v.count) > 1 ? 'days' : 'day'} in a row. One short message keeps it going.`
+              : `${v.name} wrote to you today. Reply whenever you like.`,
       },
       link_in_danger: {
         title: (v) => `Your link with ${v.name}`,
-        body: () => 'Your link is running a little low. One short message is enough to perk it up.',
+        body: () => 'It’s been a while. One short message and your link is back.',
       },
       streak_in_danger: {
-        title: (v) => `Your ${v.count}-day streak`,
+        title: (v) => `${v.count} ${Number(v.count) === 1 ? 'day' : 'days'} in a row`,
         body: (v) =>
           v.step === 'chemin'
-            ? 'Today’s session is still doable tonight.'
-            : 'Today’s challenge is still doable tonight.',
+            ? 'Today’s session is waiting, at your pace.'
+            : 'Today’s challenge is waiting, at your pace.',
       },
       habit_proof: {
         title: (v) => `${v.minimoa} would like to see`,
@@ -462,13 +461,12 @@ export const notificationTexts = defineMessages({
       },
       group_message: { title: (v) => v.group, body: (v) => `${v.name} wrote in the group.` },
       group_life_lost: {
-        title: (v) => `“${v.group}” lost a life`,
-        body: (v) =>
-          `${v.count} ${Number(v.count) === 1 ? 'life' : 'lives'} left. Today you pick it up together.`,
+        title: (v) => `“${v.group}” is waiting for you`,
+        body: () => 'Today you pick it up together.',
       },
       group_asleep: {
-        title: (v) => `“${v.group}” fell asleep`,
-        body: () => 'No lives left for now. Anyone can wake it up.',
+        title: (v) => `“${v.group}” is taking a nap`,
+        body: () => 'Anyone can wake it up, whenever they like.',
       },
       group_joined: {
         title: (v) =>
@@ -543,11 +541,11 @@ export const notificationTexts = defineMessages({
           v.step === 'passed'
             ? `${v.name} just passed you`
             : v.step === 'ending'
-              ? 'Last hours in your league'
+              ? 'Your league this week'
               : v.step === 'up'
                 ? `You’re moving up to the ${v.tier} League!`
                 : v.step === 'down'
-                  ? `You dropped to the ${v.tier} League`
+                  ? `You’re now in the ${v.tier} League`
                   : `You stay in the ${v.tier} League`,
         body: (v) =>
           v.step === 'passed'
@@ -555,7 +553,7 @@ export const notificationTexts = defineMessages({
             : v.step === 'ending'
               ? Number(v.more) > 0
                 ? `You’re #${v.count}. ${v.more} more sparks to reach the promotion zone.`
-                : `You’re #${v.count}, in the promotion zone. Hold on until midnight!`
+                : `You’re #${v.count}, in the promotion zone. Great week!`
               : v.step === 'down'
                 ? 'One session today and you’re climbing again.'
                 : `#${v.count} last week. New week, new sparks.`,
@@ -595,13 +593,13 @@ export const notificationTexts = defineMessages({
     },
     kindLabels: {
       daily_challenge: 'Daily challenge',
-      needs_out: 'Your minimoa needs to go out',
+      needs_out: 'Your minimoa would like to go out',
       new_encounter: 'New links',
       waved: 'Waves at you',
       message: 'Messages',
       your_turn: 'Your turn to write (link streak)',
-      link_in_danger: 'Link in danger',
-      streak_in_danger: 'Streak in danger',
+      link_in_danger: 'A word for a link',
+      streak_in_danger: 'A nudge for your streak',
       habit_proof: 'Habit proof',
       weekly_review: 'Weekly review',
       item_unlocked: 'Unlocked items',
@@ -610,7 +608,7 @@ export const notificationTexts = defineMessages({
       group_invite: 'Group invitations',
       together_proposal: 'Keep it together',
       group_message: 'Group messages',
-      group_life_lost: 'Group lost a life',
+      group_life_lost: 'A group is waiting',
       group_asleep: 'Group asleep',
       group_joined: 'Someone joined a group',
       first_steps: 'First steps',
@@ -632,8 +630,8 @@ export const notificationTexts = defineMessages({
             : `${v.minimoa} te ha preparado algo.`,
       },
       needs_out: {
-        title: (v) => `${v.minimoa} quiere salir`,
-        body: () => 'Una vuelta fuera o un mensaje a alguien, y recupera la chispa.',
+        title: (v) => `A ${v.minimoa} le apetece tomar el aire`,
+        body: () => 'Una vuelta fuera o un mensaje a alguien, cuando quieras.',
       },
       new_encounter: {
         title: (v) =>
@@ -671,21 +669,21 @@ export const notificationTexts = defineMessages({
         title: (v) => `Racha con ${v.name}`,
         body: (v) =>
           Number(v.more) > 0
-            ? `Te toca escribir antes de medianoche. Y en ${v.more} ${Number(v.more) === 1 ? 'vínculo más' : 'vínculos más'}.`
+            ? `Te toca escribir, cuando quieras. Y en ${v.more} ${Number(v.more) === 1 ? 'vínculo más' : 'vínculos más'}.`
             : Number(v.count) > 0
-              ? `${v.count} ${Number(v.count) === 1 ? 'día seguido' : 'días seguidos'}. Te toca escribir antes de medianoche.`
-              : `${v.name} te escribió hoy. Te toca antes de medianoche.`,
+              ? `${v.count} ${Number(v.count) === 1 ? 'día seguido' : 'días seguidos'}. Un mensajito y sigue.`
+              : `${v.name} te escribió hoy. Responde cuando quieras.`,
       },
       link_in_danger: {
         title: (v) => `Vínculo con ${v.name}`,
-        body: () => 'Vuestro vínculo anda un poco flojo. Un mensajito basta para animarlo.',
+        body: () => 'Hace un tiempo. Un mensajito y vuestro vínculo vuelve.',
       },
       streak_in_danger: {
-        title: (v) => `Tu racha de ${v.count} ${Number(v.count) !== 1 ? 'días' : 'día'}`,
+        title: (v) => `${v.count} ${Number(v.count) !== 1 ? 'días seguidos' : 'día seguido'}`,
         body: (v) =>
           v.step === 'chemin'
-            ? 'Tu sesión del día aún es posible esta noche.'
-            : 'El reto del día aún es posible esta noche.',
+            ? 'Tu sesión del día te espera, a tu ritmo.'
+            : 'El reto del día te espera, a tu ritmo.',
       },
       habit_proof: {
         title: (v) => `${v.minimoa} quiere ver algo`,
@@ -730,13 +728,12 @@ export const notificationTexts = defineMessages({
       },
       group_message: { title: (v) => v.group, body: (v) => `${v.name} ha escrito en el grupo.` },
       group_life_lost: {
-        title: (v) => `«${v.group}» pierde una vida`,
-        body: (v) =>
-          `Le ${Number(v.count) === 1 ? 'queda' : 'quedan'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoy volvéis a empezar juntos.`,
+        title: (v) => `«${v.group}» os espera`,
+        body: () => 'Hoy volvéis a empezar juntos.',
       },
       group_asleep: {
-        title: (v) => `«${v.group}» se ha dormido`,
-        body: () => 'Sin vidas por ahora. Cualquiera puede despertarlo.',
+        title: (v) => `«${v.group}» echa una siesta`,
+        body: () => 'Cualquiera puede despertarlo, cuando quiera.',
       },
       group_joined: {
         title: (v) =>
@@ -811,11 +808,11 @@ export const notificationTexts = defineMessages({
           v.step === 'passed'
             ? `${v.name} acaba de adelantarte`
             : v.step === 'ending'
-              ? 'Últimas horas en tu liga'
+              ? 'Tu liga esta semana'
               : v.step === 'up'
                 ? `¡Subes a la Liga ${v.tier}!`
                 : v.step === 'down'
-                  ? `Bajas a la Liga ${v.tier}`
+                  ? `Pasas a la Liga ${v.tier}`
                   : `Te quedas en la Liga ${v.tier}`,
         body: (v) =>
           v.step === 'passed'
@@ -823,7 +820,7 @@ export const notificationTexts = defineMessages({
             : v.step === 'ending'
               ? Number(v.more) > 0
                 ? `Vas ${v.count}.º. Te faltan ${v.more} chispas para entrar en la zona de ascenso.`
-                : `Vas ${v.count}.º, en la zona de ascenso. ¡Aguanta hasta medianoche!`
+                : `Vas ${v.count}.º, en la zona de ascenso. ¡Buena semana!`
               : v.step === 'down'
                 ? 'Una sesión hoy y vuelves a subir.'
                 : `${v.count}.º la semana pasada. Nueva semana, nuevas chispas.`,
@@ -863,13 +860,13 @@ export const notificationTexts = defineMessages({
     },
     kindLabels: {
       daily_challenge: 'Reto del día',
-      needs_out: 'Tu minimoa necesita salir',
+      needs_out: 'Tu minimoa quiere salir',
       new_encounter: 'Nuevos vínculos',
       waved: 'Te saludan',
       message: 'Mensajes',
       your_turn: 'Te toca escribir (racha de un vínculo)',
-      link_in_danger: 'Vínculo en peligro',
-      streak_in_danger: 'Racha en peligro',
+      link_in_danger: 'Un mensaje para un vínculo',
+      streak_in_danger: 'Un recordatorio de tu racha',
       habit_proof: 'Prueba de hábito',
       weekly_review: 'Resumen de la semana',
       item_unlocked: 'Objetos desbloqueados',
@@ -878,7 +875,7 @@ export const notificationTexts = defineMessages({
       group_invite: 'Invitaciones a un grupo',
       together_proposal: 'Mantenerlo juntos',
       group_message: 'Mensajes de grupo',
-      group_life_lost: 'Vida perdida de un grupo',
+      group_life_lost: 'Un grupo te espera',
       group_asleep: 'Grupo dormido',
       group_joined: 'Llegadas a un grupo',
       first_steps: 'Primeros pasos',
@@ -900,8 +897,8 @@ export const notificationTexts = defineMessages({
             : `${v.minimoa} preparou algo para você.`,
       },
       needs_out: {
-        title: (v) => `${v.minimoa} quer sair`,
-        body: () => 'Uma volta lá fora ou uma mensagem para alguém, e ele se anima de novo.',
+        title: (v) => `${v.minimoa} adoraria tomar um ar`,
+        body: () => 'Uma volta lá fora ou uma mensagem para alguém, quando você quiser.',
       },
       new_encounter: {
         title: (v) =>
@@ -939,21 +936,21 @@ export const notificationTexts = defineMessages({
         title: (v) => `Sequência com ${v.name}`,
         body: (v) =>
           Number(v.more) > 0
-            ? `Sua vez de escrever antes da meia-noite. E em mais ${v.more} ${Number(v.more) === 1 ? 'vínculo' : 'vínculos'}.`
+            ? `Sua vez de escrever, quando quiser. E em mais ${v.more} ${Number(v.more) === 1 ? 'vínculo' : 'vínculos'}.`
             : Number(v.count) > 0
-              ? `${v.count} ${Number(v.count) === 1 ? 'dia seguido' : 'dias seguidos'}. Sua vez de escrever antes da meia-noite.`
-              : `${v.name} escreveu hoje. Sua vez, antes da meia-noite.`,
+              ? `${v.count} ${Number(v.count) === 1 ? 'dia seguido' : 'dias seguidos'}. Uma mensagenzinha e continua.`
+              : `${v.name} escreveu hoje. Responda quando quiser.`,
       },
       link_in_danger: {
         title: (v) => `Vínculo com ${v.name}`,
-        body: () => 'O vínculo de vocês está meio parado. Uma mensagenzinha basta para animar.',
+        body: () => 'Faz um tempo. Uma mensagenzinha e o vínculo de vocês volta.',
       },
       streak_in_danger: {
-        title: (v) => `Sua sequência de ${v.count} ${Number(v.count) > 1 ? 'dias' : 'dia'}`,
+        title: (v) => `${v.count} ${Number(v.count) > 1 ? 'dias seguidos' : 'dia seguido'}`,
         body: (v) =>
           v.step === 'chemin'
-            ? 'Ainda dá para fazer a sessão do dia hoje à noite.'
-            : 'Ainda dá para fazer o desafio do dia hoje à noite.',
+            ? 'A sessão do dia está esperando, no seu ritmo.'
+            : 'O desafio do dia está esperando, no seu ritmo.',
       },
       habit_proof: { title: (v) => `${v.minimoa} quer ver`, body: () => 'Hora do seu hábito. Uma foto?' },
       weekly_review: {
@@ -995,13 +992,12 @@ export const notificationTexts = defineMessages({
       },
       group_message: { title: (v) => v.group, body: (v) => `${v.name} escreveu no grupo.` },
       group_life_lost: {
-        title: (v) => `«${v.group}» perdeu uma vida`,
-        body: (v) =>
-          `${Number(v.count) === 1 ? 'Resta' : 'Restam'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoje vocês recomeçam juntos.`,
+        title: (v) => `«${v.group}» está esperando vocês`,
+        body: () => 'Hoje vocês recomeçam juntos.',
       },
       group_asleep: {
-        title: (v) => `«${v.group}» adormeceu`,
-        body: () => 'Sem vidas por enquanto. Qualquer pessoa pode acordá-lo.',
+        title: (v) => `«${v.group}» está tirando uma soneca`,
+        body: () => 'Qualquer pessoa pode acordá-lo, quando quiser.',
       },
       group_joined: {
         title: (v) =>
@@ -1076,11 +1072,11 @@ export const notificationTexts = defineMessages({
           v.step === 'passed'
             ? `${v.name} acabou de te passar`
             : v.step === 'ending'
-              ? 'Últimas horas na sua liga'
+              ? 'Sua liga esta semana'
               : v.step === 'up'
                 ? `Você sobe para a Liga ${v.tier}!`
                 : v.step === 'down'
-                  ? `Você desce para a Liga ${v.tier}`
+                  ? `Você passa para a Liga ${v.tier}`
                   : `Você continua na Liga ${v.tier}`,
         body: (v) =>
           v.step === 'passed'
@@ -1088,7 +1084,7 @@ export const notificationTexts = defineMessages({
             : v.step === 'ending'
               ? Number(v.more) > 0
                 ? `Você está em ${v.count}º. Faltam ${v.more} faíscas para entrar na zona de subida.`
-                : `Você está em ${v.count}º, na zona de subida. Segure até meia-noite!`
+                : `Você está em ${v.count}º, na zona de subida. Boa semana!`
               : v.step === 'down'
                 ? 'Uma sessão hoje e você volta a subir.'
                 : `${v.count}º na semana passada. Nova semana, novas faíscas.`,
@@ -1128,13 +1124,13 @@ export const notificationTexts = defineMessages({
     },
     kindLabels: {
       daily_challenge: 'Desafio do dia',
-      needs_out: 'Seu minimoa precisa sair',
+      needs_out: 'Seu minimoa quer tomar um ar',
       new_encounter: 'Novos vínculos',
       waved: 'Acenaram para você',
       message: 'Mensagens',
       your_turn: 'Sua vez de escrever (sequência de um vínculo)',
-      link_in_danger: 'Vínculo em perigo',
-      streak_in_danger: 'Sequência em perigo',
+      link_in_danger: 'Uma mensagem para um vínculo',
+      streak_in_danger: 'Um lembrete da sua sequência',
       habit_proof: 'Prova de hábito',
       weekly_review: 'Resumo da semana',
       item_unlocked: 'Itens desbloqueados',
@@ -1143,7 +1139,7 @@ export const notificationTexts = defineMessages({
       group_invite: 'Convites para grupos',
       together_proposal: 'Manter juntos',
       group_message: 'Mensagens de grupo',
-      group_life_lost: 'Vida perdida de um grupo',
+      group_life_lost: 'Um grupo espera você',
       group_asleep: 'Grupo adormecido',
       group_joined: 'Chegadas em um grupo',
       first_steps: 'Primeiros passos',
@@ -1165,8 +1161,8 @@ export const notificationTexts = defineMessages({
             : `${v.minimoa} heeft iets voor je klaargezet.`,
       },
       needs_out: {
-        title: (v) => `${v.minimoa} wil naar buiten`,
-        body: () => 'Even naar buiten of iemand een berichtje sturen, en hij leeft weer op.',
+        title: (v) => `${v.minimoa} zou graag even buiten zijn`,
+        body: () => 'Even naar buiten of iemand een berichtje sturen, wanneer jij wilt.',
       },
       new_encounter: {
         title: (v) =>
@@ -1204,21 +1200,21 @@ export const notificationTexts = defineMessages({
         title: (v) => `Reeks met ${v.name}`,
         body: (v) =>
           Number(v.more) > 0
-            ? `Jouw beurt om te schrijven voor middernacht. En in ${v.more} ${Number(v.more) === 1 ? 'andere band' : 'andere banden'}.`
+            ? `Jouw beurt om te schrijven, wanneer je wilt. En in ${v.more} ${Number(v.more) === 1 ? 'andere band' : 'andere banden'}.`
             : Number(v.count) > 0
-              ? `${v.count} ${Number(v.count) === 1 ? 'dag' : 'dagen'} op rij. Jouw beurt om te schrijven voor middernacht.`
-              : `${v.name} schreef je vandaag. Jouw beurt, voor middernacht.`,
+              ? `${v.count} ${Number(v.count) === 1 ? 'dag' : 'dagen'} op rij. Eén berichtje en het gaat door.`
+              : `${v.name} schreef je vandaag. Antwoord wanneer je wilt.`,
       },
       link_in_danger: {
         title: (v) => `Band met ${v.name}`,
-        body: () => 'Jullie band zakt een beetje in. Eén berichtje is genoeg om hem op te vrolijken.',
+        body: () => 'Het is even geleden. Eén berichtje en jullie band is terug.',
       },
       streak_in_danger: {
-        title: (v) => `Je reeks van ${v.count} ${Number(v.count) === 1 ? 'dag' : 'dagen'}`,
+        title: (v) => `${v.count} ${Number(v.count) === 1 ? 'dag' : 'dagen'} op rij`,
         body: (v) =>
           v.step === 'chemin'
-            ? 'Je sessie van vandaag kan vanavond nog.'
-            : 'De uitdaging van vandaag kan vanavond nog.',
+            ? 'Je sessie van vandaag wacht op je, in je eigen tempo.'
+            : 'De uitdaging van vandaag wacht op je, in je eigen tempo.',
       },
       habit_proof: {
         title: (v) => `${v.minimoa} wil iets zien`,
@@ -1263,13 +1259,12 @@ export const notificationTexts = defineMessages({
       },
       group_message: { title: (v) => v.group, body: (v) => `${v.name} schreef in de groep.` },
       group_life_lost: {
-        title: (v) => `“${v.group}” verliest een leven`,
-        body: (v) =>
-          `Nog ${v.count} ${Number(v.count) === 1 ? 'leven' : 'levens'}. Vandaag pakken jullie het samen weer op.`,
+        title: (v) => `“${v.group}” wacht op jullie`,
+        body: () => 'Vandaag pakken jullie het samen weer op.',
       },
       group_asleep: {
-        title: (v) => `“${v.group}” is in slaap gevallen`,
-        body: () => 'Even geen levens meer. Iedereen kan de groep wakker maken.',
+        title: (v) => `“${v.group}” doet een dutje`,
+        body: () => 'Iedereen kan de groep wakker maken, wanneer hij wil.',
       },
       group_joined: {
         title: (v) =>
@@ -1344,11 +1339,11 @@ export const notificationTexts = defineMessages({
           v.step === 'passed'
             ? `${v.name} is je net voorbij`
             : v.step === 'ending'
-              ? 'Laatste uren in je competitie'
+              ? 'Je competitie deze week'
               : v.step === 'up'
                 ? `Je promoveert naar de ${v.tier}-competitie!`
                 : v.step === 'down'
-                  ? `Je degradeert naar de ${v.tier}-competitie`
+                  ? `Je zit nu in de ${v.tier}-competitie`
                   : `Je blijft in de ${v.tier}-competitie`,
         body: (v) =>
           v.step === 'passed'
@@ -1356,7 +1351,7 @@ export const notificationTexts = defineMessages({
             : v.step === 'ending'
               ? Number(v.more) > 0
                 ? `Je staat ${v.count}e. Nog ${v.more} vonken tot de promotiezone.`
-                : `Je staat ${v.count}e, in de promotiezone. Hou vol tot middernacht!`
+                : `Je staat ${v.count}e, in de promotiezone. Fijne week!`
               : v.step === 'down'
                 ? 'Eén sessie vandaag en je klimt weer.'
                 : `${v.count}e vorige week. Nieuwe week, nieuwe vonken.`,
@@ -1396,13 +1391,13 @@ export const notificationTexts = defineMessages({
     },
     kindLabels: {
       daily_challenge: 'Uitdaging van de dag',
-      needs_out: 'Je minimoa moet naar buiten',
+      needs_out: 'Je minimoa wil naar buiten',
       new_encounter: 'Nieuwe banden',
       waved: 'Iemand zwaait naar je',
       message: 'Berichten',
       your_turn: 'Jouw beurt om te schrijven (reeks van een band)',
-      link_in_danger: 'Band in gevaar',
-      streak_in_danger: 'Reeks in gevaar',
+      link_in_danger: 'Een berichtje voor een band',
+      streak_in_danger: 'Een zetje voor je reeks',
       habit_proof: 'Bewijs van gewoonte',
       weekly_review: 'Weekoverzicht',
       item_unlocked: 'Ontgrendelde items',
@@ -1411,7 +1406,7 @@ export const notificationTexts = defineMessages({
       group_invite: 'Uitnodigingen voor een groep',
       together_proposal: 'Samen volhouden',
       group_message: 'Groepsberichten',
-      group_life_lost: 'Groep verloor een leven',
+      group_life_lost: 'Een groep wacht op je',
       group_asleep: 'Groep in slaap',
       group_joined: 'Nieuwe leden in een groep',
       first_steps: 'Eerste stappen',

@@ -28,7 +28,7 @@ const state = { endsAt: 1794783600, streak: 0, title: null, done: false };
 describe('charges ActivityKit', () => {
   it('démarrage : timestamp, event, content-state, attributes-type, attributes, alerte obligatoire, input-push-token ; dates en secondes', () => {
     // Un prénom glissé dans les attributs ne part jamais (écran verrouillé visible de tous).
-    const p = liveStartPayload({ now: NOW, attributes: { ...attributes, otherName: 'Léa' } as typeof attributes, state, alert: { title: 'Un lien t’attend', body: 'À toi d’écrire avant minuit.' }, relevance: 75 });
+    const p = liveStartPayload({ now: NOW, attributes: { ...attributes, otherName: 'Léa' } as typeof attributes, state, alert: { title: 'Un lien t’attend', body: 'À toi d’écrire, quand tu veux.' }, relevance: 75 });
     expect(p).toEqual({
       aps: {
         timestamp: Math.floor(NOW.getTime() / 1000),
@@ -38,7 +38,7 @@ describe('charges ActivityKit', () => {
         'relevance-score': 75,
         'attributes-type': 'BlowyActivityAttributes',
         attributes,
-        alert: { title: 'Un lien t’attend', body: 'À toi d’écrire avant minuit.' },
+        alert: { title: 'Un lien t’attend', body: 'À toi d’écrire, quand tu veux.' },
         'input-push-token': 1,
       },
     });
@@ -209,8 +209,8 @@ describe('événements de bout en bout (mémoire)', () => {
     expect(LiveActivityAttributesZ.strict().safeParse(start?.payload.aps.attributes).success).toBe(true);
     // Écran verrouillé d'une app de rencontre : jamais le prénom de l'autre (audit App Store, HIG Live Activities).
     expect(start?.payload.aps.attributes).not.toHaveProperty('otherName');
-    expect(start?.payload.aps.alert).toEqual({ title: 'Un lien t’attend', body: 'À toi d’écrire avant minuit.' });
-    // Jamais plus de 8 h (limite d'Apple) : ici minuit arrive avant.
+    expect(start?.payload.aps.alert).toEqual({ title: 'Un lien t’attend', body: 'À toi d’écrire, quand tu veux.' });
+    // Jamais plus de 8 h (limite d'Apple).
     const endsAt = start?.payload.aps['content-state'].endsAt ?? 0;
     expect(endsAt * 1000 - world.clock.now().getTime()).toBeLessThanOrEqual(8 * 3_600_000);
     // L'activité porte l'alerte : pas de seconde notification sur iOS.

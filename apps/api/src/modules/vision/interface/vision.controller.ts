@@ -36,8 +36,9 @@ export const toMapDto = (r: MapResult, locale: Locale = 'fr'): MapDto => ({
   center: r.center ? latLng(r.center) : null,
   radiusKm: r.radiusKm,
   pins: r.pins.map((p) => ({
-    // Sur la carte : la photo, nette avec Minimoa+, floue en gratuit ; et l'activité du jour.
-    user: toPerson(p.profile, toPublicPet(p.pet, moodForShape(shapeOf(p.pet.needs))), !p.avatarUrl ? 'hidden' : p.clearFace ? 'clear' : 'blurred', p.avatarUrl),
+    // Sur la carte : la photo, floue pour tout le monde jusqu'au lien noué (décision 7, docs/ADA-2027.md : gratuit ou
+    // Minimoa+), cachée sans photo ; et l'activité du jour.
+    user: toPerson(p.profile, toPublicPet(p.pet, moodForShape(shapeOf(p.pet.needs))), p.avatarUrl ? 'blurred' : 'hidden', p.avatarUrl),
     activeToday: p.activeToday,
     position: latLng(p.match.shown),
     compatibility: p.match.score,

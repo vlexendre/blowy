@@ -116,7 +116,10 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     expect(hurt.lives).toBe(5);
     expect(hurt.myPet.mood).toBe('neutre');
     const again = await alice.api.links.messages(link.id);
-    const lines = again.messages.filter((m) => /5\svies/.test(m.body ?? ''));
+    // Le texte ne chiffre plus les vies (voice.lifeLost) : on reconnaît la réplique à son ton.
+    const lines = again.messages.filter((m) =>
+      /Une journée tranquille|on vous attend sans se presser|Un mot suffit à nous remettre|On vous garde de la place/.test(m.body ?? ''),
+    );
     expect(lines).toHaveLength(1);
   });
 

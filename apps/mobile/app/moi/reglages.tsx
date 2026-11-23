@@ -1,20 +1,18 @@
 /** Réglages (V6-Reglages) : compte, confidentialité (position, bloqués), langue, aide et pages légales (en feuille), déconnexion. */
-import { Banner, Button, SettingsSection, SettingsTemplate, SheetTemplate, Stagger, Text } from '@blowy/ui';
+import { Button, SettingsSection, SettingsTemplate, SheetTemplate, Stagger, Text } from '@blowy/ui';
 import Constants from 'expo-constants';
-import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
 import { ScreenMotion, useApi } from '@/core';
 import { setAnalyticsConsent, useAnalyticsConsent } from '@/features/analytics';
-import { openLegal, useMe, useUpdateMe } from '@/features/me';
+import { openLegal, useMe } from '@/features/me';
 import { openPlus } from '@/features/plus';
 import { unregisterDevice } from '@/features/notifications';
 import { useBlocks } from '@/features/safety';
 import { confirmAction, goBack, useSignOut } from '@/features/session';
 import { common } from '@/locales/common';
-import { groupes } from '@/locales/groupes';
 import { croissance } from '@/locales/croissance';
 import { useMoments } from '@/features/moments';
 import { moi } from '@/locales/moi';
@@ -27,8 +25,6 @@ export default function Reglages() {
   const me = useMe();
   const blocks = useBlocks();
   const signOut = useSignOut();
-  const updateMe = useUpdateMe();
-  const qc = useQueryClient();
   const [languageSheet, setLanguageSheet] = useState(false);
   const [helpSheet, setHelpSheet] = useState(false);
   /** Une page d'aide ou légale : la feuille se range d'abord. */
@@ -70,7 +66,7 @@ export default function Reglages() {
           { key: 'identity', title: t.rows.identity.title, subtitle: m ? moi.identite.gender[m.identity.gender] : undefined, onPress: () => router.push('/moi/identite') },
           { key: 'plus', title: t.rows.plus.title, subtitle: t.rows.plus.subtitle(!!m?.plus), onPress: () => openPlus('generic') },
           { key: 'notifications', ...t.rows.notifications, onPress: () => router.push('/moi/notifications') },
-          // Moments à partager (séries, groupes) : une carte proposée une fois ; coupé, plus rien n'est proposé.
+          // Moments à partager (séries) : une carte proposée une fois ; coupé, plus rien n'est proposé.
           {
             key: 'moments',
             title: croissance.settings.title,
@@ -91,24 +87,6 @@ export default function Reglages() {
             subtitle: t.rows.location.subtitle(!!m?.identity.location.consentAt),
             onPress: () => router.push('/moi/position'),
           },
-          // « Montrer mes habitudes » (spéc. §25), activé par défaut ; coupé : rien n'est montré, aucune suggestion « ensemble ».
-          {
-            key: 'habits',
-            title: groupes.settings.showHabits,
-            subtitle: groupes.settings.showHabitsText,
-            switchValue: m?.showHabits !== false,
-            onSwitchChange: (on: boolean) =>
-              updateMe.mutate(
-                { showHabits: on },
-                {
-                  onSuccess: () => {
-                    void qc.invalidateQueries({ queryKey: ['together'] });
-                    void qc.invalidateQueries({ queryKey: ['rituals', 'habits'] });
-                  },
-                },
-              ),
-            disabled: !m,
-          },
           // Statistiques d'usage (Amplitude, États-Unis) : coupées tant que la personne n'a pas dit oui.
           {
             key: 'analytics',
@@ -125,7 +103,6 @@ export default function Reglages() {
           },
         ]}
       />
-      {updateMe.isError ? <Banner key="habitsError" tone="error" text={groupes.settings.saveError} onClose={() => updateMe.reset()} closeLabel={common.close} /> : null}
       <SettingsSection
         key="app"
         title={t.sections.app}

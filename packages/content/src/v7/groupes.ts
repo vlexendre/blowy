@@ -37,7 +37,7 @@ type EventLine = (v: GroupEventVars) => string;
 const fr = {
   /** Dit avant de rejoindre un groupe d'habitude. */
   transparency:
-    'Dans ce groupe, chacun voit l’état du jour des autres : tenu, joker ou manqué. Jamais les photos, jamais l’heure.',
+    'Dans ce groupe, chacun voit l’état du jour des autres : tenu, joker ou en pause. Jamais les photos, jamais l’heure.',
   /** Même engagement que dans les liens, sans lecture par une IA. */
   privacy:
     'Aucun humain ne lit vos messages, et aucune IA non plus : dans un groupe, les minimoas ne parlent que des événements.',
@@ -56,8 +56,8 @@ const fr = {
     renamed: (v) => `${v.name} renomme le groupe : « ${v.group} ».`,
     joker: (v) => `${v.name} pose un joker.`,
     milestone: (v) => `${v.count} jours d’affilée, tous ensemble.`,
-    life_lost: (v) => `Une vie de moins. Il en reste ${v.count}.`,
-    life_gained: () => 'Une semaine sans faute : une vie de plus.',
+    life_lost: () => 'Un jour de pause. On repart ensemble.',
+    life_gained: () => 'Une belle semaine : une vie de plus.',
     asleep: () => 'Le groupe s’endort. N’importe qui peut le réveiller.',
     woke: (v) => `${v.name} réveille le groupe. Cinq vies, on repart.`,
     closed: () => 'Ce groupe a été fermé par la modération.',
@@ -99,7 +99,7 @@ export const groupesText = defineMessages<GroupesText>({
   fr,
   en: {
     transparency:
-      'In this group, everyone sees how the others did today: kept, joker or missed. Never photos, never times.',
+      'In this group, everyone sees how the others did today: kept, joker or resting. Never photos, never times.',
     privacy: 'No human reads your messages, and no AI either: in a group, minimoas only speak about events.',
     habitsVisibility:
       'The names of your habits, their streaks and your consistency are shown to the people your minimoa introduces you to and to your links. Never proof photos, never times.',
@@ -114,8 +114,8 @@ export const groupesText = defineMessages<GroupesText>({
       renamed: (v) => `${v.name} renamed the group: “${v.group}”.`,
       joker: (v) => `${v.name} used a joker.`,
       milestone: (v) => `${v.count} days in a row, all together.`,
-      life_lost: (v) => `One life down. ${v.count} left.`,
-      life_gained: () => 'A week without a slip: one more life.',
+      life_lost: () => 'A day off. We pick it up together.',
+      life_gained: () => 'A lovely week: one more life.',
       asleep: () => 'The group fell asleep. Anyone can wake it up.',
       woke: (v) => `${v.name} woke the group up. Five lives, off again.`,
       closed: () => 'This group was closed by moderation.',
@@ -152,7 +152,7 @@ export const groupesText = defineMessages<GroupesText>({
   },
   es: {
     transparency:
-      'En este grupo, cada uno ve cómo les fue hoy a los demás: cumplido, comodín o fallado. Nunca fotos, nunca horas.',
+      'En este grupo, cada uno ve cómo les fue hoy a los demás: cumplido, comodín o en pausa. Nunca fotos, nunca horas.',
     privacy:
       'Ningún humano lee vuestros mensajes, y ninguna IA tampoco: en un grupo, los minimoas solo hablan de los acontecimientos.',
     habitsVisibility:
@@ -168,8 +168,8 @@ export const groupesText = defineMessages<GroupesText>({
       renamed: (v) => `${v.name} cambia el nombre del grupo: «${v.group}».`,
       joker: (v) => `${v.name} usa un comodín.`,
       milestone: (v) => `${v.count} días seguidos, todos juntos.`,
-      life_lost: (v) => `Una vida menos. Quedan ${v.count}.`,
-      life_gained: () => 'Una semana sin fallos: una vida más.',
+      life_lost: () => 'Un día de pausa. Seguimos juntos.',
+      life_gained: () => 'Una semana genial: una vida más.',
       asleep: () => 'El grupo se ha dormido. Cualquiera puede despertarlo.',
       woke: (v) => `${v.name} despierta al grupo. Cinco vidas, otra vez en marcha.`,
       closed: () => 'La moderación ha cerrado este grupo.',
@@ -206,7 +206,7 @@ export const groupesText = defineMessages<GroupesText>({
   },
   pt: {
     transparency:
-      'Neste grupo, cada pessoa vê como foi o dia das outras: mantido, coringa ou perdido. Nunca fotos, nunca horários.',
+      'Neste grupo, cada pessoa vê como foi o dia das outras: mantido, coringa ou em pausa. Nunca fotos, nunca horários.',
     privacy:
       'Nenhum humano lê as mensagens de vocês, e nenhuma IA também: em um grupo, os minimoas só falam dos acontecimentos.',
     habitsVisibility:
@@ -222,8 +222,8 @@ export const groupesText = defineMessages<GroupesText>({
       renamed: (v) => `${v.name} mudou o nome do grupo: «${v.group}».`,
       joker: (v) => `${v.name} usou um coringa.`,
       milestone: (v) => `${v.count} dias seguidos, todos juntos.`,
-      life_lost: (v) => `Uma vida a menos. ${v.count === 1 ? 'Resta' : 'Restam'} ${v.count}.`,
-      life_gained: () => 'Uma semana sem falhas: uma vida a mais.',
+      life_lost: () => 'Um dia de pausa. Seguimos juntos.',
+      life_gained: () => 'Uma semana ótima: uma vida a mais.',
       asleep: () => 'O grupo adormeceu. Qualquer pessoa pode acordá-lo.',
       woke: (v) => `${v.name} acordou o grupo. Cinco vidas, recomeçando.`,
       closed: () => 'Este grupo foi fechado pela moderação.',
@@ -260,7 +260,7 @@ export const groupesText = defineMessages<GroupesText>({
   },
   nl: {
     transparency:
-      'In deze groep ziet iedereen hoe de dag van de anderen ging: volgehouden, joker of gemist. Nooit foto’s, nooit tijden.',
+      'In deze groep ziet iedereen hoe de dag van de anderen ging: volgehouden, joker of pauze. Nooit foto’s, nooit tijden.',
     privacy:
       'Geen mens leest jullie berichten, en ook geen AI: in een groep praten de minimoas alleen over gebeurtenissen.',
     habitsVisibility:
@@ -276,8 +276,8 @@ export const groupesText = defineMessages<GroupesText>({
       renamed: (v) => `${v.name} geeft de groep een nieuwe naam: “${v.group}”.`,
       joker: (v) => `${v.name} zet een joker in.`,
       milestone: (v) => `${v.count} dagen op rij, allemaal samen.`,
-      life_lost: (v) => `Een leven minder. Nog ${v.count} over.`,
-      life_gained: () => 'Een week zonder misser: een leven erbij.',
+      life_lost: () => 'Een dagje pauze. We gaan samen verder.',
+      life_gained: () => 'Een mooie week: een leven erbij.',
       asleep: () => 'De groep is in slaap gevallen. Iedereen kan hem wakker maken.',
       woke: (v) => `${v.name} maakt de groep wakker. Vijf levens, we gaan weer.`,
       closed: () => 'Deze groep is gesloten door de moderatie.',

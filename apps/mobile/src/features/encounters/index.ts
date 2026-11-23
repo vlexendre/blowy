@@ -131,6 +131,7 @@ export function useAcceptInvite() {
 }
 
 export { useShareInvite } from './share';
+export { historyEntry } from './history';
 
 /** Une rencontre précise, lue dans le cache des rencontres (salut reçu ou pet croisé). */
 export function useEncounter(userId: string) {

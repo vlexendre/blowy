@@ -10,14 +10,12 @@ import { IconButton } from '../atoms/IconButton';
 import { Panel } from '../atoms/Panel';
 import { PetImage } from '../atoms/PetImage';
 import { Pressable } from '../atoms/Pressable';
-import { Sticker } from '../atoms/Sticker';
 import { Text } from '../atoms/Text';
+import { useAccessibilityFocus } from '../lib/a11y';
 import { layout } from '../lib/styles';
 import { Appear } from '../motion/Appear';
-import { Burst } from '../motion/Burst';
 import { CountUp } from '../motion/CountUp';
 import type { MascotMoment, MascotSource } from '../motion/mascot';
-import { PopIn } from '../motion/PopIn';
 import { color, radius, space } from '../theme';
 import type { PetLook } from '../types';
 
@@ -26,36 +24,23 @@ export interface StreakRiseProps {
   count: number;
   /** D'où le chiffre défile (la série d'avant) ; égal à `count` : rien ne bouge. */
   from: number;
-  /** « jours d’affilée » (partie estompée du titre). */
+  /** « jours d’affilée ». */
   unit: string;
   accessibilityLabel: string;
-  /** À incrémenter : confettis depuis le chiffre (palier de série). */
-  celebrate?: number;
-  /** Puce sous le chiffre (« 7 jours d'affilée »), fermée d'un tap. */
-  badge?: { label: string; onPress: () => void; accessibilityLabel: string } | null;
 }
 
-/** La série qui monte en fin de séance (V6-GFin) : la flamme, le chiffre qui défile d'un cran, « jours d'affilée ». */
-export function StreakRise({ count, from, unit, accessibilityLabel, celebrate = 0, badge }: StreakRiseProps) {
+/**
+ * La série en une ligne, au-dessus de la personne du jour (fin de séance) : la flamme, le chiffre qui défile d'un cran,
+ * « jours d'affilée ». Discrète : la fête n'a lieu qu'aux paliers (`StreakTier`). Animations réduites : rien ne bouge.
+ */
+export function StreakRise({ count, from, unit, accessibilityLabel }: StreakRiseProps) {
   return (
-    <View>
-      <View accessible accessibilityLabel={accessibilityLabel} style={[layout.row, styles.rise]}>
-        <PopIn from={0.3} trigger={count}>
-          <Icon name="flamme" size={40} />
-        </PopIn>
-        <CountUp value={count} from={from} variant="h1" size={40} />
-        <Text variant="h1" size={40} dim style={layout.shrink}>
-          {unit}
-        </Text>
-      </View>
-      <Burst kind="confetti" trigger={celebrate} style={styles.burst} />
-      {badge ? (
-        <Pressable onPress={badge.onPress} accessibilityRole="button" accessibilityLabel={badge.accessibilityLabel} style={styles.badge}>
-          <PopIn from={0.5}>
-            <Sticker label={badge.label} tone="accent" rotate={-3} />
-          </PopIn>
-        </Pressable>
-      ) : null}
+    <View accessible accessibilityRole="text" accessibilityLabel={accessibilityLabel} style={[layout.row, styles.rise]}>
+      <Icon name="flamme" size={22} />
+      <CountUp value={count} from={from} variant="bodyHeavy" size={17} />
+      <Text variant="bodyHeavy" size={17} muted style={layout.shrink}>
+        {unit}
+      </Text>
     </View>
   );
 }
@@ -74,22 +59,29 @@ export interface RevelationCardProps {
   mascotKey?: number;
   /** Nom du minimoa, lu par le lecteur d'écran sur le minimoa animé. */
   name?: string;
+  /**
+   * `accent` : panneau jaune (seul élément fort de l'écran) ; `quiet` : panneau de nuit, quand un bouton jaune est
+   * déjà à l'écran (fin de séance : « Dire bonjour » reste la seule chose jaune). Défaut `accent`.
+   */
+  tone?: 'accent' | 'quiet';
 }
 
 /** La révélation de fin de séance : un panneau jaune, une phrase sur toi, le minimoa qui dépasse en bas à droite. */
-export function RevelationCard({ kicker, title, text, species, mascot, mascotMoment, mascotKey, name }: RevelationCardProps) {
+export function RevelationCard({ kicker, title, text, species, mascot, mascotMoment, mascotKey, name, tone = 'accent' }: RevelationCardProps) {
+  const quiet = tone === 'quiet';
+  const ink = quiet ? undefined : color.dark;
   return (
-    <Appear distance={16}>
-      <Panel gradient="accent" radius={28} padding="lg" overflow style={styles.revelation}>
-        <View style={styles.revelationText}>
-          <Text variant="label" color={color.dark}>
+    <Appear distance={16} delay={quiet ? 250 : 0}>
+      <Panel gradient={quiet ? 'night' : 'accent'} radius={28} padding="lg" overflow style={[styles.revelation, quiet ? styles.revelationQuiet : null]}>
+        <View accessible style={styles.revelationText}>
+          <Text variant="label" color={ink} muted={quiet}>
             {kicker}
           </Text>
-          <Text variant="bodyHeavy" size={22} color={color.dark} style={styles.revelationTitle}>
+          <Text variant="bodyHeavy" size={22} color={ink} style={styles.revelationTitle}>
             {title}
           </Text>
           {text ? (
-            <Text variant="bodyBold" size={14} color={color.dark}>
+            <Text variant="bodyBold" size={14} color={ink}>
               {text}
             </Text>
           ) : null}
@@ -142,6 +134,8 @@ export interface PersonOfDayCardProps {
   /** Toucher la carte (hors boutons) : passer à la personne suivante, par exemple. */
   onPress?: () => void;
   pressLabel?: string;
+  /** Vrai : VoiceOver se pose sur le titre de la carte (premier bloc de l'écran). */
+  focusTitle?: boolean;
 }
 
 /**
@@ -150,13 +144,16 @@ export interface PersonOfDayCardProps {
  * réponses une à une.
  */
 export function PersonOfDayCard(p: PersonOfDayCardProps) {
+  const titleRef = useAccessibilityFocus(!!p.focusTitle);
   return (
     <Appear delay={150} distance={16}>
       <View style={styles.card}>
         <View style={[layout.row, styles.top]}>
-          <Text variant="label" color={color.accent} style={layout.shrink}>
-            {p.kicker}
-          </Text>
+          <View ref={titleRef} accessible accessibilityRole="header" accessibilityLabel={p.kicker} style={layout.shrink}>
+            <Text variant="label" color={color.accent}>
+              {p.kicker}
+            </Text>
+          </View>
           {p.onClose ? <IconButton glyph="close" label={p.closeLabel ?? ''} variant="plain" size={32} onPress={p.onClose} /> : null}
         </View>
         <Pressable
@@ -235,17 +232,22 @@ export interface CheminEmptyCardProps {
   /** Seconde action, discrète (« Choisir ma ville »). */
   secondaryLabel?: string | null;
   onSecondary?: () => void;
+  /** Vrai : VoiceOver se pose sur le titre (premier bloc de l'écran). */
+  focusTitle?: boolean;
 }
 
 /** Personne à présenter aujourd'hui : l'état honnête (le serveur dit pourquoi) et l'action utile. */
-export function CheminEmptyCard({ title, text, species, actionLabel, onAction, secondaryLabel, onSecondary }: CheminEmptyCardProps) {
+export function CheminEmptyCard({ title, text, species, actionLabel, onAction, secondaryLabel, onSecondary, focusTitle = false }: CheminEmptyCardProps) {
+  const titleRef = useAccessibilityFocus(focusTitle);
   return (
     <Appear delay={150} distance={16}>
       <Panel gradient="violet" radius={28} padding="lg" overflow style={styles.empty}>
         <View style={styles.emptyText}>
-          <Text variant="bodyHeavy" size={22}>
-            {title}
-          </Text>
+          <View ref={titleRef} accessible accessibilityRole="header" accessibilityLabel={title}>
+            <Text variant="bodyHeavy" size={22}>
+              {title}
+            </Text>
+          </View>
           <Text size={15}>{text}</Text>
         </View>
         <View pointerEvents="none" style={styles.emptyPet}>
@@ -259,10 +261,9 @@ export function CheminEmptyCard({ title, text, species, actionLabel, onAction, s
 }
 
 const styles = StyleSheet.create({
-  rise: { justifyContent: 'center', gap: space.sm + 2, flexWrap: 'wrap' },
-  burst: { position: 'absolute', left: '50%', top: 12 },
-  badge: { alignSelf: 'center', marginTop: space.sm },
+  rise: { gap: space.sm, flexWrap: 'wrap', minHeight: 28 },
   revelation: { minHeight: 150 },
+  revelationQuiet: { borderWidth: 1, borderColor: color.line },
   revelationText: { maxWidth: '70%', gap: space.xs + 2 },
   revelationTitle: { lineHeight: 27 },
   revelationPet: { position: 'absolute', right: -6, bottom: -10 },

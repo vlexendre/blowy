@@ -1,10 +1,8 @@
-import type { LeagueTier, Outfit, Species } from '@blowy/domain';
-import { Image } from 'expo-image';
+import type { Outfit, Species } from '@blowy/domain';
 import { useEffect, useState } from 'react';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { leagueImage } from '../assets/ligues';
 import { Glyph } from '../atoms/Glyph';
 import { Icon } from '../atoms/Icon';
 import { Pressable } from '../atoms/Pressable';
@@ -39,14 +37,6 @@ export interface CheminPathProps {
   pet?: { species: Species; outfit?: Outfit | null; id?: string } | null;
   /** Puce de la série en haut à droite (« 12 jours d’affilée ») → l'écran série. */
   streak?: { label: string; accessibilityLabel: string; onPress: () => void } | null;
-  /** Puce de la ligue en haut à gauche (« Pompon · 4e ») → le classement, comme les ligues de Duolingo. */
-  league?: {
-    tier: LeagueTier;
-    label: string;
-    accessibilityLabel: string;
-    onPress: () => void;
-    up?: boolean;
-  } | null;
   /** Hauteur (dans le chemin) de l'étape du jour, pour y faire défiler l'écran. */
   onCurrentY?: (y: number) => void;
   /** Hauteur et taille de chaque case dans le chemin (pour caler le défilement sur les chapitres). */
@@ -89,7 +79,7 @@ export function cheminSwing(i: number): number {
  * minimoa qui attend à côté, le coffre de l'unité, puis les verrouillées. La série en puce, en haut à droite.
  * Mouvement : l'étape du jour bat deux fois à l'arrivée (une vedette, rien en boucle) ; animations réduites : fixe.
  */
-export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, onCurrentY, onGeometry }: CheminPathProps) {
+export function CheminPath({ nodes, startLabel, onStart, pet, streak, onCurrentY, onGeometry }: CheminPathProps) {
   const [width, setWidth] = useState(0);
   const onLayout = (e: LayoutChangeEvent) => setWidth(Math.round(e.nativeEvent.layout.width));
   const half = Math.max(0, width / 2 - NOW / 2 - space.sm);
@@ -216,21 +206,7 @@ export function CheminPath({ nodes, startLabel, onStart, pet, streak, league, on
           ) : null}
         </>
       ) : null}
-      {/* Ligue et série à hauteur de l'étape du jour (le chemin peut être bien plus haut que l'écran). */}
-      {league ? (
-        <Pressable
-          onPress={league.onPress}
-          accessibilityRole="button"
-          accessibilityLabel={league.accessibilityLabel}
-          style={[styles.streak, styles.league, league.up ? styles.leagueUp : null, pillTop]}
-          scaleTo={0.96}
-        >
-          <Image source={leagueImage(league.tier)} style={styles.leagueBadge} contentFit="contain" />
-          <Text variant="bodyHeavy" size={14} numberOfLines={1}>
-            {league.label}
-          </Text>
-        </Pressable>
-      ) : null}
+      {/* Série à hauteur de l'étape du jour (le chemin peut être bien plus haut que l'écran). */}
       {streak ? (
         <Pressable
           onPress={streak.onPress}
@@ -308,29 +284,14 @@ function StepDisc({ node, size, onPress }: { node: CheminPathNode; size: number;
 }
 
 export interface CheminBadgesProps {
-  league?: CheminPathProps['league'];
   streak?: CheminPathProps['streak'];
 }
 
-/** Ligue et série côte à côte (accueil : collées sous la carte du minimoa, à droite). */
-export function CheminBadges({ league, streak }: CheminBadgesProps) {
-  if (!league && !streak) return null;
+/** Puce de la série (accueil : collée sous la carte du minimoa, à droite). */
+export function CheminBadges({ streak }: CheminBadgesProps) {
+  if (!streak) return null;
   return (
     <View style={styles.badges}>
-      {league ? (
-        <Pressable
-          onPress={league.onPress}
-          accessibilityRole="button"
-          accessibilityLabel={league.accessibilityLabel}
-          style={[styles.streak, styles.badge, styles.leagueBorder, league.up ? styles.leagueUp : null]}
-          scaleTo={0.96}
-        >
-          <Image source={leagueImage(league.tier)} style={styles.leagueBadge} contentFit="contain" />
-          <Text variant="bodyHeavy" size={14} numberOfLines={1}>
-            {league.label}
-          </Text>
-        </Pressable>
-      ) : null}
       {streak ? (
         <Pressable onPress={streak.onPress} accessibilityRole="button" accessibilityLabel={streak.accessibilityLabel} style={[styles.streak, styles.badge]} scaleTo={0.96}>
           <Icon name="flamme" size={18} />
@@ -346,10 +307,6 @@ export function CheminBadges({ league, streak }: CheminBadgesProps) {
 const styles = StyleSheet.create({
   badges: { flexDirection: 'row', justifyContent: 'flex-end', gap: space.sm, paddingTop: space.sm },
   badge: { position: 'relative', top: undefined, right: undefined, height: 38 },
-  leagueBorder: { borderColor: alpha(color.violet, 0.55) },
-  league: { right: undefined, left: 0, borderColor: alpha(color.violet, 0.55) },
-  leagueUp: { borderColor: alpha(color.ok, 0.7) },
-  leagueBadge: { width: 24, height: 24 },
   wrap: { width: '100%' },
   abs: { position: 'absolute' },
   // Bandeau d'univers : pleine largeur, comme les unités de Duolingo.

@@ -33,7 +33,7 @@ import { formatDate } from '@/locales/runtime';
 /** Où l'on avance vers chaque étape. */
 const SHORTCUT: Record<StatKey, Href | null> = {
   careDays: '/(tabs)/pet',
-  links: '/(tabs)/rencontres',
+  links: '/(tabs)/quartier',
   bestLevel: '/(tabs)/chats',
   bestStreak: '/(tabs)/chats',
   // Défi du jour et habitudes : hors de l'interface V1 (Ton chemin) : pas de raccourci (l'objet se gagne encore par
@@ -43,7 +43,7 @@ const SHORTCUT: Record<StatKey, Href | null> = {
   ritualStreak: '/pet/serie',
   habitsKept: null,
   referrals: '/(tabs)/moi',
-  founded: '/(tabs)/rencontres',
+  founded: '/(tabs)/quartier',
 };
 
 export default function WardrobeScreen() {

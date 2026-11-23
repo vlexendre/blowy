@@ -11,7 +11,6 @@ import { keys, useApi } from '@/core';
 import { trackAccountCreated } from '@/features/analytics';
 import { usePendingInvite } from '@/features/encounters';
 import { currentAttribution } from '@/features/growth/attribution';
-import { useDeepLink } from '@/features/notifications/deeplink';
 import { getLocale } from '@/locales/runtime';
 
 import { readPosition } from './permissions';
@@ -234,9 +233,6 @@ export function useOnboard() {
       qc.setQueryData(keys.me, me);
       // Statistiques d'usage : seulement avec l'accord (donné juste avant, sur l'écran « statistiques »).
       trackAccountCreated();
-      // Code d'un groupe tapé à l'inscription : sa page « rejoindre » s'ouvre juste après.
-      const d = useDraft.getState();
-      if (d.codeKind === 'group' && d.inviteCode.trim()) useDeepLink.getState().park(`/g/${d.inviteCode.trim().toUpperCase()}`);
       void qc.invalidateQueries({ queryKey: keys.links });
     },
   });

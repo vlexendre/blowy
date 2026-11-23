@@ -102,7 +102,7 @@ export function useRenamePet() {
   });
 }
 
-/** Les rituels (défi du jour, série, habitudes, bilans) vivent dans `@/features/rituals`. */
+/** Le jour (série, fête d'une série) vit dans `@/features/rituals`. */
 
 /**
  * S'occuper du pet : nourrir, jouer, sieste, câlin. Optimiste : les jauges bougent à l'appui (règle du domaine), la

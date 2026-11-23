@@ -5,8 +5,8 @@
  * puis le chemin sinueux (étapes faites, celle du jour avec « Commencer », coffre, verrouillées) et la série en puce
  * (→ `/pet/serie`). Les 4 soins en pastille dans la carte du minimoa (en bas à gauche). Puis, s'il y a lieu, un bonjour reçu, un message, la position à
  * activer. États du jour : séance à faire, bonus, faite (revoir sa personne du jour, « Demain, une nouvelle séance »),
- * tout fait. Plus de question de sortie, de tuiles défi / habitudes, de jauges ni de défi en plein écran (V1 :
- * les écrans restent, joignables par leurs liens). `blowy://chemin` ouvre l'accueil sur la séance (`?chemin=1`).
+ * tout fait. Plus de question de sortie, de défi, d'habitudes ni de ligue (supprimés de l'app, docs/ADA-2027.md).
+ * `blowy://chemin` ouvre l'accueil sur la séance (`?chemin=1`).
  */
 import { ApiError } from '@blowy/api-client';
 import { careLabel, shapeLabel } from '@/locales/content';
@@ -82,9 +82,7 @@ import {
   useCheminMap,
   useCheminResults,
 } from '@/features/chemin';
-import { useProgression } from '@/features/progression';
 import { accueil as a } from '@/locales/accueil';
-import { progression as lp } from '@/locales/progression';
 import { home as t } from '@/locales/pet';
 import { carte } from '@/locales/rencontres';
 import { chemin as c } from '@/locales/chemin';
@@ -127,10 +125,6 @@ export default function PetHome() {
   const wardrobe = useWardrobe();
   const today = useRitualsToday();
   const me = useMe();
-  // La ligue en puce sur le chemin (façon Duolingo) : ton rang de la semaine, toujours sous les yeux.
-  const prog = useProgression();
-  const lg = prog.data?.league;
-  const myRank = lg?.rows.find((r) => r.me)?.rank ?? null;
   // Le chemin entier défile : une fois par ouverture, l'écran descend jusqu'à l'étape du jour.
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const scrolledTo = useRef(false);
@@ -522,17 +516,8 @@ export default function PetHome() {
                     />
                   }
                 />
-                {/* Ligue et série : collées sous la carte, à droite. */}
+                {/* Série : collée sous la carte, à droite. */}
                 <CheminBadges
-                  league={lg && myRank
-                          ? {
-                              tier: lg.tier,
-                              label: lp.league.pill(lp.league.tiers[lg.tier], myRank),
-                              accessibilityLabel: lp.league.pillA11y(lp.league.tiers[lg.tier], myRank),
-                              up: lg.toPromote === 0,
-                              onPress: () => router.push('/moi/ligue'),
-                            }
-                          : null}
                   streak={cm ? {
                         label: c.home.streak(cm.streak.current),
                         accessibilityLabel: c.home.streakA11y(cm.streak.current),
@@ -710,8 +695,7 @@ type Href = Parameters<ReturnType<typeof useRouter>['push']>[0];
 
 /**
  * Sous le chemin, la position à activer (sans elle, personne à présenter). Un bonjour reçu ou un message passent par
- * le bouton du bas (`NowBar`). Les présentations passent désormais par la séance du jour (V1) ; le groupe,
- * le test de vision et « Nino cherche encore » ne sont plus ici.
+ * le bouton du bas (`NowBar`). Les présentations passent désormais par la séance du jour (V1) ; le test de vision et « Nino cherche encore » ne sont plus ici.
  */
 function PeopleNow({
   state,

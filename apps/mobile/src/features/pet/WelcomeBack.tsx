@@ -21,7 +21,7 @@ export function WelcomeBack({ petName, onClose }: { petName: string; onClose: ()
     unread > 0
       ? { label: t.welcomeBackChats, go: () => router.navigate('/(tabs)/chats') }
       : waves > 0
-        ? { label: t.welcomeBackWaves, go: () => router.navigate('/(tabs)/rencontres') }
+        ? { label: t.welcomeBackWaves, go: () => router.navigate('/(tabs)/quartier') }
         : null;
   return (
     <Appear once="home:welcome-back" delay={150}>

@@ -5,19 +5,13 @@ export {
   TAB_BAR_SPACE,
   useTabBarSpace,
 } from './BottomTabBar';
-export { ChallengeCard, type ChallengeCardProps } from './ChallengeCard';
 export { ChatThread, type ChatThreadProps } from './ChatThread';
 export { Composer, type ComposerProps } from './Composer';
-export { EvolutionHero, type EvolutionHeroProps } from './EvolutionHero';
 export { EncountersHero, type EncountersHeroProps } from './EncountersHero';
 export { EncounterStage, type EncounterStageHandle, type EncounterStageProps } from './EncounterStage';
-export { type EvolutionStep, EvolutionTimeline, type EvolutionTimelineProps } from './EvolutionTimeline';
-export { type FormGauge, type FormOption, FormPicker, type FormPickerProps } from './FormPicker';
-export { type GaugeDetail, GaugePanel, type GaugePanelProps } from './GaugePanel';
 export { GhostPanel, type GhostPanelProps } from './GhostPanel';
 export { IncomingCard, type IncomingCardProps } from './IncomingCard';
 export { InvitationPanel, type InvitationPanelProps } from './InvitationPanel';
-export { LevelHero, type LevelHeroProps } from './LevelHero';
 export { LevelLadder, type LevelLadderProps } from './LevelLadder';
 export { LinkRow, type LinkRowProps } from './LinkRow';
 export { LivesPanel, type LivesPanelProps, type WeekDayState } from './LivesPanel';
@@ -26,11 +20,9 @@ export { NudgeBanner, type NudgeBannerProps } from './NudgeBanner';
 export { PetHero, type PetHeroProps } from './PetHero';
 export { PetTip, type PetTipProps } from './PetTip';
 export { PhotoEditCard, type PhotoEditCardProps } from './PhotoEditCard';
-export { PetQuote, type PetQuoteProps } from './PetQuote';
 export { PlusBanner, type PlusBannerProps } from './PlusBanner';
 export { QuartierCard, type QuartierCardProps } from './QuartierCard';
 export { ProfileHero, type ProfileHeroProps } from './ProfileHero';
-export { PetSummary, type PetSummaryAction, type PetSummaryItem, type PetSummaryProps } from './PetSummary';
 export { type Plan, PlanPicker, type PlanPickerProps } from './PlanPicker';
 export {
   QuizResult,
@@ -95,44 +87,19 @@ export {
 export { RenameCard, type RenameCardProps } from './RenameCard';
 export { PetHomeSkeleton } from './PetHomeSkeleton';
 export { VisionMatch, type VisionMatchAxis, type VisionMatchProps } from './VisionMatch';
-export { MinimoaConsent, type MinimoaConsentProps } from './MinimoaConsent';
-export { type ConsentFact, ConsentFacts, type ConsentFactsProps } from './ConsentFacts';
 export { type MapPoint, projectAround, ZoneMap, type ZoneMapPin, type ZoneMapProps } from './ZoneMap';
 export { MapPinCard, type MapPinCardProps, MapPlusStrip, type MapPlusStripProps } from './MapPinCard';
-export {
-  ChallengeEntry,
-  type ChallengeEntryProps,
-  ChallengeKindIcon,
-  type ChallengeKindLook,
-} from './ChallengeEntry';
-export {
-  type ChallengeReward,
-  ChallengeStage,
-  ChallengeStagePlaceholder,
-  type ChallengeStagePlaceholderProps,
-  type ChallengeStageProps,
-} from './ChallengeStage';
-export { HabitCard, type HabitCardProps } from './HabitCard';
+export { PeopleSheet, type PeopleSheetProps, type SheetDetent } from './PeopleSheet';
 export { type Milestone, MilestoneTrack, type MilestoneTrackProps } from './MilestoneTrack';
-export { type OutingAnswerLook, OutingCard, type OutingCardProps } from './OutingCard';
-export { type PrivateMemoryLook, PrivateMemoryGrid, type PrivateMemoryGridProps } from './PrivateMemoryGrid';
-export { ProofStage, type ProofStageProps, type ProofTone, type ProofVerdictLook } from './ProofStage';
-export { ReviewHero, type ReviewHeroProps } from './ReviewHero';
 export { StreakCelebration, type StreakCelebrationProps } from './StreakCelebration';
 export { StreakHero, type StreakHeroProps } from './StreakHero';
 export { type StreakDayStatus, StreakWeek, type StreakWeekProps } from './StreakWeek';
-export { StylePanel, type StylePanelProps } from './StylePanel';
-export { type VisionAxisLook, VisionPanel, type VisionPanelProps } from './VisionPanel';
 export { VisionReading, type VisionReadingAxis, type VisionReadingProps } from './VisionReading';
 export { DateWheel, type DateParts, type DateWheelProps } from './DateWheel';
 export { AgeCard, type AgeCardProps } from './AgeCard';
 export { ZonePreview, type ZonePreviewProps } from './ZonePreview';
 export { NotifPreview, type NotifPreviewProps } from './NotifPreview';
 export { VisionHero, type VisionHeroProps } from './VisionHero';
-export { GroupRow, type GroupRowProps } from './GroupRow';
-export { GroupInviteRow, type GroupInviteRowProps } from './GroupInviteRow';
-export { SharedHabitsCard, type SharedHabitsCardProps, type SharedHabitSide } from './SharedHabitsCard';
-export { TogetherCard, type TogetherCardProps } from './TogetherCard';
 export { ShareCard, type ShareCardProps } from './ShareCard';
 export { PeopleCard, type PeopleCardProps } from './PeopleCard';
 export { PlusHero, type PlusHeroPose, type PlusHeroProps } from './PlusHero';
@@ -180,9 +147,4 @@ export {
 } from './CheminProfile';
 export { type PreviewPerson, PreviewPeople, type PreviewPeopleProps } from './PreviewPeople';
 export { NOW_BAR_SPACE, NowBar, type NowBarProps } from './NowBar';
-export { LeagueRow, type LeagueRowProps, LeagueZoneLine } from './LeagueRow';
-export { LeagueHowCard } from './LeagueHowCard';
-export { TrophyCard, type TrophyCardProps } from './TrophyCard';
-export { SessionCelebration, type CelebrationTile, type SessionCelebrationProps } from './SessionCelebration';
-export { STREAK_TIER_BACKGROUND, StreakTier, type StreakTierDay, type StreakTierProps } from './StreakTier';
-export { LeagueHeader, type LeagueHeaderProps } from './LeagueHeader';
+export { STREAK_TIER_BACKGROUND, STREAK_TIER_MS, StreakTier, type StreakTierProps } from './StreakTier';

@@ -466,12 +466,12 @@ describe('notifications', () => {
   });
 
   it('langue du profil : chaque notification dans la langue de la personne', async () => {
-    expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '4', more: '0' })).toEqual({ title: 'Série avec Léa', body: '4 jours d’affilée. À toi d’écrire avant minuit.' });
-    expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '0' })).toEqual({ title: 'Série avec Léa', body: 'Léa t’a écrit aujourd’hui. À toi avant minuit.' });
-    expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '4', more: '2' }).body).toBe('À toi d’écrire avant minuit. Et dans 2 autres liens.');
-    expect(notificationText('en', 'your_turn', { name: 'Léa', count: '1' })).toEqual({ title: 'Streak with Léa', body: '1 day in a row. Your turn to write before midnight.' });
-    expect(notificationText('nl', 'your_turn', { name: 'Léa', count: '0' })).toEqual({ title: 'Reeks met Léa', body: 'Léa schreef je vandaag. Jouw beurt, voor middernacht.' });
-    expect(notificationText('nl', 'your_turn', { name: 'Léa', count: '1' }).body).toBe('1 dag op rij. Jouw beurt om te schrijven voor middernacht.');
+    expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '4', more: '0' })).toEqual({ title: 'Série avec Léa', body: '4 jours d’affilée. Un petit mot et ça continue.' });
+    expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '0' })).toEqual({ title: 'Série avec Léa', body: 'Léa t’a écrit aujourd’hui. Réponds quand tu veux.' });
+    expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '4', more: '2' }).body).toBe('À toi d’écrire, quand tu veux. Et dans 2 autres liens.');
+    expect(notificationText('en', 'your_turn', { name: 'Léa', count: '1' })).toEqual({ title: 'Streak with Léa', body: '1 day in a row. One short message keeps it going.' });
+    expect(notificationText('nl', 'your_turn', { name: 'Léa', count: '0' })).toEqual({ title: 'Reeks met Léa', body: 'Léa schreef je vandaag. Antwoord wanneer je wilt.' });
+    expect(notificationText('nl', 'your_turn', { name: 'Léa', count: '1' }).body).toBe('1 dag op rij. Eén berichtje en het gaat door.');
     const e = world.client();
     await e.api.me.onboard(onboardBody({ displayName: 'Eva', locale: 'pt' }));
     await e.api.notifications.registerDevice({ token: 'ExponentPushToken[eva]', platform: 'ios', timeZone: 'Europe/Lisbon' });

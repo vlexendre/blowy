@@ -92,7 +92,7 @@ export const plus = messages({
     perkLines: (pet: string, premium: number) => ({
       map_everywhere: ['Toute la carte', 'et d’autres villes'],
       more_encounters: ['10 personnes par jour', 'au lieu de 3'],
-      streak_jokers: ['3 jokers par semaine', 'pour sauver ta série'],
+      streak_jokers: ['3 jokers par semaine', 'pour les jours sans séance'],
       more_habits: ['6 habitudes', 'au lieu de 2'],
       detailed_review: ['Bilan détaillé', '4 semaines, lien par lien'],
       free_rename: [`Renommer ${pet}`, 'quand tu veux'],
@@ -201,7 +201,7 @@ export const plus = messages({
     perkLines: (pet: string, premium: number) => ({
       map_everywhere: ['The whole map', 'and other cities too'],
       more_encounters: ['10 people a day', 'instead of 3'],
-      streak_jokers: ['3 jokers a week', 'to save your streak'],
+      streak_jokers: ['3 jokers a week', 'for days without a session'],
       more_habits: ['6 habits', 'instead of 2'],
       detailed_review: ['Detailed review', '4 weeks, link by link'],
       free_rename: [`Rename ${pet}`, 'whenever you like'],
@@ -307,7 +307,7 @@ export const plus = messages({
     perkLines: (pet: string, premium: number) => ({
       map_everywhere: ['Todo el mapa', 'y también otras ciudades'],
       more_encounters: ['10 personas al día', 'en vez de 3'],
-      streak_jokers: ['3 comodines por semana', 'salva tu racha'],
+      streak_jokers: ['3 comodines por semana', 'para los días sin sesión'],
       more_habits: ['6 hábitos', 'en vez de 2'],
       detailed_review: ['Resumen detallado', 'vínculo a vínculo'],
       free_rename: [`Renombrar a ${pet}`, 'cuando quieras'],
@@ -519,7 +519,7 @@ export const plus = messages({
     perkLines: (pet: string, premium: number) => ({
       map_everywhere: ['De hele kaart', 'ook in andere steden'],
       more_encounters: ['10 mensen per dag', 'in plaats van 3'],
-      streak_jokers: ['3 jokers per week', 'red je reeks'],
+      streak_jokers: ['3 jokers per week', 'voor dagen zonder sessie'],
       more_habits: ['6 gewoontes', 'in plaats van 2'],
       detailed_review: ['Uitgebreid overzicht', 'band voor band'],
       free_rename: [`${pet} hernoemen`, 'wanneer je wilt'],

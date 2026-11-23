@@ -24,7 +24,7 @@ export const REVIEW_AFTER_PURCHASE_MS = DAY;
 export const SESSION_GAP_MS = 30 * 60_000;
 
 /** Les bons moments où l'on peut demander (« après utilisation »). */
-export type ReviewMoment = 'encounter_accepted' | 'proof_validated' | 'streak_milestone';
+export type ReviewMoment = 'encounter_accepted' | 'streak_milestone';
 
 /** Ce qui est gardé sur le téléphone (jamais envoyé). */
 export interface ReviewMemory {

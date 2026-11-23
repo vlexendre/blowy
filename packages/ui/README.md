@@ -241,11 +241,6 @@ ChoiceCardProps = { title: string; caption?: string; icon?: IconName | ReactNode
 ```ts
 DayChipProps = { label: string; }
 ```
-#### `EntryCard` — `src/molecules/EntryCard.tsx`
-```ts
-EntryCardProps = { title: string; text?: string; left?: ReactNode; badge?: string; chevron?: boolean; tone?: 'default' | 'alert'; onPress?: () => void; accessibilityLabel?: string; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
-// `.card.row` de V6-Accueil (garde-robe, caractère) ; alert : filet rouge (« il ne sort plus »)
-```
 #### `EmptyState` — `src/molecules/EmptyState.tsx`
 ```ts
 EmptyStateProps = { species?: Species; mood?: Mood | PetPose; title: TitleContent; text?: string; actionLabel?: string; onAction?: () => void; peek?: boolean; seed?: string; style?: StyleProp<ViewStyle>; }
@@ -254,11 +249,6 @@ EmptyStateProps = { species?: Species; mood?: Mood | PetPose; title: TitleConten
 #### `FeatureRow` — `src/molecules/FeatureRow.tsx`
 ```ts
 FeatureRowProps = { icon: IconName; title: string; text?: string; style?: StyleProp<ViewStyle>; }
-```
-#### `GaugeBar` — `src/molecules/GaugeBar.tsx`
-```ts
-GaugeBarProps = { value: number; low: string; high: string; caption?: string; target?: number; color?: string; compact?: boolean; selected?: boolean; onPress?: () => void; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
-// compteur, pas réglage : le remplissage part du centre vers un pôle avec un léger dépassement, sans curseur (rien à tirer)
 ```
 #### `Header` — `src/molecules/Header.tsx`
 ```ts
@@ -377,11 +367,6 @@ CareBarProps = { labels: Record<CareAction, { action: string; refused: string }>
 // labels : careLabel tel quel ; available : canCare(needs, action) ; pictos par défaut : CareIcon
 // lure (usePetLure, le même que PetStage) : appuyer 0,14 s puis glisser soulève le picto ; lâché sur le pet = onCare (comme un tap)
 ```
-#### `ChallengeCard` — `src/organisms/ChallengeCard.tsx`
-```ts
-ChallengeCardProps = { label: string; question: string; choices: readonly [string, string] | readonly string[]; done: boolean; picked?: number | null; doneLabel?: string; onChoose?: (choice: 0 | 1) => void; loading?: boolean; streak?: number; streakUnit?: string; gradient?: GradientName; }
-// réponse choisie : la carte s'incline et grandit pendant l'envoi ; résolue : elle se redresse en jaune, coche en pop
-```
 #### `ChatThread` — `src/organisms/ChatThread.tsx`
 ```ts
 ChatThreadProps = { messages: readonly MessageLook[]; myPet: PetLook; other: Pick<PersonLook, 'displayName' | 'avatarUrl' | 'face' | 'pet'>; otherName?: string; dayLabel: (day: string) => string; dayKey?: (at: string) => string; onEndReached?: () => void; loadingOlder?: boolean; onPhotoPress?: (message: MessageLook) => void; lockedPhotoLabel?: string; header?: ReactElement; empty?: ReactElement; contentStyle?: StyleProp<ViewStyle>; sendingLabel?: string; failedLabel?: string; onRetry?: (message: MessageLook) => void; }   // lignes mémoïsées : une frappe ou un message ajouté ne redessine pas tout le fil
@@ -389,14 +374,6 @@ ChatThreadProps = { messages: readonly MessageLook[]; myPet: PetLook; other: Pic
 #### `Composer` — `src/organisms/Composer.tsx`
 ```ts
 ComposerProps = { value: string; onChangeText: (text: string) => void; onSend: () => void; placeholder: string; disabled?: boolean; disabledText?: string; sending?: boolean; onAttach?: () => void; attachLabel?: string; sendLabel?: string; maxLength?: number; }
-```
-#### `EvolutionTimeline` — `src/organisms/EvolutionTimeline.tsx`
-```ts
-EvolutionTimelineProps = { events: readonly PetEventLook[]; eventLabels: Record<PetEventKind, string>; gaugeLabels: Record<GaugeKey, { low: string; high: string }>; dateLabel: (at: string) => string; emptyText?: string; }
-```
-#### `GaugePanel` — `src/organisms/GaugePanel.tsx`
-```ts
-GaugePanelProps = { gauges: Gauges; labels: Record<GaugeKey, { low: string; high: string }>; names?: Partial<Record<GaugeKey, string>>; title?: string; hint?: string; selected?: GaugeKey | null; onSelect?: (key: GaugeKey) => void; footer?: ReactNode; }
 ```
 #### `GhostPanel` — `src/organisms/GhostPanel.tsx`
 ```ts

@@ -75,13 +75,13 @@ export const rencontres = messages({
     retry: 'Réessayer',
     actionError: 'Ça n’a pas marché. Réessaie.',
     /** Minimoa qui boude (titre, `shapeLabel.boude`). */
-    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'BOUDE.', dim: true }],
+    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'EST TRANQUILLE.', dim: true }],
     sulkAction: 'M’occuper de lui',
     /**
      * Bandeau quand le minimoa boude ou est un peu à plat : ça ne bloque personne (le serveur présente quand même et
      * laisse saluer) ; les soins le gardent de bonne humeur.
      */
-    waveSulk: (pet: string): string => `${pet} boude un peu, mais il te présente quand même du monde`,
+    waveSulk: (pet: string): string => `${pet} est un peu tranquille, mais il te présente quand même du monde`,
     bofTitle: (pet: string): string => `${pet} est un peu à plat`,
     moodText: 'Ça ne change rien aux gens qu’il te présente. Un soin, et il retrouve sa bonne humeur.',
     /** Historique : rencontres passées, acceptées ou non. */
@@ -161,9 +161,9 @@ export const rencontres = messages({
     loadError: 'Couldn’t load encounters',
     retry: 'Try again',
     actionError: 'That didn’t work. Try again.',
-    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'IS SULKING.', dim: true }],
+    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'IS TAKING IT EASY.', dim: true }],
     sulkAction: 'Take care of it',
-    waveSulk: (pet: string): string => `${pet} is sulking a little, but still introduces you to people`,
+    waveSulk: (pet: string): string => `${pet} is taking it easy, but still introduces you to people`,
     bofTitle: (pet: string): string => `${pet} is a bit flat`,
     moodText: 'It doesn’t change who it introduces you to. A little care and it’s back in a good mood.',
     history: {
@@ -242,9 +242,9 @@ export const rencontres = messages({
     loadError: 'No se pudieron cargar los encuentros',
     retry: 'Reintentar',
     actionError: 'No ha funcionado. Inténtalo de nuevo.',
-    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'ESTÁ ENFURRUÑADO.', dim: true }],
+    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'ESTÁ TRANQUILO.', dim: true }],
     sulkAction: 'Ocuparme de él',
-    waveSulk: (pet: string): string => `${pet} está un poco enfurruñado, pero aun así te presenta gente`,
+    waveSulk: (pet: string): string => `${pet} está un poco tranquilo, pero aun así te presenta gente`,
     bofTitle: (pet: string): string => `${pet} está un poco apagado`,
     moodText: 'No cambia a quién te presenta. Un cuidado y vuelve a estar de buen humor.',
     history: {
@@ -323,9 +323,9 @@ export const rencontres = messages({
     loadError: 'Não foi possível carregar os encontros',
     retry: 'Tentar de novo',
     actionError: 'Não deu certo. Tente de novo.',
-    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'ESTÁ EMBURRADO.', dim: true }],
+    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'ESTÁ DE BOA.', dim: true }],
     sulkAction: 'Cuidar dele',
-    waveSulk: (pet: string): string => `${pet} está meio emburrado, mas mesmo assim te apresenta gente`,
+    waveSulk: (pet: string): string => `${pet} está meio quietinho, mas mesmo assim te apresenta gente`,
     bofTitle: (pet: string): string => `${pet} está meio pra baixo`,
     moodText: 'Isso não muda quem ele te apresenta. Um cuidado e ele volta ao bom humor.',
     history: {
@@ -404,9 +404,9 @@ export const rencontres = messages({
     loadError: 'Ontmoetingen konden niet worden geladen',
     retry: 'Opnieuw',
     actionError: 'Dat lukte niet. Probeer het opnieuw.',
-    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'MOKT.', dim: true }],
+    sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'DOET HET RUSTIG AAN.', dim: true }],
     sulkAction: 'Voor hem zorgen',
-    waveSulk: (pet: string): string => `${pet} mokt een beetje, maar stelt je toch mensen voor`,
+    waveSulk: (pet: string): string => `${pet} doet het rustig aan, maar stelt je toch mensen voor`,
     bofTitle: (pet: string): string => `${pet} is een beetje futloos`,
     moodText: 'Dat verandert niets aan wie hij je voorstelt. Een beetje zorg en hij is weer goedgehumeurd.',
     history: {

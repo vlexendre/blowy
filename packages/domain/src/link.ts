@@ -72,7 +72,7 @@ export type LevelKey = (typeof LEVEL_KEYS)[number];
 
 /**
  * Visage d'une personne. Lien noué (bonjour accepté des deux côtés) : net, dès le premier jour. Sur la carte, avant le
- * lien : floue en gratuit, nette avec Minimoa+. Ailleurs, sans lien : caché. (Avant le 21 nov. 2026, le visage d'un lien ne se révélait qu'au niveau 5.)
+ * lien : flou pour tout le monde, gratuit ou Minimoa+ (décision 7, docs/ADA-2027.md). Ailleurs, sans lien : caché. (Avant le 21 nov. 2026, le visage d'un lien ne se révélait qu'au niveau 5.)
  */
 export type FaceVisibility = 'hidden' | 'blurred' | 'clear';
 export const faceVisibility = (_level: number): FaceVisibility => 'clear';

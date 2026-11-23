@@ -1,6 +1,6 @@
 /**
- * Cache gardé entre deux lancements : à l'ouverture, l'accueil, la liste des chats, les derniers messages, les groupes
- * et les rencontres s'affichent tout de suite avec les dernières données connues, puis sont relus (elles sont datées :
+ * Cache gardé entre deux lancements : à l'ouverture, l'accueil, la liste des chats, les derniers messages et
+ * les rencontres s'affichent tout de suite avec les dernières données connues, puis sont relus (elles sont datées :
  * jamais « fraîches » au réveil). Rien d'autre n'est gardé : seulement ces clés, seulement la page la plus récente
  * d'un fil, quelques fils, pour la même personne, pour le même build, moins de 3 jours.
  */
@@ -20,13 +20,13 @@ interface Saved {
   state: DehydratedState;
 }
 
-/** Clés gardées : ce qui fait les premiers écrans (accueil, chats, un chat, groupes, rencontres). */
+/** Clés gardées : ce qui fait les premiers écrans (accueil, chats, un chat, rencontres). */
 export function keepQuery(key: readonly unknown[]): 'whole' | 'thread' | null {
   const [a, b, c] = key;
-  if (key.length === 1 && (a === 'me' || a === 'pet' || a === 'links' || a === 'groups' || a === 'encounters')) return 'whole';
+  if (key.length === 1 && (a === 'me' || a === 'pet' || a === 'links' || a === 'encounters')) return 'whole';
   if (a === 'rituals' && key.length === 2 && (b === 'today' || b === 'streak')) return 'whole';
-  if ((a === 'links' || a === 'groups') && key.length === 2 && typeof b === 'string') return 'whole';
-  if ((a === 'links' || a === 'groups') && key.length === 3 && c === 'messages') return 'thread';
+  if (a === 'links' && key.length === 2 && typeof b === 'string') return 'whole';
+  if (a === 'links' && key.length === 3 && c === 'messages') return 'thread';
   return null;
 }
 

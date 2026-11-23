@@ -18,7 +18,7 @@ describe('cache gardé entre deux lancements', () => {
     expect(keepQuery(['links'])).toBe('whole');
     expect(keepQuery(['links', 'abc'])).toBe('whole');
     expect(keepQuery(['links', 'abc', 'messages'])).toBe('thread');
-    expect(keepQuery(['groups', 'g', 'messages'])).toBe('thread');
+    expect(keepQuery(['groups', 'g', 'messages'])).toBeNull();
     expect(keepQuery(['rituals', 'today'])).toBe('whole');
     expect(keepQuery(['links', 'abc', 'minimoas'])).toBeNull();
     expect(keepQuery(['invite', 'CODE'])).toBeNull();

@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Avatar } from '../atoms/Avatar';
 import { Button } from '../atoms/Button';
 import { Chip, type ChipTone } from '../atoms/Chip';
+import { Glyph } from '../atoms/Glyph';
+import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { ListRow } from '../molecules/ListRow';
 import { color, size, space, type, veil } from '../theme';
@@ -34,18 +37,44 @@ export interface EncounterHistoryProps {
   moreLabel?: string;
   onMore?: () => void;
   loadingMore?: boolean;
+  /**
+   * Repliée par défaut (« Déjà croisés », en bas des Chats) : le titre devient un bouton qui ouvre ou ferme la liste
+   * (VoiceOver : bouton, état « développé » / « réduit »).
+   */
+  collapsible?: boolean;
 }
 
 const CHIP_TONE: Record<EncounterHistoryTone, ChipTone> = { linked: 'accent', ended: 'glass', declined: 'glass', waiting: 'glass' };
 
 /** Historique des rencontres : une ligne par personne croisée, son issue et sa date ; les liens vivants s'ouvrent. */
-export function EncounterHistory({ title, entries, moreLabel, onMore, loadingMore }: EncounterHistoryProps) {
+export function EncounterHistory({ title, entries, moreLabel, onMore, loadingMore, collapsible = false }: EncounterHistoryProps) {
+  const [open, setOpen] = useState(!collapsible);
   if (entries.length === 0) return null;
   return (
     <View style={styles.base}>
-      <Text variant="label" size={11} muted style={styles.sec} accessibilityRole="header">
-        {title}
-      </Text>
+      {collapsible ? (
+        <Pressable
+          onPress={() => setOpen((o) => !o)}
+          haptic="selection"
+          scaleTo={0.98}
+          accessibilityRole="button"
+          accessibilityLabel={title}
+          accessibilityState={{ expanded: open }}
+          style={styles.toggle}
+        >
+          <Text variant="label" size={11} muted style={[styles.sec, styles.toggleText]}>
+            {title}
+          </Text>
+          <View style={open ? styles.up : null}>
+            <Glyph name="down" size={14} color={color.mute} />
+          </View>
+        </Pressable>
+      ) : (
+        <Text variant="label" size={11} muted style={styles.sec} accessibilityRole="header">
+          {title}
+        </Text>
+      )}
+      {open ? (
       <View style={styles.group}>
         {entries.map((e, i) => {
           const quiet = e.tone === 'ended' || e.tone === 'declined';
@@ -64,13 +93,17 @@ export function EncounterHistory({ title, entries, moreLabel, onMore, loadingMor
           );
         })}
       </View>
-      {onMore && moreLabel ? <Button label={moreLabel} variant="link" size="md" onPress={onMore} loading={loadingMore} /> : null}
+      ) : null}
+      {open && onMore && moreLabel ? <Button label={moreLabel} variant="link" size="md" onPress={onMore} loading={loadingMore} /> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   base: { gap: space.sm + 2, marginTop: space.md },
+  toggle: { flexDirection: 'row', alignItems: 'center', minHeight: 44, gap: space.sm, paddingRight: space.xs + 2 },
+  toggleText: { flex: 1 },
+  up: { transform: [{ rotate: '180deg' }] },
   sec: { fontFamily: type.bodyHeavy.fontFamily, letterSpacing: 11 * 0.12, paddingHorizontal: space.xs + 2 },
   group: {
     backgroundColor: color.panel,

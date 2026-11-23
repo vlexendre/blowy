@@ -1,96 +1,111 @@
 import type { Species } from '@blowy/domain';
 import { color } from '@blowy/tokens';
-import { StyleSheet, View } from 'react-native';
-import { Button } from '../atoms/Button';
+import { useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, Modal, Pressable as RNPressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
+import { hapticFor } from '../lib/haptics';
+import { useReducedMotion } from '../lib/motion';
+import { useOverlay } from '../lib/overlay';
+import { Burst } from '../motion/Burst';
 import { CountUp } from '../motion/CountUp';
-import { SpeechBubble } from '../molecules/SpeechBubble';
 import { PopIn } from '../motion/PopIn';
-import { alpha, space } from '../theme';
+import { space } from '../theme';
 
-export interface StreakTierDay {
-  letter: string;
-  done: boolean;
-  today: boolean;
-  label: string;
-}
+/** Durée de la fête d'un palier : sous les 3 s de la règle (docs/ADA-2027.md, grille n° 7). */
+export const STREAK_TIER_MS = 2600;
 
 export interface StreakTierProps {
+  visible: boolean;
   species: Species;
+  /** Le palier atteint (7, 30, 100, 365). */
   count: number;
-  from: number;
-  /** « jours d'affilée ». */
+  /** « jours d’affilée ». */
   unit: string;
-  days: readonly StreakTierDay[];
-  shareLabel?: string | null;
-  onShare?: () => void;
-  continueLabel: string;
-  onContinue: () => void;
-  accessibilityLabel: string;
-  /** Ce que dit le minimoa, dans une bulle au-dessus de lui (« Continue ! Je file me vanter de ta série. »). */
+  /** Ce que dit le minimoa, sous le chiffre. */
   line?: string | null;
+  /** « Touche pour continuer ». */
+  tapLabel: string;
+  /** Ce que lit VoiceOver (« 7 jours d’affilée »). */
+  accessibilityLabel: string;
+  /** Appelé au tap, ou de lui-même après `STREAK_TIER_MS`. */
+  onDone: () => void;
 }
 
-const ORANGE = color.orange;
+/**
+ * La fête d'un palier de série (7, 30, 100, 365 jours), plein écran orange : le minimoa, le grand chiffre, une phrase.
+ * Moins de 3 s, puis elle se ferme seule ; un tap n'importe où la coupe. Une vibration, des confettis ; animations
+ * réduites : ni confettis ni défilement, un simple fondu. VoiceOver : la fête est annoncée, puis rend la main.
+ */
+export function StreakTier({ visible, species, count, unit, line, tapLabel, accessibilityLabel, onDone }: StreakTierProps) {
+  const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  // Petit écran (375 × 667) : le minimoa rapetisse pour que rien ne déborde, même en grand texte.
+  const PET = height < 740 ? 150 : 200;
+  const reduced = useReducedMotion();
+  const [confetti, setConfetti] = useState(0);
+  const done = useRef(onDone);
+  done.current = onDone;
+  useOverlay(visible);
 
-/** La série qui monte (maquette V7 « Palier de série ») : fond orange plein, le grand nombre, la semaine cochée. */
-export function StreakTier({ species, count, from, unit, days, shareLabel, onShare, continueLabel, onContinue, accessibilityLabel, line }: StreakTierProps) {
+  useEffect(() => {
+    if (!visible) return;
+    hapticFor('celebrate');
+    if (!reduced) setConfetti((n) => n + 1);
+    AccessibilityInfo.announceForAccessibility(line ? `${accessibilityLabel}. ${line}` : accessibilityLabel);
+    const timer = setTimeout(() => done.current(), STREAK_TIER_MS);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
+
   return (
-    <View style={styles.wrap}>
-      {line ? (
-        <PopIn from={0.7} delay={250} style={styles.say}>
-          <SpeechBubble text={line} tone="light" tail="right" size="md" />
-        </PopIn>
-      ) : null}
-      <View style={[styles.stage, line ? styles.stageSay : null]}>
-        <PopIn from={0.6}>
-          <PetImage species={species} mood="joie" size={200} />
-        </PopIn>
-      </View>
-      <View accessible accessibilityLabel={accessibilityLabel}>
-        <View style={styles.center}>
-          <CountUp value={count} from={from} variant="hero" size={130} color={color.white} />
-        </View>
-        <Text variant="h2" center color={color.white}>
-          {unit}
-        </Text>
-      </View>
-      <View style={styles.week}>
-        {days.map((d, i) => (
-          <View key={i} style={styles.day} accessible accessibilityLabel={d.label}>
-            <Text variant="bodyHeavy" color={color.white}>
-              {d.letter}
-            </Text>
-            <PopIn delay={400 + i * 150} onMount={d.done}>
-              <View style={[styles.dot, d.done ? (d.today ? styles.today : styles.done) : styles.empty]}>
-                {d.done ? <Text variant="bodyHeavy" color={d.today ? ORANGE : color.dark}>✓</Text> : null}
-              </View>
+    <Modal visible={visible} transparent animationType={reduced ? 'none' : 'fade'} onRequestClose={onDone} statusBarTranslucent>
+      {visible ? (
+        <RNPressable
+          onPress={onDone}
+          accessibilityRole="button"
+          accessibilityViewIsModal
+          accessibilityLabel={line ? `${accessibilityLabel}. ${line}` : accessibilityLabel}
+          accessibilityHint={tapLabel}
+          style={[styles.root, { paddingTop: insets.top + space.xl, paddingBottom: Math.max(insets.bottom, space.lg) + space.sm }]}
+        >
+          <View style={styles.stage}>
+            <PopIn from={0.6}>
+              <PetImage species={species} mood="joie" size={PET} />
             </PopIn>
+            <Burst kind="confetti" trigger={confetti} count={16} size={12} spread={200} seed={`palier:${count}`} style={styles.burst} />
           </View>
-        ))}
-      </View>
-      <View style={styles.grow} />
-      {shareLabel && onShare ? <Button label={shareLabel} variant="white" size="lg" onPress={onShare} block /> : null}
-      <Button label={continueLabel} variant="link" onPress={onContinue} block />
-    </View>
+          <View style={styles.center}>
+            <CountUp value={count} from={Math.max(0, count - 1)} variant="hero" size={120} duration={600} color={color.dark} />
+          </View>
+          <Text variant="h2" center color={color.dark}>
+            {unit}
+          </Text>
+          {line ? (
+            <Text variant="bodyBold" size={17} center color={color.dark} style={styles.line}>
+              {line}
+            </Text>
+          ) : null}
+          <View style={styles.grow} />
+          <Text size={14} center color={color.dark}>
+            {tapLabel}
+          </Text>
+        </RNPressable>
+      ) : null}
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, paddingBottom: space.lg, gap: space.sm },
-  stage: { height: 230, alignItems: 'center', justifyContent: 'flex-end', marginTop: space.lg },
-  stageSay: { height: 190, marginTop: 0 },
-  say: { alignSelf: 'center', maxWidth: 300, marginTop: space.md },
-  week: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xl },
-  day: { alignItems: 'center', gap: space.sm },
-  dot: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  done: { backgroundColor: color.accentSoft },
-  today: { backgroundColor: color.white },
-  empty: { backgroundColor: alpha(color.dark, 0.16) },
-  grow: { flex: 1 },
+  root: { flex: 1, paddingHorizontal: space.xl, backgroundColor: color.orange, gap: space.sm },
+  stage: { alignItems: 'center', justifyContent: 'flex-end' },
+  burst: { position: 'absolute', left: '50%', top: 40 },
   center: { alignItems: 'center' },
+  line: { marginTop: space.sm },
+  grow: { flex: 1 },
 });
 
-/** Couleur de fond de l'écran de palier (le gabarit d'écran la pose). */
-export const STREAK_TIER_BACKGROUND = ORANGE;
+/** Couleur de fond de la fête d'un palier. */
+export const STREAK_TIER_BACKGROUND = color.orange;

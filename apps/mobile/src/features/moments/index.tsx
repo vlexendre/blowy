@@ -1,6 +1,6 @@
 /**
  * Moments à partager (docs/VIRALITE.md) : une carte au format story (1080 × 1920, `ShareCard`) proposée une seule fois
- * au bon moment (palier de série 7 / 30 / 100 jours, groupe qui tient 7 / 30 jours, résultat du test), jamais bloquante,
+ * au bon moment (palier de série 7 / 30 / 100 jours, résultat du test), jamais bloquante,
  * désactivable (Moi › Réglages). Les paliers déjà proposés sont gardés sur le téléphone. Composition de @blowy/ui.
  */
 import type { ShareBody } from '@blowy/contract';
@@ -22,7 +22,7 @@ const t = croissance;
 interface MomentsState {
   /** Réglage « Proposer de partager mes moments » (activé par défaut). */
   enabled: boolean;
-  /** Paliers déjà proposés, par moment (`streak`, `group:<id>`). */
+  /** Paliers déjà proposés, par moment (`streak`…). */
   offered: Record<string, number[]>;
   setEnabled: (on: boolean) => void;
   markOffered: (key: string, upTo: number, steps: readonly number[]) => void;

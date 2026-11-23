@@ -32,8 +32,6 @@ import { useDiscreet } from '@/features/map';
 import { useLivePet } from '@/features/pet';
 import { common } from '@/locales/common';
 import { moi } from '@/locales/moi';
-import { progression as lp } from '@/locales/progression';
-import { useProgression } from '@/features/progression';
 import { croissance } from '@/locales/croissance';
 import { useTrackShare } from '@/features/growth';
 import { knowsStep, profilGauges, useCheminMap, useProfil } from '@/features/chemin';
@@ -50,7 +48,6 @@ export default function Moi() {
   const track = useTrackShare();
   const { purchases } = usePorts();
   const discreet = useDiscreet();
-  const prog = useProgression();
   const subscription = useSubscription(!!me.data?.plus);
   // Les avantages viennent de la même source que la feuille Minimoa+ (jamais une autre liste ici).
   const perks = usePlusPerks(me.data?.pet.name ?? '');
@@ -210,32 +207,6 @@ export default function Moi() {
             key="rows"
             variant="plain"
             rows={[
-              // Toujours là (même avant la réponse de l'API) : la ligue et les trophées s'ouvrent depuis Moi.
-              {
-                key: 'league',
-                title: prog.data
-                  ? lp.league.tierTitle(lp.league.tiers[prog.data.league.tier])
-                  : lp.rows.league,
-                subtitle: (() => {
-                  const rank = prog.data?.league.located
-                    ? (prog.data.league.rows.find((r) => r.me)?.rank ?? null)
-                    : null;
-                  return rank
-                    ? lp.rows.leagueRank(rank)
-                    : prog.data
-                      ? lp.rows.leagueSub(prog.data.sparks, null)
-                      : lp.rows.leagueEmpty;
-                })(),
-                onPress: () => router.push('/moi/ligue'),
-              },
-              {
-                key: 'trophies',
-                title: lp.rows.trophies,
-                subtitle: prog.data
-                  ? lp.rows.trophiesSub(prog.data.trophiesWon, prog.data.trophiesTotal)
-                  : undefined,
-                onPress: () => router.push('/moi/trophees'),
-              },
               {
                 key: 'discreet',
                 title: t.rows.discreet.title,

@@ -11,9 +11,11 @@ import { ease, springs, useReducedMotion } from '../lib/motion';
 import { type Indicator, useActiveInk, useIndicator } from '../motion/indicator';
 import { color, radius } from '../theme';
 
-/** Hauteur d'un onglet (`.gnav a` : 54 px). */
-/** Onglet compact (V7 : pictogrammes seuls, barre plus fine). */
-export const ITEM_HEIGHT = 44;
+/**
+ * Hauteur d'un onglet : pictogramme et libellé dessous (ADA 2027, décision 8 : quatre onglets avec libellés ; plus de
+ * pictogrammes seuls).
+ */
+export const ITEM_HEIGHT = 50;
 
 export interface TabBarItemProps {
   label: string;
@@ -22,6 +24,7 @@ export interface TabBarItemProps {
   badge?: number;
   onPress?: () => void;
   onLongPress?: () => void;
+  /** Lu par VoiceOver à la place du libellé, pastille comprise (« Chats, 3 non lus »). */
   accessibilityLabel?: string;
   /**
    * Pilule glissante de `BottomTabBar` (et rang de l'onglet) : l'onglet ne dessine plus son fond jaune,
@@ -29,8 +32,6 @@ export interface TabBarItemProps {
    */
   indicator?: Indicator;
   index?: number;
-  /** Sans libellé (pictogramme seul, plus grand) ; le libellé reste lu par le lecteur d'écran. */
-  iconOnly?: boolean;
 }
 
 const SW = 2.2;
@@ -81,27 +82,37 @@ function NavIcon({ glyph, color: c, active }: { glyph: GlyphName; color: string;
   );
 }
 
-/** Picto + libellé d'un onglet dans une encre donnée. */
-function Face({ glyph, label, ink, active, iconOnly = false }: { glyph: GlyphName; label: string; ink: string; active: boolean; iconOnly?: boolean }) {
+/**
+ * Picto + libellé d'un onglet dans une encre donnée. Le libellé tient toujours sur une ligne, sans coupe : il rétrécit
+ * un peu s'il le faut (écran de 320 pt, néerlandais, très grand texte) plutôt que de finir en « … ».
+ */
+function Face({ glyph, label, ink, active }: { glyph: GlyphName; label: string; ink: string; active: boolean }) {
   return (
     <View style={styles.face}>
-      <View style={iconOnly ? styles.big : null}>
-        <NavIcon glyph={glyph} color={ink} active={active} />
-      </View>
-      {iconOnly ? null : (
-        <Text variant="bodyHeavy" size={10} tabLabel color={ink} numberOfLines={1} style={styles.label}>
-          {label}
-        </Text>
-      )}
+      <NavIcon glyph={glyph} color={ink} active={active} />
+      <Text
+        variant="bodyHeavy"
+        size={11}
+        tabLabel
+        color={ink}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.7}
+        ellipsizeMode="clip"
+        style={styles.label}
+      >
+        {label}
+      </Text>
     </View>
   );
 }
 
 /**
  * Onglet de la barre flottante : pictogramme + libellé, pilule jaune quand actif. Devenu actif, son picto rebondit ;
- * ses pastilles font « pop » quand leur nombre change.
+ * ses pastilles font « pop » quand leur nombre change. VoiceOver : rôle « onglet », état sélectionné, et la pastille
+ * dans le libellé (`accessibilityLabel`, fourni par l'écran).
  */
-export function TabBarItem({ label, glyph, active, badge, onPress, onLongPress, accessibilityLabel, indicator, index = 0, iconOnly = false }: TabBarItemProps) {
+export function TabBarItem({ label, glyph, active, badge, onPress, onLongPress, accessibilityLabel, indicator, index = 0 }: TabBarItemProps) {
   const reduced = useReducedMotion();
   const still = useIndicator(index);
   const ink = useActiveInk(indicator ?? still, index);
@@ -129,18 +140,18 @@ export function TabBarItem({ label, glyph, active, badge, onPress, onLongPress, 
       accessibilityState={{ selected: !!active }}
       style={[styles.base, active && !sliding && styles.active]}
     >
-      <Animated.View style={bounce}>
+      <Animated.View style={[styles.stretch, bounce]}>
         {sliding ? (
           <>
             <Animated.View style={ink.off}>
-              <Face glyph={glyph} label={label} ink={color.mute} active={false} iconOnly={iconOnly} />
+              <Face glyph={glyph} label={label} ink={color.mute} active={false} />
             </Animated.View>
             <Animated.View style={[StyleSheet.absoluteFill, ink.on]}>
-              <Face glyph={glyph} label={label} ink={color.dark} active iconOnly={iconOnly} />
+              <Face glyph={glyph} label={label} ink={color.dark} active />
             </Animated.View>
           </>
         ) : (
-          <Face glyph={glyph} label={label} ink={active ? color.dark : color.mute} active={!!active} iconOnly={iconOnly} />
+          <Face glyph={glyph} label={label} ink={active ? color.dark : color.mute} active={!!active} />
         )}
       </Animated.View>
       {badge && !active ? (
@@ -155,8 +166,8 @@ export function TabBarItem({ label, glyph, active, badge, onPress, onLongPress, 
 const styles = StyleSheet.create({
   base: { flex: 1, height: ITEM_HEIGHT, minWidth: 0, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', gap: 2 },
   active: { backgroundColor: color.accent },
-  label: { letterSpacing: 0.4 },
-  big: { transform: [{ scale: 1.15 }] },
-  face: { alignItems: 'center', justifyContent: 'center', gap: 2 },
-  badge: { position: 'absolute', top: 5, left: '50%', marginLeft: 6 },
+  stretch: { alignSelf: 'stretch' },
+  label: { letterSpacing: 0.2, maxWidth: '100%' },
+  face: { alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', gap: 3, paddingHorizontal: 2 },
+  badge: { position: 'absolute', top: 3, left: '50%', marginLeft: 6 },
 });

@@ -13,13 +13,10 @@ import {
   type CareProp,
   Button,
   CareBar,
-  ChallengeCard,
   Chip,
   ChoiceCard,
   CountUp,
   EmptyState,
-  EvolutionTimeline,
-  GaugeBar,
   Header,
   ItemImage,
   KeyboardPeek,
@@ -219,7 +216,6 @@ function PrimitivesBench() {
   const [pulse, setPulse] = useState(0);
   const [count, setCount] = useState(42);
   const [ratio, setRatio] = useState(0.35);
-  const [gauge, setGauge] = useState(-20);
   const [bursts, setBursts] = useState<Record<BurstKind, number>>({ hearts: 0, stars: 0, sparkles: 0, confetti: 0, zzz: 0, bubbles: 0, twinkle: 0 });
   const [line, setLine] = useState(0);
   const [on, setOn] = useState(false);
@@ -257,7 +253,7 @@ function PrimitivesBench() {
         </Shake>
         <Button label="shake" size="chip" variant="glass" block={false} onPress={() => shake.current?.shake()} />
       </Row>
-      <Label>CountUp · ProgressBar · GaugeBar</Label>
+      <Label>CountUp · ProgressBar</Label>
       <Row>
         <CountUp value={count} variant="h1" />
         <Button label="compter" size="chip" variant="glass" block={false} onPress={() => setCount(Math.round(Math.random() * 999))} />
@@ -268,12 +264,10 @@ function PrimitivesBench() {
           block={false}
           onPress={() => {
             setRatio(Math.random());
-            setGauge(Math.round(Math.random() * 200 - 100));
           }}
         />
       </Row>
       <ProgressBar value={ratio} />
-      <GaugeBar value={gauge} low="casanier" high="sociable" caption={`sociabilité · ${gauge}`} />
       <Label>Shimmer (squelettes)</Label>
       <Skeleton height={56} radius="md" />
       <Label>Burst</Label>
@@ -446,8 +440,6 @@ function ScenesBench() {
   const [sheet, setSheet] = useState(false);
   const [unlock, setUnlock] = useState(false);
   const [entrance, setEntrance] = useState(0);
-  const [timeline, setTimeline] = useState(0);
-  const [challenge, setChallenge] = useState<{ loading: boolean; done: boolean; picked: 0 | 1 | null }>({ loading: false, done: false, picked: null });
   return (
     <Section title="SCÈNES">
       <Label>Lancement : le minimoa arrive en courant</Label>
@@ -476,33 +468,6 @@ function ScenesBench() {
         closeLabel="ranger dans la garde-robe"
         onClose={() => setUnlock(false)}
       />
-      <Label>Défi du jour : la carte s'incline puis se résout</Label>
-      <ChallengeCard
-        label="défi du jour"
-        question="CE SOIR : CANAPÉ OU SORTIE ?"
-        choices={['canapé', 'sortie']}
-        done={challenge.done}
-        picked={challenge.picked}
-        loading={challenge.loading}
-        doneLabel="reviens demain"
-        onChoose={(c) => {
-          setChallenge({ loading: true, done: false, picked: null });
-          setTimeout(() => setChallenge({ loading: false, done: true, picked: c }), 900);
-        }}
-      />
-      <Button label="nouveau défi" size="sm" variant="ghost" onPress={() => setChallenge({ loading: false, done: false, picked: null })} />
-      <Label>Évolution : la frise se dessine</Label>
-      <Button label="rejouer la frise" size="sm" variant="ghost" onPress={() => setTimeline((n) => n + 1)} />
-      <View key={timeline} style={styles.violet}>
-        <EvolutionTimeline
-          species="nino"
-          steps={[
-            { form: 'equilibre', when: 'juin', name: 'équilibré', caption: 'un peu de tout.' },
-            { form: 'casanier', when: 'septembre', name: 'casanier', caption: 'que du canapé.' },
-            { form: 'sociable', when: 'aujourd’hui', name: 'sociable', caption: 'il connaît tout le monde.', current: true },
-          ]}
-        />
-      </View>
     </Section>
   );
 }
@@ -552,5 +517,4 @@ const styles = StyleSheet.create({
   half: { flex: 1 },
   tabFrame: { borderRadius: radius.lg, paddingTop: 40, backgroundColor: color.panel },
   center: { alignItems: 'center', paddingVertical: space.xl },
-  violet: { borderRadius: radius.lg, padding: space.lg, backgroundColor: color.violet },
 });

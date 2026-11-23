@@ -1,5 +1,5 @@
 /**
- * Rappel « série avec Léa : à toi d'écrire avant minuit » (spéc §24) : le soir seulement, à la personne qui n'a pas
+ * Rappel « série avec Léa : à toi d'écrire, quand tu veux » (spéc §24) : le soir seulement, à la personne qui n'a pas
  * encore écrit quand l'autre l'a fait, une fois par jour au plus, un seul envoi qui résume plusieurs liens ; heures
  * calmes, réglage et plafond du notifieur respectés ; idempotent d'un passage du minuteur à l'autre.
  */
@@ -85,7 +85,7 @@ describe('rappel « à toi d’écrire »', () => {
       body: notificationText('fr', 'your_turn', { name: 'Léa', count: '1', more: '1' }).body,
       data: { kind: 'your_turn', url: 'blowy://chats', state: { writeTo: 'Léa', streak: 1 } },
     });
-    expect(push?.body).toBe('À toi d’écrire avant minuit. Et dans 1 autre lien.');
+    expect(push?.body).toBe('À toi d’écrire, quand tu veux. Et dans 1 autre lien.');
     // Personne d'autre : Léa, Zoé et Max ont écrit ; Max et Tom se sont écrit tous les deux.
     for (const name of ['Léa', 'Zoé', 'Max', 'Noa', 'Ana', 'Eli']) expect(reminders(name)).toHaveLength(0);
   });
@@ -121,7 +121,7 @@ describe('rappel « à toi d’écrire »', () => {
     await write('Max', 'Sam');
     await run();
     expect(reminders('Sam')).toHaveLength(1);
-    expect(reminders('Sam')[0]).toMatchObject({ title: 'Série avec Max', body: 'Max t’a écrit aujourd’hui. À toi avant minuit.', data: { url: expect.stringMatching(/^blowy:\/\/link\//) } });
+    expect(reminders('Sam')[0]).toMatchObject({ title: 'Série avec Max', body: 'Max t’a écrit aujourd’hui. Réponds quand tu veux.', data: { url: expect.stringMatching(/^blowy:\/\/link\//) } });
   });
 
   it('après 22 h : plus de rappel ; le lendemain soir, ça recommence', async () => {

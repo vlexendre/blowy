@@ -5,11 +5,12 @@ import type { Href } from 'expo-router';
  * (Android) et les schémas `minimoa://` / `blowy://` (docs/DEEPLINKS.md).
  *
  * Adresses publiques courtes (celles qu'on partage, servies aussi par le site quand l'app n'est pas installée) :
- * /i/<code> invitation · /m/<code> 3 mots · /g/<id> groupe (membres) · /g/<code> lien d'invitation d'un groupe ·
- * /c/<code> code d'un créateur · /r/<id> rencontre · /l/<id> lien · /plus Minimoa+ · /defi défi du jour · /habitudes ·
- * /carte · /chemin (séance du jour) · /mots (ton lien « 3 mots » et ton résultat) · /quiz/<code> résultat du quiz du site · /quartier/<code> inscription
- * « Ouvre ton quartier ». `?ref=<code>` sur n'importe quel lien : code d'un créateur. Les chemins internes de l'app (`link/<id>`, `pet/…`, `groupe/<id>`…), ceux
- * des notifications, passent tels quels.
+ * /i/<code> invitation · /m/<code> 3 mots · /c/<code> code d'un créateur · /r/<id> rencontre · /l/<id> lien ·
+ * /plus Minimoa+ · /carte et /rencontres (l'onglet Quartier) · /quartier · /chemin (séance du jour) · /mots (ton lien
+ * « 3 mots » et ton résultat) · /quiz/<code> résultat du quiz du site · /quartier/<code> inscription « Ouvre ton quartier ».
+ * Anciennes adresses de fonctions supprimées de l'app (`RETIRED`) : /g/… (groupes), /defi, /habitudes → l'accueil.
+ * `?ref=<code>` sur n'importe quel lien : code d'un créateur. Les chemins internes de l'app (`link/<id>`, `pet/…`…), ceux
+ * des notifications, passent tels quels, sauf ceux des écrans supprimés (`RETIRED`).
  */
 
 /**
@@ -26,8 +27,6 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHORT: readonly [RegExp, (id: string) => string][] = [
   [new RegExp(`^i/(${ID})/?$`), (c) => `/i/${c.toUpperCase()}`],
   [new RegExp(`^m/(${ID})/?$`), (c) => `/m/${c}`],
-  // Un identifiant : le groupe (membres) ; un code court : la page « rejoindre » du lien d'invitation.
-  [new RegExp(`^g/(${ID})/?$`), (id) => (UUID.test(id) ? `/groupe/${id}` : `/g/${id.toUpperCase()}`)],
   // Code d'un créateur : gardé comme source d'arrivée (`attributionFromUrl`), puis l'accueil.
   [new RegExp(`^c/(${ID})/?$`), () => '/'],
   [/^mots\/?$/, () => '/mots'],
@@ -37,12 +36,46 @@ const SHORT: readonly [RegExp, (id: string) => string][] = [
   [new RegExp(`^r/(${ID})/?$`), (id) => `/rencontre/${id}`],
   [new RegExp(`^l/(${ID})/?$`), (id) => `/link/${id}`],
   [/^plus\/?$/, () => '/moi/blowy-plus'],
-  [/^defi\/?$/, () => '/pet/defi'],
-  [/^habitudes\/?$/, () => '/pet/habitudes'],
-  [/^carte\/?$/, () => '/carte'],
+  // Carte et Rencontres réunies dans l'onglet Quartier (ADA 2027) : les anciens liens (notifications, widgets) y mènent.
+  [/^carte\/?$/, () => '/quartier'],
+  [/^rencontres\/?$/, () => '/quartier'],
+  [/^quartier\/?$/, () => '/quartier'],
   // Rappel du matin de Ton chemin (docs/CHEMIN.md) : l'accueil, ouvert sur la séance du jour.
   [/^chemin\/?$/, () => '/pet?chemin=1'],
 ];
+
+/**
+ * Écrans supprimés de l'app (docs/ADA-2027.md, « pas de fonction cachée ») : un lien, un widget ou une notification
+ * déjà envoyée y mène encore (l'API garde ces adresses pour les anciennes versions). Aucune route ne reste : le lien
+ * ouvre l'accueil, Moi, ou l'écran qui a repris le contenu. Le reste de la requête (`?…`) est gardé.
+ */
+const RETIRED: readonly [RegExp, (m: RegExpExecArray) => string][] = [
+  // Ligue, trophées, étincelles.
+  [/^\/moi\/(ligue|trophees)\/?$/, () => '/pet'],
+  // Rituels du minimoa : défi, évolution, habitudes, preuve, souvenirs, bilans ; le caractère (renommage) est dans Moi.
+  [/^\/pet\/caractere\/?$/, () => '/moi'],
+  [/^\/pet\/(defi|evolution|habitudes|preuve|souvenirs|bilans|bilan(\/[\w-]+)?)\/?$/, () => '/pet'],
+  [/^\/(defi|habitudes)\/?$/, () => '/pet'],
+  // Groupes : un groupe, sa création, son lien d'invitation (`/g/<code>`, `/g/<id>`).
+  [/^\/(groupe|g)(\/[\w-]+)?\/?$/, () => '/pet'],
+  // Anciennes étapes de fin de séance : tout tient dans `/chemin/fin` ; le parcours entier doublait l'accueil.
+  [/^\/chemin\/(bravo|palier)\/?$/, () => '/chemin/fin'],
+  [/^\/chemin\/parcours\/?$/, () => '/pet'],
+  // Les niveaux d'un lien sont dans son onglet « Le lien ».
+  [/^\/link\/([\w-]{1,64})\/niveaux\/?$/, (m) => `/link/${m[1]}?tab=lien`],
+];
+
+/** Chemin de l'app pour un chemin lu (sans requête) : celui d'un écran supprimé est remplacé (`RETIRED`). */
+function retiredTarget(path: string): string {
+  for (const [re, to] of RETIRED) {
+    const m = re.exec(path);
+    if (m) return to(m);
+  }
+  return path;
+}
+
+/** Ajoute la requête d'origine à un chemin qui peut déjà en avoir une. */
+const withQuery = (path: string, query: string | undefined): string => (query ? `${path}${path.includes('?') ? '&' : '?'}${query}` : path);
 
 /** Chemin (sans « / » de tête, requête comprise) d'un lien de l'app ou du site ; null pour tout autre lien. */
 function rawPath(url: string): string | null {
@@ -71,9 +104,9 @@ export function appPathFromUrl(url: string): Href | null {
   const [pathname = '', query] = path.split('?', 2);
   for (const [re, to] of SHORT) {
     const m = re.exec(pathname);
-    if (m) return `${to(m[1] ?? '')}${query ? `?${query}` : ''}` as Href;
+    if (m) return withQuery(retiredTarget(to(m[1] ?? '')), query) as Href;
   }
-  return `/${path}` as Href;
+  return withQuery(retiredTarget(`/${pathname}`), query) as Href;
 }
 
 /** Lien profond d'une notification (même lecteur que les liens universels). */
@@ -85,7 +118,8 @@ export const pathFromPushUrl = appPathFromUrl;
  */
 export function needsAccount(path: string): boolean {
   const p = path.split('?')[0] ?? '';
-  return /^\/(groupe|g|mots|rencontre|link|moi|pet|carte|chats|rencontres|chemin)(\/|$)/.test(p);
+  // `/quartier` seul est l'onglet ; `/quartier/<code>` (inscription « Ouvre ton quartier ») gère la session lui-même.
+  return /^\/(mots|rencontre|link|moi|pet|chats|chemin)(\/|$)/.test(p) || /^\/quartier\/?$/.test(p);
 }
 
 /**

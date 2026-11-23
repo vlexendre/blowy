@@ -13,7 +13,6 @@ import {
   MessageBubble,
   ScreenTemplate,
   SettingsSection,
-  SharedHabitsCard,
   SheetTemplate,
   Skeleton,
   Stack,
@@ -39,7 +38,6 @@ import {
   useWave,
   useWaveBlock,
 } from '@/features/encounters';
-import { sharedHabitsView } from '@/features/groups';
 import { ConfirmSheet, errorText, ReportSheet } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { useMe } from '@/features/me';
@@ -72,7 +70,7 @@ export default function RencontreScreen() {
   // Le pet « écrit » avant que sa bulle s'affiche.
   const typing = useTypingPause(800, 450, encounter.incoming?.id ?? encounter.suggestion?.user.id);
 
-  const back = () => (router.canGoBack() ? router.back() : router.replace('/rencontres'));
+  const back = () => (router.canGoBack() ? router.back() : router.replace('/quartier'));
   const { incoming, suggestion } = encounter;
   const person: Person | null = incoming?.from ?? suggestion?.user ?? null;
   const compat = incoming?.compatibility ?? suggestion?.compatibility ?? 0;
@@ -132,7 +130,7 @@ export default function RencontreScreen() {
               title={t.goneTitle}
               text={t.goneText}
               actionLabel={t.goneAction}
-              onAction={() => router.replace('/rencontres')}
+              onAction={() => router.replace('/quartier')}
             />
           )}
         </ScreenTemplate>
@@ -140,8 +138,6 @@ export default function RencontreScreen() {
     );
   }
 
-  // « Vous tenez tous les deux : Sport » (spéc. §25) : les deux séries, les deux rigueurs ; absent sans habitude commune.
-  const shared = sharedHabitsView(incoming?.sharedHabits ?? suggestion?.sharedHabits, person.displayName);
   const worn =
     Object.values(person.pet.outfit ?? {}).find(
       (id): id is string =>
@@ -262,7 +258,6 @@ export default function RencontreScreen() {
           ) : (
             <DotNote text={t.unknownVision} />
           )}
-          {shared ? <SharedHabitsCard {...shared} /> : null}
           {waveBlock && !incoming && !suggestion?.waved ? <Banner tone="info" text={waveBlock} /> : null}
           {/* Objet premium déjà visible sur son minimoa : l'essayer sur le sien (aperçu, docs/DESIR.md). */}
           {worn && me.data && !me.data.plus ? (
@@ -336,7 +331,7 @@ export default function RencontreScreen() {
             block.mutate(person.id, {
               onSuccess: () => {
                 setSheet(null);
-                router.replace('/rencontres');
+                router.replace('/quartier');
               },
             })
           }

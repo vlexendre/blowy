@@ -21,7 +21,7 @@ notifications, anciens retours de connexion) ouvrent les mêmes écrans.
 | `/plus` | `app/moi/blowy-plus` (feuille Minimoa+) | gardé | `/plus` |
 | `/defi` | `app/pet/defi` | gardé | `/defi` |
 | `/habitudes` | `app/pet/habitudes` | gardé | `/habitudes` |
-| `/carte` | `app/carte` | gardé | `/carte` |
+| `/carte`, `/rencontres`, `/quartier` | `app/(tabs)/quartier` (onglet Quartier, ADA 2027 ; `/carte` et `/rencontres` lus comme `/quartier`) | gardé | `/carte` |
 
 `?ref=<code>` sur n'importe quel lien (site ou app) : code d'un créateur. Le site le garde le temps de la visite et
 l'ajoute aux boutons `minimoa://…` ; l'app le garde comme source d'arrivée (`features/growth/attribution.ts`, la

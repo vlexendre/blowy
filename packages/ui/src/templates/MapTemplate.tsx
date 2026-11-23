@@ -47,22 +47,31 @@ export interface MapTemplateProps {
   badge?: ReactNode;
   /** Pied : fiche choisie, bandeau Minimoa+, boutons. */
   bottom?: ReactNode;
+  /**
+   * Feuille à crans (`PeopleSheet`, onglet Quartier) : posée au-dessus de la barre d'onglets, elle peut monter jusque
+   * sous l'encoche. Le pied (fiche, puce) se range au-dessus de sa partie visible.
+   */
+  sheet?: ReactNode;
+  /** Hauteur visible de la feuille (0 : cachée), telle que la feuille la donne une fois posée. */
+  sheetVisible?: number;
 }
 
 /**
  * Écran de carte (maquette V6-GCarte) : la carte en plein écran, l'en-tête sur un fondu nuit (le titre reste lisible
  * sur la carte), et un pied flottant. Rien d'autre ne bouge ici : la vedette est la carte (les minimoas qui se posent).
  */
-export function MapTemplate({ map, title, subtitle, zone, onBack, backLabel, right, badge, bottom, inTabs = false }: MapTemplateProps) {
+export function MapTemplate({ map, title, subtitle, zone, onBack, backLabel, right, badge, bottom, sheet, sheetVisible = 0, inTabs = false }: MapTemplateProps) {
   const insets = useSafeAreaInsets();
   const tabSpace = useTabBarSpace();
   const [head, setHead] = useState<number | null>(null);
   const [foot, setFoot] = useState<number | null>(null);
-  const footGap = inTabs ? tabSpace + space.xs : space.md + insets.bottom;
+  const sheetGap = inTabs ? tabSpace + space.xs : space.md + insets.bottom;
+  const lifted = sheet && sheetVisible > 0 ? sheetVisible + space.sm : 0;
+  const footGap = sheetGap + lifted;
   const frame: MapFrame = {
     // Le fondu sous l'en-tête laisse voir la carte : on n'en garde que le haut.
     top: Math.round((head ?? insets.top + 220) - space.xxl + space.sm),
-    bottom: Math.round(bottom || badge ? footGap + (foot ?? 120) + space.sm : inTabs ? tabSpace : insets.bottom + space.md),
+    bottom: Math.round(bottom || badge ? footGap + (foot ?? 120) + space.sm : lifted > 0 ? footGap : inTabs ? tabSpace : insets.bottom + space.md),
     safeTop: insets.top,
     safeBottom: insets.bottom,
     measured: head !== null && (foot !== null || !(bottom || badge)),
@@ -92,6 +101,11 @@ export function MapTemplate({ map, title, subtitle, zone, onBack, backLabel, rig
         ) : null}
         {zone ? <View style={styles.zone}>{zone}</View> : null}
       </LinearGradient>
+      {sheet ? (
+        <View pointerEvents="box-none" style={[styles.sheet, { top: insets.top + space.md, bottom: sheetGap - space.xs }]}>
+          {sheet}
+        </View>
+      ) : null}
       {bottom || badge ? (
         <Appear once="map:bottom" delay={320} distance={30} duration={300} style={[styles.bottom, { bottom: footGap }]} pointerEvents="box-none">
           <View onLayout={onFoot} pointerEvents="box-none" style={styles.footCol}>
@@ -115,6 +129,7 @@ const styles = StyleSheet.create({
   subtitle: { maxWidth: 300 },
   zone: { marginTop: space.xs },
   bottom: { position: 'absolute', left: 14, right: 14 },
+  sheet: { position: 'absolute', left: space.sm, right: space.sm },
   footCol: { gap: space.sm },
   badge: { flexDirection: 'row', justifyContent: 'center', paddingBottom: space.xs },
 });

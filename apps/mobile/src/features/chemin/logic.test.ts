@@ -6,6 +6,7 @@ import {
   canSkip,
   currentQuestionId,
   distanceBand,
+  milestoneToCelebrate,
   pathWindow,
   profilGauges,
   reactionFor,
@@ -118,5 +119,15 @@ describe('profilGauges', () => {
       ['elan', false],
       ['foyer', true],
     ]);
+  });
+});
+
+describe('milestoneToCelebrate', () => {
+  it('fête seulement les paliers 7, 30, 100 et 365 d’une séance tout juste enregistrée', () => {
+    for (const m of [7, 30, 100, 365]) expect(milestoneToCelebrate({ milestone: m, alreadyRecorded: false })).toBe(m);
+    expect(milestoneToCelebrate({ milestone: null, alreadyRecorded: false })).toBeNull();
+    expect(milestoneToCelebrate({ milestone: 3, alreadyRecorded: false })).toBeNull();
+    expect(milestoneToCelebrate({ milestone: 14, alreadyRecorded: false })).toBeNull();
+    expect(milestoneToCelebrate({ milestone: 7, alreadyRecorded: true })).toBeNull();
   });
 });
