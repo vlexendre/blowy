@@ -32,7 +32,7 @@ const fr = {
     title: (i: WelcomeInput) => `${i.petName} est né.`,
     paragraphs: (i: WelcomeInput) => [
       `Salut ${i.displayName}, ton minimoa ${i.petName} vient d’ouvrir les yeux.`,
-      'Il va croiser d’autres minimoas et te présenter du monde. Rien ne se passe sans ton tap : tu salues, l’autre accepte, le lien se crée.',
+      'Il va croiser d’autres minimoas et te présenter du monde. Rien ne se passe sans ton tap : tu dis bonjour, l’autre accepte, le lien se crée.',
       'Passe le voir chaque jour. Il grandit avec toi.',
     ],
     cta: (i: WelcomeInput) => `Voir ${i.petName}`,
@@ -65,7 +65,7 @@ export const emailText = defineMessages({
       title: (i: WelcomeInput) => `${i.petName} is born.`,
       paragraphs: (i: WelcomeInput) => [
         `Hi ${i.displayName}, your minimoa ${i.petName} just opened its eyes.`,
-        'It will cross paths with other minimoas and introduce you to people. Nothing happens without your tap: you wave, the other person accepts, the link is made.',
+        'It will cross paths with other minimoas and introduce you to people. Nothing happens without your tap: you say hello, the other person accepts, the link is made.',
         'Drop by every day. It grows with you.',
       ],
       cta: (i: WelcomeInput) => `See ${i.petName}`,
@@ -95,16 +95,16 @@ export const emailText = defineMessages({
       title: (i: WelcomeInput) => `${i.petName} ha nacido.`,
       paragraphs: (i: WelcomeInput) => [
         `Hola, ${i.displayName}: tu minimoa ${i.petName} acaba de abrir los ojos.`,
-        'Se cruzará con otros minimoas y te presentará gente. Nada pasa sin tu toque: saludas, la otra persona acepta y se crea el vínculo.',
+        'Se cruzará con otros minimoas y te presentará gente. Nada pasa sin tu toque: dices hola, la otra persona acepta y se crea el vínculo.',
         'Pásate a verlo cada día. Crece contigo.',
       ],
       cta: (i: WelcomeInput) => `Ver a ${i.petName}`,
     },
     wave: {
-      subject: (i: WaveInput) => `${i.fromName} te saluda`,
-      title: (i: WaveInput) => `${i.fromPetName} ha pasado a saludar.`,
+      subject: (i: WaveInput) => `${i.fromName} te dice hola`,
+      title: (i: WaveInput) => `${i.fromPetName} ha pasado a decir hola.`,
       paragraphs: (i: WaveInput) => [
-        `Hola, ${i.displayName}: ${i.fromName} te saluda. Su minimoa, ${i.fromPetName}, vino a ver a ${i.petName}.`,
+        `Hola, ${i.displayName}: ${i.fromName} te dice hola. Su minimoa, ${i.fromPetName}, vino a ver a ${i.petName}.`,
         'Si aceptas, sus minimoas se conocen y podrás escribirle.',
       ],
       cta: 'Ver el encuentro',
@@ -125,7 +125,7 @@ export const emailText = defineMessages({
       title: (i: WelcomeInput) => `${i.petName} nasceu.`,
       paragraphs: (i: WelcomeInput) => [
         `Oi, ${i.displayName}! Seu minimoa ${i.petName} acabou de abrir os olhos.`,
-        'Ele vai cruzar com outros minimoas e te apresentar pessoas. Nada acontece sem o seu toque: você acena, a outra pessoa aceita e o vínculo é criado.',
+        'Ele vai cruzar com outros minimoas e te apresentar pessoas. Nada acontece sem o seu toque: você diz olá, a outra pessoa aceita e o vínculo é criado.',
         'Passe para vê-lo todos os dias. Ele cresce com você.',
       ],
       cta: (i: WelcomeInput) => `Ver ${i.petName}`,
@@ -155,7 +155,7 @@ export const emailText = defineMessages({
       title: (i: WelcomeInput) => `${i.petName} is geboren.`,
       paragraphs: (i: WelcomeInput) => [
         `Hoi ${i.displayName}, je minimoa ${i.petName} heeft net zijn ogen geopend.`,
-        'Hij gaat andere minimoas tegenkomen en je aan mensen voorstellen. Niets gebeurt zonder jouw tik: jij zwaait, de ander accepteert, de band ontstaat.',
+        'Hij gaat andere minimoas tegenkomen en je aan mensen voorstellen. Niets gebeurt zonder jouw tik: jij zegt hallo, de ander accepteert, de band ontstaat.',
         'Kom elke dag even langs. Hij groeit met je mee.',
       ],
       cta: (i: WelcomeInput) => `Bekijk ${i.petName}`,

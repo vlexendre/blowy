@@ -290,7 +290,7 @@ export const confidentialite: LegalPage = {
     },
     { p: 'Your vision is indicative: it is “your vision, for now”. It is not a diagnosis, and we use no medical or psychological vocabulary.' },
     {
-      p: '**No decision producing legal effects** concerning you, or similarly significantly affecting you, is made by this calculation. It only decides whom your minimoa introduces you to; you always choose whether to wave, accept or ignore. You can ask us for explanations, challenge a result or object to this processing by writing to {{email.privacy}}; in the latter case, we will no longer be able to introduce you to anyone.',
+      p: '**No decision producing legal effects** concerning you, or similarly significantly affecting you, is made by this calculation. It only decides whom your minimoa introduces you to; you always choose whether to say hello, accept or ignore. You can ask us for explanations, challenge a result or object to this processing by writing to {{email.privacy}}; in the latter case, we will no longer be able to introduce you to anyone.',
     },
 
     { h2: '4. Artificial intelligence', id: 'ia' },

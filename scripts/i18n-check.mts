@@ -243,7 +243,7 @@ const LIVES: Record<(typeof LOCALES)[number], string> = {
   nl: `${N}levens?|levens? van \\d|één leven erbij|kost (?:\\S+ ){0,2}een leven`,
 };
 const RETIRED: Record<(typeof LOCALES)[number], RegExp> = {
-  fr: word(`défis?|habitudes?|ligues?|trophées?|étincelles?|bilans?|preuves?|${LIVES.fr}`),
+  fr: word(`défis?|habitudes?|ligues?|trophées?|étincelles?|bilans?|preuves?|saluer|salu[ée]e?s?|salue[sz]?|${LIVES.fr}`),
   en: word(`challenges?|habits?|leagues?|trophy|trophies|sparks?|recaps?|reviews?|proofs?|${LIVES.en}`),
   es: word(`retos?|desafíos?|hábitos?|ligas?|trofeos?|chispas?|balances?|pruebas?(?! gratu| gratis)|${LIVES.es}`),
   pt: word(`desafios?|hábitos?|ligas?|troféus?|faíscas?|balanços?|provas?|${LIVES.pt}`),

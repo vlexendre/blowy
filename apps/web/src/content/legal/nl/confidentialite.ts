@@ -290,7 +290,7 @@ export const confidentialite: LegalPage = {
     },
     { p: 'Je kijk is indicatief: het is “je kijk, voor nu”. Het is geen diagnose, en we gebruiken geen medische of psychologische woorden.' },
     {
-      p: '**Geen enkel besluit met rechtsgevolgen** voor jou, of dat je in vergelijkbare mate treft, wordt door deze berekening genomen. Ze bepaalt alleen aan wie je minimoa je voorstelt; jij kiest altijd of je zwaait, accepteert of negeert. Je kunt ons om uitleg vragen, een resultaat betwisten of bezwaar maken tegen deze verwerking door te mailen naar {{email.privacy}}; in dat laatste geval kunnen we je niemand meer voorstellen.',
+      p: '**Geen enkel besluit met rechtsgevolgen** voor jou, of dat je in vergelijkbare mate treft, wordt door deze berekening genomen. Ze bepaalt alleen aan wie je minimoa je voorstelt; jij kiest altijd of je hallo zegt, accepteert of negeert. Je kunt ons om uitleg vragen, een resultaat betwisten of bezwaar maken tegen deze verwerking door te mailen naar {{email.privacy}}; in dat laatste geval kunnen we je niemand meer voorstellen.',
     },
 
     { h2: '4. Kunstmatige intelligentie', id: 'ia' },

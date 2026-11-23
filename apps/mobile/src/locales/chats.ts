@@ -38,7 +38,7 @@ export const tabs = messages({
     a11y: 'Navegación principal',
     badgeA11y: {
       chats: (tab: string, n: number): string => `${tab}, ${n} sin leer`,
-      quartier: (tab: string, n: number): string => `${tab}, ${n} ${n === 1 ? 'saludo recibido' : 'saludos recibidos'}`,
+      quartier: (tab: string, n: number): string => `${tab}, ${n} ${n === 1 ? 'hola recibido' : 'holas recibidos'}`,
     },
   },
   pt: {
@@ -49,7 +49,7 @@ export const tabs = messages({
     a11y: 'Navegação principal',
     badgeA11y: {
       chats: (tab: string, n: number): string => `${tab}, ${n} ${n === 1 ? 'não lida' : 'não lidas'}`,
-      quartier: (tab: string, n: number): string => `${tab}, ${n} ${n === 1 ? 'oi recebido' : 'ois recebidos'}`,
+      quartier: (tab: string, n: number): string => `${tab}, ${n} ${n === 1 ? 'olá recebido' : 'olás recebidos'}`,
     },
   },
   nl: {
@@ -173,10 +173,10 @@ export const chats = messages({
     ],
     wavesText: (names: string[]): string =>
       names.length === 1
-        ? `${names[0]} te ha saludado. ¿Respondes?`
-        : `${names.slice(0, -1).join(', ')} y ${names.at(-1)} te han saludado.`,
+        ? `${names[0]} te ha dicho hola. ¿Respondes?`
+        : `${names.slice(0, -1).join(', ')} y ${names.at(-1)} te han dicho hola.`,
     wavesA11y: (n: number): string =>
-      `${n} ${n === 1 ? 'persona te ha saludado' : 'personas te han saludado'}. Abrir encuentros.`,
+      `${n} ${n === 1 ? 'persona te ha dicho hola' : 'personas te han dicho hola'}. Abrir encuentros.`,
     turnKicker: 'Te espera un mensaje',
     turnTitle: (n: number): TitleSegment[] => [
       { text: `${n} ${n === 1 ? 'VÍNCULO' : 'VÍNCULOS'} ` },
@@ -240,7 +240,7 @@ export const chats = messages({
     mood: { moment: 'Uma mensagem ia alegrar o dia', endormi: 'Vínculo dormindo' },
     isNew: 'Novo',
     introducedBy: (pet: string): string => `Apresentados por ${pet}`,
-    emptyPreview: 'Digam oi.',
+    emptyPreview: 'Digam olá.',
     emptyTitle: [{ text: 'AINDA SEM\n' }, { text: 'CHATS', dim: true }],
     emptyText: (pet: string): string => `${pet} está esperando cruzar com alguém.`,
     emptyAction: 'Ver encontros',
@@ -709,7 +709,7 @@ export const chat = messages({
     refusedKeep: 'Seu texto continua no campo: edite antes de enviar de novo.',
     lockedPhoto: 'Foto que ficou oculta',
     typing: (name: string): string => `${name} está digitando…`,
-    emptyTitle: [{ text: 'DIGAM\n' }, { text: 'OI', dim: true }],
+    emptyTitle: [{ text: 'DIGAM\n' }, { text: 'OLÁ', dim: true }],
     emptyText: (pet: string, otherPet: string): string =>
       `${pet} e ${otherPet} se encontraram. A primeira palavra é sua.`,
     loadError: 'Não foi possível carregar as mensagens',

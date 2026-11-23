@@ -54,7 +54,7 @@ const fr = {
   } as Record<LevelKey, { title: string; text: string }>,
   eventLabel: {
     met_new_pet: 'A rencontré un nouveau minimoa',
-    waved: 'A salué un minimoa',
+    waved: 'A dit bonjour à un minimoa',
     challenge_done: 'A relevé le défi du jour',
     photo_sent: 'Photo partagée dans un lien',
     wrote_together: 'Vous vous êtes écrit tous les deux',
@@ -180,7 +180,7 @@ export const labels = defineMessages({
     },
     eventLabel: {
       met_new_pet: 'Met a new minimoa',
-      waved: 'Waved at a minimoa',
+      waved: 'Said hello to a minimoa',
       challenge_done: 'Did the daily challenge',
       photo_sent: 'Photo shared in a link',
       wrote_together: 'You both wrote to each other',
@@ -301,7 +301,7 @@ export const labels = defineMessages({
     },
     eventLabel: {
       met_new_pet: 'Se cruzó con un minimoa nuevo',
-      waved: 'Saludó a un minimoa',
+      waved: 'Dijo hola a un minimoa',
       challenge_done: 'Completó el reto del día',
       photo_sent: 'Foto compartida en un vínculo',
       wrote_together: 'Se escribieron mutuamente',
@@ -422,7 +422,7 @@ export const labels = defineMessages({
     },
     eventLabel: {
       met_new_pet: 'Cruzou com um minimoa novo',
-      waved: 'Acenou para um minimoa',
+      waved: 'Disse olá para um minimoa',
       challenge_done: 'Cumpriu o desafio do dia',
       photo_sent: 'Foto compartilhada em um vínculo',
       wrote_together: 'Vocês trocaram mensagens',
@@ -543,7 +543,7 @@ export const labels = defineMessages({
     },
     eventLabel: {
       met_new_pet: 'Kwam een nieuwe minimoa tegen',
-      waved: 'Zwaaide naar een minimoa',
+      waved: 'Zei hallo tegen een minimoa',
       challenge_done: 'Deed de uitdaging van de dag',
       photo_sent: 'Foto gedeeld in een band',
       wrote_together: 'Jullie schreven elkaar allebei',

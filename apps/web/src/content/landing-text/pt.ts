@@ -49,7 +49,7 @@ export const pt: LandingText = {
     steps: [
       { title: 'Cuide do seu minimoa', meta: 'todo dia', text: 'Dê comida, brinque, saia: quanto mais você sai, mais gente ele apresenta.' },
       { title: 'Ele te apresenta pessoas perto de você', meta: 'e diz por quê', text: '3 pontos em comum, 1 diferença para explorar. Nunca só um número.' },
-      { title: 'Vocês conversam, vocês se encontram', meta: 'nada sem o seu ok', text: 'Você acena, a outra pessoa aceita. Ninguém te escreve sem o seu sim.' },
+      { title: 'Vocês conversam, vocês se encontram', meta: 'nada sem o seu ok', text: 'Você diz olá, a outra pessoa aceita. Ninguém te escreve sem o seu sim.' },
     ],
     cta: 'Qual minimoa é você?',
     quartier: 'Seu bairro abre com 50',
@@ -201,7 +201,7 @@ export const pt: LandingText = {
     m2: 'Do Alex. Caminha de manhã, lê à noite.',
     why: { label: 'Por que a Sasha', common: ['Mesmo ritmo', 'Ficar por aqui', 'Planejar tudo'], diff: 'Uma diferença para explorar: o pique' },
     ctaLabel: 'Nada acontece sem o seu toque',
-    yes: 'Acenar para a Sasha',
+    yes: 'Dizer olá para a Sasha',
     no: 'Dessa vez não',
   },
   outings: {

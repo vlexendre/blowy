@@ -122,8 +122,8 @@ export const voiceText = defineMessages({
       low: ['Somos muy distintos. Eso es lo que me gusta.', 'Qué sorpresa, este encuentro.'],
     },
     wavedAtYou: [
-      (other: string) => `${other} me ha saludado. ¿Le respondemos?`,
-      (other: string) => `${other} pasó a saludar. Parece simpático.`,
+      (other: string) => `${other} me ha dicho hola. ¿Le respondemos?`,
+      (other: string) => `${other} pasó a decir hola. Parece simpático.`,
       (other: string) => `${other} no para de rondarme. Huele a ganas de jugar.`,
     ],
     system: {

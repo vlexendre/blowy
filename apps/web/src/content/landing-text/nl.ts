@@ -49,7 +49,7 @@ export const nl: LandingText = {
     steps: [
       { title: 'Zorg voor je minimoa', meta: 'elke dag', text: 'Eten, spelen, naar buiten: hoe vaker je weggaat, hoe meer mensen hij voorstelt.' },
       { title: 'Hij stelt je voor aan mensen in je buurt', meta: 'en zegt waarom', text: '3 dingen gemeen, 1 verschil om te ontdekken. Nooit zomaar een getal.' },
-      { title: 'Jullie schrijven, jullie spreken af', meta: 'niets zonder jouw ja', text: 'Jij zwaait, de ander accepteert. Niemand schrijft je zonder jouw ja.' },
+      { title: 'Jullie schrijven, jullie spreken af', meta: 'niets zonder jouw ja', text: 'Jij zegt hallo, de ander accepteert. Niemand schrijft je zonder jouw ja.' },
     ],
     cta: 'Welke minimoa ben jij?',
     quartier: 'Je buurt gaat open bij 50',
@@ -201,7 +201,7 @@ export const nl: LandingText = {
     m2: 'Van Alex. Wandelt ’s ochtends, leest ’s avonds.',
     why: { label: 'Waarom Sasha', common: ['Zelfde ritme', 'Hier blijven', 'Alles plannen'], diff: 'Een verschil om te ontdekken: drive' },
     ctaLabel: 'Niets gebeurt zonder jouw tik',
-    yes: 'Zwaai naar Sasha',
+    yes: 'Hallo zeggen tegen Sasha',
     no: 'Deze keer niet',
   },
   outings: {

@@ -93,9 +93,9 @@ describe('anti-spam des coucous', () => {
     const first = await waveUntilRefused(free, targets);
     expect(first.sent).toBe(freeStart?.left);
     expect(first.refusal?.code).toBe('wave_limit');
-    expect(first.refusal?.message).toBe('Tu as fait signe à beaucoup de monde aujourd’hui. Reviens demain.');
+    expect(first.refusal?.message).toBe('Tu as dit bonjour à beaucoup de monde aujourd’hui. Reviens demain.');
     const blocked = (await free.api.encounters.list()).waves;
-    expect(blocked).toEqual({ left: 0, blocked: 'daily', message: 'Tu as fait signe à beaucoup de monde aujourd’hui. Reviens demain.' });
+    expect(blocked).toEqual({ left: 0, blocked: 'daily', message: 'Tu as dit bonjour à beaucoup de monde aujourd’hui. Reviens demain.' });
     // Un coucou déjà envoyé reste idempotent, même au plafond.
     await free.api.encounters.wave(targets[0]?.id ?? '');
 

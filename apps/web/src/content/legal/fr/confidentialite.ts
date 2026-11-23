@@ -302,7 +302,7 @@ export const confidentialite: LegalPage = {
       p: 'Ta vision est indicative : c’est « ta vision, pour l’instant ». Ce n’est pas un diagnostic, et on n’utilise aucun vocabulaire médical ou psychologique.',
     },
     {
-      p: '**Aucune décision produisant des effets juridiques** à ton égard, ou t’affectant de manière comparable, n’est prise par ce calcul. Il décide seulement qui ton minimoa te présente ; c’est toujours toi qui choisis de saluer, d’accepter ou d’ignorer. Tu peux nous demander des explications, contester un résultat ou t’opposer à ce traitement en écrivant à {{email.privacy}} ; dans ce dernier cas, on ne pourra plus te présenter de rencontres.',
+      p: '**Aucune décision produisant des effets juridiques** à ton égard, ou t’affectant de manière comparable, n’est prise par ce calcul. Il décide seulement qui ton minimoa te présente ; c’est toujours toi qui choisis de dire bonjour, d’accepter ou d’ignorer. Tu peux nous demander des explications, contester un résultat ou t’opposer à ce traitement en écrivant à {{email.privacy}} ; dans ce dernier cas, on ne pourra plus te présenter de rencontres.',
     },
 
     { h2: "4. L'intelligence artificielle", id: 'ia' },

@@ -249,7 +249,7 @@ const es: Translation<typeof fr> = {
         ? [
             'Mientras tanto:',
             ...(i.unread > 0 ? [`· ${i.unread} ${i.unread > 1 ? 'mensajes te esperan' : 'mensaje te espera'} en tus chats`] : []),
-            ...(i.waves > 0 ? [`· ${i.waves} ${i.waves > 1 ? 'personas te han saludado' : 'persona te ha saludado'}`] : []),
+            ...(i.waves > 0 ? [`· ${i.waves} ${i.waves > 1 ? 'personas te han dicho hola' : 'persona te ha dicho hola'}`] : []),
           ]
         : ['Sin prisa: todo está donde lo dejaste.']),
       `Cuando vuelvas, ${i.petName} se alegrará de verte. Y si prefieres tomarte un descanso, también está bien.`,

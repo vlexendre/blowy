@@ -13,7 +13,7 @@ export const regles: LegalPage = {
 
     { h2: 'Un non, c’est non', id: 'consentement' },
     {
-      p: 'Si quelqu’un ne répond pas, ne te salue pas en retour, quitte un lien ou te bloque, c’est son choix. On ne relance pas en boucle, on ne crée pas un autre compte pour contourner un refus, et on ne cherche pas la personne ailleurs.',
+      p: 'Si quelqu’un ne répond pas, ne te dit pas bonjour en retour, quitte un lien ou te bloque, c’est son choix. On ne relance pas en boucle, on ne crée pas un autre compte pour contourner un refus, et on ne cherche pas la personne ailleurs.',
     },
 
     { h2: 'Pas de harcèlement ni de haine', id: 'harcelement' },

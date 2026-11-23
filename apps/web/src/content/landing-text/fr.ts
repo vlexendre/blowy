@@ -53,7 +53,7 @@ export const fr = {
     steps: [
       { title: 'Il apprend à te connaître', meta: 'chaque jour', text: 'Quelques questions par jour. En te présentant à lui, tu apprends aussi à te connaître.' },
       { title: 'Il te présente des gens près de chez toi', meta: 'et dit pourquoi', text: 'Des personnes qui te ressemblent, avec vos points communs. Des potes, et pourquoi pas plus.' },
-      { title: 'Vous vous écrivez, vous vous voyez', meta: 'rien sans ton accord', text: 'Tu salues, l’autre accepte. Personne ne t’écrit sans ton oui.' },
+      { title: 'Vous vous écrivez, vous vous voyez', meta: 'rien sans ton accord', text: 'Tu dis bonjour, l’autre accepte. Personne ne t’écrit sans ton oui.' },
     ],
     cta: 'Quel minimoa es-tu ?',
     quartier: 'Ton quartier ouvre à 50',
@@ -211,7 +211,7 @@ export const fr = {
     m2: 'D’Alex. Marche le matin, lit le soir.',
     why: { label: 'Pourquoi Sasha', common: ['Même rythme', 'Rester ici', 'Tout prévoir'], diff: 'Une différence à explorer : l’élan' },
     ctaLabel: 'Rien ne se passe sans ton tap',
-    yes: 'Saluer Sasha',
+    yes: 'Dire bonjour à Sasha',
     no: 'Pas cette fois',
   },
   outings: {

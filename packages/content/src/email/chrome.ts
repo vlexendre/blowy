@@ -227,11 +227,11 @@ const es: Translation<typeof fr> = {
   /** Citation de la bulle dans la version texte. */
   quote: (s: string) => `«${s}»`,
   art: {
-    'nino-coucou': 'Nino, el minimoa verde con tupé naranja, te saluda',
+    'nino-coucou': 'Nino, el minimoa verde con tupé naranja, te dice hola',
     'nino-pense': 'Nino, el minimoa verde, piensa en ti',
     'nino-check': 'Nino, el minimoa verde, levanta el pulgar',
     'nino-accueil': 'Nino, el minimoa verde, te abre los brazos',
-    'suzie-coucou': 'Suzie, el minimoa rosa, te saluda',
+    'suzie-coucou': 'Suzie, el minimoa rosa, te dice hola',
     'suzie-dodo': 'Suzie, el minimoa rosa, echa la siesta',
     'suzie-timide': 'Suzie, el minimoa rosa, un poco emocionado',
     'gaston-joie': 'Gaston, el minimoa naranja, salta de alegría',
@@ -253,7 +253,7 @@ const es: Translation<typeof fr> = {
     bubble: (i: Pet) => `¡Hola! Soy Nino. Le echo un ojo a ${i.petName} en sus primeros pasos.`,
   },
   wave: {
-    eyebrow: 'Alguien te saluda',
+    eyebrow: 'Alguien te dice hola',
     preheader: (i: Wave) => `${i.fromPetName} vino a ver a ${i.petName}. Te toca.`,
     bubble: (i: Wave) => `¡Psst! ${i.fromPetName} espera en la puerta de ${i.petName}. ¿Qué le digo?`,
   },

@@ -49,7 +49,7 @@ export const en: LandingText = {
     steps: [
       { title: 'It gets to know you', meta: 'every day', text: 'A few questions a day. Introducing yourself to it, you get to know yourself too.' },
       { title: 'It introduces you to people nearby', meta: 'and says why', text: 'People who are like you, with what you have in common. Friends, and maybe more.' },
-      { title: 'You chat, you meet up', meta: 'nothing without your OK', text: 'You wave, they accept. Nobody can write to you unless you say yes.' },
+      { title: 'You chat, you meet up', meta: 'nothing without your OK', text: 'You say hello, they accept. Nobody can write to you unless you say yes.' },
     ],
     cta: 'Which minimoa are you?',
     quartier: 'Your neighborhood opens at 50',
@@ -201,7 +201,7 @@ export const en: LandingText = {
     m2: 'Alex’s. Walks in the morning, reads at night.',
     why: { label: 'Why Sasha', common: ['Same pace', 'Staying put', 'Planning everything'], diff: 'A difference to explore: drive' },
     ctaLabel: 'Nothing happens without your tap',
-    yes: 'Wave at Sasha',
+    yes: 'Say hello to Sasha',
     no: 'Not this time',
   },
   outings: {
@@ -240,7 +240,7 @@ export const en: LandingText = {
       '01-des-potes': '“Friends near you, for real.” The app’s home screen: the card “Léa is waving at you” (their minimoa, Suzie, came to say hi) and Nino, in a party hat and monocle, 92% up for going out; Suzie and Pia wave around him.',
       '02-pourquoi': '“Who see life like you do.” Nino meeting Pia, 83% compatible, and the card “Léa is waving at you”: 78% compatible, 3 things in common, 1 difference to explore, “Not this time” or “Accept”.',
       '03-groupe': '“One habit, together.” The “Morning walk” group: who kept it today, this week so far, the Walk habit to prove with a photo and “2 more people needed to start the streak”; Suzie and Nino wave.',
-      '04-sortie': '“See them for real.” What Nino says about Pia, met through Malo, and the list of matches: Pia, 83% compatible, with the “Wave at Pia” button, then Basile; Pia bursts out laughing.',
+      '04-sortie': '“See them for real.” What Nino says about Pia, met through Malo, and the list of matches: Pia, 83% compatible, with the “Say hello to Pia” button, then Basile; Pia bursts out laughing.',
       '05-soins': '“It looks after you.” Nino and his care (Feed, Play, Nap), and the card “Me, in 3 words” where his friends describe him: funny, gentle, calm; Nino bites into an apple.',
       '06-garde-robe': '“Dress it like you.” The wardrobe: Nino in a party hat and monocle, 14 items out of 74, items earned with day streaks and Minimoa+ items (halo, horns, pirate hat, winter beanie), surrounded by a cap, a bucket hat, a crown and a scarf.',
       '07-quartier': '“Your block, for real.” The “Around you” map: your 1.5 km zone, Yanis, Inès and Léa at rounded positions, discreet mode, and the card “This week, Nino found 5 people”.',

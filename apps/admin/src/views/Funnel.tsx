@@ -32,12 +32,12 @@ export function Funnel() {
         <>
           <section className="section" aria-labelledby="fun">
             <h2 id="fun">
-              Des rencontres aux liens <span className="hint">proposées par les minimoas → saluées → acceptées</span>
+              Des rencontres aux liens <span className="hint">proposées par les minimoas → bonjour envoyé → acceptées</span>
             </h2>
             <div className="funnel">
               <Step label="Proposées" m={data.encounters.proposed} from={null} />
-              <Step label="Saluées" m={data.encounters.waved} from={{ label: 'Proposées', m: data.encounters.proposed }} />
-              <Step label="Acceptées" m={data.encounters.accepted} from={{ label: 'Saluées', m: data.encounters.waved }} />
+              <Step label="Bonjours envoyés" m={data.encounters.waved} from={{ label: 'Proposées', m: data.encounters.proposed }} />
+              <Step label="Acceptées" m={data.encounters.accepted} from={{ label: 'Bonjours envoyés', m: data.encounters.waved }} />
             </div>
           </section>
           <div className="grid-2 section">

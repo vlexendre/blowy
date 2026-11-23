@@ -769,7 +769,7 @@ export const moi = messages({
       rows: {
         daily_challenge: { title: 'Sesión del día' },
         streak_in_danger: { title: 'Un recordatorio de tu racha', subtitle: 'Por la noche, 1 al día como máximo' },
-        encounters: { title: 'Nuevo encuentro, alguien te saluda' },
+        encounters: { title: 'Nuevo encuentro, alguien te dice hola' },
         messages: { title: 'Mensajes', subtitle: 'Y el saludito de un vínculo que dormía' },
         link_in_danger: { title: 'Te toca escribir', subtitle: 'Por la noche, si alguien te escribió ese día' },
         marketing: { title: 'Ofertas de Minimoa+', subtitle: 'Un recordatorio como máximo, solo si quieres' },
@@ -794,7 +794,7 @@ export const moi = messages({
       title: [{ text: 'MI ' }, { text: 'CUENTA.', dim: true }],
       photoLabel: 'Tu foto de perfil',
       photoHint:
-        'Hasta que os hayáis saludado los dos, la otra persona solo ve una versión muy borrosa de tu foto.',
+        'Hasta que os hayáis dicho hola los dos, la otra persona solo ve una versión muy borrosa de tu foto.',
       photoChange: 'Cambiar la foto',
       photoAdd: 'Añadir una foto',
       sheetTitle: [{ text: 'TU ' }, { text: 'FOTO', dim: true }],

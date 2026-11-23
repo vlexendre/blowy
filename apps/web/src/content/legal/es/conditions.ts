@@ -34,7 +34,7 @@ export const conditions: LegalPage = {
     {
       ul: [
         '**La visión** se construye con un test al registrarte, una pregunta al día, tus hábitos y tu forma de cuidar a tu minimoa. Es orientativa y se afina con el tiempo.',
-        '**Los encuentros**: tu minimoa solo te presenta a personas cuya compatibilidad supera un umbral. Nada ocurre sin tu acuerdo: saludas, la otra persona acepta, se crea el vínculo. Cómo funciona se explica en la [política de privacidad](@confidentialite#compatibilite).',
+        '**Los encuentros**: tu minimoa solo te presenta a personas cuya compatibilidad supera un umbral. Nada ocurre sin tu acuerdo: dices hola, la otra persona acepta, se crea el vínculo. Cómo funciona se explica en la [política de privacidad](@confidentialite#compatibilite).',
         '**Los vínculos**: un chat, una racha que crece cada día en que os escribís los dos, recuerdos y su estado en una frase (vivo, tranquilo, dormido): un vínculo en silencio se duerme, no se pierde nada, una palabra lo despierta.',
         '**Tu minimoa** tiene indicadores (sociabilidad, hambre, energía, humor), hábitos que mantener, una racha, objetos. Nunca muere.',
         '**El mapa** muestra los minimoas compatibles a tu alrededor (o alrededor de la ciudad que elegiste, si no activas la ubicación), en una posición imprecisa a propósito.',

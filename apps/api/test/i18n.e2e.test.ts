@@ -44,7 +44,7 @@ describe('langues', () => {
     expect(sentTo('ExponentPushToken[i18n-en]')[0]).toMatchObject({ title: 'Léa waved at you', body: 'Come and see who it is, and wave back whenever you like.' });
     expect(sentTo('ExponentPushToken[i18n-fr]')[0]).toMatchObject({ title: 'Léa te fait signe', body: 'Viens voir qui c’est et réponds quand tu veux.' });
     expect(sentTo('ExponentPushToken[i18n-nl]')[0]).toMatchObject({ title: 'Léa zwaait naar je', body: 'Kom kijken wie het is en zwaai terug wanneer je wilt.' });
-    expect(sentTo('ExponentPushToken[i18n-es]')[0]).toMatchObject({ title: 'Léa te saluda' });
+    expect(sentTo('ExponentPushToken[i18n-es]')[0]).toMatchObject({ title: 'Léa te dice hola' });
     expect(sentTo('ExponentPushToken[i18n-pt]')[0]).toMatchObject({ title: 'Léa acenou para você' });
   });
 

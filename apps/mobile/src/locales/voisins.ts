@@ -29,7 +29,7 @@ export const voisins = messages({
     loadErrorText: 'Vérifie ta connexion, puis réessaie.',
     /** Fiche d'une épingle non présentée aujourd'hui (gratuit) : le bouton ouvre Minimoa+, il le dit. */
     plusAction: 'Découvrir Minimoa+',
-    plusNote: (name: string): string => `${name} n’est pas dans tes présentations du jour : le saluer depuis la carte, c’est avec Minimoa+.`,
+    plusNote: (name: string): string => `${name} n’est pas dans tes présentations du jour : lui dire bonjour depuis la carte, c’est avec Minimoa+.`,
   },
   en: {
     title: [{ text: 'YOUR ' }, { text: 'NEIGHBORHOOD', dim: true }],
@@ -46,12 +46,12 @@ export const voisins = messages({
     history: 'Already met',
     loadErrorText: 'Check your connection, then try again.',
     plusAction: 'Discover Minimoa+',
-    plusNote: (name: string): string => `${name} isn’t in today’s introductions: waving from the map comes with Minimoa+.`,
+    plusNote: (name: string): string => `${name} isn’t in today’s introductions: saying hello from the map comes with Minimoa+.`,
   },
   es: {
     title: [{ text: 'TU ' }, { text: 'BARRIO', dim: true }],
     sheetTitle: (n: number): string => (n === 0 ? 'Hoy · nadie por ahora' : `Hoy · ${n} ${n === 1 ? 'persona' : 'personas'}`),
-    sheetNote: 'Las fotos se ven borrosas hasta que os hayáis saludado los dos. Ubicaciones aproximadas.',
+    sheetNote: 'Las fotos se ven borrosas hasta que os hayáis dicho hola los dos. Ubicaciones aproximadas.',
     expandA11y: 'Abrir la lista',
     collapseA11y: 'Plegar la lista',
     around: (n: number): string => `En el mapa · ${n}`,
@@ -63,7 +63,7 @@ export const voisins = messages({
     history: 'Ya os habéis cruzado',
     loadErrorText: 'Comprueba tu conexión y vuelve a intentarlo.',
     plusAction: 'Descubrir Minimoa+',
-    plusNote: (name: string): string => `${name} no está en tus presentaciones de hoy: saludar desde el mapa es con Minimoa+.`,
+    plusNote: (name: string): string => `${name} no está en tus presentaciones de hoy: decir hola desde el mapa es con Minimoa+.`,
   },
   pt: {
     title: [{ text: 'SEU ' }, { text: 'BAIRRO', dim: true }],
@@ -80,7 +80,7 @@ export const voisins = messages({
     history: 'Já se cruzaram',
     loadErrorText: 'Verifique sua conexão e tente de novo.',
     plusAction: 'Conhecer o Minimoa+',
-    plusNote: (name: string): string => `${name} não está nas suas apresentações de hoje: acenar pelo mapa é com o Minimoa+.`,
+    plusNote: (name: string): string => `${name} não está nas suas apresentações de hoje: dizer olá pelo mapa é com o Minimoa+.`,
   },
   nl: {
     title: [{ text: 'JOUW ' }, { text: 'BUURT', dim: true }],
@@ -97,6 +97,6 @@ export const voisins = messages({
     history: 'Al ontmoet',
     loadErrorText: 'Controleer je verbinding en probeer het opnieuw.',
     plusAction: 'Ontdek Minimoa+',
-    plusNote: (name: string): string => `${name} zit niet in je voorstellingen van vandaag: zwaaien vanaf de kaart kan met Minimoa+.`,
+    plusNote: (name: string): string => `${name} zit niet in je voorstellingen van vandaag: hallo zeggen vanaf de kaart kan met Minimoa+.`,
   },
 });

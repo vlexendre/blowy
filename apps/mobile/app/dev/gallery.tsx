@@ -753,7 +753,7 @@ function GalleryScreen() {
             ownerLabel="le minimoa de Sasha"
             badgeLabel="nouveau"
             compatLabel="d’accord"
-            waveLabel="saluer pia"
+            waveLabel="dire bonjour à pia"
             wavedLabel="salut envoyé"
             onWave={noop}
           />

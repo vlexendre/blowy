@@ -316,7 +316,7 @@ export const home = messages({
     welcomeBack: (unread: number, waves: number): string => {
       const parts = [
         unread > 0 ? `${unread} ${unread > 1 ? 'mensajes sin leer' : 'mensaje sin leer'}` : null,
-        waves > 0 ? `${waves} ${waves > 1 ? 'personas te han saludado' : 'persona te ha saludado'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'personas te han dicho hola' : 'persona te ha dicho hola'}` : null,
       ].filter((p): p is string => p !== null);
       return parts.length ? `Mientras no estabas: ${parts.join(' y ')}.` : 'Nada se ha movido sin ti: sigue donde quieras.';
     },

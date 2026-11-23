@@ -46,7 +46,7 @@ export const securite: LegalPage = {
         'Les prénoms, les messages et les photos de profil passent par un **filtre automatique** : ce qui enfreint nettement les [règles](@regles) n’est pas publié, un message limite est signalé à la modération.',
         'Quand un lien atteint le niveau où l’on se voit en vrai, l’app te rappelle ces conseils de sécurité.',
         'Le **mode discret** te retire de la carte.',
-        'Rien ne se passe sans ton accord : tu salues, l’autre accepte, le lien se crée.',
+        'Rien ne se passe sans ton accord : tu dis bonjour, l’autre accepte, le lien se crée.',
         'Tu peux quitter un lien à tout moment.',
       ],
     },

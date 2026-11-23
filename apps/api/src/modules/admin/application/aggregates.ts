@@ -157,6 +157,6 @@ export function funnelOf(w: StatsWindow | null, computedAt: string | null): Admi
     averageCompatibility: w.snapshot('averageCompatibility', 7),
     wroteTogether: w.snapshot('linksWroteTogether', 7),
     links: { active: latest?.linksActive ?? 0, ghost: latest?.linksGhost ?? 0, archived: latest?.linksArchived ?? 0 },
-    series: [w.series('encountersProposed', 'Proposées'), w.series('encountersWaved', 'Saluées'), w.series('encountersAccepted', 'Acceptées')],
+    series: [w.series('encountersProposed', 'Proposées'), w.series('encountersWaved', 'Bonjours envoyés'), w.series('encountersAccepted', 'Acceptées')],
   };
 }

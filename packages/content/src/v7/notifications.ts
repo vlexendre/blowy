@@ -648,8 +648,8 @@ export const notificationTexts = defineMessages({
       waved: {
         title: (v) =>
           many(v)
-            ? `${v.name} y ${others(v, 'persona más', 'personas más')} te han saludado`
-            : `${v.name} te saluda`,
+            ? `${v.name} y ${others(v, 'persona más', 'personas más')} te han dicho hola`
+            : `${v.name} te dice hola`,
         body: () => 'Ven a ver quién es y responde cuando quieras.',
       },
       message: {
@@ -723,7 +723,7 @@ export const notificationTexts = defineMessages({
         title: (v) => (v.group ? `«${v.group}» empieza` : `${v.habit}, ¿en grupo?`),
         body: (v) =>
           v.group
-            ? `Sois ${v.count} con el mismo hábito: ${v.habit}. Saluda.`
+            ? `Sois ${v.count} con el mismo hábito: ${v.habit}. Di hola.`
             : 'Hay gente cerca de ti con este hábito. ¿Lo mantenéis juntos?',
       },
       group_message: { title: (v) => v.group, body: (v) => `${v.name} ha escrito en el grupo.` },
@@ -742,7 +742,7 @@ export const notificationTexts = defineMessages({
             : `${v.name} se une a «${v.group}»`,
         body: (v) =>
           Number(v.count) >= 3
-            ? `Ya sois ${v.count}. Saluda.`
+            ? `Ya sois ${v.count}. Di hola.`
             : `Sois ${v.count}. Una persona más y empieza la racha.`,
       },
       first_steps: {
@@ -862,7 +862,7 @@ export const notificationTexts = defineMessages({
       daily_challenge: 'Reto del día',
       needs_out: 'Tu minimoa quiere salir',
       new_encounter: 'Nuevos vínculos',
-      waved: 'Te saludan',
+      waved: 'Te dicen hola',
       message: 'Mensajes',
       your_turn: 'Te toca escribir (racha de un vínculo)',
       link_in_danger: 'Un mensaje para un vínculo',

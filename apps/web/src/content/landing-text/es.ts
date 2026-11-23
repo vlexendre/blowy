@@ -49,7 +49,7 @@ export const es: LandingText = {
     steps: [
       { title: 'Cuida de tu minimoa', meta: 'cada día', text: 'Dale de comer, juega, sal: cuanto más sales, a más gente te presenta.' },
       { title: 'Te presenta a gente cerca de ti', meta: 'y te dice por qué', text: '3 cosas en común, 1 diferencia por explorar. Nunca una cifra sin más.' },
-      { title: 'Os escribís, os veis', meta: 'nada sin tu permiso', text: 'Tú saludas, la otra persona acepta. Nadie te escribe sin tu sí.' },
+      { title: 'Os escribís, os veis', meta: 'nada sin tu permiso', text: 'Tú dices hola, la otra persona acepta. Nadie te escribe sin tu sí.' },
     ],
     cta: '¿Qué minimoa eres?',
     quartier: 'Tu barrio abre con 50',
@@ -201,7 +201,7 @@ export const es: LandingText = {
     m2: 'De Alex. Camina por la mañana, lee por la noche.',
     why: { label: 'Por qué Sasha', common: ['Mismo ritmo', 'Quedarse aquí', 'Planearlo todo'], diff: 'Una diferencia por explorar: el empuje' },
     ctaLabel: 'Nada pasa sin tu toque',
-    yes: 'Saludar a Sasha',
+    yes: 'Decir hola a Sasha',
     no: 'Esta vez no',
   },
   outings: {
@@ -237,8 +237,8 @@ export const es: LandingText = {
     frenchShots: '(Capturas en francés.)',
     listLabel: 'Pantallas de la app',
     shots: {
-      '01-des-potes': '«Amigos cerca de ti.» La pantalla de inicio: la tarjeta «Léa te saluda» (su minimoa, Suzie, ha venido a decir hola) y Nino, con gorro de fiesta y monóculo, con un 92 % de ganas de salir; Suzie y Pia saludan alrededor.',
-      '02-pourquoi': '«Que ven la vida como tú.» El encuentro de Nino y Pia, compatibles al 83 %, y la tarjeta «Léa te saluda»: 78 % compatibles, 3 puntos en común, 1 diferencia por explorar, «Esta vez no» o «Aceptar».',
+      '01-des-potes': '«Amigos cerca de ti.» La pantalla de inicio: la tarjeta «Léa te dice hola» (su minimoa, Suzie, ha venido a decir hola) y Nino, con gorro de fiesta y monóculo, con un 92 % de ganas de salir; Suzie y Pia saludan alrededor.',
+      '02-pourquoi': '«Que ven la vida como tú.» El encuentro de Nino y Pia, compatibles al 83 %, y la tarjeta «Léa te dice hola»: 78 % compatibles, 3 puntos en común, 1 diferencia por explorar, «Esta vez no» o «Aceptar».',
       '03-groupe': '«Un hábito, entre varios.» El grupo «Paseo matutino»: quién ha cumplido hoy, la semana en curso, el hábito Caminar que se demuestra con una foto y «Faltan 2 personas para empezar la racha»; Suzie y Nino se saludan.',
       '04-sortie': '«Veos de verdad.» El chat del grupo «Los colegas del 11», donde Malo propone unas cañas el jueves y Yanis lleva patatas fritas, y lo que Nino cuenta de Pia, conocida a través de Malo; Pia se parte de risa.',
       '05-soins': '«Cuida de ti.» Nino y sus cuidados (Dar de comer, Jugar, Siesta), y la tarjeta «Yo, en 3 palabras» donde sus amigos lo describen: gracioso, tierno, directo; Nino muerde una manzana.',
