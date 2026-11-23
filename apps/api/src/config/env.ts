@@ -45,6 +45,11 @@ const EnvSchema = z
     BLOWY_SEED: z.preprocess(emptyToUndefined, z.coerce.number().int().min(0).optional()),
     /** `1` : chaque nouvelle inscription locale rejoint le monde du semis (elle voit ses comptes). */
     BLOWY_SEED_ADOPT: z.preprocess(emptyToUndefined, z.enum(['0', '1']).default('0')),
+    /**
+     * Ménage des photos de profil orphelines (`OrphanMediaJobs`, docs/ADA-2027.md) : `dry` (défaut) compte et journalise
+     * sans rien effacer, `on` efface, `off` ne fait rien.
+     */
+    MEDIA_SWEEP: z.preprocess(emptyToUndefined, z.enum(['dry', 'on', 'off']).default('dry')),
   })
   .superRefine((env, ctx) => {
     if (env.BLOWY_ENV === 'production' && env.BLOWY_ADAPTERS === 'memory') {
@@ -115,7 +120,11 @@ export interface Env {
   mascots: MascotsEnv;
   /** Semis au démarrage (démo locale en mémoire seulement) ; null sinon. */
   seed: SeedBootEnv | null;
+  /** Ménage des photos de profil orphelines : `dry` (compte seulement), `on` (efface), `off`. */
+  mediaSweep: MediaSweepMode;
 }
+
+export type MediaSweepMode = 'dry' | 'on' | 'off';
 
 export interface SeedBootEnv {
   cities: string[];
@@ -162,5 +171,6 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
       demo && e.BLOWY_SEED_CITIES
         ? { cities: e.BLOWY_SEED_CITIES.split(','), perCity: e.BLOWY_SEED_PER_CITY ?? null, seed: e.BLOWY_SEED ?? 1, adoptNewcomers: e.BLOWY_SEED_ADOPT === '1', source }
         : null,
+    mediaSweep: e.MEDIA_SWEEP,
   };
 }

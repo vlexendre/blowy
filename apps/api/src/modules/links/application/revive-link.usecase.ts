@@ -11,8 +11,8 @@ import { LinkSession } from './link-session';
  * « Le réveiller » (`POST /v1/links/:id/revive`), seulement sur un lien endormi (`warmth` « endormi », ADA-2027 item 27,
  * décision du relecteur du 23/11/2026 : prévenir l'autre, une fois, doucement) :
  * - le minimoa de qui réveille lui dit « Je lui ai fait un petit coucou. » (vu de lui seul) ;
- * - le minimoa de l'autre lui transmet, dans sa langue : « Coucou de la part de {prénom}. Un mot quand tu veux. » (vu de
- *   l'autre seul) ;
+ * - le minimoa de qui réveille dit à l'autre, dans la langue de l'autre : « Coucou de la part de {prénom}. Un mot quand
+ *   tu veux. » (vu de l'autre seul, compté comme non lu chez lui) ;
  * - l'autre reçoit une notification par le canal existant `message` (« {minimoa} te fait un petit coucou. ») : réglage
  *   des messages, heures calmes, délai par conversation et `Audience` appliqués par le notifieur ; jamais d'e-mail.
  * Le lien redevient « calme » : un second appel le même jour (ou sur un lien qui ne dort pas) rend le lien tel quel,
@@ -40,7 +40,9 @@ export class ReviveLink {
     const pet = draft.pair(userId).self;
     draft.update(woken);
     draft.pet(userId, wakeLine(draft.localeOf(userId), draft.seed('wake', userId)), 'event', userId);
-    draft.pet(otherId, wakeOtherLine(draft.localeOf(otherId), name), 'event', otherId);
+    // Réplique du minimoa de qui réveille, vue de l'autre seul : écrite au nom de l'autre, elle ne compterait pas comme
+    // non lue chez lui (`countUnread` écarte ce dont il est l'auteur).
+    draft.pet(userId, wakeOtherLine(draft.localeOf(otherId), name), 'event', otherId);
     const messages = await this.session.commit(draft);
     await this.notifier.notify(otherId, 'message', {
       linkId: draft.link.id,

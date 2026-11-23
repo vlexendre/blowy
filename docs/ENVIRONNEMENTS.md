@@ -46,11 +46,19 @@ Les valeurs secrètes ne vont que dans les tableaux de bord (Railway, Cloudflare
 | `APPLE_SIGNIN_KEY_P8`, `APPLE_SIGNIN_KEY_ID`, `APPLE_SIGNIN_TEAM_ID`, `APPLE_SIGNIN_CLIENT_ID` | | rien (révocation coupée) |
 | `REVIEW_EMAIL`, `REVIEW_CODE` | | facultatifs (code de 10 caractères au moins) |
 | `APP_IOS_MIN_SUPPORTED_BUILD`, `APP_IOS_LATEST_BUILD` (`APP_IOS_STORE_URL`, `APP_ANDROID_…`) | builds servis et dernier publié (docs/VERSIONING.md ; défaut `0` : ni minimum ni bandeau) | ceux de « Minimoa Dev » (ses numéros de build sont à part) |
+| `MEDIA_SWEEP` | `dry` (défaut) puis `on` après un passage à blanc vérifié (docs/ADA-2027.md) | `dry` (défaut), ou `on` |
 
 En `staging`, l'API refuse de démarrer si une variable désigne la production (projet `sqxebllmatfflopqddaw`, adresses
 minimoa.app, www, api, admin), si `REVENUECAT_APPLE_NOTIFICATIONS_URL` est posée ou si `REVIEW_CODE` est court. Elle
 n'accepte que les achats du bac à sable d'Apple. Un environnement Railway **dupliqué** depuis la production copie ses
 variables : l'API de dev s'arrête alors au démarrage tant qu'elles n'ont pas été remplacées, c'est voulu.
+
+`MEDIA_SWEEP` : ménage des photos de profil orphelines (`OrphanMediaJobs`, à chaque passage du minuteur, par lots de
+50 dossiers de `avatars/` et `blurred/`, puis repos d'une semaine). `dry` (défaut) compte sans rien effacer et journalise
+à la fin de chaque passe `OrphanMediaJobs … à blanc (MEDIA_SWEEP=dry) : N dossiers orphelins, M fichiers à effacer` ;
+`on` efface (dossier sans profil : tout ; dossier d'un profil : tout sauf la photo courante et sa vignette ; jamais un
+fichier de moins de deux heures) et journalise `N dossiers orphelins, M fichiers effacés` ; `off` ne fait rien. Toute
+autre valeur empêche l'API de démarrer.
 
 `BLOWY_ENV` : le Dockerfile pose `ENV BLOWY_ENV=production`, mais les variables du service Railway sont données au
 conteneur au démarrage et l'emportent sur les `ENV` de l'image (comme `docker run -e`). Contrôle : `GET /health`.

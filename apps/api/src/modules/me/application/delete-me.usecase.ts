@@ -43,7 +43,7 @@ export class DeleteMe {
       await this.profiles.update(userId, { avatarPath: null });
       paths.push(profile.avatarPath, blurPathOf(profile.avatarPath));
     }
-    for (const folder of avatarFoldersOf(userId)) paths.push(...(await this.storage.list(folder)));
+    for (const folder of avatarFoldersOf(userId)) paths.push(...(await this.storage.list(folder)).map((f) => f.path));
     // Photos privées des rituels (preuves, défis photo) encore dans le stockage, gardées ou pas.
     paths.push(...(await this.ritualPhotos.listLive(userId)).map((p) => p.path));
     await this.storage.remove([...new Set(paths)]);

@@ -212,9 +212,9 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     const woken = await bob.api.links.revive(link.id);
     expect(woken.link).toMatchObject({ status: 'active', lives: 7, warmth: 'calme', streak: 0, bestStreak: 2 });
     expect(woken.messages.map((m) => [m.author, m.body])).toEqual([['my_pet', 'Je lui ai fait un petit coucou.']]);
-    // Alice voit le coucou de la part de Bob, dit par son minimoa ; pas la réplique de celui de Bob.
+    // Alice voit le coucou de la part de Bob, dit par le minimoa de Bob (compté non lu chez elle) ; pas l'autre réplique.
     const seen = (await alice.api.links.messages(link.id)).messages.slice(-1);
-    expect(seen.map((m) => [m.author, m.body])).toEqual([['my_pet', 'Coucou de la part de Bob. Un mot quand tu veux.']]);
+    expect(seen.map((m) => [m.author, m.body])).toEqual([['other_pet', 'Coucou de la part de Bob. Un mot quand tu veux.']]);
     // Le lien ne dort plus : un second appel ne fait rien (ni réplique, ni erreur).
     expect((await bob.api.links.revive(link.id)).messages).toEqual([]);
     // Pas de « une seule fois » : deux semaines plus tard, il se réveille encore.

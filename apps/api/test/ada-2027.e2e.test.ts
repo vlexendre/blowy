@@ -369,7 +369,7 @@ describe('ADA 2027 : visages et notifications', () => {
   describe('relecture B2 : la photo de profil ne laisse rien derrière elle', () => {
     const files = async (userId: string): Promise<string[]> => {
       const storage = world.app.get<MemoryStorage>(STORAGE);
-      return [...(await storage.list(`avatars/${userId}`)), ...(await storage.list(`blurred/${userId}`))].sort();
+      return [...(await storage.list(`avatars/${userId}`)), ...(await storage.list(`blurred/${userId}`))].map((f) => f.path).sort();
     };
 
     it('confirmation : tout sauf la nouvelle photo et sa vignette est effacé ; suppression du compte : les deux dossiers vides', async () => {
@@ -379,8 +379,15 @@ describe('ADA 2027 : visages et notifications', () => {
       const stray = await bob.api.me.avatarTicket('image/jpeg');
       await upload(stray.uploadUrl);
       await storage.write(`blurred/${bob.id}/00000000-0000-0000-0000-000000000000.jpg`, { bytes: Buffer.from([1]), contentType: 'image/jpeg' });
+      // Plus vieux que le ticket d'envoi (deux heures) : plus rien ne peut arriver, le ménage les efface.
+      world.clock.advanceHours(3);
       const path = await withPhoto(bob);
       expect(await files(bob.id)).toEqual([path, blurPathOf(path)].sort());
+      // La photo remplacée part tout de suite, même récente ; un envoi récent non confirmé reste (il peut être confirmé).
+      const pending = await bob.api.me.avatarTicket('image/jpeg');
+      await upload(pending.uploadUrl);
+      const next = await withPhoto(bob);
+      expect(await files(bob.id)).toEqual([pending.path, next, blurPathOf(next)].sort());
 
       // Un autre envoi non confirmé, puis la suppression du compte : rien ne reste.
       await upload((await bob.api.me.avatarTicket('image/jpeg')).uploadUrl);
@@ -402,6 +409,61 @@ describe('ADA 2027 : visages et notifications', () => {
       } finally {
         images.blurredThumbnail = original;
       }
+    });
+
+    describe('deux confirmations entrelacées : la photo courante survit', () => {
+      /** Bob envoie deux photos ; la confirmation de la première laisse passer toute la seconde pendant `pause`. */
+      const interleave = async (pause: 'moderation' | 'blur') => {
+        const images = world.app.get<MemoryImages>(IMAGES);
+        const moderation = world.app.get(AvatarModeration);
+        const bob = await person('Bob');
+        const tickets = [await bob.api.me.avatarTicket('image/jpeg'), await bob.api.me.avatarTicket('image/jpeg')];
+        for (const t of tickets) await upload(t.uploadUrl);
+        const [first, second] = tickets.map((t) => t.path) as [string, string];
+        let armed = true;
+        const during = async (): Promise<void> => {
+          if (!armed) return;
+          armed = false;
+          await bob.api.me.setAvatar(second);
+        };
+        const review = moderation.review.bind(moderation);
+        const blur = images.blurredThumbnail.bind(images);
+        if (pause === 'moderation') {
+          moderation.review = async (profile, path) => {
+            await during();
+            return review(profile, path);
+          };
+        } else {
+          images.blurredThumbnail = async (input) => {
+            await during();
+            return blur(input);
+          };
+        }
+        try {
+          await bob.api.me.setAvatar(first);
+        } finally {
+          moderation.review = review;
+          images.blurredThumbnail = blur;
+        }
+        return { bob, first, second };
+      };
+
+      it('la seconde confirmée pendant la modération de la première : la première, devenue courante, reste', async () => {
+        const { bob, first } = await interleave('moderation');
+        expect(db.profiles.get(bob.id)?.avatarPath).toBe(first);
+        const current = await files(bob.id);
+        expect(current).toContain(first);
+        expect(current).toContain(blurPathOf(first));
+        expect((await bob.api.me.get()).avatarUrl).toMatch(AVATAR_URL);
+      });
+
+      it('la seconde confirmée pendant la vignette de la première : la seconde, devenue courante, reste', async () => {
+        const { bob, first, second } = await interleave('blur');
+        expect(db.profiles.get(bob.id)?.avatarPath).toBe(second);
+        expect(await files(bob.id)).toEqual(expect.arrayContaining([second, blurPathOf(second)]));
+        // La vignette de la première, écrite après coup, est effacée par `AvatarBlurs.make`.
+        expect(await files(bob.id)).not.toContain(blurPathOf(first));
+      });
     });
 
     describe('courses avec le minuteur des vignettes', () => {
@@ -480,13 +542,20 @@ describe('ADA 2027 : visages et notifications', () => {
       const sent = () => pusher.outbox.filter((m) => m.to === token);
       const before = sent().length;
       const xp = db.links.get(link.id)?.xp;
+      // Tout est lu avant le réveil : les non-lus qui suivent ne comptent que le coucou.
+      await ana.api.links.read(link.id);
+      await bob.api.links.read(link.id);
 
       const woken = await ana.api.links.revive(link.id);
       expect(woken.link).toMatchObject({ warmth: 'calme', streak: 0 });
       expect(db.links.get(link.id)?.xp).toBe(xp);
       expect(woken.messages.map((m) => [m.author, m.body])).toEqual([['my_pet', 'Je lui ai fait un petit coucou.']]);
       const bobSees = (await bob.api.links.messages(link.id)).messages.slice(-1);
-      expect(bobSees.map((m) => [m.author, m.body])).toEqual([['my_pet', 'Coucou de la part de Ana. Un mot quand tu veux.']]);
+      expect(bobSees.map((m) => [m.author, m.body])).toEqual([['other_pet', 'Coucou de la part de Ana. Un mot quand tu veux.']]);
+      // Le coucou compte comme non lu chez Bob, et rien chez Ana (sa propre réplique ne compte pas).
+      const unreadOf = async (c: { api: ApiClient }) => (await c.api.links.list()).find((l) => l.id === link.id)?.unread;
+      expect(await unreadOf(bob)).toBe(1);
+      expect(await unreadOf(ana)).toBe(0);
       const anaSees = (await ana.api.links.messages(link.id)).messages.map((m) => m.body);
       expect(anaSees).not.toContain('Coucou de la part de Ana. Un mot quand tu veux.');
       const pushes = sent().slice(before);

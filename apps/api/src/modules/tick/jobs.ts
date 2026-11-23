@@ -12,6 +12,7 @@ import { RetentionJobs } from '../retention/application/retention.jobs';
 import { WardrobeJobs } from '../pets/application/wardrobe.jobs';
 import { ModerationJobs } from '../moderation/moderation.jobs';
 import { AvatarBlurJobs } from '../me/application/avatar-blur.jobs';
+import { OrphanMediaJobs } from '../me/application/orphan-media.jobs';
 import { GroupJobs } from '../groups/application/group.jobs';
 import { FideliteJobs } from '../fidelite/application/fidelite.jobs';
 import { QuartierJobs } from '../quartiers/application/quartier.jobs';
@@ -27,6 +28,7 @@ export const TICK_JOBS: ReadonlyArray<{ name: string; job: TickJobClass }> = [
   { name: 'retention', job: RetentionJobs },
   { name: 'moderation', job: ModerationJobs },
   { name: 'avatar-blurs', job: AvatarBlurJobs },
+  { name: 'orphan-media', job: OrphanMediaJobs },
   { name: 'wardrobe', job: WardrobeJobs },
   { name: 'groups', job: GroupJobs },
   { name: 'fidelite', job: FideliteJobs },

@@ -1,5 +1,5 @@
 import type { Db } from '../../persistence/database.types';
-import type { Storage, StoredBytes, UploadTicket } from './ports';
+import type { ListedFile, Storage, StoredBytes, UploadTicket } from './ports';
 
 const BUCKET = 'media';
 const LIST_PAGE = 1000;
@@ -50,16 +50,32 @@ export class SupabaseStorage implements Storage {
     return { bytes: Buffer.from(await data.arrayBuffer()), contentType: data.type };
   }
 
-  async list(folder: string): Promise<string[]> {
-    const dir = folder.replace(/\/+$/, '');
+  async list(folder: string): Promise<ListedFile[]> {
+    const out: ListedFile[] = [];
+    // Un sous-dossier revient sans identifiant : seuls les fichiers comptent.
+    await this.eachEntry(folder, (dir, f) => {
+      if (f.id) out.push({ path: `${dir}/${f.name}`, createdAt: f.created_at ?? null });
+    });
+    return out;
+  }
+
+  async listFolders(folder: string): Promise<string[]> {
     const out: string[] = [];
-    // Par pages de 1 000 (plafond de Supabase) ; un dossier vide ou absent rend une liste vide.
+    // Les dossiers de Supabase Storage sont virtuels : ils reviennent sans identifiant.
+    await this.eachEntry(folder, (dir, f) => {
+      if (!f.id) out.push(`${dir}/${f.name}`);
+    });
+    return out;
+  }
+
+  /** Parcourt les entrées directes de `folder` par pages de 1 000 (plafond de Supabase) ; dossier absent : rien. */
+  private async eachEntry(folder: string, visit: (dir: string, entry: { id: string | null; name: string; created_at?: string | null }) => void): Promise<void> {
+    const dir = folder.replace(/\/+$/, '');
     for (let offset = 0; ; offset += LIST_PAGE) {
       const { data, error } = await this.bucket.list(dir, { limit: LIST_PAGE, offset, sortBy: { column: 'name', order: 'asc' } });
       if (error) throw new Error(`liste des médias impossible : ${error.message}`);
-      // Un sous-dossier revient sans identifiant : seuls les fichiers comptent.
-      for (const f of data ?? []) if (f.id) out.push(`${dir}/${f.name}`);
-      if (!data || data.length < LIST_PAGE) return out;
+      for (const f of data ?? []) visit(dir, f);
+      if (!data || data.length < LIST_PAGE) return;
     }
   }
 
