@@ -64,7 +64,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Dados:** a foto que você escolhe, se adicionar uma (é opcional), tirada com a câmera ou escolhida na sua galeria.',
-        '**Finalidade:** mostrar você aos seus vínculos: ela fica escondida num vínculo até o nível 4, desfocada no nível 4, nítida a partir do nível 5.',
+        '**Finalidade:** mostrar você aos seus vínculos: ela fica escondida até vocês dois se cumprimentarem; depois que o vínculo se forma, seu vínculo a vê nítida. As pessoas com quem você não tem vínculo nunca a veem, nem no mapa nem nas apresentações: elas veem o seu minimoa.',
         '**Verificação de segurança:** antes de ser publicada, a foto é reduzida e enviada ao nosso fornecedor de IA, {{sub.ai.provider}}, que verifica se ela não mostra nudez, nem pessoa que pareça menor de idade, nem violência, nem ódio, nem propaganda. Avisamos você no app antes de escolher a foto. Uma foto recusada é apagada na hora, e a equipe de moderação recebe uma denúncia automática, sem a foto. Se a verificação não for possível no momento, a foto é publicada e verificada um pouco depois. Essa verificação não pode ser desativada: ela protege todo mundo. Sem foto de perfil, nada é enviado.',
         '**Base legal:** execução do contrato para exibi-la; nosso legítimo interesse e nossas obrigações de segurança (filtrar os conteúdos publicados) para a verificação.',
         '**Prazo:** enquanto você a mantiver. Quando você a troca, a anterior é apagada. Ela é apagada quando você exclui sua conta.',
@@ -351,7 +351,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**As pessoas que seu minimoa te apresenta** veem seu nome, seu minimoa, o estilo dele, os pontos em comum entre vocês e uma diferença, e a sua posição aproximada no mapa (exceto no modo discreto).',
-        '**Seus vínculos** veem, além disso, as mensagens de vocês, a sequência de vocês, as etapas do vínculo, as antigas fotos do dia de vocês se houver, e sua foto de perfil se você tiver uma (escondida até o nível 4, desfocada no nível 4, nítida a partir do nível 5).',
+        '**Seus vínculos** veem, além disso, as mensagens de vocês, a sequência de vocês, as etapas do vínculo, as antigas fotos do dia de vocês se houver, e sua foto de perfil se você tiver uma (visível assim que o vínculo se forma).',
         '**Os visitantes da sua página “3 palavras” ou do seu convite** veem seu nome e seu minimoa.',
         'Ninguém vê seu endereço de e-mail, sua data de nascimento, seu sexo nem suas respostas ao teste de visão. Sua posição exata não é registrada em lugar nenhum. Suas fotos de prova não são vistas por nenhum humano, e são excluídas em até 24 h (a não ser que você as guarde nas suas lembranças privadas).',
       ],

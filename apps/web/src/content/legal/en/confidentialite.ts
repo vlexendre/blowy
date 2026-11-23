@@ -56,7 +56,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Data:** the photo you choose, if you add one (it is optional), taken with the camera or picked from your gallery.',
-        '**Purpose:** show you to your connections: it stays hidden in a connection until level 4, blurred at level 4, sharp from level 5.',
+        '**Purpose:** show you to your connections: it stays hidden until you’ve both said hello; once the connection is made, your connection sees it clearly. People you have no connection with never see it, on the map or in introductions: they see your minimoa.',
         '**Safety check:** before it is published, the photo is downsized and sent to our AI provider, {{sub.ai.provider}}, which checks that it shows no nudity, no one who appears to be a minor, no violence, no hate and no advertising. We tell you so in the app before you choose the photo. A rejected photo is erased immediately, and the moderation team receives an automatic report, without the photo. If the check is not possible at that moment, the photo is published and checked a little later. This check cannot be turned off: it protects everyone. Without a profile photo, nothing is sent.',
         '**Legal basis:** performance of the contract to display it; our legitimate interest and our safety obligations (filtering published content) for the check.',
         '**Retention:** as long as you keep it. When you change it, the old one is erased. It is erased when you delete your account.',
@@ -339,7 +339,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**People your minimoa introduces you to** see your first name, your minimoa, its style, what you have in common and one difference, and your approximate position on the map (unless you are in discreet mode).',
-        '**Your connections** also see your messages, your streak, your connection’s milestones, your old daily photos if any, and your profile photo if you have one (hidden until level 4, blurred at level 4, sharp from level 5).',
+        '**Your connections** also see your messages, your streak, your connection’s milestones, your old daily photos if any, and your profile photo if you have one (visible once the connection is made).',
         '**Visitors to your “3 words” page or your invitation** see your first name and your minimoa.',
         'No one sees your email address, your date of birth, your gender, or your vision test answers. Your exact position is not stored anywhere. Your proof photos are seen by no human, and they are deleted within 24 hours (unless you keep them in your private memories).',
       ],

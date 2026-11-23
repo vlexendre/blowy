@@ -64,7 +64,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Données :** la photo que tu choisis, si tu en ajoutes une (c’est facultatif), prise avec l’appareil photo ou choisie dans ta galerie.',
-        '**But :** te montrer à tes liens : elle reste cachée dans un lien jusqu’au niveau 4, floue au niveau 4, nette à partir du niveau 5.',
+        '**But :** te montrer à tes liens : elle reste cachée tant que vous ne vous êtes pas dit bonjour tous les deux ; une fois le lien noué, ton lien la voit nette. Les personnes avec qui tu n’as pas de lien ne la voient jamais, ni sur la carte ni dans les présentations : elles voient ton minimoa.',
         '**Vérification de sécurité :** avant d’être publiée, la photo est réduite et envoyée à notre prestataire d’IA, {{sub.ai.provider}}, qui vérifie qu’elle ne montre ni nudité, ni personne qui semble mineure, ni violence, ni haine, ni publicité. On te le dit dans l’app avant que tu choisisses la photo. Une photo refusée est effacée aussitôt, et l’équipe de modération reçoit un signalement automatique, sans la photo. Si la vérification n’est pas possible sur le moment, la photo est publiée et vérifiée un peu plus tard. Cette vérification ne se désactive pas : elle protège tout le monde. Sans photo de profil, rien n’est envoyé.',
         '**Base légale :** exécution du contrat pour l’afficher ; notre intérêt légitime et nos obligations de sécurité (filtrer les contenus publiés) pour la vérification.',
         '**Durée :** tant que tu la gardes. Quand tu la changes, l’ancienne est effacée. Elle est effacée quand tu supprimes ton compte.',
@@ -351,7 +351,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Les personnes que ton minimoa te présente** voient ton prénom, ton minimoa, son style, vos points communs et une différence, et ta position approximative sur la carte (sauf en mode discret).',
-        '**Tes liens** voient en plus vos messages, votre série, les étapes de votre lien, vos anciennes photos du jour s’il y en a, et ta photo de profil si tu en as une (cachée jusqu’au niveau 4, floue au niveau 4, nette à partir du niveau 5).',
+        '**Tes liens** voient en plus vos messages, votre série, les étapes de votre lien, vos anciennes photos du jour s’il y en a, et ta photo de profil si tu en as une (visible dès que le lien est noué).',
         '**Les visiteurs de ta page « 3 mots » ou de ton invitation** voient ton prénom et ton minimoa.',
         'Personne ne voit ton adresse e-mail, ta date de naissance, ton sexe, ni tes réponses au test de vision. Ta position exacte n’est enregistrée nulle part. Tes photos de preuve ne sont vues par aucun humain, et elles sont supprimées sous 24 h (sauf si tu les gardes dans tes souvenirs privés).',
       ],
