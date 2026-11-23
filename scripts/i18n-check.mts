@@ -11,6 +11,8 @@
  *   « boude », « tu vas perdre », « dernière chance »… (liste `FORBIDDEN`, section 5) ;
  * - un texte de l'app (cinq langues) parle d'une fonction retirée : défi, habitude, ligue, trophée, étincelle, bilan,
  *   preuve, vies d'un lien… (liste `RETIRED`, exceptions écrites dans `RETIRED_ALLOWED`, section 6) ;
+ * - un texte légal du site (`apps/web/src/content/legal`) parle encore des vies d'un lien ou d'un lien « en danger »
+ *   (liste `LEGAL_RETIRED`, section 7) ;
  * Affiche ensuite, pour chaque langue, le nombre de textes encore en français (`TODO`) par dictionnaire.
  * `--list` affiche aussi les clés non traduites.
  */
@@ -268,6 +270,35 @@ for (const [name, m] of Object.entries(appDictionaries)) {
       if (RETIRED_ALLOWED.some((a) => a.dict.test(name) && a.at.test(at))) continue;
       seen.add(at);
       problems.push(`fonction retirée : ${name}.${at} [${locale}] « ${hit[0]} » dans « ${text.slice(0, 90)} »`);
+    }
+  }
+}
+
+// ── 7. Textes légaux du site : pas de vies d'un lien, pas de lien « en danger » ───
+
+/**
+ * Relecture du 23/11/2026 (ADA-2027 item 27) : la politique de confidentialité et les conditions ne décrivent plus de
+ * mécanique retirée. Le garde-fou de la section 6 ne lit que l'app ; ici, les fichiers de `apps/web/src/content/legal`
+ * (cinq langues), avec une liste propre : les vies d'un lien (le pluriel suffit, les textes légaux n'emploient jamais
+ * « vies » au sens courant) et un lien ou une série « en danger ». Les urgences (« En danger immédiat ? Appelle le 112 »,
+ * « enfance en danger ») ne sont pas visées : seul un lien ou une série l'est.
+ */
+const LEGAL_RETIRED: Record<(typeof LOCALES)[number], RegExp> = {
+  fr: new RegExp(`${LIVES.fr}|(?<![\\p{L}])vies(?![\\p{L}])|(?:liens?|séries?)(?: ou (?:liens?|séries?))? en danger`, 'iu'),
+  en: new RegExp(`${LIVES.en}|(?<![\\p{L}])lives(?![\\p{L}])|(?:connections?|links?|streaks?)(?: or (?:connections?|links?|streaks?))? (?:in danger|at risk)`, 'iu'),
+  es: new RegExp(`${LIVES.es}|(?<![\\p{L}])vidas(?![\\p{L}])|(?:vínculos?|rachas?)(?: o (?:vínculos?|rachas?))? en peligro`, 'iu'),
+  pt: new RegExp(`${LIVES.pt}|(?<![\\p{L}])vidas(?![\\p{L}])|(?:vínculos?|sequências?)(?: ou (?:vínculos?|sequências?))? em perigo`, 'iu'),
+  nl: new RegExp(`${LIVES.nl}|(?<![\\p{L}])levens(?![\\p{L}])|(?:band(?:en)?|reeks(?:en)?)(?: of (?:band(?:en)?|reeks(?:en)?))? in gevaar`, 'iu'),
+};
+const legalRoot = path.join(root, 'apps/web/src/content/legal');
+for (const locale of LOCALES) {
+  const dir = path.join(legalRoot, locale);
+  if (!fs.existsSync(dir)) continue;
+  for (const f of fs.readdirSync(dir).filter((n) => n.endsWith('.ts'))) {
+    const file = path.join(dir, f);
+    for (const l of literals(file)) {
+      const hit = LEGAL_RETIRED[locale].exec(l.text);
+      if (hit) problems.push(`texte légal, fonction retirée : ${rel(file)}:${l.line} « ${hit[0]} » dans « ${l.text.slice(0, 90)} »`);
     }
   }
 }

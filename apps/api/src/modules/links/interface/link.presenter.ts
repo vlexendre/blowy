@@ -2,14 +2,16 @@ import { surpriseOf } from '@blowy/content';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Link, Message } from '@blowy/contract';
 import {
+  MAX_LIVES,
   dayOf,
-  faceVisibility,
   levelProgress,
+  linkFace,
   linkToday,
   linkWarmth,
   linkWeek,
   type Mood,
   nextLevel,
+  pastPhotosShown,
 } from '@blowy/domain';
 import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/ports';
 import { type Clock, todayOf } from '../../../shared/clock';
@@ -19,6 +21,7 @@ import type { ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import { toPublicPet } from '../../pets/interface/pet.presenter';
 import type { PetsRepository } from '../../pets/ports';
+import { Audience } from '../../safety/application/audience';
 import {
   type LinkReadsRepository,
   type LinkRecord,
@@ -55,7 +58,12 @@ const authorOf = (m: MessageRecord, viewerId: string): Message['author'] => {
 /** Les minimoas d'un lien sont contents : un lien ne se perd plus, jamais de minimoa triste comme levier (ADA-2027). */
 const LINK_MOOD: Mood = 'joie';
 
-/** Assemble les DTO de liens et de messages, relatifs à la personne qui regarde. */
+/**
+ * Assemble les DTO de liens et de messages, relatifs à la personne qui regarde. Un lien « fermé » pour elle (rangé par
+ * « Le laisser partir » ou par un blocage, ou blocage entre eux : `Audience`) ne signe aucune photo de l'autre : ni sa
+ * photo de profil (`face: 'hidden'`), ni ses anciennes photos du jour. Les anciennes photos de l'autre ne partent
+ * qu'à partir du niveau 5 (`pastPhotosShown`, promesse de la politique de confidentialité).
+ */
 @Injectable()
 export class LinkPresenter {
   constructor(
@@ -66,7 +74,13 @@ export class LinkPresenter {
     @Inject(PAST_PHOTOS) private readonly photos: PastPhotosRepository,
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(Audience) private readonly audience: Audience,
   ) {}
+
+  /** Lien ouvert pour `viewerId` : ni rangé, ni bloqué dans un sens ou dans l'autre. */
+  private isOpen(link: LinkRecord, viewerId: string, blocked: ReadonlySet<string>): boolean {
+    return link.status !== 'archived' && !blocked.has(link.userA === viewerId ? link.userB : link.userA);
+  }
 
   async link(link: LinkRecord, viewerId: string): Promise<Link> {
     const [dto] = await this.links([link], viewerId);
@@ -78,9 +92,10 @@ export class LinkPresenter {
     const now = this.clock.now();
     const today = todayOf(this.clock);
     const otherIds = links.map((l) => (l.userA === viewerId ? l.userB : l.userA));
-    const [profiles, pets] = await Promise.all([
+    const [profiles, pets, blocked] = await Promise.all([
       this.profiles.findByIds(otherIds),
       this.pets.findByOwners([viewerId, ...otherIds]),
+      this.audience.blockedPartners(viewerId),
     ]);
     const profileById = new Map(profiles.map((p) => [p.id, p]));
     const petByOwner = new Map(pets.map((p) => [p.ownerId, livePet(p, now)]));
@@ -93,7 +108,7 @@ export class LinkPresenter {
         const theirPet = petByOwner.get(otherId);
         if (!other || !myPet || !theirPet) return null;
         const mood = LINK_MOOD;
-        const face = faceVisibility(link.level);
+        const face = linkFace(this.isOpen(link, viewerId, blocked));
         const [latest, lastRead, avatarUrl] = await Promise.all([
           this.messages.latest(link.id, viewerId),
           this.reads.lastReadAt(link.id, viewerId),
@@ -114,8 +129,10 @@ export class LinkPresenter {
           id: link.id,
           other: toPerson(other, toPublicPet(theirPet, mood), face, avatarUrl),
           myPet: toPublicPet(myPet, mood),
-          status: link.status,
-          lives: link.lives,
+          // Anciennes versions de l'app : jamais de lien fantôme ni de vie en moins, même pour un lien rendu tel quel
+          // sans rattrapage (`CreateLink` sur une paire déjà liée).
+          status: link.status === 'ghost' ? 'active' : link.status,
+          lives: MAX_LIVES,
           level: link.level,
           xp: link.xp,
           levelRatio: levelProgress(link.xp).ratio,
@@ -146,8 +163,9 @@ export class LinkPresenter {
   }
 
   /**
-   * Messages vus par `viewerId`. Une ancienne photo du jour de l'autre n'est visible que si tu avais envoyé la tienne
-   * le même jour (règle d'alors, gardée pour l'historique).
+   * Messages vus par `viewerId`. Une ancienne photo du jour de l'autre n'est envoyée que si tu avais envoyé la tienne
+   * le même jour (règle d'alors, gardée pour l'historique), que le lien a atteint le niveau 5 et qu'il est ouvert
+   * (ni rangé ni bloqué) ; sinon `mediaUrl` est nul (case verrouillée dans l'app). Tes propres photos te restent.
    */
   async messagesFor(
     link: LinkRecord,
@@ -155,7 +173,10 @@ export class LinkPresenter {
     viewerId: string,
   ): Promise<Message[]> {
     const hasPhotos = records.some((m) => m.mediaPath !== null);
-    const photos = hasPhotos ? await this.photos.listForLink(link.id) : [];
+    const [photos, blocked] = hasPhotos
+      ? await Promise.all([this.photos.listForLink(link.id), this.audience.blockedPartners(viewerId)])
+      : [[], new Set<string>()];
+    const theirsShown = pastPhotosShown(link.level, this.isOpen(link, viewerId, blocked));
     const dayOfPath = new Map(photos.map((p) => [p.mediaPath, p.day]));
     const myDays = new Set(photos.filter((p) => p.userId === viewerId).map((p) => p.day));
     return Promise.all(
@@ -166,7 +187,7 @@ export class LinkPresenter {
         .map(async (m): Promise<Message> => {
           const mine = m.authorId === viewerId;
           const day = m.mediaPath ? dayOfPath.get(m.mediaPath) : undefined;
-          const visible = m.mediaPath !== null && (mine || (day !== undefined && myDays.has(day)));
+          const visible = m.mediaPath !== null && (mine || (theirsShown && day !== undefined && myDays.has(day)));
           return {
             id: m.id,
             linkId: m.linkId,

@@ -7,7 +7,11 @@
  * - les notifications des fonctions supprimées de l'app (ligue, défi et série hors Ton chemin, habitudes, bilans,
  *   groupes, premiers pas « habitude » et « groupe », lien « en danger ») ne partent plus vers un compte dont la dernière app vue est la version simplifiée ; les anciennes versions les reçoivent.
  * - item 27 : un lien ne perd plus de vies ; après un long silence, le minuteur n'envoie aucune alerte et le lien reste
- *   ouvert, il dit seulement son état (`warmth`).
+ *   ouvert, il dit seulement son état (`warmth`) ; « Le réveiller » prévient l'autre une fois (réplique et notification
+ *   `message`), un second appel ne fait rien ;
+ * - relecture du 23/11/2026 (B1, B2) : aucune photo de l'autre (profil, anciennes photos) vers une paire bloquée ou un
+ *   lien quitté ; les anciennes photos de l'autre seulement à partir du niveau 5 ; la photo de profil ne laisse rien
+ *   derrière elle (changement, suppression du compte, refus), même en course avec le minuteur des vignettes.
  */
 import { randomUUID } from 'node:crypto';
 import { type ApiClient, createApiClient } from '@blowy/api-client';
@@ -17,11 +21,14 @@ import { NOTIFIER, type Notifier } from '../src/integrations/push/notifier';
 import { PUSHER } from '../src/integrations/push/pusher';
 import type { MemoryImages } from '../src/integrations/images/memory-images';
 import type { MemoryStorage } from '../src/integrations/storage/memory-storage';
+import type { MemoryModel } from '../src/integrations/ai/memory-model';
+import { AI_MODEL } from '../src/integrations/plateforme/plateforme.module';
 import { AvatarBlurJobs } from '../src/modules/me/application/avatar-blur.jobs';
+import { AvatarModeration } from '../src/modules/moderation/avatar-moderation';
 import { blurPathOf } from '../src/modules/me/application/avatar-blurs';
 import type { MemoryDb } from '../src/persistence/memory-db';
 import { IMAGES, MEMORY_DB, STORAGE } from '../src/shared/tokens';
-import { type TestWorld, onboardBody, startWorld, upload } from './helpers';
+import { type TestWorld, errorCode, onboardBody, seedPastPhoto, startWorld, upload } from './helpers';
 
 /** Premier build de la version simplifiée, dans ces tests. */
 const ADA_BUILD = 70;
@@ -302,6 +309,196 @@ describe('ADA 2027 : visages et notifications', () => {
       expect(added.filter((m) => /\bvies?\b|\blives?\b/i.test(m.body ?? ''))).toEqual([]);
       const back = await ana.api.links.send(link.id, { body: 'Coucou, ça fait un moment !' });
       expect(back.link.warmth).toBe('vivant');
+    });
+  });
+  describe('relecture B1 : rien de l’autre vers une paire bloquée ou un lien quitté', () => {
+    /** Ana et Bob, liés, avec photos de profil et anciennes photos du jour des deux, lien au niveau 5. */
+    const linked = async () => {
+      const ana = await person('Ana');
+      const bob = await person('Bob');
+      await withPhoto(ana);
+      await withPhoto(bob);
+      await bob.api.encounters.wave(ana.id);
+      const wave = (await ana.api.encounters.list()).incoming.find((i) => i.from.id === bob.id);
+      const link = await ana.api.encounters.accept(wave?.id ?? '');
+      await seedPastPhoto(world, link.id, ana.id, '2026-11-09');
+      const bobPhoto = await seedPastPhoto(world, link.id, bob.id, '2026-11-09');
+      const row = db.links.get(link.id);
+      if (!row) throw new Error('lien absent');
+      db.links.set(link.id, { ...row, level: 5, xp: 480 });
+      // Lien ouvert : la photo de Bob et son ancienne photo arrivent chez Ana.
+      expect((await ana.api.links.get(link.id)).other.avatarUrl).toMatch(AVATAR_URL);
+      expect((await ana.api.links.memories(link.id)).photos[0]?.theirPhotoUrl).toBeTruthy();
+      return { ana, bob, linkId: link.id, bobPhoto };
+    };
+    const photoUrl = (path: string): RegExp => new RegExp(path.split('/').map(encodeURIComponent).join('/').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+    it('B bloque A : fiche, liste, messages et souvenirs introuvables pour les deux, aucune URL de photo', async () => {
+      const { ana, bob, linkId, bobPhoto } = await linked();
+      await bob.api.safety.block(ana.id);
+      for (const [viewer, other] of [[ana, bob], [bob, ana]] as const) {
+        expect(await errorCode(viewer.api.links.get(linkId))).toBe('not_found');
+        expect(await errorCode(viewer.api.links.messages(linkId))).toBe('not_found');
+        expect(await errorCode(viewer.api.links.memories(linkId))).toBe('not_found');
+        expect(await errorCode(viewer.api.links.send(linkId, { body: 'hé' }))).toBe('not_found');
+        const list = await viewer.api.links.list();
+        expect(list.some((l) => l.other.id === other.id)).toBe(false);
+        expect(JSON.stringify(list)).not.toMatch(AVATAR_URL);
+      }
+      expect(JSON.stringify(await ana.api.links.list())).not.toMatch(photoUrl(bobPhoto));
+    });
+
+    it('« Le laisser partir » : le lien rangé ne montre plus ni la photo ni les anciennes photos de l’autre', async () => {
+      const { ana, bob, linkId, bobPhoto } = await linked();
+      await bob.api.links.archive(linkId);
+      const link = await ana.api.links.get(linkId);
+      expect(link.status).toBe('archived');
+      expect(link.other).toMatchObject({ face: 'hidden', avatarUrl: null });
+      const messages = await ana.api.links.messages(linkId);
+      const memories = await ana.api.links.memories(linkId);
+      expect(memories.photos.every((d) => d.theirPhotoUrl === null)).toBe(true);
+      for (const body of [link, messages, memories, await ana.api.links.list()].map((x) => JSON.stringify(x))) {
+        expect(body).not.toMatch(AVATAR_URL);
+        expect(body).not.toMatch(photoUrl(bobPhoto));
+      }
+      // Et de l'autre côté aussi.
+      expect((await bob.api.links.get(linkId)).other).toMatchObject({ face: 'hidden', avatarUrl: null });
+    });
+  });
+
+  describe('relecture B2 : la photo de profil ne laisse rien derrière elle', () => {
+    const files = async (userId: string): Promise<string[]> => {
+      const storage = world.app.get<MemoryStorage>(STORAGE);
+      return [...(await storage.list(`avatars/${userId}`)), ...(await storage.list(`blurred/${userId}`))].sort();
+    };
+
+    it('confirmation : tout sauf la nouvelle photo et sa vignette est effacé ; suppression du compte : les deux dossiers vides', async () => {
+      const storage = world.app.get<MemoryStorage>(STORAGE);
+      const bob = await person('Bob');
+      // Un envoi jamais confirmé et une vignette égarée (course d'avant ce correctif).
+      const stray = await bob.api.me.avatarTicket('image/jpeg');
+      await upload(stray.uploadUrl);
+      await storage.write(`blurred/${bob.id}/00000000-0000-0000-0000-000000000000.jpg`, { bytes: Buffer.from([1]), contentType: 'image/jpeg' });
+      const path = await withPhoto(bob);
+      expect(await files(bob.id)).toEqual([path, blurPathOf(path)].sort());
+
+      // Un autre envoi non confirmé, puis la suppression du compte : rien ne reste.
+      await upload((await bob.api.me.avatarTicket('image/jpeg')).uploadUrl);
+      await bob.api.me.remove();
+      expect(await files(bob.id)).toEqual([]);
+    });
+
+    it('vignette ratée à la confirmation : la photo est quand même à jour', async () => {
+      const images = world.app.get<MemoryImages>(IMAGES);
+      const bob = await person('Bob');
+      const original = images.blurredThumbnail.bind(images);
+      images.blurredThumbnail = async () => {
+        throw new Error('panne');
+      };
+      try {
+        const path = await withPhoto(bob);
+        expect(db.profiles.get(bob.id)?.avatarPath).toBe(path);
+        expect(await files(bob.id)).toEqual([path]);
+      } finally {
+        images.blurredThumbnail = original;
+      }
+    });
+
+    describe('courses avec le minuteur des vignettes', () => {
+      /** Bob avec une photo d'avant la vignette ; le minuteur la traite et `during` se passe pendant le calcul. */
+      const race = async (during: (bob: { id: string; api: ApiClient }, path: string) => Promise<void>) => {
+        const storage = world.app.get<MemoryStorage>(STORAGE);
+        const images = world.app.get<MemoryImages>(IMAGES);
+        const bob = await person('Bob');
+        const path = await withPhoto(bob);
+        await storage.remove([blurPathOf(path)]);
+        const original = images.blurredThumbnail.bind(images);
+        let armed = true;
+        images.blurredThumbnail = async (input) => {
+          if (armed) {
+            armed = false;
+            await during(bob, path);
+          }
+          return original(input);
+        };
+        try {
+          await world.app.get(AvatarBlurJobs).runDue(world.clock.now());
+        } finally {
+          images.blurredThumbnail = original;
+        }
+        return { bob, path };
+      };
+
+      it('pendant un changement de photo : seule la vignette de la nouvelle reste', async () => {
+        let next = '';
+        const { bob, path } = await race(async (b) => {
+          next = await withPhoto(b);
+        });
+        expect(next).not.toBe(path);
+        expect(await files(bob.id)).toEqual([next, blurPathOf(next)].sort());
+      });
+
+      it('pendant la suppression du compte : aucune vignette ne reste', async () => {
+        const { bob } = await race(async (b) => {
+          await b.api.me.remove();
+        });
+        expect(await files(bob.id)).toEqual([]);
+      });
+
+      it('pendant un refus de la modération : aucune vignette ne reste', async () => {
+        const model = world.app.get<MemoryModel>(AI_MODEL);
+        const { bob } = await race(async (b, path) => {
+          const profile = db.profiles.get(b.id);
+          if (!profile) throw new Error('profil absent');
+          model.respondWith((c) => (c.system.includes('photos de profil') ? 'SEXUAL' : 'oui'));
+          try {
+            expect(await world.app.get(AvatarModeration).review(profile, path)).toBe('rejected');
+          } finally {
+            model.respondWith(null);
+          }
+        });
+        expect(db.profiles.get(bob.id)?.avatarPath).toBeNull();
+        expect(await files(bob.id)).toEqual([]);
+      });
+    });
+  });
+
+  describe('relecture B5 : « Le réveiller » prévient l’autre, une fois, doucement', () => {
+    it('un réveil : deux répliques (chacun la sienne) et une notification `message` ; un second appel le même jour : rien', async () => {
+      const pusher = world.app.get<MemoryPusher>(PUSHER);
+      const ana = await person('Ana');
+      const bob = await person('Bob');
+      const token = `ExponentPushToken[bob-${bob.id.slice(0, 6)}]`;
+      await bob.api.notifications.registerDevice({ token, platform: 'ios', timeZone: 'Europe/Paris' });
+      await bob.api.encounters.wave(ana.id);
+      const wave = (await ana.api.encounters.list()).incoming.find((i) => i.from.id === bob.id);
+      const link = await ana.api.encounters.accept(wave?.id ?? '');
+      // Un lien qui ne dort pas : rien, sans erreur.
+      expect((await ana.api.links.revive(link.id)).messages).toEqual([]);
+      world.clock.advanceDays(15);
+      expect((await ana.api.links.get(link.id)).warmth).toBe('endormi');
+      const sent = () => pusher.outbox.filter((m) => m.to === token);
+      const before = sent().length;
+      const xp = db.links.get(link.id)?.xp;
+
+      const woken = await ana.api.links.revive(link.id);
+      expect(woken.link).toMatchObject({ warmth: 'calme', streak: 0 });
+      expect(db.links.get(link.id)?.xp).toBe(xp);
+      expect(woken.messages.map((m) => [m.author, m.body])).toEqual([['my_pet', 'Je lui ai fait un petit coucou.']]);
+      const bobSees = (await bob.api.links.messages(link.id)).messages.slice(-1);
+      expect(bobSees.map((m) => [m.author, m.body])).toEqual([['my_pet', 'Coucou de la part de Ana. Un mot quand tu veux.']]);
+      const anaSees = (await ana.api.links.messages(link.id)).messages.map((m) => m.body);
+      expect(anaSees).not.toContain('Coucou de la part de Ana. Un mot quand tu veux.');
+      const pushes = sent().slice(before);
+      expect(pushes).toHaveLength(1);
+      expect(pushes[0]?.data.kind).toBe('message');
+      expect(pushes[0]?.body).toMatch(/te fait un petit coucou\.$/);
+      expect(JSON.stringify(pushes[0])).not.toMatch(/t’attend|attend/);
+
+      // Second appel le même jour : ni réplique, ni notification, ni erreur.
+      const again = await ana.api.links.revive(link.id);
+      expect(again.messages).toEqual([]);
+      expect(sent().slice(before)).toHaveLength(1);
     });
   });
 });

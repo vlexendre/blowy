@@ -81,7 +81,17 @@ export type LevelKey = (typeof LEVEL_KEYS)[number];
  * visage d'un lien ne se révélait qu'au niveau 5.)
  */
 export type FaceVisibility = 'hidden' | 'blurred' | 'clear';
-export const faceVisibility = (_level: number): FaceVisibility => 'clear';
+/**
+ * Visage de l'autre dans un lien : net tant que le lien est ouvert pour celui qui regarde ; caché (photo jamais signée)
+ * dès que le lien est rangé (« Le laisser partir », blocage) ou qu'un blocage existe entre eux.
+ */
+export const linkFace = (open: boolean): FaceVisibility => (open ? 'clear' : 'hidden');
+/**
+ * Anciennes photos du jour de l'autre (d'avant le 15 nov. 2026) : envoyées seulement à partir de ce niveau du lien, et
+ * jamais sur un lien rangé ou bloqué. Avant, rien ne part (l'app montre une case verrouillée).
+ */
+export const PAST_PHOTOS_LEVEL = 5;
+export const pastPhotosShown = (level: number, open: boolean): boolean => open && level >= PAST_PHOTOS_LEVEL;
 /** Visage d'une personne sans lien noué : la vignette floue si elle existe, jamais la photo d'origine. */
 export const faceBeforeLink = (hasBlurredThumbnail: boolean): Exclude<FaceVisibility, 'clear'> => (hasBlurredThumbnail ? 'blurred' : 'hidden');
 

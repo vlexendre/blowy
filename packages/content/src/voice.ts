@@ -27,6 +27,10 @@ const fr = {
   ] as Line<[string, string]>,
   /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
   wake: ['Je lui ai fait un petit coucou.'] as readonly string[],
+  /** Le même coucou, vu de l'autre : son minimoa lui dit qui pense à lui (`name` : prénom de qui réveille). */
+  wakeOther: (name: string): string => `Coucou de la part de ${name}. Un mot quand tu veux.`,
+  /** Corps de la notification (canal « message ») : `pet` = minimoa de qui réveille. */
+  wakeNotice: (pet: string): string => `${pet} te fait un petit coucou.`,
   /** Palier de série d'un lien (3, 7, 14… jours d'affilée où les deux se sont écrit). */
   streakMilestone: [
     (other: string, days: number) => `${days} jours d’affilée à vous écrire. ${other} et moi, on le note quelque part.`,
@@ -65,6 +69,8 @@ export const voiceText = defineMessages({
     ],
     /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
     wake: ['I sent them a little hello.'],
+    wakeOther: (name: string): string => `A little hello from ${name}. A word whenever you like.`,
+    wakeNotice: (pet: string): string => `${pet} says a little hello.`,
     streakMilestone: [
       (other: string, days: number) => `${days} days in a row writing to each other. ${other} and I are making a note of it.`,
       (other: string, days: number) => `${days} days without a gap in the conversation. Nice pair.`,
@@ -98,6 +104,8 @@ export const voiceText = defineMessages({
     ],
     /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
     wake: ['Le he mandado un saludito.'],
+    wakeOther: (name: string): string => `Un saludito de parte de ${name}. Una palabra cuando quieras.`,
+    wakeNotice: (pet: string): string => `${pet} te manda un saludito.`,
     streakMilestone: [
       (other: string, days: number) => `${days} días seguidos escribiéndose. ${other} y yo lo apuntamos en algún sitio.`,
       (other: string, days: number) => `${days} días sin un hueco en la conversación. Buen dúo.`,
@@ -131,6 +139,8 @@ export const voiceText = defineMessages({
     ],
     /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
     wake: ['Mandei um oizinho.'],
+    wakeOther: (name: string): string => `Um oizinho da parte de ${name}. Uma palavra quando quiser.`,
+    wakeNotice: (pet: string): string => `${pet} te mandou um oizinho.`,
     streakMilestone: [
       (other: string, days: number) => `${days} dias seguidos de conversa. ${other} e eu anotamos isso em algum lugar.`,
       (other: string, days: number) => `${days} dias sem nenhum buraco na conversa. Que dupla.`,
@@ -164,6 +174,8 @@ export const voiceText = defineMessages({
     ],
     /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
     wake: ['Ik heb even dag gezegd.'],
+    wakeOther: (name: string): string => `Een groetje van ${name}. Een berichtje wanneer jij wilt.`,
+    wakeNotice: (pet: string): string => `${pet} zegt even dag.`,
     streakMilestone: [
       (other: string, days: number) => `${days} dagen op rij contact. ${other} en ik schrijven het ergens op.`,
       (other: string, days: number) => `${days} dagen zonder gat in het gesprek. Mooi duo.`,
@@ -197,8 +209,14 @@ const pick = <T>(variants: readonly T[], seed: number): T => {
 
 export const levelUpLine = (locale: Locale, p: PetPair, levelTitle: string, seed: number): string => pick(voiceText.in(locale).levelUp, seed)(p.other, levelTitle);
 
-/** « Le réveiller » : la réplique du minimoa de la personne qui réveille le lien (ADA-2027 item 27). */
+/** « Le réveiller » : la réplique du minimoa de la personne qui réveille le lien (ADA-2027 item 27), vue d'elle seule. */
 export const wakeLine = (locale: Locale, seed: number): string => pick(voiceText.in(locale).wake, seed);
+
+/** « Le réveiller », vu de l'autre : son minimoa lui transmet le coucou, dans sa langue (`profiles.locale`). */
+export const wakeOtherLine = (locale: Locale, name: string): string => voiceText.in(locale).wakeOther(name);
+
+/** Corps de la notification du coucou (canal « message »), dans la langue de qui la reçoit. */
+export const wakeNoticeText = (locale: Locale, pet: string): string => voiceText.in(locale).wakeNotice(pet);
 
 /** Palier de série d'un lien atteint (`LINK_STREAK_MILESTONES`). */
 export const streakMilestoneLine = (locale: Locale, p: PetPair, streak: number, seed: number): string =>

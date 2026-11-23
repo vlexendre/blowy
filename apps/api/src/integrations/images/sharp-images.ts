@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import type SharpModule from 'sharp';
-import { BLURRED_SIDE, BLURRED_SOURCE_SIDE, type ImageProcessor } from './ports';
+import { BLURRED_SIDE, BLURRED_SOURCE_SIDE, type ImageProcessor, type ImagesStatus } from './ports';
 
 /** Au-delà, l'image est refusée sans être décodée (protection mémoire : une photo de téléphone en fait ~12 M). */
 const MAX_INPUT_PIXELS = 50_000_000;
@@ -17,6 +17,32 @@ type SharpFactory = typeof SharpModule;
 export class SharpImages implements ImageProcessor {
   private readonly logger = new Logger('SharpImages');
   private sharp: Promise<SharpFactory> | null = null;
+  private state: ImagesStatus = 'unchecked';
+
+  /**
+   * Essai au démarrage (mode supabase) : une image de 16 × 16 px fabriquée en mémoire, puis sa vignette. Un module
+   * natif absent ou cassé (binaire libvips manquant sur l'hébergeur) est journalisé en erreur et visible dans
+   * `GET /health` ; l'API démarre quand même (visages cachés, le minimoa, tant que rien ne se fait).
+   */
+  async selfCheck(): Promise<ImagesStatus> {
+    let detail = 'vignette vide';
+    try {
+      const sharp = await this.load();
+      const sample = await sharp({ create: { width: 16, height: 16, channels: 3, background: { r: 120, g: 160, b: 200 } } }).jpeg().toBuffer();
+      const out = await this.blurredThumbnail(sample);
+      this.state = out && out.length > 0 ? 'ok' : 'failed';
+    } catch (err) {
+      detail = err instanceof Error ? err.message : 'erreur inconnue';
+      this.state = 'failed';
+    }
+    if (this.state === 'ok') this.logger.log('sharp prêt (essai de vignette réussi)');
+    else this.logger.error(`sharp ne marche pas, aucune vignette floue ne se fera : ${detail}`);
+    return this.state;
+  }
+
+  status(): ImagesStatus {
+    return this.state;
+  }
 
   private load(): Promise<SharpFactory> {
     this.sharp ??= import('sharp').then((m) => ((m as { default?: SharpFactory }).default ?? (m as unknown as SharpFactory)));

@@ -30,9 +30,8 @@ export interface CreateLinkInput {
 
 /**
  * Création d'un lien, commune aux rencontres, aux invitations et à l'inscription.
- * Si la paire a déjà un lien actif ou fantôme, on le rend tel quel. Un lien archivé est restauré
- * dans l'état où il était (actif s'il lui restait des vies, fantôme sinon) sans rattraper les jours
- * passés en archive : on repart d'aujourd'hui.
+ * Si la paire a déjà un lien ouvert, on le rend tel quel (sans rattrapage : `LinkPresenter` montre toujours `lives` à 7
+ * et jamais `ghost`). Un lien archivé revient actif, sans rattraper les jours passés en archive : on repart d'aujourd'hui.
  */
 @Injectable()
 export class CreateLink {

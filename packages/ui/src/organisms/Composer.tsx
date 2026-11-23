@@ -15,7 +15,7 @@ export interface ComposerProps {
   onChangeText: (text: string) => void;
   onSend: () => void;
   placeholder: string;
-  /** Lien fantôme ou bloqué : pas de saisie, `disabledText` à la place. */
+  /** Lien rangé : pas de saisie, `disabledText` à la place. */
   disabled?: boolean;
   disabledText?: string;
   /** Envoi en cours, non optimiste : le bouton attend. Le chat envoie de façon optimiste et ne s'en sert plus. */
@@ -25,6 +25,8 @@ export interface ComposerProps {
   attachLabel?: string;
   sendLabel?: string;
   maxLength?: number;
+  /** Ouvre le clavier à l'apparition (chat ouvert juste après « Le réveiller » : « il se réveille au premier mot »). */
+  autoFocus?: boolean;
 }
 
 /** Avion en papier de la maquette (19 pt). */
@@ -47,6 +49,7 @@ export function Composer({
   attachLabel,
   sendLabel,
   maxLength = 2000,
+  autoFocus,
 }: ComposerProps) {
   const uiStrings = useUiStrings();
   // Envoi optimiste : l'avion s'envole à chaque envoi, sans attendre le serveur (le champ reste libre).
@@ -78,6 +81,7 @@ export function Composer({
             selectionColor={color.accent}
             accessibilityLabel={placeholder}
             maxLength={maxLength}
+            autoFocus={autoFocus}
             multiline
             numberOfLines={Platform.OS === 'web' ? 1 : undefined}
             style={[type.body, styles.input]}

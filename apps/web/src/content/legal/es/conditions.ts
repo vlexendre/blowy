@@ -35,7 +35,7 @@ export const conditions: LegalPage = {
       ul: [
         '**La visión** se construye con un test al registrarte, una pregunta al día, tus hábitos y tu forma de cuidar a tu minimoa. Es orientativa y se afina con el tiempo.',
         '**Los encuentros**: tu minimoa solo te presenta a personas cuya compatibilidad supera un umbral. Nada ocurre sin tu acuerdo: saludas, la otra persona acepta, se crea el vínculo. Cómo funciona se explica en la [política de privacidad](@confidentialite#compatibilite).',
-        '**Los vínculos**: un chat, una racha que crece cada día en que os escribís los dos, recuerdos y vidas que bajan cuando el vínculo se queda en silencio.',
+        '**Los vínculos**: un chat, una racha que crece cada día en que os escribís los dos, recuerdos y su estado en una frase (vivo, tranquilo, dormido): un vínculo en silencio se duerme, no se pierde nada, una palabra lo despierta.',
         '**Tu minimoa** tiene indicadores (sociabilidad, hambre, energía, humor), hábitos que mantener, una racha, objetos. Nunca muere.',
         '**El mapa** muestra los minimoas compatibles a tu alrededor (o alrededor de la ciudad que elegiste, si no activas la ubicación), en una posición imprecisa a propósito.',
       ],
@@ -126,7 +126,7 @@ export const conditions: LegalPage = {
       p: 'Si descargaste Minimoa del App Store, el [contrato de licencia estándar de Apple para aplicaciones](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (“Licensed Application End User License Agreement”) también se aplica a la app.',
     },
     {
-      p: 'Los objetos, comodines, rachas, vidas y demás elementos del juego no tienen valor monetario. No se intercambian, no se revenden y no se reembolsan, salvo lo que exija la ley.',
+      p: 'Los objetos, comodines, rachas y demás elementos del juego no tienen valor monetario. No se intercambian, no se revenden y no se reembolsan, salvo lo que exija la ley.',
     },
 
     { h2: '10. Fin del contrato', id: 'fin' },

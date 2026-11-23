@@ -25,7 +25,7 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
   it('répond à /health et refuse sans jeton', async () => {
     expect(await world.anonymous.me.get().catch((e: { code: string }) => e.code)).toBe('unauthorized');
     const res = await fetch(`${world.baseUrl}/health`);
-    expect(HealthZ.parse(await res.json())).toEqual({ ok: true, env: 'local' });
+    expect(HealthZ.parse(await res.json())).toEqual({ ok: true, env: 'local', images: 'ok' });
   });
 
   it('refuse les moins de 18 ans puis inscrit deux personnes', async () => {
@@ -153,10 +153,20 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     expect(kept.link).toMatchObject({ streak: 2, bestStreak: 2, today: { atStake: false } });
   });
 
-  it('les anciennes photos du jour restent dans les souvenirs (celle de l’autre seulement si vous aviez posté tous les deux)', async () => {
+  it('les anciennes photos du jour restent dans les souvenirs (celle de l’autre seulement si vous aviez posté tous les deux, à partir du niveau 5)', async () => {
     await seedPastPhoto(world, link.id, alice.id, '2026-11-12');
     await seedPastPhoto(world, link.id, bob.id, '2026-11-12');
     await seedPastPhoto(world, link.id, bob.id, '2026-11-13');
+    // Avant le niveau 5 : aucune photo de l'autre ne part (politique de confidentialité), ni en souvenir ni dans le chat.
+    const early = await alice.api.links.memories(link.id);
+    expect(early.photos.map((d) => [d.day, d.myPhotoUrl !== null, d.theirPhotoUrl])).toEqual([['2026-11-12', true, null]]);
+    const earlyChat = (await alice.api.links.messages(link.id)).messages.filter((m) => m.kind === 'photo' && m.author === 'other');
+    expect(earlyChat.map((m) => m.mediaUrl)).toEqual([null, null]);
+    const db = world.app.get<MemoryDb>(MEMORY_DB);
+    const row = db.links.get(link.id);
+    if (!row) throw new Error('lien absent');
+    const before = { level: row.level, xp: row.xp };
+    db.links.set(link.id, { ...row, level: 5, xp: 480 });
     const memories = await alice.api.links.memories(link.id);
     expect(memories.photos.map((d) => d.day)).toEqual(['2026-11-12']);
     expect(memories.photos[0]?.theirPhotoUrl).toBeTruthy();
@@ -169,6 +179,8 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     // Dans le chat, même règle qu'avant : la photo de Bob du 13 reste cachée pour Alice.
     const photos = (await alice.api.links.messages(link.id)).messages.filter((m) => m.kind === 'photo' && m.author === 'other');
     expect(photos.map((m) => m.mediaUrl !== null).sort()).toEqual([false, true]);
+    const now = db.links.get(link.id);
+    if (now) db.links.set(link.id, { ...now, ...before });
   });
 
   it('souvenirs : les étapes du lien et les chiffres', async () => {
@@ -200,6 +212,11 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     const woken = await bob.api.links.revive(link.id);
     expect(woken.link).toMatchObject({ status: 'active', lives: 7, warmth: 'calme', streak: 0, bestStreak: 2 });
     expect(woken.messages.map((m) => [m.author, m.body])).toEqual([['my_pet', 'Je lui ai fait un petit coucou.']]);
+    // Alice voit le coucou de la part de Bob, dit par son minimoa ; pas la réplique de celui de Bob.
+    const seen = (await alice.api.links.messages(link.id)).messages.slice(-1);
+    expect(seen.map((m) => [m.author, m.body])).toEqual([['my_pet', 'Coucou de la part de Bob. Un mot quand tu veux.']]);
+    // Le lien ne dort plus : un second appel ne fait rien (ni réplique, ni erreur).
+    expect((await bob.api.links.revive(link.id)).messages).toEqual([]);
     // Pas de « une seule fois » : deux semaines plus tard, il se réveille encore.
     world.clock.advanceDays(15);
     expect((await alice.api.links.get(link.id)).warmth).toBe('endormi');

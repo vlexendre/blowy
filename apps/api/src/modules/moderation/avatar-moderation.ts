@@ -36,9 +36,10 @@ export class AvatarModeration {
       if (profile.avatarPath === path) await this.profiles.update(profile.id, { avatarCheckedAt: now });
       return 'ok';
     }
+    // Le profil d'abord : une vignette que le minuteur écrirait pendant ce temps s'efface d'elle-même (`AvatarBlurs.make`).
+    if (profile.avatarPath === path) await this.profiles.update(profile.id, { avatarPath: null, avatarCheckedAt: now });
     await this.storage.remove([path]);
     await this.blurs.remove(path);
-    if (profile.avatarPath === path) await this.profiles.update(profile.id, { avatarPath: null, avatarCheckedAt: now });
     await this.desk.file({
       reporter: null,
       targetUser: profile.id,

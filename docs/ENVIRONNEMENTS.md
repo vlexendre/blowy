@@ -16,7 +16,7 @@ arrive en production en fusionnant `dev` dans `main`.
 | Cloudflare Pages, site | projet `minimoa`, déploiement de production (`main`) | projet `minimoa`, prévisualisation de la branche `dev` (alias `dev.minimoa.pages.dev`) |
 | Cloudflare Pages, admin | projet `minimoa-admin`, production (`main`) | projet `minimoa-admin`, prévisualisation de `dev` (alias `dev.minimoa-admin.pages.dev`) |
 | App iOS | « Minimoa », `app.blowy`, profil EAS `production` (App Store, TestFlight) | « Minimoa Dev », `app.blowy.dev`, profil EAS `dev` (TestFlight interne) |
-| `GET /health` | `{"ok":true,"env":"production"}` | `{"ok":true,"env":"staging"}` |
+| `GET /health` | `{"ok":true,"env":"production","images":"ok"}` | `{"ok":true,"env":"staging","images":"ok"}` (`images` : essai de sharp au démarrage, `failed` = aucune vignette floue) |
 
 ## Variables par environnement (noms seulement)
 

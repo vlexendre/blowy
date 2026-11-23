@@ -34,6 +34,7 @@ export interface SleepPanelProps {
   speakerLabel?: string;
   /** « Le réveiller » : ton minimoa fait un petit coucou à l'autre. */
   wakeLabel: string;
+  /** « Le laisser partir », en texte sous « Le réveiller » ; l'écran demande confirmation (alerte du système) avant d'agir. */
   leaveLabel?: string;
   onWake?: () => void;
   onLeave?: () => void;
@@ -125,7 +126,7 @@ export function SleepPanel({
             </Shake>
           ) : null}
           <Button label={wakeLabel} variant="white" onPress={onWake} loading={waking} />
-          {leaveLabel && onLeave ? <Button label={leaveLabel} variant="ghost" onPress={onLeave} loading={leaving} /> : null}
+          {leaveLabel && onLeave ? <Button label={leaveLabel} variant="link" onPress={onLeave} loading={leaving} /> : null}
         </Appear>
       </InkProvider>
     </View>

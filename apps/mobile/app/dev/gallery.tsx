@@ -514,7 +514,7 @@ function GalleryScreen() {
           <View style={styles.wrap}>
             <Chip label="nouveau" tone="coral" size="sm" />
             <Chip label="niv. 3" tone="accent" size="sm" />
-            <Chip label="lien fantôme" size="sm" />
+            <Chip label="lien endormi" size="sm" />
             <Chip label="d’humeur joueuse" tone="dark" left={<Glyph name="dot" size={12} color={color.accent} />} />
           </View>
         </Item>
@@ -721,7 +721,7 @@ function GalleryScreen() {
               onAttach={noop}
             />
           </Frame>
-          <Composer value="" onChangeText={noop} onSend={noop} placeholder="" disabled disabledText="lien fantôme : ranime-le pour écrire" />
+          <Composer value="" onChangeText={noop} onSend={noop} placeholder="" disabled disabledText="lien rangé : il revient si vous vous retrouvez" />
         </Item>
         <Item name="LinkTodayHero (états du jour)">
           <LinkTodayHero streak={12} streakUnit={heroLabels.streakUnit} title={[{ text: 'À TOI\n' }, { text: 'D’ÉCRIRE', dim: true }]} text="Léa t’a écrit. Réponds avant minuit et la série passe à 13." myPet={nino} other={lea} me={heroLabels.me(false)} them={heroLabels.them(true)} wroteLabel={heroLabels.wroteLabel} waitingLabel={heroLabels.waitingLabel} cta="Écrire à Léa" onCta={noop} motionKey="gallery-hero-1" />
@@ -882,7 +882,7 @@ function GalleryScreen() {
             title="confidentialité"
             rows={[
               { key: 'pause', title: 'pause rencontres', subtitle: 'nino croise de nouveaux minimoas', switchValue: pause, onSwitchChange: setPause },
-              { key: 'notif', title: 'notifications', subtitle: 'séries, vies, rencontres', onPress: noop },
+              { key: 'notif', title: 'notifications', subtitle: 'séries, rencontres, messages', onPress: noop },
               { key: 'blocks', title: 'personnes bloquées', onPress: noop },
               { key: 'delete', title: 'supprimer mon compte', destructive: true, onPress: noop },
             ]}

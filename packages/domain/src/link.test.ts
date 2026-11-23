@@ -11,7 +11,8 @@ import {
   type LinkState,
   applyLinkMessage,
   faceBeforeLink,
-  faceVisibility,
+  linkFace,
+  pastPhotosShown,
   isWriteReminderHour,
   lateSide,
   levelForXp,
@@ -247,8 +248,11 @@ describe('lien : expérience (rééquilibrage de la photo du jour)', () => {
     expect(levelForXp(40)).toBe(2);
     expect(levelForXp(5000)).toBe(7);
     // Lien noué : visage net dès le niveau 1 (règle du 21 nov. 2026).
-    expect(faceVisibility(1)).toBe('clear');
-    expect(faceVisibility(6)).toBe('clear');
+    expect(linkFace(true)).toBe('clear');
+    expect(linkFace(false)).toBe('hidden');
+    expect(pastPhotosShown(4, true)).toBe(false);
+    expect(pastPhotosShown(5, true)).toBe(true);
+    expect(pastPhotosShown(7, false)).toBe(false);
     // Avant le lien : jamais net ; flou seulement quand la vignette du serveur existe.
     expect(faceBeforeLink(true)).toBe('blurred');
     expect(faceBeforeLink(false)).toBe('hidden');

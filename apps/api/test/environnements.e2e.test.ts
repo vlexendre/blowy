@@ -103,11 +103,11 @@ describe('GET /health', () => {
   });
   afterAll(() => close());
 
-  it('dit l’environnement, et rien d’autre', async () => {
+  it('dit l’environnement et l’état des vignettes floues, rien d’autre (ni version, ni configuration)', async () => {
     const res = await fetch(`${baseUrl}/health`);
     expect(res.headers.get('x-robots-tag')).toBe('noindex, nofollow');
     const body: unknown = await res.json();
-    expect(HealthZ.parse(body)).toEqual({ ok: true, env: 'staging' });
-    expect(Object.keys(body as object).sort()).toEqual(['env', 'ok']);
+    expect(HealthZ.parse(body)).toEqual({ ok: true, env: 'staging', images: 'ok' });
+    expect(Object.keys(body as object).sort()).toEqual(['env', 'images', 'ok']);
   });
 });

@@ -42,6 +42,7 @@ import { inviteUrl, ScreenMotion } from '@/core';
 import { useDraft, useRefusal } from '@/features/chat';
 import { displayUrl, useMe, useStoryShare } from '@/features/me';
 import { MEET_LEVEL, useMeetReminders } from '@/features/safety';
+import { confirmAction } from '@/features/session';
 import { home as homeText } from '@/locales/pet';
 import {
   chatDayLabel,
@@ -67,6 +68,7 @@ import {
   link as t,
   memories as memText,
   minimoas as minimoaText,
+  options as optionsText,
   sleep as sleepText,
   today as todayText,
   warmth as warmthText,
@@ -256,6 +258,7 @@ export default function LinkScreen() {
           active === 'chat' ? (
             <ChatComposer
               link={l}
+              autoFocus={awake}
               send={chat.send}
               notice={notice}
               onNotice={setNotice}
@@ -587,8 +590,11 @@ function ChatComposer({
   onNotice,
   rhythm,
   onRhythm,
+  autoFocus,
 }: {
   link: Link;
+  /** Juste réveillé : le clavier s'ouvre, le premier mot est à un geste. */
+  autoFocus?: boolean;
   send: (body: string) => void;
   rhythm: string | null;
   /** La ligne du rythme ouvre les rôles des minimoas (l'explication reste à un tap, jamais affichée en continu). */
@@ -654,12 +660,20 @@ function ChatComposer({
         disabled={closed}
         disabledText={chatText.closedDisabled}
         sendLabel={chatText.send}
+        autoFocus={autoFocus}
       />
     </View>
   );
 }
 
 // ── Lien endormi ────────────────────────────────────────────────────────────
+/** Titre d'alerte en casse de phrase (« QUITTER CE LIEN ? » → « Quitter ce lien ? », « ¿Salir de este vínculo? »). */
+const sentence = (text: string): string => {
+  const lower = text.toLocaleLowerCase();
+  const first = lower.search(/\p{L}/u);
+  return first < 0 ? lower : lower.slice(0, first) + lower.charAt(first).toLocaleUpperCase() + lower.slice(first + 1);
+};
+
 function SleepBody({
   link,
   onBack,
@@ -691,7 +705,17 @@ function SleepBody({
       wakeLabel={sleepText.wake}
       leaveLabel={sleepText.leave}
       onWake={() => wake.mutate(undefined, { onSuccess: onWoken })}
-      onLeave={() => archive.mutate(link.id, { onSuccess: onLeft })}
+      onLeave={() =>
+        // Geste destructif : alerte du système d'abord (comme Options › Quitter le lien), rien ne part avant.
+        confirmAction({
+          title: sentence(optionsText.leaveTitle.map((seg) => seg.text).join('')),
+          message: optionsText.leaveText(link.other.displayName),
+          confirm: optionsText.leaveConfirm,
+          cancel: optionsText.cancel,
+          destructive: true,
+          onConfirm: () => archive.mutate(link.id, { onSuccess: onLeft }),
+        })
+      }
       waking={wake.isPending}
       leaving={archive.isPending}
       error={error}

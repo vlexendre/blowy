@@ -53,6 +53,11 @@ export class MemoryStorage implements Storage {
     this.files.set(path, { bytes: Buffer.from(file.bytes), contentType: file.contentType });
   }
 
+  async list(folder: string): Promise<string[]> {
+    const prefix = `${folder.replace(/\/+$/, '')}/`;
+    return [...this.files.keys()].filter((p) => p.startsWith(prefix) && !p.slice(prefix.length).includes('/')).sort();
+  }
+
   /** Reçoit le fichier envoyé avec un ticket ; faux si le ticket n'est pas valable. */
   put(path: string, token: string, file: StoredFile): boolean {
     if (this.uploadTokens.get(path) !== token) return false;

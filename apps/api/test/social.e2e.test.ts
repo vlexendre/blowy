@@ -3,6 +3,8 @@ import type { ApiClient } from '@blowy/api-client';
 import { START_NEEDS, WORD_KEYS } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { type TestWorld, doToday, errorCode, onboardBody, seedPastPhoto, startWorld, upload } from './helpers';
+import type { MemoryDb } from '../src/persistence/memory-db';
+import { MEMORY_DB } from '../src/shared/tokens';
 
 describe('vie sociale et sécurité', () => {
   let world: TestWorld;
@@ -138,6 +140,10 @@ describe('vie sociale et sécurité', () => {
     const carolLink = (await carol.api.links.list()).find((l) => l.other.id === bob.id);
     await seedPastPhoto(world, carolLink?.id ?? '', carol.id, '2026-11-10');
     await seedPastPhoto(world, carolLink?.id ?? '', bob.id, '2026-11-10');
+    // Les anciennes photos de l'autre ne partent qu'à partir du niveau 5.
+    const mdb = world.app.get<MemoryDb>(MEMORY_DB);
+    const row = mdb.links.get(carolLink?.id ?? '');
+    if (row) mdb.links.set(row.id, { ...row, level: 5, xp: 480 });
     const [day] = (await carol.api.links.memories(carolLink?.id ?? '')).photos;
     const theirUrl = day?.theirPhotoUrl ?? '';
     const myUrl = day?.myPhotoUrl ?? '';

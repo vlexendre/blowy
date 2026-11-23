@@ -56,11 +56,11 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Gegevens:** de foto die je kiest, als je er een toevoegt (dat is optioneel), gemaakt met de camera of gekozen uit je galerij.',
-        '**Doel:** je laten zien aan je banden, en de mensen aan wie je minimoa je voorstelt een idee van je geven. Tot jullie elkaar allebei gedag hebben gezegd, zien zij alleen een **heel wazige versie**, gemaakt door onze servers uit een kopie van een paar pixels, waarop je geen gezicht kunt herkennen; het origineel wordt nooit naar hen gestuurd, niet op de kaart en niet in voorstellingen, gratis of met Minimoa+. Zodra de band er is, ziet je band hem scherp.',
+        '**Doel:** je laten zien aan je banden, en mensen die je tegenkomen zonder band (voorstellingen, kaart, zwaaien) een idee van je geven. Tot jullie elkaar allebei gedag hebben gezegd, zien zij alleen een **heel wazige versie**, gemaakt door onze servers uit een kopie van een paar pixels, waarop je geen gezicht kunt herkennen: hij laat alleen overheersende kleuren raden (huidtint, haar, achtergrond). Het origineel wordt nooit naar hen gestuurd, niet op de kaart, niet in voorstellingen en niet bij een zwaai, gratis of met Minimoa+. Zodra de band er is, ziet je band hem scherp; als de band verlaten wordt of een van jullie de ander blokkeert, wordt niets meer gestuurd.',
         '**Veiligheidscontrole:** voordat de foto wordt gepubliceerd, wordt hij verkleind en naar onze AI-provider {{sub.ai.provider}} gestuurd, die controleert dat er geen naaktheid, niemand die minderjarig lijkt, geen geweld, geen haat en geen reclame op staat. Dat zeggen we je in de app voordat je de foto kiest. Een afgekeurde foto wordt direct gewist, en het moderatieteam krijgt een automatische melding, zonder de foto. Is de controle op dat moment niet mogelijk, dan wordt de foto gepubliceerd en iets later gecontroleerd. Deze controle kan niet worden uitgezet: ze beschermt iedereen. Zonder profielfoto wordt er niets verstuurd.',
         '**Rechtsgrond:** uitvoering van de overeenkomst om hem te tonen; ons gerechtvaardigd belang en onze veiligheidsverplichtingen (gepubliceerde inhoud filteren) voor de controle.',
         '**Bewaartermijn:** zolang je hem houdt. Als je hem vervangt, worden de oude en zijn wazige versie gewist. Beide worden gewist als je je account verwijdert.',
-        '**Toegang:** je banden (scherpe foto); de mensen aan wie je minimoa je voorstelt (alleen de heel wazige versie); onze AI-provider, tijdens de controle. Beide versies staan in een privéopslag, alleen bereikbaar via tijdelijke links.',
+        '**Toegang:** je banden (scherpe foto); mensen die je tegenkomen zonder band: voorstellingen, kaart, zwaaien (alleen de heel wazige versie); onze AI-provider, tijdens de controle. Beide versies staan in een privéopslag, alleen bereikbaar via tijdelijke links.',
       ],
     },
 
@@ -154,10 +154,10 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Gegevens:** de dagen waarop ieder van jullie in de band schreef (niet de inhoud van de berichten) en de mijlpalen van de band (ontmoeting, bereikte niveaus, reeksrecords). Voor banden van vóór 15 november 2026 de “foto’s van de dag” die jullie elkaar daar stuurden: Minimoa ontvangt er geen nieuwe meer, en de oude blijven in de herinneringen van de band.',
-        '**Doel:** de reeks van de band laten leven (de dagen achter elkaar dat jullie allebei schrijven), de levens en de niveaus, en jullie je herinneringen laten zien.',
+        '**Doel:** de band levend houden: de reeks (de dagen achter elkaar dat jullie allebei schrijven), de staat (levendig, rustig, slapend) en de niveaus, en jullie je herinneringen laten zien.',
         '**Rechtsgrond:** uitvoering van de overeenkomst.',
         '**Bewaartermijn:** zolang de band bestaat (zelfde regels als de berichten): de oude foto’s van de dag worden gewist als de band wordt gewist, of als een van jullie zijn account verwijdert.',
-        '**Toegang:** jij en de andere persoon in de band (diens oude foto’s blijven voor jou wazig tot niveau 5). Foto’s worden in een privéruimte opgeslagen, alleen bereikbaar via tijdelijke links.',
+        '**Toegang:** jij en de andere persoon in de band (diens oude foto’s worden pas vanaf niveau 5 van de band naar jou gestuurd, en helemaal niet meer als de band verlaten is of als een van jullie de ander blokkeert). Foto’s worden in een privéruimte opgeslagen, alleen bereikbaar via tijdelijke links.',
       ],
     },
 
@@ -165,7 +165,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Gegevens:** het technische meldingstoken van je telefoon, je instellingen per type melding, het gekozen tijdstip voor de uitdaging van de dag; op iPhone de tokens van live-activiteiten.',
-        '**Doel:** je op de hoogte brengen (uitdaging van de dag, nieuwe ontmoeting, bericht, “jij bent aan de beurt om te schrijven” ’s avonds, band of reeks in gevaar, gevraagd bewijs, weekoverzicht, herinnering aan het einde van de proefperiode; eerste stappen in de eerste 7 dagen, nieuws van je minimoa als je weg bent en op jullie verjaardagen, berichten over je Minimoa+-abonnement). Stille uren van 22 tot 8 uur; buiten berichten maximaal 3 per dag. De herinnering aan het einde van de proefperiode en de e-mails over je abonnement (welkom, mislukte betaling, einde) worden ook per e-mail verstuurd, ook als meldingen uit staan. De e-mail na 14 dagen afwezigheid en de enige herinnering een maand na het einde van Minimoa+ zet je uit met dezelfde instelling als de melding (“Nieuws van je minimoa”, “Je Minimoa+-abonnement”). Op iPhone gebruiken de widget en live-activiteiten dezelfde gegevens; een live-activiteit op het vergrendelscherm toont nooit iemands voornaam.',
+        '**Doel:** je op de hoogte brengen (uitdaging van de dag, nieuwe ontmoeting, bericht (ook het groetje als iemand jullie band wakker maakt), “jij bent aan de beurt om te schrijven” ’s avonds, herinnering aan je reeks, gevraagd bewijs, weekoverzicht, herinnering aan het einde van de proefperiode; eerste stappen in de eerste 7 dagen, nieuws van je minimoa als je weg bent en op jullie verjaardagen, berichten over je Minimoa+-abonnement). Stille uren van 22 tot 8 uur; buiten berichten maximaal 3 per dag. De herinnering aan het einde van de proefperiode en de e-mails over je abonnement (welkom, mislukte betaling, einde) worden ook per e-mail verstuurd, ook als meldingen uit staan. De e-mail na 14 dagen afwezigheid en de enige herinnering een maand na het einde van Minimoa+ zet je uit met dezelfde instelling als de melding (“Nieuws van je minimoa”, “Je Minimoa+-abonnement”). Op iPhone gebruiken de widget en live-activiteiten dezelfde gegevens; een live-activiteit op het vergrendelscherm toont nooit iemands voornaam.',
         '**Rechtsgrond:** je toestemming voor meldingen, gegeven via de toestemming van je telefoon (je trekt die in via de instellingen van je telefoon of per type in de app); uitvoering van de overeenkomst voor e-mails over je account en je abonnement; gerechtvaardigd belang voor de afwezigheidsmail en de herinnering na het einde van Minimoa+ (je maakt bezwaar door de instelling uit te zetten).',
         '**Bewaartermijn:** tot je meldingen uitzet of je account verwijdert. De lijst van al verstuurde berichten (alleen het type en de datum, zodat hetzelfde bericht nooit twee keer gaat) wordt maximaal 400 dagen bewaard.',
         '**Toegang:** onze dienstverleners voor het versturen van meldingen en e-mails, en Apple of Google, die de meldingen naar je telefoon brengen.',
@@ -338,7 +338,7 @@ export const confidentialite: LegalPage = {
     { h2: '5. Wat anderen zien', id: 'visibilite' },
     {
       ul: [
-        '**Mensen aan wie je minimoa je voorstelt** zien je voornaam, je minimoa, zijn stijl, wat jullie gemeen hebben en één verschil, een heel wazige versie van je profielfoto als je er een hebt (nooit het origineel), en je geschatte positie op de kaart (behalve in de discrete modus).',
+        '**Mensen die je tegenkomen zonder band** (voorstellingen, kaart, zwaaien) zien je voornaam, je minimoa, zijn stijl, wat jullie gemeen hebben en één verschil, een heel wazige versie van je profielfoto als je er een hebt (nooit het origineel), en je geschatte positie op de kaart (behalve in de discrete modus).',
         '**Je banden** zien daarnaast jullie berichten, jullie reeks, de mijlpalen van jullie band, jullie oude foto’s van de dag als die er zijn, en je scherpe profielfoto als je er een hebt (zodra de band er is).',
         '**Bezoekers van je “3 woorden”-pagina of je uitnodiging** zien je voornaam en je minimoa.',
         'Niemand ziet je e-mailadres, je geboortedatum, je geslacht, of je antwoorden op de kijk-test. Je exacte positie wordt nergens opgeslagen. Je bewijsfoto’s worden door geen mens gezien, en binnen 24 uur gewist (tenzij je ze in je privéherinneringen bewaart).',

@@ -36,7 +36,7 @@ export const conditions: LegalPage = {
       ul: [
         '**La vision** se construit avec un test à l’inscription, une question par jour, tes habitudes et ta façon de t’occuper de ton minimoa. Elle est indicative et s’affine avec le temps.',
         '**Les rencontres** : ton minimoa ne te présente que des personnes dont la compatibilité dépasse un seuil. Rien ne se passe sans ton accord : tu salues, l’autre accepte, le lien se crée. Le fonctionnement est expliqué dans la [politique de confidentialité](@confidentialite#compatibilite).',
-        '**Les liens** : un chat, une série qui grandit chaque jour où vous vous écrivez tous les deux, des souvenirs, et des vies qui baissent quand le lien reste silencieux.',
+        '**Les liens** : un chat, une série qui grandit chaque jour où vous vous écrivez tous les deux, des souvenirs, et son état dit en une phrase (vivant, calme, endormi) : un lien silencieux s’endort, rien ne se perd, un mot le réveille.',
         '**Ton minimoa** a des jauges (sociabilité, faim, énergie, humeur), des habitudes à tenir, une série, des objets. Il ne meurt jamais.',
         '**La carte** montre les minimoas compatibles autour de toi (ou autour de la ville que tu as choisie, si tu n’actives pas la localisation), à une position volontairement imprécise.',
       ],
@@ -131,7 +131,7 @@ export const conditions: LegalPage = {
       p: 'Si tu as téléchargé Minimoa sur l’App Store, le [contrat de licence standard d’Apple pour les applications](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (« Licensed Application End User License Agreement ») s’applique aussi à l’app.',
     },
     {
-      p: 'Les objets, jokers, séries, vies et autres éléments du jeu n’ont aucune valeur monétaire. Ils ne s’échangent pas, ne se revendent pas et ne se remboursent pas, sauf ce que la loi impose.',
+      p: 'Les objets, jokers, séries et autres éléments du jeu n’ont aucune valeur monétaire. Ils ne s’échangent pas, ne se revendent pas et ne se remboursent pas, sauf ce que la loi impose.',
     },
 
     { h2: '10. Fin du contrat', id: 'fin' },

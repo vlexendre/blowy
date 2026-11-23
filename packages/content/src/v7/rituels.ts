@@ -280,7 +280,8 @@ const fr = {
     /** Minimoa+ : détail par axe sur quatre semaines (`pole` en minuscules) et audit de chaque lien. */
     detailedAxisStable: (axis: string): string => `${axis} : stable.`,
     detailedAxis: (axis: string, signedDelta: string, pole: string): string => `${axis} : ${signedDelta} vers « ${pole} ».`,
-    detailedLink: (name: string, level: number, lives: number): string => `Avec ${name} : niveau ${level}, ${plural(lives, 'vie', 'vies')}.`,
+    /** Les vies d'un lien sont retirées (ADA-2027 item 27) : `_lives` est ignoré, la signature reste (anciennes builds). */
+    detailedLink: (name: string, level: number, _lives: number): string => `Avec ${name} : niveau ${level}.`,
   },
 };
 
@@ -412,7 +413,7 @@ const en: Translation<RituelsText> = {
     },
     detailedAxisStable: (axis: string): string => `${axis}: steady.`,
     detailedAxis: (axis: string, signedDelta: string, pole: string): string => `${axis}: ${signedDelta} toward “${pole}”.`,
-    detailedLink: (name: string, level: number, lives: number): string => `With ${name}: level ${level}, ${pl(lives, 'life', 'lives')}.`,
+    detailedLink: (name: string, level: number, _lives: number): string => `With ${name}: level ${level}.`,
   },
 };
 
@@ -541,7 +542,7 @@ const es: Translation<RituelsText> = {
     },
     detailedAxisStable: (axis: string): string => `${axis}: estable.`,
     detailedAxis: (axis: string, signedDelta: string, pole: string): string => `${axis}: ${signedDelta} hacia «${pole}».`,
-    detailedLink: (name: string, level: number, lives: number): string => `Con ${name}: nivel ${level}, ${pl(lives, 'vida', 'vidas')}.`,
+    detailedLink: (name: string, level: number, _lives: number): string => `Con ${name}: nivel ${level}.`,
   },
 };
 
@@ -670,7 +671,7 @@ const pt: Translation<RituelsText> = {
     },
     detailedAxisStable: (axis: string): string => `${axis}: estável.`,
     detailedAxis: (axis: string, signedDelta: string, pole: string): string => `${axis}: ${signedDelta} rumo a “${pole}”.`,
-    detailedLink: (name: string, level: number, lives: number): string => `Com ${name}: nível ${level}, ${pl(lives, 'vida', 'vidas')}.`,
+    detailedLink: (name: string, level: number, _lives: number): string => `Com ${name}: nível ${level}.`,
   },
 };
 
@@ -799,7 +800,7 @@ const nl: Translation<RituelsText> = {
     },
     detailedAxisStable: (axis: string): string => `${axis}: stabiel.`,
     detailedAxis: (axis: string, signedDelta: string, pole: string): string => `${axis}: ${signedDelta} richting “${pole}”.`,
-    detailedLink: (name: string, level: number, lives: number): string => `Met ${name}: niveau ${level}, ${pl(lives, 'leven', 'levens')}.`,
+    detailedLink: (name: string, level: number, _lives: number): string => `Met ${name}: niveau ${level}.`,
   },
 };
 

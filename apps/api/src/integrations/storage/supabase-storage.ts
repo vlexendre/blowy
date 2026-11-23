@@ -2,6 +2,7 @@ import type { Db } from '../../persistence/database.types';
 import type { Storage, StoredBytes, UploadTicket } from './ports';
 
 const BUCKET = 'media';
+const LIST_PAGE = 1000;
 
 export class SupabaseStorage implements Storage {
   constructor(private readonly client: Db) {}
@@ -47,6 +48,19 @@ export class SupabaseStorage implements Storage {
     const { data, error } = await this.bucket.download(path);
     if (error || !data) return null;
     return { bytes: Buffer.from(await data.arrayBuffer()), contentType: data.type };
+  }
+
+  async list(folder: string): Promise<string[]> {
+    const dir = folder.replace(/\/+$/, '');
+    const out: string[] = [];
+    // Par pages de 1 000 (plafond de Supabase) ; un dossier vide ou absent rend une liste vide.
+    for (let offset = 0; ; offset += LIST_PAGE) {
+      const { data, error } = await this.bucket.list(dir, { limit: LIST_PAGE, offset, sortBy: { column: 'name', order: 'asc' } });
+      if (error) throw new Error(`liste des médias impossible : ${error.message}`);
+      // Un sous-dossier revient sans identifiant : seuls les fichiers comptent.
+      for (const f of data ?? []) if (f.id) out.push(`${dir}/${f.name}`);
+      if (!data || data.length < LIST_PAGE) return out;
+    }
   }
 
   async write(path: string, file: StoredBytes): Promise<void> {

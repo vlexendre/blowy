@@ -1,3 +1,4 @@
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 
 import { MediaAccessError, type PickedImage } from '../ports';
@@ -8,7 +9,18 @@ const TYPES: Record<string, PickedImage['contentType']> = {
   'image/png': 'image/png',
   'image/webp': 'image/webp',
   'image/heic': 'image/heic',
+  'image/heif': 'image/heic',
 };
+
+/**
+ * HEIC/HEIF (format par défaut des iPhone) : réencodé en JPEG sur le téléphone avant l'envoi. Le serveur ne sait pas
+ * toujours le lire (vignette floue, vérification), et un JPEG s'affiche partout.
+ */
+async function asJpeg(uri: string): Promise<PickedImage> {
+  const rendered = await ImageManipulator.manipulate(uri).renderAsync();
+  const saved = await rendered.saveAsync({ format: SaveFormat.JPEG, compress: 0.8 });
+  return { uri: saved.uri, contentType: 'image/jpeg' };
+}
 
 /**
  * Demande l'accès au moment utile (texte d'autorisation iOS : app.config.ts), puis ouvre l'appareil photo ou la
@@ -23,5 +35,6 @@ export async function pickImage(source: 'camera' | 'library'): Promise<PickedIma
   const result = source === 'camera' ? await ImagePicker.launchCameraAsync(options) : await ImagePicker.launchImageLibraryAsync(options);
   const asset = result.canceled ? undefined : result.assets[0];
   if (!asset) return null;
-  return { uri: asset.uri, contentType: TYPES[asset.mimeType ?? ''] ?? 'image/jpeg' };
+  const contentType = TYPES[asset.mimeType ?? ''] ?? (/\.hei[cf]$/i.test(asset.uri) ? 'image/heic' : 'image/jpeg');
+  return contentType === 'image/heic' ? asJpeg(asset.uri) : { uri: asset.uri, contentType };
 }

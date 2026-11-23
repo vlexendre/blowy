@@ -36,7 +36,7 @@ export const conditions: LegalPage = {
       ul: [
         '**A visão** é construída com um teste no cadastro, uma pergunta por dia, seus hábitos e o jeito como você cuida do seu minimoa. Ela é indicativa e fica mais precisa com o tempo.',
         '**Os encontros**: seu minimoa só te apresenta pessoas cuja compatibilidade passa de um limite mínimo. Nada acontece sem a sua concordância: você cumprimenta, a outra pessoa aceita, o vínculo é criado. O funcionamento está explicado na [política de privacidade](@confidentialite#compatibilite).',
-        '**Os vínculos**: um chat, uma sequência que cresce a cada dia em que vocês dois trocam mensagens, lembranças, e vidas que diminuem quando o vínculo fica em silêncio.',
+        '**Os vínculos**: um chat, uma sequência que cresce a cada dia em que vocês dois trocam mensagens, lembranças, e o estado dele em uma frase (vivo, calmo, dormindo): um vínculo em silêncio adormece, nada se perde, uma palavra o acorda.',
         '**Seu minimoa** tem medidores (sociabilidade, fome, energia, humor), hábitos a manter, uma sequência, itens. Ele nunca morre.',
         '**O mapa** mostra os minimoas compatíveis perto de você (ou perto da cidade que você escolheu, se não ativar a localização), numa posição propositalmente imprecisa.',
       ],
@@ -131,7 +131,7 @@ export const conditions: LegalPage = {
       p: 'Se você baixou o Minimoa na App Store, o [contrato de licença padrão da Apple para aplicativos](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (“Licensed Application End User License Agreement”) também se aplica ao app.',
     },
     {
-      p: 'Os itens, coringas, sequências, vidas e outros elementos do jogo não têm valor monetário. Eles não podem ser trocados, revendidos nem reembolsados, exceto quando a lei exigir.',
+      p: 'Os itens, coringas, sequências e outros elementos do jogo não têm valor monetário. Eles não podem ser trocados, revendidos nem reembolsados, exceto quando a lei exigir.',
     },
 
     { h2: '10. Fim do contrato', id: 'fin' },

@@ -64,11 +64,11 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Dados:** a foto que você escolhe, se adicionar uma (é opcional), tirada com a câmera ou escolhida na sua galeria.',
-        '**Finalidade:** mostrar você aos seus vínculos, e dar uma ideia de você às pessoas que seu minimoa te apresenta. Até vocês dois se cumprimentarem, elas só veem uma **versão bem desfocada**, feita pelos nossos servidores a partir de uma cópia reduzida a poucos pixels, na qual não dá para reconhecer um rosto; o original nunca é enviado a elas, nem no mapa nem nas apresentações, no plano gratuito ou no Minimoa+. Depois que o vínculo se forma, seu vínculo a vê nítida.',
+        '**Finalidade:** mostrar você aos seus vínculos, e dar uma ideia de você às pessoas que cruzam com você sem vínculo (apresentações, mapa, acenos). Até vocês dois se cumprimentarem, elas só veem uma **versão bem desfocada**, feita pelos nossos servidores a partir de uma cópia reduzida a poucos pixels, na qual não dá para reconhecer um rosto: ela só deixa adivinhar cores dominantes (tom de pele, cabelo, fundo). O original nunca é enviado a elas, nem no mapa, nem nas apresentações, nem com um aceno, no plano gratuito ou no Minimoa+. Depois que o vínculo se forma, seu vínculo a vê nítida; se ele for deixado ou se um de vocês bloquear o outro, mais nada é enviado.',
         '**Verificação de segurança:** antes de ser publicada, a foto é reduzida e enviada ao nosso fornecedor de IA, {{sub.ai.provider}}, que verifica se ela não mostra nudez, nem pessoa que pareça menor de idade, nem violência, nem ódio, nem propaganda. Avisamos você no app antes de escolher a foto. Uma foto recusada é apagada na hora, e a equipe de moderação recebe uma denúncia automática, sem a foto. Se a verificação não for possível no momento, a foto é publicada e verificada um pouco depois. Essa verificação não pode ser desativada: ela protege todo mundo. Sem foto de perfil, nada é enviado.',
         '**Base legal:** execução do contrato para exibi-la; nosso legítimo interesse e nossas obrigações de segurança (filtrar os conteúdos publicados) para a verificação.',
         '**Prazo:** enquanto você a mantiver. Quando você a troca, a anterior e a versão desfocada dela são apagadas. As duas são apagadas quando você exclui sua conta.',
-        '**Acesso:** seus vínculos (foto nítida); as pessoas que seu minimoa te apresenta (só a versão bem desfocada); nosso fornecedor de IA, durante a verificação. As duas versões ficam num espaço privado, acessíveis só por links temporários.',
+        '**Acesso:** seus vínculos (foto nítida); as pessoas que cruzam com você sem vínculo: apresentações, mapa, acenos (só a versão bem desfocada); nosso fornecedor de IA, durante a verificação. As duas versões ficam num espaço privado, acessíveis só por links temporários.',
       ],
     },
 
@@ -162,10 +162,10 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Dados:** os dias em que cada um de vocês dois escreveu no vínculo (não o conteúdo das mensagens) e as etapas do vínculo (encontro, níveis alcançados, recordes de sequência). Para os vínculos de antes de 15 de novembro de 2026, as “fotos do dia” que vocês tinham trocado nele: o Minimoa não recebe mais fotos novas, e as antigas continuam nas lembranças do vínculo.',
-        '**Finalidade:** dar vida à sequência do vínculo (os dias seguidos em que vocês dois trocam mensagens), às vidas e aos níveis dele, e mostrar as lembranças de vocês.',
+        '**Finalidade:** dar vida ao vínculo: a sequência dele (os dias seguidos em que vocês dois trocam mensagens), o estado dele (vivo, calmo, dormindo) e os níveis, e mostrar as lembranças de vocês.',
         '**Base legal:** execução do contrato.',
         '**Prazo:** enquanto o vínculo existir (mesmas regras das mensagens): as antigas fotos do dia são apagadas quando o vínculo é apagado, ou quando um de vocês exclui a conta.',
-        '**Acesso:** você e a outra pessoa do vínculo (as antigas fotos dela ficam desfocadas para você até o nível 5). As fotos são armazenadas num espaço privado, acessíveis só por links temporários.',
+        '**Acesso:** você e a outra pessoa do vínculo (as antigas fotos dela só são enviadas para você a partir do nível 5 do vínculo, e nunca mais se o vínculo for deixado ou se um de vocês bloquear o outro). As fotos são armazenadas num espaço privado, acessíveis só por links temporários.',
       ],
     },
 
@@ -173,7 +173,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Dados:** o token técnico do seu celular para as notificações, seus ajustes por tipo de notificação, o horário escolhido para o desafio do dia; no iPhone, os tokens das atividades ao vivo.',
-        '**Finalidade:** te avisar (desafio do dia, novo encontro, mensagem, “sua vez de escrever” à noite, vínculo ou sequência em perigo, prova pedida, resumo, lembrete do fim do teste; primeiros passos nos 7 primeiros dias, notícias do seu minimoa quando você some e nos aniversários de vocês, mensagens da sua assinatura Minimoa+). Horas de silêncio das 22h às 8h; fora as mensagens, no máximo 3 por dia. O lembrete do fim do teste e os e-mails da sua assinatura (boas-vindas, pagamento recusado, fim) também são enviados por e-mail, mesmo se as notificações estiverem desativadas. O e-mail depois de 14 dias de ausência e o lembrete único um mês depois do fim do Minimoa+ são desativados pelo mesmo ajuste da notificação (“Notícias do seu minimoa”, “Sua assinatura do Minimoa+”). No iPhone, o widget e as atividades ao vivo usam os mesmos dados; uma atividade ao vivo na tela bloqueada nunca mostra o nome de alguém.',
+        '**Finalidade:** te avisar (desafio do dia, novo encontro, mensagem (inclusive o oizinho quando alguém acorda o vínculo de vocês), “sua vez de escrever” à noite, lembrete da sua sequência, prova pedida, resumo, lembrete do fim do teste; primeiros passos nos 7 primeiros dias, notícias do seu minimoa quando você some e nos aniversários de vocês, mensagens da sua assinatura Minimoa+). Horas de silêncio das 22h às 8h; fora as mensagens, no máximo 3 por dia. O lembrete do fim do teste e os e-mails da sua assinatura (boas-vindas, pagamento recusado, fim) também são enviados por e-mail, mesmo se as notificações estiverem desativadas. O e-mail depois de 14 dias de ausência e o lembrete único um mês depois do fim do Minimoa+ são desativados pelo mesmo ajuste da notificação (“Notícias do seu minimoa”, “Sua assinatura do Minimoa+”). No iPhone, o widget e as atividades ao vivo usam os mesmos dados; uma atividade ao vivo na tela bloqueada nunca mostra o nome de alguém.',
         '**Base legal:** seu consentimento para as notificações, dado pela permissão do seu celular (você o retira nos ajustes do celular ou tipo por tipo no app); execução do contrato para os e-mails ligados à sua conta e à sua assinatura; legítimo interesse para o e-mail de ausência e o lembrete depois do fim do Minimoa+ (você se opõe desativando o ajuste).',
         '**Prazo:** até você desativar as notificações ou excluir sua conta. A lista das mensagens já enviadas (só o tipo e a data, para nunca enviar a mesma duas vezes) é guardada por no máximo 400 dias.',
         '**Acesso:** nossos fornecedores de envio das notificações e dos e-mails, e a Apple ou o Google, que entregam as notificações até o seu celular.',
@@ -350,7 +350,7 @@ export const confidentialite: LegalPage = {
     { h2: '5. O que os outros veem', id: 'visibilite' },
     {
       ul: [
-        '**As pessoas que seu minimoa te apresenta** veem seu nome, seu minimoa, o estilo dele, os pontos em comum entre vocês e uma diferença, uma versão bem desfocada da sua foto de perfil se você tiver uma (nunca o original), e a sua posição aproximada no mapa (exceto no modo discreto).',
+        '**As pessoas que cruzam com você sem vínculo** (apresentações, mapa, acenos) veem seu nome, seu minimoa, o estilo dele, os pontos em comum entre vocês e uma diferença, uma versão bem desfocada da sua foto de perfil se você tiver uma (nunca o original), e a sua posição aproximada no mapa (exceto no modo discreto).',
         '**Seus vínculos** veem, além disso, as mensagens de vocês, a sequência de vocês, as etapas do vínculo, as antigas fotos do dia de vocês se houver, e sua foto de perfil nítida se você tiver uma (assim que o vínculo se forma).',
         '**Os visitantes da sua página “3 palavras” ou do seu convite** veem seu nome e seu minimoa.',
         'Ninguém vê seu endereço de e-mail, sua data de nascimento, seu sexo nem suas respostas ao teste de visão. Sua posição exata não é registrada em lugar nenhum. Suas fotos de prova não são vistas por nenhum humano, e são excluídas em até 24 h (a não ser que você as guarde nas suas lembranças privadas).',

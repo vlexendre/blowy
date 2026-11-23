@@ -628,9 +628,13 @@ export const ApiErrorZ = z.object({
 });
 export type ApiErrorBody = z.infer<typeof ApiErrorZ>;
 
-/** `GET /health` : vivante, et dans quel environnement (rien d'autre : ni version, ni configuration). */
+/**
+ * `GET /health` : vivante, et dans quel environnement (ni version, ni configuration). `images` : état du traitement
+ * d'image (vignettes floues des photos de profil), essayé au démarrage ; `failed` = rien ne se floute (visages cachés).
+ */
 export const API_ENVS = ['local', 'staging', 'production'] as const;
-export const HealthZ = z.object({ ok: z.literal(true), env: z.enum(API_ENVS) });
+export const IMAGES_STATUSES = ['ok', 'failed', 'unchecked'] as const;
+export const HealthZ = z.object({ ok: z.literal(true), env: z.enum(API_ENVS), images: z.enum(IMAGES_STATUSES).optional() });
 export type HealthDto = z.infer<typeof HealthZ>;
 
 // ── Table des routes ───────────────────────────────────────────────────────

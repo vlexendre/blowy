@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { type Day, type LinkMilestoneKind, dayOf, daysBetween } from '@blowy/domain';
+import { type Day, type LinkMilestoneKind, dayOf, daysBetween, pastPhotosShown } from '@blowy/domain';
 import { MESSAGES, PAST_PHOTOS } from '../../../shared/tokens';
 import type { MessagesRepository, PastPhotosRepository } from '../ports';
 import { LinkSession } from './link-session';
@@ -13,7 +13,7 @@ export interface MemoryMilestone {
 export interface MemoryDayResult {
   day: Day;
   myPath: string | null;
-  /** Seulement si les deux avaient envoyé leur photo ce jour-là. */
+  /** Seulement si les deux avaient envoyé leur photo ce jour-là, à partir du niveau 5, et sur un lien ouvert. */
   theirPath: string | null;
 }
 
@@ -36,7 +36,9 @@ const byRecency = (x: MemoryMilestone, y: MemoryMilestone): number => {
 
 /**
  * Souvenirs d'un lien (spéc §24) : ses étapes (la rencontre, les niveaux passés, les paliers de série), quelques chiffres,
- * et les anciennes photos du jour s'il y en a (la tienne ; celle de l'autre seulement si vous aviez posté tous les deux).
+ * et les anciennes photos du jour s'il y en a (la tienne ; celle de l'autre seulement si vous aviez posté tous les deux,
+ * que le lien a atteint le niveau 5 et qu'il n'est pas rangé : `pastPhotosShown`). Paire bloquée : introuvable
+ * (`LinkSession.open`).
  */
 @Injectable()
 export class GetMemories {
@@ -59,10 +61,11 @@ export class GetMemories {
       else entry.theirs = p.mediaPath;
       byDay.set(p.day, entry);
     }
+    const theirsShown = pastPhotosShown(link.level, link.status !== 'archived');
     const days: MemoryDayResult[] = [...byDay.entries()]
       .filter(([, e]) => e.mine !== undefined)
       .sort(([a], [b]) => b.localeCompare(a))
-      .map(([day, e]) => ({ day, myPath: e.mine ?? null, theirPath: e.mine && e.theirs ? e.theirs : null }));
+      .map(([day, e]) => ({ day, myPath: e.mine ?? null, theirPath: theirsShown && e.mine && e.theirs ? e.theirs : null }));
 
     const createdOn = dayOf(new Date(link.createdAt));
     const milestones: MemoryMilestone[] = [...link.milestones.map((m) => ({ ...m })), { kind: 'met' as const, value: 0, on: createdOn }].sort(byRecency);

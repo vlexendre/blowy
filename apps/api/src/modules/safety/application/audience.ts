@@ -78,6 +78,20 @@ export class Audience {
     return (await this.gate.isSuspended(profile.id)) ? null : profile;
   }
 
+  /**
+   * Personnes avec qui `viewerId` a un blocage, dans un sens ou dans l'autre. Un lien avec elles n'existe plus pour lui :
+   * absent de la liste des chats, et sa fiche, ses messages et ses souvenirs répondent « introuvable » (`LinkSession`) ;
+   * jamais de photo de l'autre (`LinkPresenter`).
+   */
+  async blockedPartners(viewerId: string): Promise<Set<string>> {
+    return this.blocks.blockedEitherWay(viewerId);
+  }
+
+  /** Le lien entre `viewerId` et `otherId` peut-il lui être montré (pas de blocage entre eux) ? */
+  async linkVisible(viewerId: string, otherId: string): Promise<boolean> {
+    return !(await this.blocks.blockedEitherWay(viewerId)).has(otherId);
+  }
+
   /** Compte suspendu en ce moment (cache de 30 s de la garde de compte). */
   async isSuspended(userId: string): Promise<boolean> {
     return this.gate.isSuspended(userId);

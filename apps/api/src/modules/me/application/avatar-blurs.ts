@@ -7,6 +7,8 @@
  *   d'avant (`AvatarBlurJobs`). Rangée à part dans le stockage privé, sous `blurred/` : son chemin se déduit de celui de
  *   la photo (pas de colonne en base), et l'app ne peut jamais la choisir comme photo de profil (motif de `Avatar`).
  * - Effacée avec la photo : changement de photo, photo refusée par le filtre, suppression du compte (`DeleteMe`).
+ *   Course avec le minuteur (ou une confirmation lente) : après avoir écrit une vignette, `make` relit le profil et
+ *   l'efface aussitôt si la photo n'est plus la sienne (changée, refusée, compte supprimé). Aucune vignette orpheline.
  * - Tant qu'elle n'existe pas (image illisible, envoi d'avant le déploiement pas encore rattrapé) : visage caché, le
  *   minimoa à la place, comme avant.
  */
@@ -14,12 +16,18 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { type FaceVisibility, faceBeforeLink } from '@blowy/domain';
 import { BLURRED_CONTENT_TYPE, type ImageProcessor } from '../../../integrations/images/ports';
 import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/ports';
-import { IMAGES, STORAGE } from '../../../shared/tokens';
-import type { Profile } from '../ports';
+import { IMAGES, PROFILES, STORAGE } from '../../../shared/tokens';
+import type { Profile, ProfilesRepository } from '../ports';
 
 /** `avatars/<personne>/<id>.jpg` → `blurred/<personne>/<id>.jpg`. */
 export const blurPathOf = (avatarPath: string): string =>
   `blurred/${avatarPath.replace(/^avatars\//, '').replace(/\.[A-Za-z0-9]+$/, '')}.jpg`;
+
+/** Personne à qui appartient une photo de profil (`avatars/<personne>/<id>.<ext>`) ; null pour un autre chemin. */
+export const avatarOwnerOf = (avatarPath: string): string | null => /^avatars\/([^/]+)\/[^/]+$/.exec(avatarPath)?.[1] ?? null;
+
+/** Les deux dossiers d'une personne : ses photos de profil envoyées et leurs vignettes floues. */
+export const avatarFoldersOf = (userId: string): [string, string] => [`avatars/${userId}`, `blurred/${userId}`];
 
 /** URL signée de la vignette floue de chaque personne qui en a une, par identifiant. */
 export type BlurredFaces = ReadonlyMap<string, string>;
@@ -41,16 +49,33 @@ export class AvatarBlurs {
   constructor(
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(IMAGES) private readonly images: ImageProcessor,
+    @Inject(PROFILES) private readonly profiles: ProfilesRepository,
   ) {}
 
-  /** Fabrique (ou refait) la vignette de `avatarPath`. Faux si la photo manque ou ne se lit pas. */
+  /**
+   * Fabrique (ou refait) la vignette de `avatarPath`. Faux si la photo manque ou ne se lit pas, ou si elle n'est plus
+   * la photo de son propriétaire une fois la vignette écrite (changée, refusée, compte supprimé pendant le calcul) :
+   * la vignette est alors effacée aussitôt.
+   */
   async make(avatarPath: string): Promise<boolean> {
     const original = await this.storage.read(avatarPath);
     if (!original) return false;
     const blurred = await this.images.blurredThumbnail(original.bytes);
     if (!blurred) return false;
-    await this.storage.write(blurPathOf(avatarPath), { bytes: blurred, contentType: BLURRED_CONTENT_TYPE });
-    return true;
+    const target = blurPathOf(avatarPath);
+    await this.storage.write(target, { bytes: blurred, contentType: BLURRED_CONTENT_TYPE });
+    // Relu après l'écriture : ce qui a changé pendant le calcul est vu ici, et ce qui change après efface la vignette
+    // de son côté (`Avatar.confirm`, `AvatarModeration`, `DeleteMe`).
+    if (await this.stillCurrent(avatarPath)) return true;
+    await this.storage.remove([target]);
+    return false;
+  }
+
+  /** `avatarPath` est-elle toujours la photo de profil de son propriétaire ? */
+  private async stillCurrent(avatarPath: string): Promise<boolean> {
+    const owner = avatarOwnerOf(avatarPath);
+    if (!owner) return false;
+    return (await this.profiles.findById(owner))?.avatarPath === avatarPath;
   }
 
   /** Idempotent : ne fabrique la vignette que si elle manque. */

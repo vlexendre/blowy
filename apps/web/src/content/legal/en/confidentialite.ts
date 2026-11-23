@@ -56,11 +56,11 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Data:** the photo you choose, if you add one (it is optional), taken with the camera or picked from your gallery.',
-        '**Purpose:** show you to your connections, and give the people your minimoa introduces you to an idea of you. Until you’ve both said hello, they only see a **very blurred version**, made by our servers from a copy shrunk to a few pixels, in which a face cannot be recognized; the original is never sent to them, on the map or in introductions, whether you are on the free plan or Minimoa+. Once the connection is made, your connection sees it clearly.',
+        '**Purpose:** show you to your connections, and give people who come across you without a connection (introductions, map, waves) an idea of you. Until you’ve both said hello, they only see a **very blurred version**, made by our servers from a copy shrunk to a few pixels, in which a face cannot be recognized: it only hints at dominant colours (skin tone, hair, background). The original is never sent to them, not on the map, not in introductions, not with a wave, whether you are on the free plan or Minimoa+. Once the connection is made, your connection sees it clearly; if it is left or if one of you blocks the other, nothing more is sent to them.',
         '**Safety check:** before it is published, the photo is downsized and sent to our AI provider, {{sub.ai.provider}}, which checks that it shows no nudity, no one who appears to be a minor, no violence, no hate and no advertising. We tell you so in the app before you choose the photo. A rejected photo is erased immediately, and the moderation team receives an automatic report, without the photo. If the check is not possible at that moment, the photo is published and checked a little later. This check cannot be turned off: it protects everyone. Without a profile photo, nothing is sent.',
         '**Legal basis:** performance of the contract to display it; our legitimate interest and our safety obligations (filtering published content) for the check.',
         '**Retention:** as long as you keep it. When you change it, the old one and its blurred version are erased. Both are erased when you delete your account.',
-        '**Access:** your connections (clear photo); the people your minimoa introduces you to (very blurred version only); our AI provider, for the duration of the check. Both versions are kept in private storage, reachable only through temporary links.',
+        '**Access:** your connections (clear photo); people who come across you without a connection: introductions, map, waves (very blurred version only); our AI provider, for the duration of the check. Both versions are kept in private storage, reachable only through temporary links.',
       ],
     },
 
@@ -154,10 +154,10 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Data:** the days on which each of you wrote in the connection (not the content of the messages) and the connection’s milestones (meeting, levels reached, streak records). For connections from before 15 November 2026, the “daily photos” you had sent each other there: Minimoa no longer receives new ones, and the old ones stay in the connection’s memories.',
-        '**Purpose:** run the connection’s streak (the days in a row you both write), its lives and levels, and show you your memories.',
+        '**Purpose:** keep the connection going: its streak (the days in a row you both write), its state (lively, calm, asleep) and its levels, and show you your memories.',
         '**Legal basis:** performance of the contract.',
         '**Retention:** as long as the connection exists (same rules as messages): old daily photos are erased when the connection is, or when either of you deletes their account.',
-        '**Access:** you and the other person in the connection (their old photos stay blurred for you until level 5). Photos are stored in a private space, reachable only through temporary links.',
+        '**Access:** you and the other person in the connection (their old photos are only sent to you from level 5 of the connection, and no longer at all if the connection is left or if one of you blocks the other). Photos are stored in a private space, reachable only through temporary links.',
       ],
     },
 
@@ -165,7 +165,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Data:** your phone’s technical notification token, your settings for each notification type, the time you chose for the daily challenge; on iPhone, Live Activity tokens.',
-        '**Purpose:** let you know (daily challenge, new encounter, message, “your turn to write” in the evening, connection or streak at risk, proof requested, weekly review, end-of-trial reminder; first steps during the first 7 days, news from your minimoa when you’re away and on your anniversaries, messages about your Minimoa+ subscription). Quiet hours from 10 pm to 8 am; apart from messages, 3 a day at most. The end-of-trial reminder and the emails about your subscription (welcome, failed payment, end) are also sent by email, even if notifications are off. The email after 14 days away and the single reminder one month after Minimoa+ ends are turned off with the same setting as the notification (“News from your minimoa”, “Your Minimoa+ subscription”). On iPhone, the widget and Live Activities use the same data; a Live Activity on the lock screen never shows anyone’s first name.',
+        '**Purpose:** let you know (daily challenge, new encounter, message (including the little hello when someone wakes your connection), “your turn to write” in the evening, reminder about your streak, proof requested, weekly review, end-of-trial reminder; first steps during the first 7 days, news from your minimoa when you’re away and on your anniversaries, messages about your Minimoa+ subscription). Quiet hours from 10 pm to 8 am; apart from messages, 3 a day at most. The end-of-trial reminder and the emails about your subscription (welcome, failed payment, end) are also sent by email, even if notifications are off. The email after 14 days away and the single reminder one month after Minimoa+ ends are turned off with the same setting as the notification (“News from your minimoa”, “Your Minimoa+ subscription”). On iPhone, the widget and Live Activities use the same data; a Live Activity on the lock screen never shows anyone’s first name.',
         '**Legal basis:** your consent for notifications, given through your phone’s permission (you withdraw it in your phone settings or type by type in the app); performance of the contract for emails about your account and subscription; legitimate interest for the absence email and the reminder after Minimoa+ ends (you object by turning the setting off).',
         '**Retention:** until you turn off notifications or delete your account. The list of messages already sent (only their type and date, so the same one is never sent twice) is kept for 400 days at most.',
         '**Access:** our notification and email providers, and Apple or Google, which deliver notifications to your phone.',
@@ -338,7 +338,7 @@ export const confidentialite: LegalPage = {
     { h2: '5. What others see', id: 'visibilite' },
     {
       ul: [
-        '**People your minimoa introduces you to** see your first name, your minimoa, its style, what you have in common and one difference, a very blurred version of your profile photo if you have one (never the original), and your approximate position on the map (unless you are in discreet mode).',
+        '**People who come across you without a connection** (introductions, map, waves) see your first name, your minimoa, its style, what you have in common and one difference, a very blurred version of your profile photo if you have one (never the original), and your approximate position on the map (unless you are in discreet mode).',
         '**Your connections** also see your messages, your streak, your connection’s milestones, your old daily photos if any, and your clear profile photo if you have one (once the connection is made).',
         '**Visitors to your “3 words” page or your invitation** see your first name and your minimoa.',
         'No one sees your email address, your date of birth, your gender, or your vision test answers. Your exact position is not stored anywhere. Your proof photos are seen by no human, and they are deleted within 24 hours (unless you keep them in your private memories).',

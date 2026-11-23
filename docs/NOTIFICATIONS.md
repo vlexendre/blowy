@@ -89,7 +89,7 @@ Q = heures calmes (R : reporté à 8 h et regroupé ; A : abandonné). Plafond :
 
 | Type | Déclencheur | Destinataire | Priorité | Q | Regroupé | Texte fr (exemple) | Lien | Catégorie | E-mail |
 |---|---|---|---|---|---|---|---|---|---|
-| `message` | message dans un lien | l'autre | direct | R (un paquet pour la nuit) | nuit | « Léa » / « Léa t'a écrit. » ; « Messages » / « Léa et 2 autres t'ont écrit. » | `link/<id>` ou `chats` | messages | non |
+| `message` | message dans un lien ; aussi le coucou de « Le réveiller » sur un lien endormi (une fois, corps « Nino te fait un petit coucou. », dans la langue du destinataire, `ReviveLink`) | l'autre | direct | R (un paquet pour la nuit) | nuit | « Léa » / « Léa t'a écrit. » ; « Messages » / « Léa et 2 autres t'ont écrit. » | `link/<id>` ou `chats` | messages | non |
 | `group_message` | message de groupe, une fois jusqu'à la lecture | membres | direct | R | — | « Run » / « Léa a écrit dans le groupe. » | `groupe/<id>` | group_message | non |
 | `new_encounter` | réponse à ton signe, invitation acceptée | qui avait fait signe / invité | direct | R | 60 min | « Léa t'a répondu » / « Léa a accepté ton invitation » / « Vous pouvez vous écrire. Dis-lui bonjour. » | `link/<id>` ou `chats` | encounters | repli |
 | `trial_reminder` | jour 5 de l'essai (J-2), en journée ou < 12 h de la fin | abonné à l'essai | urgent, **obligatoire** | R, ou tout de suite si l'essai finit avant 8 h | — | « Ton essai Minimoa+ se termine le 20 novembre » / « Ensuite, premier paiement de 59,99 €. Pour l'éviter… » | `moi/blowy-plus` | — | toujours |

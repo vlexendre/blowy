@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { ImageProcessor } from './ports';
+import type { ImageProcessor, ImagesStatus } from './ports';
 
 /** JPEG gris de 1 × 1 px : une vraie image, que l'app affiche en local, et qui ne doit rien à la photo d'origine. */
 const GREY_JPEG = Buffer.from(
@@ -14,6 +14,16 @@ const GREY_JPEG = Buffer.from(
 export class MemoryImages implements ImageProcessor {
   /** Nombre de vignettes fabriquées (tests). */
   made = 0;
+  private state: ImagesStatus = 'unchecked';
+
+  async selfCheck(): Promise<ImagesStatus> {
+    this.state = 'ok';
+    return this.state;
+  }
+
+  status(): ImagesStatus {
+    return this.state;
+  }
 
   async blurredThumbnail(input: Buffer): Promise<Buffer | null> {
     if (input.length === 0) return null;

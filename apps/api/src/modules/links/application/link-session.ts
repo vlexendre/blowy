@@ -4,6 +4,7 @@ import { DomainError, errorText } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
 import { CLOCK, IDS, LINKS, MESSAGES, PETS, PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
+import { Audience } from '../../safety/application/audience';
 import type { PetsRepository } from '../../pets/ports';
 import type { PetRole } from '@blowy/domain';
 import type { LinkRecord, LinksRepository, MessageRecord, MessagesRepository } from '../ports';
@@ -22,12 +23,19 @@ export class LinkSession {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
+    @Inject(Audience) private readonly audience: Audience,
   ) {}
 
-  /** Lien d'un membre ; `not_found` pour les autres (on ne révèle pas son existence). */
+  /**
+   * Lien d'un membre ; `not_found` pour les autres (on ne révèle pas son existence), et pour un membre bloqué par
+   * l'autre ou qui l'a bloqué (`Audience` : la fiche, les messages, les souvenirs et les actions disparaissent avec le
+   * blocage, photos comprises).
+   */
   async open(linkId: string, userId: string): Promise<LinkDraft> {
     const link = await this.links.findById(linkId);
     if (!link || (link.userA !== userId && link.userB !== userId)) throw new DomainError('not_found', errorText('linkNotFound'));
+    const otherId = link.userA === userId ? link.userB : link.userA;
+    if (!(await this.audience.linkVisible(userId, otherId))) throw new DomainError('not_found', errorText('linkNotFound'));
     const [draft] = await this.draftsFor([link]);
     if (!draft) throw new DomainError('not_found');
     return draft;

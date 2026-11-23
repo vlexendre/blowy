@@ -26,6 +26,12 @@ export interface Storage {
   read(path: string): Promise<StoredBytes | null>;
   /** Écrit (ou remplace) un fichier produit par l'API. */
   write(path: string, file: StoredBytes): Promise<void>;
+  /**
+   * Chemins complets des fichiers rangés directement dans le dossier `folder` (sans « / » final, sans sous-dossiers) :
+   * `list('avatars/<personne>')` → `['avatars/<personne>/<id>.jpg', …]`. Sert à effacer tout ce qu'une personne a laissé
+   * (suppression du compte, anciennes photos de profil). Dossier absent : liste vide.
+   */
+  list(folder: string): Promise<string[]>;
 }
 
 /** Durée de validité des URL de lecture. */

@@ -64,11 +64,11 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Données :** la photo que tu choisis, si tu en ajoutes une (c’est facultatif), prise avec l’appareil photo ou choisie dans ta galerie.',
-        '**But :** te montrer à tes liens, et donner une idée de toi aux personnes que ton minimoa te présente. Tant que vous ne vous êtes pas dit bonjour tous les deux, elles ne voient qu’une **version très floue**, fabriquée par nos serveurs à partir d’une copie réduite à quelques pixels, où l’on ne peut pas reconnaître un visage ; l’original ne leur est jamais envoyé, ni sur la carte ni dans les présentations, que tu sois en gratuit ou sur Minimoa+. Une fois le lien noué, ton lien la voit nette.',
+        '**But :** te montrer à tes liens, et donner une idée de toi aux personnes qui te croisent sans lien avec toi (présentations, carte, coucous). Tant que vous ne vous êtes pas dit bonjour tous les deux, elles ne voient qu’une **version très floue**, fabriquée par nos serveurs à partir d’une copie réduite à quelques pixels, où l’on ne peut pas reconnaître un visage : elle laisse seulement deviner des couleurs dominantes (teint, cheveux, fond). L’original ne leur est jamais envoyé, ni sur la carte, ni dans les présentations, ni avec un coucou, que tu sois en gratuit ou sur Minimoa+. Une fois le lien noué, ton lien la voit nette ; s’il est quitté ou si l’un de vous bloque l’autre, plus rien ne lui est envoyé.',
         '**Vérification de sécurité :** avant d’être publiée, la photo est réduite et envoyée à notre prestataire d’IA, {{sub.ai.provider}}, qui vérifie qu’elle ne montre ni nudité, ni personne qui semble mineure, ni violence, ni haine, ni publicité. On te le dit dans l’app avant que tu choisisses la photo. Une photo refusée est effacée aussitôt, et l’équipe de modération reçoit un signalement automatique, sans la photo. Si la vérification n’est pas possible sur le moment, la photo est publiée et vérifiée un peu plus tard. Cette vérification ne se désactive pas : elle protège tout le monde. Sans photo de profil, rien n’est envoyé.',
         '**Base légale :** exécution du contrat pour l’afficher ; notre intérêt légitime et nos obligations de sécurité (filtrer les contenus publiés) pour la vérification.',
         '**Durée :** tant que tu la gardes. Quand tu la changes, l’ancienne et sa version floue sont effacées. Les deux sont effacées quand tu supprimes ton compte.',
-        '**Accès :** tes liens (photo nette) ; les personnes que ton minimoa te présente (version très floue seulement) ; notre prestataire d’IA, le temps de la vérification. Les deux versions sont stockées dans un espace privé, accessibles seulement par des liens temporaires.',
+        '**Accès :** tes liens (photo nette) ; les personnes qui te croisent sans lien avec toi : présentations, carte, coucous (version très floue seulement) ; notre prestataire d’IA, le temps de la vérification. Les deux versions sont stockées dans un espace privé, accessibles seulement par des liens temporaires.',
       ],
     },
 
@@ -162,10 +162,10 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Données :** les jours où chacun de vous deux a écrit dans le lien (pas le contenu des messages) et les étapes du lien (rencontre, niveaux passés, records de série). Pour les liens d’avant le 15 novembre 2026, les « photos du jour » que vous vous y étiez envoyées : Minimoa n’en reçoit plus de nouvelles, et les anciennes restent dans les souvenirs du lien.',
-        '**But :** faire vivre la série du lien (les jours d’affilée où vous vous écrivez tous les deux), ses vies et ses niveaux, et vous montrer vos souvenirs.',
+        '**But :** faire vivre le lien : sa série (les jours d’affilée où vous vous écrivez tous les deux), son état (vivant, calme, endormi) et ses niveaux, et vous montrer vos souvenirs.',
         '**Base légale :** exécution du contrat.',
         '**Durée :** tant que le lien existe (mêmes règles que les messages) : les anciennes photos du jour sont effacées quand le lien l’est, ou quand l’un de vous supprime son compte.',
-        '**Accès :** toi et l’autre personne du lien (ses anciennes photos restent floues pour toi jusqu’au niveau 5). Les photos sont stockées dans un espace privé, accessibles seulement par des liens temporaires.',
+        '**Accès :** toi et l’autre personne du lien (ses anciennes photos ne te sont envoyées qu’à partir du niveau 5 du lien, et plus du tout si le lien est quitté ou si l’un de vous bloque l’autre). Les photos sont stockées dans un espace privé, accessibles seulement par des liens temporaires.',
       ],
     },
 
@@ -173,7 +173,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Données :** le jeton technique de ton téléphone pour les notifications, tes réglages par type de notification, l’heure choisie pour le défi du jour ; sur iPhone, les jetons des activités en direct.',
-        '**But :** te prévenir (défi du jour, nouvelle rencontre, message, « à toi d’écrire » le soir, lien ou série en danger, preuve demandée, bilan, rappel de fin d’essai ; premiers pas les 7 premiers jours, nouvelles de ton minimoa quand tu t’absentes et à vos anniversaires, messages de ton abonnement Minimoa+). Heures calmes de 22 h à 8 h ; hors messages, 3 par jour au plus. Le rappel de fin d’essai et les e-mails de ton abonnement (bienvenue, paiement refusé, fin) partent aussi par e-mail, même si les notifications sont coupées. L’e-mail après 14 jours d’absence et la relance unique un mois après la fin de Minimoa+ se coupent avec le même réglage que la notification (« Nouvelles de ton minimoa », « Ton abonnement Minimoa+ »). Sur iPhone, le widget et les activités en direct utilisent les mêmes données ; une activité en direct sur l’écran verrouillé ne montre jamais le prénom de quelqu’un.',
+        '**But :** te prévenir (défi du jour, nouvelle rencontre, message (et le petit coucou quand quelqu’un réveille votre lien), « à toi d’écrire » le soir, rappel de ta série, preuve demandée, bilan, rappel de fin d’essai ; premiers pas les 7 premiers jours, nouvelles de ton minimoa quand tu t’absentes et à vos anniversaires, messages de ton abonnement Minimoa+). Heures calmes de 22 h à 8 h ; hors messages, 3 par jour au plus. Le rappel de fin d’essai et les e-mails de ton abonnement (bienvenue, paiement refusé, fin) partent aussi par e-mail, même si les notifications sont coupées. L’e-mail après 14 jours d’absence et la relance unique un mois après la fin de Minimoa+ se coupent avec le même réglage que la notification (« Nouvelles de ton minimoa », « Ton abonnement Minimoa+ »). Sur iPhone, le widget et les activités en direct utilisent les mêmes données ; une activité en direct sur l’écran verrouillé ne montre jamais le prénom de quelqu’un.',
         '**Base légale :** ton consentement pour les notifications, donné via l’autorisation de ton téléphone (tu le retires dans les réglages du téléphone ou type par type dans l’app) ; exécution du contrat pour les e-mails liés à ton compte et à ton abonnement ; intérêt légitime pour l’e-mail d’absence et la relance après la fin de Minimoa+ (tu t’y opposes en coupant le réglage).',
         '**Durée :** jusqu’à ce que tu désactives les notifications ou supprimes ton compte. La liste des messages déjà envoyés (seulement leur type et leur date, pour ne jamais envoyer deux fois le même) est gardée 400 jours au plus.',
         '**Accès :** nos prestataires d’envoi des notifications et des e-mails, et Apple ou Google, qui acheminent les notifications jusqu’à ton téléphone.',
@@ -350,7 +350,7 @@ export const confidentialite: LegalPage = {
     { h2: '5. Ce que voient les autres', id: 'visibilite' },
     {
       ul: [
-        '**Les personnes que ton minimoa te présente** voient ton prénom, ton minimoa, son style, vos points communs et une différence, une version très floue de ta photo de profil si tu en as une (jamais l’original), et ta position approximative sur la carte (sauf en mode discret).',
+        '**Les personnes qui te croisent sans lien avec toi** (présentations, carte, coucous) voient ton prénom, ton minimoa, son style, vos points communs et une différence, une version très floue de ta photo de profil si tu en as une (jamais l’original), et ta position approximative sur la carte (sauf en mode discret).',
         '**Tes liens** voient en plus vos messages, votre série, les étapes de votre lien, vos anciennes photos du jour s’il y en a, et ta photo de profil nette si tu en as une (dès que le lien est noué).',
         '**Les visiteurs de ta page « 3 mots » ou de ton invitation** voient ton prénom et ton minimoa.',
         'Personne ne voit ton adresse e-mail, ta date de naissance, ton sexe, ni tes réponses au test de vision. Ta position exacte n’est enregistrée nulle part. Tes photos de preuve ne sont vues par aucun humain, et elles sont supprimées sous 24 h (sauf si tu les gardes dans tes souvenirs privés).',

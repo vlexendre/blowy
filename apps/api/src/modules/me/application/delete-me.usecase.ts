@@ -8,10 +8,13 @@ import type { LinksRepository, PastPhotosRepository } from '../../links/ports';
 import type { RitualPhotosRepository } from '../../rituels/ports';
 import { RITUAL_PHOTOS } from '../../rituels/tokens';
 import type { ProfilesRepository } from '../ports';
-import { blurPathOf } from './avatar-blurs';
+import { avatarFoldersOf, blurPathOf } from './avatar-blurs';
 
 /**
- * Suppression du compte (exigence App Store) : d'abord les médias (photo de profil et sa vignette floue comprises), puis le compte d'authentification ;
+ * Suppression du compte (exigence App Store, RGPD) : d'abord les médias, puis le compte d'authentification. Photos de
+ * profil : tout le contenu des dossiers `avatars/<personne>/` et `blurred/<personne>/` (anciennes photos, envois jamais
+ * confirmés, vignettes floues), pas seulement la photo actuelle ; une vignette écrite par le minuteur pendant la
+ * suppression s'efface d'elle-même (`AvatarBlurs.make` relit le profil) ;
  * la base supprime le reste en cascade. Ses liens disparaissent avec lui, anciennes photos du jour des deux côtés comprises :
  * leurs fichiers sont effacés ici, sinon plus rien ne les référencerait. Juste avant de supprimer le compte, le jeton
  * de Sign in with Apple est révoqué (exigence d'Apple) ; un échec d'Apple est journalisé et ne bloque rien.
@@ -34,10 +37,16 @@ export class DeleteMe {
     const [profile, links] = await Promise.all([this.profiles.findById(userId), this.links.listForUsers([userId])]);
     const photos = (await Promise.all(links.map((l) => this.photos.listForLink(l.id)))).flat();
     const paths = photos.map((p) => p.mediaPath);
-    if (profile?.avatarPath) paths.push(profile.avatarPath, blurPathOf(profile.avatarPath));
+    if (profile?.avatarPath) {
+      // Plus de photo d'abord, puis la liste des dossiers : une vignette que le minuteur écrirait d'ici là est soit
+      // listée ci-dessous, soit effacée par lui en relisant le profil.
+      await this.profiles.update(userId, { avatarPath: null });
+      paths.push(profile.avatarPath, blurPathOf(profile.avatarPath));
+    }
+    for (const folder of avatarFoldersOf(userId)) paths.push(...(await this.storage.list(folder)));
     // Photos privées des rituels (preuves, défis photo) encore dans le stockage, gardées ou pas.
     paths.push(...(await this.ritualPhotos.listLive(userId)).map((p) => p.path));
-    await this.storage.remove(paths);
+    await this.storage.remove([...new Set(paths)]);
     // Compte de revue d'Apple : ses personnes fictives partent avec lui, comptes d'authentification compris.
     if (profile?.reviewWorld === userId) {
       for (const f of await this.profiles.listFixtures(userId)) await this.fixtures?.remove(f.id).catch(() => undefined);

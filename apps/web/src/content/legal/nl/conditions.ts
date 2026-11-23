@@ -35,7 +35,7 @@ export const conditions: LegalPage = {
       ul: [
         '**Je kijk** wordt opgebouwd met een test bij het aanmelden, één vraag per dag, je gewoontes en de manier waarop je voor je minimoa zorgt. Hij is indicatief en wordt na verloop van tijd nauwkeuriger.',
         '**Ontmoetingen**: je minimoa stelt je alleen voor aan mensen van wie de compatibiliteit boven een drempel ligt. Niets gebeurt zonder jouw akkoord: jij zwaait, de ander accepteert, de band ontstaat. Hoe het werkt staat in het [privacybeleid](@confidentialite#compatibilite).',
-        '**Banden**: een chat, een reeks die groeit op elke dag dat jullie allebei schrijven, herinneringen, en levens die dalen als het stil blijft.',
+        '**Banden**: een chat, een reeks die groeit op elke dag dat jullie allebei schrijven, herinneringen, en de staat in één zin (levendig, rustig, slapend): een stille band valt in slaap, er gaat niets verloren, één woord maakt hem wakker.',
         '**Je minimoa** heeft meters (sociaal, honger, energie, humeur), gewoontes om vol te houden, een reeks, voorwerpen. Hij gaat nooit dood.',
         '**De kaart** toont passende minimoas om je heen (of rond de stad die je koos, als je je locatie niet aanzet), op een bewust onnauwkeurige plek.',
       ],
@@ -126,7 +126,7 @@ export const conditions: LegalPage = {
       p: 'Heb je Minimoa uit de App Store gedownload, dan geldt voor de app ook Apples [standaard licentieovereenkomst voor apps](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (“Licensed Application End User License Agreement”).',
     },
     {
-      p: 'Voorwerpen, jokers, reeksen, levens en andere spelelementen hebben geen geldwaarde. Ze kunnen niet worden geruild, doorverkocht of terugbetaald, behalve waar de wet dat vereist.',
+      p: 'Voorwerpen, jokers, reeksen en andere spelelementen hebben geen geldwaarde. Ze kunnen niet worden geruild, doorverkocht of terugbetaald, behalve waar de wet dat vereist.',
     },
 
     { h2: '10. Einde van de overeenkomst', id: 'fin' },
