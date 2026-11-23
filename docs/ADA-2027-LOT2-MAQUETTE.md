@@ -160,3 +160,23 @@ Note : l'histoire et le sous-titre « Il te présente tes voisins ».
 - « 7 jours sans message avec… » → « Ça fait un moment avec Tom. » — item 27.
 - Note du Quartier « Visages flous jusqu’à votre bonjour. Positions arrondies. » — item 26.
 - Police des titres : Anton (maquette) ou Allo ExtraBold (`docs/DESIGN.md`) — à confirmer.
+
+## Décisions de la relecture finale (Fable, 23/11/2026)
+
+- Quartier : présentés du jour = anneau blanc 3 px + étoile (pas jaune) ; feuille `mi` à 53 % en 375 ; un seul style d'interrupteur dans l'app : violet `#7A45F0`, piste éteinte `#3E3862`.
+- Barre d'onglets seulement sur les quatre écrans racines (Accueil, Quartier, Chats, Moi) ; tous les écrans poussés (`moi/*`, `pet/*`, fin, série, chat, lien) n'en ont pas.
+- Aucun prénom d'autrui avant la création du compte (App Review 5.1.1) ; aucune notification ne porte de prénom.
+- GLien : la carte « À toi » n'existe que quand l'autre a vraiment écrit (état `vivant`).
+
+## Écarts maquette → code (à faire suivre, item 6 et suivants)
+
+**Accueil** (`(tabs)/pet.tsx`, à découper sous 300 lignes) : bandeau « Séance du jour · 5 questions · 2 min » / titre / « À la fin : ta personne du jour » ; `faite` : carte avec « Revoir ta personne du jour » (+ « Continuer avec l’étape suivante » pour un membre) ; `repos` : « À demain » + bulle « Bien joué. À demain ! » ; chemin de 7 étapes, étape du jour 72 px jaune « Commencer », seul jaune, visible en 375×667 ; panneau 184 px (168 en 375) avec puce d'humeur, sans pastille chiffrée sur Garde-robe, sans bouderie ; sous le chemin, une seule carte « Léa t’a dit bonjour » (au-dessus du chemin) — retirer carte de position, `WelcomeBack`, bannière `meet`, `UnlockCelebration`, `StreakMoment`, `FirstWeekMoment` ; `sieste` : bulle « Zzz… ».
+**Barre d'onglets** : pastilles blanches encre sombre, libellé 10 px / 800, pictogramme plein actif.
+**Fin** : « Ce que Nino a appris », « On te prévient quand Léa répond. », palier « Nino te connaît un peu mieux chaque jour. » sans confettis, fermeture seule à 2,6 s ; `perdu` : « Séance du jour faite » + « Retour à l’accueil » ; retirer `fin.location`.
+**Série** : « Ta séance du jour la fait grandir. » ; frise 7 · 30 · 100 · 365.
+**Quartier** : note « Visages flous jusqu’à votre bonjour. Positions arrondies. », « 3 plus loin », « Plus de monde, d’autres villes », « Nino a besoin de ton quartier » / « Ta zone, jamais ton adresse. » ; anneau blanc + étoile ; crans 96 px / 46 % (53 % en 375) / ouvert ; état vide court (compteur + bouton) ; « Saluer » → « Dire bonjour » ; titres sans `dim` ; « Lien copié » sans glyphe ✓.
+**Chats et lien** : section « Vos étapes » ; carte « À toi » seulement quand c'est ton tour ; état vide « Voir le quartier ».
+**États** : erreur unique « Ça n’a pas chargé. Vérifie ta connexion, puis réessaie. » ; « Hors ligne. Ton message partira au retour du réseau. »
+**Moi, Réglages, Notifications** : `Toggle` violet ; fusions `moi/ia` + `moi/minimoas` (« L’IA et tes chats »), `moi/compte` + `moi/identite` ; « Il te connaît bien · 2 sur 3 », « Jamais de pub », « Floue pour les autres jusqu’à votre bonjour. » ; notification de bonjour sans prénom (vérifier `packages/content`).
+**Minimoa+** : titre « Minimoa+ : plus loin, plus de monde » ; décider du gel de série vendu (`jokers`) ; libellé du bouton d'achat à aligner.
+**Inscription (item 22)** : GApercu / GApercuVide absents de l'app ; `prenom`, `craft`, `preparation`, `statistiques` sans planche.
