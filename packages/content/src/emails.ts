@@ -51,7 +51,7 @@ const fr = {
     title: (i: LinkInput) => `Nouveau lien avec ${i.otherName}.`,
     paragraphs: (i: LinkInput) => [
       `Salut ${i.displayName}, ${i.petName} et ${i.otherPetName} viennent de se rencontrer.`,
-      `Écris à ${i.otherName} : chaque jour de silence coûte une vie au lien.`,
+      `Écris à ${i.otherName} quand tu veux : un premier mot suffit.`,
     ],
     cta: 'Ouvrir le lien',
   },
@@ -84,7 +84,7 @@ export const emailText = defineMessages({
       title: (i: LinkInput) => `New link with ${i.otherName}.`,
       paragraphs: (i: LinkInput) => [
         `Hi ${i.displayName}, ${i.petName} and ${i.otherPetName} just met.`,
-        `Write to ${i.otherName}: every day of silence costs the link a life.`,
+        `Write to ${i.otherName} whenever you like: a first word is all it takes.`,
       ],
       cta: 'Open the link',
     },
@@ -114,7 +114,7 @@ export const emailText = defineMessages({
       title: (i: LinkInput) => `Nuevo vínculo con ${i.otherName}.`,
       paragraphs: (i: LinkInput) => [
         `Hola, ${i.displayName}: ${i.petName} y ${i.otherPetName} acaban de conocerse.`,
-        `Escríbele a ${i.otherName}: cada día de silencio le cuesta una vida al vínculo.`,
+        `Escríbele a ${i.otherName} cuando quieras: basta con una primera palabra.`,
       ],
       cta: 'Abrir el vínculo',
     },
@@ -144,7 +144,7 @@ export const emailText = defineMessages({
       title: (i: LinkInput) => `Novo vínculo com ${i.otherName}.`,
       paragraphs: (i: LinkInput) => [
         `Oi, ${i.displayName}! ${i.petName} e ${i.otherPetName} acabaram de se conhecer.`,
-        `Escreva para ${i.otherName}: cada dia de silêncio custa uma vida ao vínculo.`,
+        `Escreva para ${i.otherName} quando quiser: uma primeira palavra basta.`,
       ],
       cta: 'Abrir o vínculo',
     },
@@ -174,7 +174,7 @@ export const emailText = defineMessages({
       title: (i: LinkInput) => `Nieuwe band met ${i.otherName}.`,
       paragraphs: (i: LinkInput) => [
         `Hoi ${i.displayName}, ${i.petName} en ${i.otherPetName} hebben elkaar net ontmoet.`,
-        `Schrijf ${i.otherName}: elke dag stilte kost de band een leven.`,
+        `Schrijf ${i.otherName} wanneer je wilt: één eerste woord is genoeg.`,
       ],
       cta: 'Open de band',
     },

@@ -8,9 +8,10 @@ import type { LinksRepository, PastPhotosRepository } from '../../links/ports';
 import type { RitualPhotosRepository } from '../../rituels/ports';
 import { RITUAL_PHOTOS } from '../../rituels/tokens';
 import type { ProfilesRepository } from '../ports';
+import { blurPathOf } from './avatar-blurs';
 
 /**
- * Suppression du compte (exigence App Store) : d'abord les médias, puis le compte d'authentification ;
+ * Suppression du compte (exigence App Store) : d'abord les médias (photo de profil et sa vignette floue comprises), puis le compte d'authentification ;
  * la base supprime le reste en cascade. Ses liens disparaissent avec lui, anciennes photos du jour des deux côtés comprises :
  * leurs fichiers sont effacés ici, sinon plus rien ne les référencerait. Juste avant de supprimer le compte, le jeton
  * de Sign in with Apple est révoqué (exigence d'Apple) ; un échec d'Apple est journalisé et ne bloque rien.
@@ -33,7 +34,7 @@ export class DeleteMe {
     const [profile, links] = await Promise.all([this.profiles.findById(userId), this.links.listForUsers([userId])]);
     const photos = (await Promise.all(links.map((l) => this.photos.listForLink(l.id)))).flat();
     const paths = photos.map((p) => p.mediaPath);
-    if (profile?.avatarPath) paths.push(profile.avatarPath);
+    if (profile?.avatarPath) paths.push(profile.avatarPath, blurPathOf(profile.avatarPath));
     // Photos privées des rituels (preuves, défis photo) encore dans le stockage, gardées ou pas.
     paths.push(...(await this.ritualPhotos.listLive(userId)).map((p) => p.path));
     await this.storage.remove(paths);

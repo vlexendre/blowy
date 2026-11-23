@@ -41,11 +41,10 @@ import {
   DressedPet,
   EmptyState,
   FeatureRow,
-  GhostPanel,
   Glyph,
   GLYPHS,
   Header,
-  LifeSparks,
+  LinkMoodIcon,
   Icon,
   ICON_NAMES,
   IconButton,
@@ -58,7 +57,8 @@ import {
   type LinkLook,
   LinkTemplate,
   ListRow,
-  LivesPanel,
+  LinkMoodCard,
+  SleepPanel,
   MemoryGrid,
   type MessageLook,
   MessageBubble,
@@ -130,10 +130,10 @@ const sasha: PersonLook = { displayName: 'Sasha', pet: { name: 'Pia', species: '
 const tom: PersonLook = { displayName: 'Tom', pet: { name: 'Bob', species: 'nino', form: 'equilibre', mood: 'triste' }, face: 'hidden', avatarUrl: null };
 
 const links: { link: LinkLook; time: string; author: string; level: string; isNew?: boolean }[] = [
-  { link: { other: lea, myPet: nino, status: 'active', lives: 5, level: 3, unread: 2, lastMessage: { preview: '🔥 12 jours. ne casse pas la série', at: '' } }, time: '21:04', author: 'nino :', level: 'niv. 3' },
-  { link: { other: malo, myPet: nino, status: 'active', lives: 6, level: 2, unread: 0, lastMessage: { preview: 'quiz dispo. le perdant paie le kebab', at: '' } }, time: '19:30', author: 'gaston :', level: 'niv. 2' },
-  { link: { other: sasha, myPet: nino, status: 'active', lives: 7, level: 1, unread: 0, lastMessage: { preview: 'on s’est croisés rue oberkampf 👀', at: '' } }, time: 'hier', author: 'pia :', level: 'niv. 1', isNew: true },
-  { link: { other: tom, myPet: nino, status: 'ghost', lives: 0, level: 2, unread: 0, lastMessage: { preview: 'plus un bruit depuis 7 jours', at: '' } }, time: 'lun.', author: 'son minimoa :', level: 'niv. 2' },
+  { link: { other: lea, myPet: nino, status: 'active', level: 3, unread: 2, lastMessage: { preview: '🔥 12 jours. ne casse pas la série', at: '' } }, time: '21:04', author: 'nino :', level: 'niv. 3' },
+  { link: { other: malo, myPet: nino, status: 'active', level: 2, unread: 0, lastMessage: { preview: 'quiz dispo. le perdant paie le kebab', at: '' } }, time: '19:30', author: 'gaston :', level: 'niv. 2' },
+  { link: { other: sasha, myPet: nino, status: 'active', level: 1, unread: 0, lastMessage: { preview: 'on s’est croisés rue oberkampf 👀', at: '' } }, time: 'hier', author: 'pia :', level: 'niv. 1', isNew: true },
+  { link: { other: tom, myPet: nino, status: 'active', level: 2, unread: 0, lastMessage: { preview: 'à bientôt !', at: '' } }, time: 'lun.', author: 'son minimoa :', level: 'niv. 2' },
 ];
 
 const at = (d: string, h: string): string => `2026-11-${d}T${h}:00+01:00`;
@@ -534,7 +534,7 @@ function GalleryScreen() {
             <Avatar uri={photo('malo')} name="Malo" face="blurred" size={56} />
             <Avatar uri={photo('sasha')} name="Sasha" face="clear" size={56} ring={color.accent} />
             <Avatar name="Tom" size={56} />
-            <Avatar pet={tom.pet} hidden pose="fantome" size={56} />
+            <Avatar pet={tom.pet} hidden pose="dodo" size={56} />
           </View>
         </Item>
         <Item name="PetImage · humeurs (bustes)">
@@ -606,10 +606,12 @@ function GalleryScreen() {
       </Level>
 
       <Level title="MOLÉCULES">
-        <Item name="LifeSparks">
-          <LifeSparks lives={5} accessibilityLabel="5 vies sur 7" />
-          <LifeSparks lives={7} size={18} />
-          <LifeSparks lives={0} ghost />
+        <Item name="LinkMoodIcon">
+          <View style={styles.row}>
+            {(['vivant', 'calme', 'moment', 'endormi'] as const).map((w) => (
+              <LinkMoodIcon key={w} warmth={w} size={24} />
+            ))}
+          </View>
         </Item>
         <Item name="LevelPill · StreakPill">
           <View style={styles.row}>
@@ -694,7 +696,7 @@ function GalleryScreen() {
                 levelLabel={level}
                 previewAuthor={author}
                 newLabel={isNew ? 'nouveau' : undefined}
-                ghostLabel="lien fantôme 👻"
+                mood={link.other.displayName === tom.displayName ? { warmth: 'endormi', label: 'Lien endormi' } : undefined}
                 onPress={noop}
               />
             ))}
@@ -726,24 +728,9 @@ function GalleryScreen() {
           <LinkTodayHero streak={13} streakUnit={heroLabels.streakUnit} title={[{ text: 'VOUS VOUS ÊTES\n' }, { text: 'ÉCRIT', dim: true }]} text="13 jours d’affilée. Demain, on remet ça." myPet={nino} other={lea} me={heroLabels.me(true)} them={heroLabels.them(true)} wroteLabel={heroLabels.wroteLabel} waitingLabel={heroLabels.waitingLabel} cta="Retourner au chat" onCta={noop} gradient="accent" />
           <LinkTodayHero streak={0} streakUnit="jour" title={[{ text: 'UN MOT\n' }, { text: 'CHACUN', dim: true }]} text="Un message de chacun dans la journée, et votre série commence." myPet={nino} other={malo} me={heroLabels.me(false)} them={{ label: 'Malo', wrote: false }} wroteLabel={heroLabels.wroteLabel} waitingLabel={heroLabels.waitingLabel} cta="Écrire à Malo" onCta={noop} gradient="coral" />
         </Item>
-        <Item name="LivesPanel">
-          <LivesPanel
-            lives={5}
-            title={[{ text: '5 VIES ' }, { text: 'SUR 7', dim: true }]}
-            text="un truc fait ensemble = +1 vie. un jour de silence = −1 vie. à 0, le lien devient fantôme."
-            weekTitle="cette semaine"
-            week={[
-              { day: 'L', state: 'done' },
-              { day: 'M', state: 'done' },
-              { day: 'M', state: 'done' },
-              { day: 'J', state: 'done' },
-              { day: 'V', state: 'done' },
-              { day: 'S', state: 'half', mark: '1/2' },
-              { day: 'D', state: 'none' },
-            ]}
-            streak={12}
-            streakUnit="jours de série"
-          />
+        <Item name="LinkMoodCard">
+          <LinkMoodCard warmth="vivant" text="Vous vous parlez souvent." help="Chaque jour où vous vous écrivez fait grandir le lien. Après une pause, il se réveille dès qu’un mot arrive." />
+          <LinkMoodCard warmth="moment" text="Ça fait un moment. Un mot lui ferait plaisir." />
         </Item>
         <Item name="LevelLadder">
           <Panel gradient="rose" padding="lg">
@@ -797,22 +784,18 @@ function GalleryScreen() {
             onDayPress={noop}
           />
         </Item>
-        <Item name="GhostPanel">
-          <GhostPanel
+        <Item name="SleepPanel">
+          <SleepPanel
             pet={nino}
-            title={[{ text: 'TU L’AS\n' }, { text: 'GHOSTÉ.', dim: true }]}
-            text="7 jours de silence avec Tom. le lien est devenu fantôme."
-            speech="j’ai attendu tom une semaine. je suis devenu transparent, c’est normal ?"
-            speakerLabel="nino, version fantôme"
-            canRevive
-            reviveLabel="le ranimer"
-            reviveHint="(une seule fois)"
-            alreadyRevivedLabel="déjà ranimé une fois"
-            leaveLabel="le laisser partir"
-            onRevive={noop}
+            title={[{ text: 'UNE PETITE\n' }, { text: 'PAUSE.', dim: true }]}
+            text="Ça fait un moment avec Tom. Le lien fait la sieste, il se réveille quand tu veux."
+            speech="J’ai pensé à Tom cette semaine. Un petit mot, quand tu veux."
+            speakerLabel="Nino, en pleine sieste"
+            wakeLabel="Le réveiller"
+            leaveLabel="Le laisser partir"
+            onWake={noop}
             onLeave={noop}
           />
-          <GhostPanel pet={nino} title="FANTÔME." canRevive={false} reviveLabel="le ranimer" alreadyRevivedLabel="déjà ranimé une fois" />
         </Item>
         <Item name="SpeciesPicker">
           <SpeciesPicker value={species} onChange={setSpecies} names={speciesNames} speech={`salut, moi c’est ${speciesNames[species].toLowerCase()} 👋`} speechHighlight={speciesNames[species].toLowerCase()} badge="exemplaire unique" />
@@ -946,7 +929,7 @@ function GalleryScreen() {
         </Item>
         <Item name="LinkTemplate">
           <Frame height={600}>
-            <LinkTemplate other={lea} myPet={nino} lives={5} levelLabel="niveau 3 ›" onLevelPress={noop} onBack={noop} tabs={tabs} activeTab="lien" onTabChange={noop} scroll>
+            <LinkTemplate other={lea} myPet={nino} levelLabel="niveau 3 ›" onLevelPress={noop} onBack={noop} tabs={tabs} activeTab="lien" onTabChange={noop} scroll>
               <View style={styles.linkBody}>
                 <LinkTodayHero streak={12} streakUnit={heroLabels.streakUnit} title={[{ text: 'SÉRIE\n' }, { text: 'EN JEU', dim: true }]} text="12 jours d’affilée. Un message de chacun avant minuit." myPet={nino} other={lea} me={heroLabels.me(false)} them={heroLabels.them(false)} wroteLabel={heroLabels.wroteLabel} waitingLabel={heroLabels.waitingLabel} cta="Écrire à Léa" onCta={noop} />
               </View>

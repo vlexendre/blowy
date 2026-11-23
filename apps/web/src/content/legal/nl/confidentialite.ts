@@ -56,11 +56,11 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Gegevens:** de foto die je kiest, als je er een toevoegt (dat is optioneel), gemaakt met de camera of gekozen uit je galerij.',
-        '**Doel:** je laten zien aan je banden: hij blijft verborgen tot jullie elkaar allebei gedag hebben gezegd; zodra de band er is, ziet je band hem scherp. Mensen met wie je geen band hebt, zien hem nooit, niet op de kaart en niet in voorstellingen: zij zien je minimoa.',
+        '**Doel:** je laten zien aan je banden, en de mensen aan wie je minimoa je voorstelt een idee van je geven. Tot jullie elkaar allebei gedag hebben gezegd, zien zij alleen een **heel wazige versie**, gemaakt door onze servers uit een kopie van een paar pixels, waarop je geen gezicht kunt herkennen; het origineel wordt nooit naar hen gestuurd, niet op de kaart en niet in voorstellingen, gratis of met Minimoa+. Zodra de band er is, ziet je band hem scherp.',
         '**Veiligheidscontrole:** voordat de foto wordt gepubliceerd, wordt hij verkleind en naar onze AI-provider {{sub.ai.provider}} gestuurd, die controleert dat er geen naaktheid, niemand die minderjarig lijkt, geen geweld, geen haat en geen reclame op staat. Dat zeggen we je in de app voordat je de foto kiest. Een afgekeurde foto wordt direct gewist, en het moderatieteam krijgt een automatische melding, zonder de foto. Is de controle op dat moment niet mogelijk, dan wordt de foto gepubliceerd en iets later gecontroleerd. Deze controle kan niet worden uitgezet: ze beschermt iedereen. Zonder profielfoto wordt er niets verstuurd.',
         '**Rechtsgrond:** uitvoering van de overeenkomst om hem te tonen; ons gerechtvaardigd belang en onze veiligheidsverplichtingen (gepubliceerde inhoud filteren) voor de controle.',
-        '**Bewaartermijn:** zolang je hem houdt. Als je hem vervangt, wordt de oude gewist. Hij wordt gewist als je je account verwijdert.',
-        '**Toegang:** je banden, afhankelijk van het niveau van de band; onze AI-provider, tijdens de controle.',
+        '**Bewaartermijn:** zolang je hem houdt. Als je hem vervangt, worden de oude en zijn wazige versie gewist. Beide worden gewist als je je account verwijdert.',
+        '**Toegang:** je banden (scherpe foto); de mensen aan wie je minimoa je voorstelt (alleen de heel wazige versie); onze AI-provider, tijdens de controle. Beide versies staan in een privéopslag, alleen bereikbaar via tijdelijke links.',
       ],
     },
 
@@ -338,8 +338,8 @@ export const confidentialite: LegalPage = {
     { h2: '5. Wat anderen zien', id: 'visibilite' },
     {
       ul: [
-        '**Mensen aan wie je minimoa je voorstelt** zien je voornaam, je minimoa, zijn stijl, wat jullie gemeen hebben en één verschil, en je geschatte positie op de kaart (behalve in de discrete modus).',
-        '**Je banden** zien daarnaast jullie berichten, jullie reeks, de mijlpalen van jullie band, jullie oude foto’s van de dag als die er zijn, en je profielfoto als je er een hebt (zichtbaar zodra de band er is).',
+        '**Mensen aan wie je minimoa je voorstelt** zien je voornaam, je minimoa, zijn stijl, wat jullie gemeen hebben en één verschil, een heel wazige versie van je profielfoto als je er een hebt (nooit het origineel), en je geschatte positie op de kaart (behalve in de discrete modus).',
+        '**Je banden** zien daarnaast jullie berichten, jullie reeks, de mijlpalen van jullie band, jullie oude foto’s van de dag als die er zijn, en je scherpe profielfoto als je er een hebt (zodra de band er is).',
         '**Bezoekers van je “3 woorden”-pagina of je uitnodiging** zien je voornaam en je minimoa.',
         'Niemand ziet je e-mailadres, je geboortedatum, je geslacht, of je antwoorden op de kijk-test. Je exacte positie wordt nergens opgeslagen. Je bewijsfoto’s worden door geen mens gezien, en binnen 24 uur gewist (tenzij je ze in je privéherinneringen bewaart).',
       ],

@@ -38,12 +38,6 @@ export interface MapPinResult {
   relation: PinRelation;
   /** Venu dans l'app aujourd'hui (pastille verte, jamais l'heure). */
   activeToday: boolean;
-  /**
-   * Photo : jamais sur la carte, ni nette ni floue (docs/ADA-2027.md, décision 7 : visages cachés pour tout le monde,
-   * gratuit ou Minimoa+, jusqu'au lien noué ; les liens n'ont pas d'épingle). Le flou ne peut pas se faire sur le
-   * téléphone (l'URL nette partirait quand même) et l'API ne transforme pas d'images : aucune URL n'est donc signée.
-   */
-  clearFace: false;
 }
 
 export interface MapResult {
@@ -141,7 +135,7 @@ export class GetMap {
     const pins = shownInside.flatMap((m): MapPinResult[] => {
       const p = visible.get(m.userId);
       const pet = pets.get(m.userId);
-      return p && pet ? [{ profile: p, pet, match: m, relation: relationOf(m.userId), activeToday: seen.get(m.userId) === today, clearFace: false }] : [];
+      return p && pet ? [{ profile: p, pet, match: m, relation: relationOf(m.userId), activeToday: seen.get(m.userId) === today }] : [];
     });
 
     const blurred = new Map<string, GeoPoint>();

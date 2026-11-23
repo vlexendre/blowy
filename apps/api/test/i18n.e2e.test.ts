@@ -156,7 +156,7 @@ describe('monde de revue dans la langue de l’examinateur', () => {
 
   it('les personnes fictives répondent dans la langue de l’examinateur', async () => {
     const api = await visit('en');
-    const [link] = (await api.links.list()).filter((l) => l.lives !== 2);
+    const [link] = (await api.links.list()).filter((l) => l.warmth !== 'calme');
     await api.links.send(link?.id ?? '', { body: 'Sounds good, Tuesday then!' });
     await new Promise((r) => setTimeout(r, 300));
     const after = (await api.links.messages(link?.id ?? '')).messages.map((m) => m.body ?? '');

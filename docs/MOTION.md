@@ -140,7 +140,7 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Le lien | la série avance sous tes yeux quand le deuxième écrit : le chiffre défile d'un cran, la flamme saute (ressort `plush`), confettis depuis elle, vibration de fête (`LinkTodayHero`) | à la 1re visite, la flamme grandit et le chiffre défile depuis 0 ; jours de la semaine cochés un à un ; cartes en cascade (une fois par lien) |
 | Le lien : étapes | — | étapes en cascade ; photos d'avant qui se posent comme des cartes |
 | Le lien : niveaux (dans l'onglet « Le lien ») | la marche atteinte s'allume | barre vers le niveau suivant ; confettis au passage |
-| Lien fantôme | le pet devient transparent et flotte | ranimer : les étincelles de vie se rallument une à une |
+| Lien endormi | le minimoa dort et respire doucement | « Le réveiller » : il se lève et sourit (fondu seul en animations réduites) |
 | Rencontres | les cartes arrivent en éventail | « saluer » : le minimoa fait signe, onde autour du bouton ; accepté : les deux minimoas se courent dessus et se cognent |
 | Une rencontre | les deux minimoas entrent par leur côté | les repères « toi » et l'autre glissent du centre de chaque piste vers leur tiers, l'un après l'autre (ressort `pop`) ; « saluer » : ton minimoa fait signe, onde |
 | Carte | les minimoas se posent dans la zone, du centre vers l'extérieur (une fois par session) | au repos, chaque autocollant flotte doucement (décalés) ; touché, il sautille et sa fiche glisse de la droite ; onde jaune autour de toi ; silhouettes floues qui respirent lentement ; « saluer » : onde depuis le bouton ; la puce « plus loin » et le pied arrivent après la carte |

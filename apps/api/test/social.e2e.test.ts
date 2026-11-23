@@ -220,7 +220,7 @@ describe('configuration', () => {
     }
   });
 
-  it('monde de démo : états d’un lien à la demande (série en jeu, lien en danger, fantôme)', async () => {
+  it('monde de démo : états d’un lien à la demande (série en jeu, calme, « ça fait un moment »)', async () => {
     const world = await startWorld({ BLOWY_DEMO: '1' });
     try {
       const me = world.client();
@@ -229,9 +229,9 @@ describe('configuration', () => {
       expect(await res.json()).toEqual({ userId: me.id });
       const byName = new Map((await me.api.links.list()).map((l) => [l.other.displayName, l]));
       expect(byName.get('Malo')?.today).toMatchObject({ mine: false, theirs: true, atStake: false });
-      expect(byName.get('Sasha')).toMatchObject({ status: 'active', streak: 6, bestStreak: 9, lives: 7, today: { mine: false, theirs: false, atStake: true } });
-      expect(byName.get('Inès')).toMatchObject({ status: 'active', lives: 2, streak: 0 });
-      expect(byName.get('Yanis')).toMatchObject({ status: 'ghost', lives: 0, canRevive: true });
+      expect(byName.get('Sasha')).toMatchObject({ status: 'active', streak: 6, bestStreak: 9, lives: 7, warmth: 'vivant', today: { mine: false, theirs: false, atStake: true } });
+      expect(byName.get('Inès')).toMatchObject({ status: 'active', lives: 7, streak: 0, warmth: 'calme' });
+      expect(byName.get('Yanis')).toMatchObject({ status: 'active', lives: 7, canRevive: false, warmth: 'moment' });
       const memories = await me.api.links.memories(byName.get('Sasha')?.id ?? '');
       expect(memories.milestones.map((m) => `${m.kind}:${m.value}`)).toEqual(['level:4', 'streak:7', 'level:3', 'streak:3', 'level:2', 'met:0']);
     } finally {

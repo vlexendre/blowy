@@ -261,8 +261,8 @@ export default function QuartierScreen() {
                 pet: p.user.pet,
                 label: band ? chemin.carte.pin(p.user.displayName, band) : p.user.displayName,
                 hot,
-                // Sur la carte, le serveur n'envoie aucune photo (`face: 'hidden'`, décision 7) : l'épingle montre le minimoa.
-                // Pastille verte s'il est venu aujourd'hui.
+                // Sur la carte, le serveur n'envoie que la vignette très floue (`face: 'blurred'`, décision 7), ou rien
+                // (`hidden`) : l'épingle montre alors le minimoa. Pastille verte s'il est venu aujourd'hui.
                 photo: p.user.face === 'hidden' ? null : p.user.avatarUrl,
                 blurred: p.user.face === 'blurred',
                 online: p.activeToday ?? false,

@@ -82,6 +82,7 @@ import {
 } from '../ports';
 import { CHEMIN_ANSWERS, CHEMIN_PROGRESS, CHEMIN_SESSIONS } from '../tokens';
 import { CheminContentService, type LiveContent, toDomainQuestion } from './chemin-content';
+import { AvatarBlurs } from '../../me/application/avatar-blurs';
 
 const sessionError = (l: Locale): string => cheminText.in(l).errors.session;
 const answersError = (l: Locale): string => cheminText.in(l).errors.answers;
@@ -134,6 +135,7 @@ export class CheminService {
     @Inject(ListEncounters) private readonly listEncounters: ListEncounters,
     @Inject(ENV) private readonly env: Env,
     @Inject(ProgressionService) private readonly progression: ProgressionService,
+    @Inject(AvatarBlurs) private readonly blurs: AvatarBlurs,
   ) {}
 
   // ── Entrée : avancement, bonus du jour, règles de la série ─────────────────
@@ -675,7 +677,9 @@ export class CheminService {
       })),
     );
     const chosen = pool.find((s) => s.profile.id === pick?.id) ?? pool[0]!;
-    const suggestion = toEncountersDto({ ...r, incoming: [], suggestions: [chosen] }, locale).suggestions[0]!;
+    // La personne du jour : sa vignette très floue (jamais la photo d'origine avant le lien), ou son minimoa.
+    const faces = await this.blurs.urls([chosen.profile]);
+    const suggestion = toEncountersDto({ ...r, incoming: [], suggestions: [chosen] }, locale, faces).suggestions[0]!;
     // « Vous deux : » d'abord les traits partagés de la séance, complétés par les points communs de la vision.
     const points = (pick?.tags ?? []).flatMap((tag) => (t.tags[tag] ? [t.tags[tag]!] : []));
     for (const c of suggestion.explanation.common) if (points.length < 2) points.push(c.text);

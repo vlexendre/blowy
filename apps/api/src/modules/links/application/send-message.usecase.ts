@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { lifeGainedLine, streakMilestoneLine } from '@blowy/content';
+import { streakMilestoneLine } from '@blowy/content';
 import { LINK_STREAK_MILESTONES, applyLinkMessage } from '@blowy/domain';
 import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
 import { DomainError, errorText } from '../../../shared/errors';
@@ -81,16 +81,6 @@ export class SendMessage {
           ),
         );
       }
-      if (effect.lifeGained)
-        draft.pet(
-          userId,
-          lifeGainedLine(
-            draft.localeOf(userId),
-            draft.pair(userId),
-            effect.state.lives,
-            draft.seed('life-gained'),
-          ),
-        );
     }
     // Les minimoas réagissent (règles tout de suite ; IA éventuelle après la réponse), dans leurs plafonds.
     const followUp = await this.minimoas.onUserMessage(draft, userId, input.body, {

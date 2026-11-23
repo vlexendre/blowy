@@ -1,9 +1,13 @@
 /**
  * Version simplifiée (docs/ADA-2027.md), côté API :
- * - décision 7 : aucune réponse ne contient l'URL de la photo d'une personne sans lien noué (carte, rencontres, coucous
- *   reçus) ; le flou n'est plus confié au téléphone ;
+ * - décision 7 et item 26 : aucune réponse ne contient l'URL de la photo d'origine d'une personne sans lien noué (carte,
+ *   rencontres, coucous reçus, historique) ; seule sort sa vignette très floue, faite par le serveur (`face: 'blurred'`),
+ *   ou rien tant qu'elle n'existe pas (`hidden`) ; la photo nette arrive avec le lien ; la vignette suit la photo
+ *   (changée, effacée avec le compte) ;
  * - les notifications des fonctions supprimées de l'app (ligue, défi et série hors Ton chemin, habitudes, bilans,
- *   groupes, premiers pas « habitude » et « groupe ») ne partent plus vers un compte dont la dernière app vue est la version simplifiée ; les anciennes versions les reçoivent.
+ *   groupes, premiers pas « habitude » et « groupe », lien « en danger ») ne partent plus vers un compte dont la dernière app vue est la version simplifiée ; les anciennes versions les reçoivent.
+ * - item 27 : un lien ne perd plus de vies ; après un long silence, le minuteur n'envoie aucune alerte et le lien reste
+ *   ouvert, il dit seulement son état (`warmth`).
  */
 import { randomUUID } from 'node:crypto';
 import { type ApiClient, createApiClient } from '@blowy/api-client';
@@ -11,8 +15,12 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { MemoryPusher } from '../src/integrations/push/memory-pusher';
 import { NOTIFIER, type Notifier } from '../src/integrations/push/notifier';
 import { PUSHER } from '../src/integrations/push/pusher';
+import type { MemoryImages } from '../src/integrations/images/memory-images';
+import type { MemoryStorage } from '../src/integrations/storage/memory-storage';
+import { AvatarBlurJobs } from '../src/modules/me/application/avatar-blur.jobs';
+import { blurPathOf } from '../src/modules/me/application/avatar-blurs';
 import type { MemoryDb } from '../src/persistence/memory-db';
-import { MEMORY_DB } from '../src/shared/tokens';
+import { IMAGES, MEMORY_DB, STORAGE } from '../src/shared/tokens';
 import { type TestWorld, onboardBody, startWorld, upload } from './helpers';
 
 /** Premier build de la version simplifiée, dans ces tests. */
@@ -22,6 +30,8 @@ const OLD_BUILD = 60;
 const NEAR = { latitude: 48.87, longitude: 2.366 };
 /** Une URL de lecture d'une photo de profil (stockage en mémoire : `/dev/media/avatars/…`). */
 const AVATAR_URL = /\/dev\/media\/avatars/;
+/** Une URL de lecture d'une vignette floue (`/dev/media/blurred/…`). */
+const BLURRED_URL = /\/dev\/media\/blurred\//;
 
 describe('ADA 2027 : visages et notifications', () => {
   let world: TestWorld;
@@ -49,12 +59,26 @@ describe('ADA 2027 : visages et notifications', () => {
     }
   };
 
-  it('aucune URL de photo pour une personne sans lien noué (carte, rencontres, coucous) ; nette une fois liés', async () => {
+  /** Bob avec une photo de profil ; rend son chemin dans le stockage. */
+  const withPhoto = async (c: { api: ApiClient }): Promise<string> => {
+    const ticket = await c.api.me.avatarTicket('image/jpeg');
+    await upload(ticket.uploadUrl);
+    expect((await c.api.me.setAvatar(ticket.path)).avatarUrl).toMatch(AVATAR_URL);
+    return ticket.path;
+  };
+  const fetchBytes = async (url: string): Promise<Buffer> => {
+    const res = await fetch(url);
+    expect(res.status).toBe(200);
+    return Buffer.from(await res.arrayBuffer());
+  };
+
+  it('sans lien : jamais l’original, la vignette floue du serveur (carte, rencontres, coucous, historique) ; nette une fois liés', async () => {
     const ana = await person('Ana');
     const bob = await person('Bob');
-    const ticket = await bob.api.me.avatarTicket('image/jpeg');
-    await upload(ticket.uploadUrl);
-    expect((await bob.api.me.setAvatar(ticket.path)).avatarUrl).toMatch(AVATAR_URL);
+    const path = await withPhoto(bob);
+    const storage = world.app.get<MemoryStorage>(STORAGE);
+    const original = storage.peek(path)?.bytes;
+    expect(storage.peek(blurPathOf(path)), 'vignette faite à l’envoi').not.toBeNull();
     // Gratuit puis Minimoa+ : même règle (Minimoa+ vend l'étendue, jamais les visages).
     for (const plus of [false, true]) {
       const p = db.profiles.get(ana.id);
@@ -66,25 +90,83 @@ describe('ADA 2027 : visages et notifications', () => {
       const map = await ana.api.vision.map();
       const pin = map.pins.find((x) => x.user.id === bob.id);
       expect(pin, 'Bob est sur la carte').toBeDefined();
-      expect(pin?.user).toMatchObject({ face: 'hidden', avatarUrl: null });
+      expect(pin?.user.face).toBe('blurred');
+      expect(pin?.user.avatarUrl).toMatch(BLURRED_URL);
       expect(JSON.stringify(map)).not.toMatch(AVATAR_URL);
 
       const encounters = await ana.api.encounters.list();
-      expect(encounters.suggestions.map((s) => s.user.id)).toContain(bob.id);
+      const suggested = encounters.suggestions.find((s) => s.user.id === bob.id);
+      expect(suggested?.user.face).toBe('blurred');
+      expect(suggested?.user.avatarUrl).toMatch(BLURRED_URL);
       expect(JSON.stringify(encounters)).not.toMatch(AVATAR_URL);
     }
 
-    // Bob salue Ana : le coucou reçu ne montre pas sa photo non plus.
+    // La vignette n'est pas la photo : rien de ses octets ne sort.
+    const pin = (await ana.api.vision.map()).pins.find((x) => x.user.id === bob.id);
+    const blurred = await fetchBytes(pin?.user.avatarUrl ?? '');
+    expect(original).toBeDefined();
+    expect(blurred.equals(original ?? Buffer.alloc(0))).toBe(false);
+    expect(blurred.includes(original ?? Buffer.alloc(0))).toBe(false);
+
+    // Bob salue Ana : le coucou reçu montre la vignette floue, pas la photo.
     await bob.api.encounters.wave(ana.id);
     const withWave = await ana.api.encounters.list();
-    expect(withWave.incoming.map((i) => i.from.id)).toContain(bob.id);
+    const wave = withWave.incoming.find((i) => i.from.id === bob.id);
+    expect(wave?.from.face).toBe('blurred');
+    expect(wave?.from.avatarUrl).toMatch(BLURRED_URL);
     expect(JSON.stringify(withWave)).not.toMatch(AVATAR_URL);
     expect(JSON.stringify(await ana.api.vision.map())).not.toMatch(AVATAR_URL);
 
-    // Lien noué : la photo arrive, nette.
-    const link = await ana.api.encounters.accept(withWave.incoming.find((i) => i.from.id === bob.id)?.id ?? '');
+    // Lien noué : la photo arrive, nette ; l'historique des rencontres, lui, reste flou.
+    const link = await ana.api.encounters.accept(wave?.id ?? '');
     expect(link.other).toMatchObject({ id: bob.id, face: 'clear' });
     expect(link.other.avatarUrl).toMatch(AVATAR_URL);
+    const history = await ana.api.encounters.history();
+    expect(history.items.find((i) => i.person.id === bob.id)?.person).toMatchObject({ face: 'blurred' });
+    expect(JSON.stringify(history)).not.toMatch(AVATAR_URL);
+  });
+
+  it('photo changée : nouvelle vignette, l’ancienne effacée ; compte supprimé : photo et vignette effacées', async () => {
+    const storage = world.app.get<MemoryStorage>(STORAGE);
+    const bob = await person('Bob');
+    const first = await withPhoto(bob);
+    const second = await withPhoto(bob);
+    expect(await storage.exists(blurPathOf(first))).toBe(false);
+    expect(await storage.exists(first)).toBe(false);
+    expect(await storage.exists(blurPathOf(second))).toBe(true);
+
+    await bob.api.me.remove();
+    expect(await storage.exists(second)).toBe(false);
+    expect(await storage.exists(blurPathOf(second))).toBe(false);
+  });
+
+  it('photo d’avant la vignette : minimoa (hidden) jusqu’au rattrapage du minuteur, puis floue ; idempotent', async () => {
+    const storage = world.app.get<MemoryStorage>(STORAGE);
+    const images = world.app.get<MemoryImages>(IMAGES);
+    const ana = await person('Ana');
+    const bob = await person('Bob');
+    const path = await withPhoto(bob);
+    // Comme une photo envoyée avant le déploiement : pas de vignette.
+    await storage.remove([blurPathOf(path)]);
+    world.clock.advanceDays(1);
+    cheerUp();
+
+    const before = (await ana.api.vision.map()).pins.find((x) => x.user.id === bob.id);
+    expect(before?.user).toMatchObject({ face: 'hidden', avatarUrl: null });
+
+    const jobs = world.app.get(AvatarBlurJobs);
+    const made = images.made;
+    expect(await jobs.runDue(world.clock.now())).toBe(1);
+    expect(images.made).toBe(made + 1);
+    // Deuxième passage (même après la pause de 24 h) : rien à refaire.
+    world.clock.advanceDays(2);
+    cheerUp();
+    expect(await jobs.runDue(world.clock.now())).toBe(0);
+    expect(images.made).toBe(made + 1);
+
+    const after = (await ana.api.vision.map()).pins.find((x) => x.user.id === bob.id);
+    expect(after?.user.face).toBe('blurred');
+    expect(after?.user.avatarUrl).toMatch(BLURRED_URL);
   });
 
   describe('notifications des fonctions retirées', () => {
@@ -125,6 +207,8 @@ describe('ADA 2027 : visages et notifications', () => {
       ['first_steps', { step: 'group', minimoa: 'Nino' }],
       // Ancienne clé d'un report : `d3` était le premier pas « groupe ».
       ['first_steps', { step: 'd3', minimoa: 'Nino' }],
+      // Item 27 : « un mot pour un lien » venait des vies d'un lien, retirées.
+      ['link_in_danger', { name: 'Léa', linkId: randomUUID(), lives: '2' }],
     ] as const;
 
     it('version simplifiée : rien des fonctions retirées ; le rappel de la séance et les messages partent', async () => {
@@ -189,6 +273,35 @@ describe('ADA 2027 : visages et notifications', () => {
       expect(morning(nina.token).every((m) => m.data.url === 'blowy://chemin')).toBe(true);
       expect(morning(old.token).length).toBeGreaterThan(0);
       expect(morning(old.token).every((m) => m.data.url !== 'blowy://chemin')).toBe(true);
+    });
+  });
+
+  describe('item 27 : le lien ne se perd plus', () => {
+    it('après deux semaines de silence et le minuteur chaque jour : aucune alerte, aucune réplique, le lien reste ouvert', async () => {
+      const secret = 'un-secret-de-test-assez-long-pour-passer';
+      await world.close();
+      world = await startWorld({ APP_IOS_ADA_BUILD: String(ADA_BUILD), INTERNAL_TICK_SECRET: secret });
+      db = world.app.get<MemoryDb>(MEMORY_DB);
+      const ana = await person('Ana', OLD_BUILD);
+      const bob = await person('Bob', OLD_BUILD);
+      await bob.api.encounters.wave(ana.id);
+      const incoming = (await ana.api.encounters.list()).incoming.find((i) => i.from.id === bob.id);
+      const link = await ana.api.encounters.accept(incoming?.id ?? '');
+      expect(link).toMatchObject({ status: 'active', lives: 7, canRevive: false, warmth: 'calme' });
+      const before = (await ana.api.links.messages(link.id)).messages.length;
+      for (let i = 0; i < 14; i++) {
+        world.clock.advanceDays(1);
+        await fetch(`${world.baseUrl}/internal/tick`, { method: 'POST', headers: { 'x-tick-secret': secret } });
+      }
+      expect(db.notificationLog.filter((l) => l.kind === 'link_in_danger')).toEqual([]);
+      const later = await ana.api.links.get(link.id);
+      expect(later).toMatchObject({ status: 'active', lives: 7, canRevive: false, warmth: 'endormi' });
+      const page = await ana.api.links.messages(link.id);
+      // Les relances des minimoas (silence de 72 h) peuvent parler ; aucune ne compte des vies.
+      const added = page.messages.slice(0, page.messages.length - before);
+      expect(added.filter((m) => /\bvies?\b|\blives?\b/i.test(m.body ?? ''))).toEqual([]);
+      const back = await ana.api.links.send(link.id, { body: 'Coucou, ça fait un moment !' });
+      expect(back.link.warmth).toBe('vivant');
     });
   });
 });

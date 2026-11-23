@@ -9,7 +9,7 @@ export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { FeatureRow, type FeatureRowProps } from './FeatureRow';
 export { Header, type HeaderProps } from './Header';
 export { InlineField, type InlineFieldProps } from './InlineField';
-export { LifeSparks, type LifeSparksProps } from './LifeSparks';
+export { LinkMoodIcon, type LinkMoodIconProps } from './LinkMoodIcon';
 export { LevelPill, type LevelPillProps } from './LevelPill';
 export { ListRow, type ListRowProps } from './ListRow';
 export { MessageBubble, type MessageBubbleProps } from './MessageBubble';

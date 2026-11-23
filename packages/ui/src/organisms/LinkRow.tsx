@@ -1,14 +1,14 @@
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Avatar } from '../atoms/Avatar';
+import type { LinkWarmth } from '@blowy/domain';
 import { Badge } from '../atoms/Badge';
 import { Chip } from '../atoms/Chip';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { AvatarPair } from '../molecules/AvatarPair';
-import { LifeSparks } from '../molecules/LifeSparks';
 import { LevelPill } from '../molecules/LevelPill';
+import { LinkMoodIcon } from '../molecules/LinkMoodIcon';
 import { StreakPill } from '../molecules/StreakPill';
 import { layout } from '../lib/styles';
 import { color, extra, space, speciesColor, veil } from '../theme';
@@ -26,8 +26,11 @@ export interface LinkRowProps {
   previewAuthorColor?: string;
   /** Aperçu quand aucun message n'existe encore. */
   emptyPreview?: string;
-  /** Puce affichée pour un lien fantôme (« lien fantôme »). */
-  ghostLabel?: string;
+  /**
+   * L'état du lien quand il demande un peu d'attention (ADA-2027 item 27) : « Un mot lui ferait plaisir » (`moment`),
+   * « Lien endormi » (`endormi`). Une ligne sous l'aperçu, avec le pictogramme de l'état ; jamais de chiffre.
+   */
+  mood?: { warmth: LinkWarmth; label: string };
   /** Puce à côté du nom (« nouveau »). */
   newLabel?: string;
   /** Série du lien (jours d'affilée où les deux se sont écrit) : pastille à flamme, absente à 0. */
@@ -45,10 +48,7 @@ export interface LinkRowProps {
   accessibilityLabel?: string;
 }
 
-/** En dessous (ou à égalité), la vie du lien est en danger : la dernière étincelle palpite. */
-const DANGER_LIVES = 2;
-
-/** Ligne de la liste des chats : les deux pets, le nom, l'aperçu, les vies, le niveau, la série, les non-lus. */
+/** Ligne de la liste des chats : les deux pets, le nom, l'aperçu, l'état du lien, le niveau, la série, les non-lus. */
 export const LinkRow = memo(function LinkRow({
   link,
   timeLabel,
@@ -56,7 +56,7 @@ export const LinkRow = memo(function LinkRow({
   previewAuthor,
   previewAuthorColor,
   emptyPreview,
-  ghostLabel,
+  mood,
   newLabel,
   streak = 0,
   streakUnit,
@@ -67,13 +67,12 @@ export const LinkRow = memo(function LinkRow({
   onLongPress,
   accessibilityLabel,
 }: LinkRowProps) {
-  const ghost = link.status === 'ghost';
   const { other, myPet } = link;
-  const unread = ghost ? 0 : link.unread;
+  const unread = link.unread;
   const preview = link.lastMessage?.preview ?? emptyPreview ?? '';
   const a11y =
     accessibilityLabel ??
-    [other.displayName, preview, timeLabel, turnLabel, levelLabel].filter(Boolean).join(', ');
+    [other.displayName, preview, timeLabel, mood?.label, turnLabel, levelLabel].filter(Boolean).join(', ');
   return (
     <Pressable
       onPress={onPress}
@@ -81,19 +80,13 @@ export const LinkRow = memo(function LinkRow({
       scaleTo={0.98}
       dimTo={0.85}
       accessibilityLabel={a11y}
-      style={[layout.row, styles.row, ghost && styles.ghost]}
+      style={[layout.row, styles.row]}
     >
-      {ghost ? (
-        <View style={styles.ghostAvatar}>
-          <Avatar size={46} pet={other.pet} hidden pose="fantome" bg={extra.ghostDisc} />
-        </View>
-      ) : (
-        <AvatarPair
-          size={42}
-          first={{ pet: myPet, hidden: true }}
-          second={{ pet: other.pet, uri: other.avatarUrl, face: other.face, name: other.displayName }}
-        />
-      )}
+      <AvatarPair
+        size={42}
+        first={{ pet: myPet, hidden: true }}
+        second={{ pet: other.pet, uri: other.avatarUrl, face: other.face, name: other.displayName }}
+      />
       <View style={[layout.grow, styles.body]}>
         <View style={[layout.row, layout.gapSm]}>
           <Text variant="bodyHeavy" size={17} numberOfLines={1} style={layout.shrink}>
@@ -124,22 +117,19 @@ export const LinkRow = memo(function LinkRow({
           </Text>
           <Badge count={unread} />
         </View>
+        {mood ? (
+          <View style={[layout.row, styles.mood]}>
+            <LinkMoodIcon warmth={mood.warmth} size={15} color={extra.preview} />
+            <Text variant="body" size={13} color={extra.preview} style={layout.shrink}>
+              {mood.label}
+            </Text>
+          </View>
+        ) : null}
         <View style={[layout.row, layout.gapSm, styles.meta]}>
-          {ghost ? (
-            ghostLabel ? (
-              <Chip label={ghostLabel} size="sm" />
-            ) : null
-          ) : (
-            <>
-              <LifeSparks lives={link.lives} size={14} beat={link.lives > 0 && link.lives <= DANGER_LIVES} />
-              <LevelPill label={levelLabel} tone={(highlight ?? unread > 0) ? 'accent' : 'glass'} size="sm" />
-              {streak > 0 && streakUnit ? (
-                <StreakPill count={streak} label={streakUnit} style={styles.streak} />
-              ) : null}
-              {turnLabel ? <Chip label={turnLabel} tone="orange" size="sm" /> : null}
-              {noteLabel ? <Chip label={noteLabel} size="sm" /> : null}
-            </>
-          )}
+          <LevelPill label={levelLabel} tone={(highlight ?? unread > 0) ? 'accent' : 'glass'} size="sm" />
+          {streak > 0 && streakUnit ? <StreakPill count={streak} label={streakUnit} style={styles.streak} /> : null}
+          {turnLabel ? <Chip label={turnLabel} tone="orange" size="sm" /> : null}
+          {noteLabel ? <Chip label={noteLabel} size="sm" /> : null}
         </View>
       </View>
     </Pressable>
@@ -155,12 +145,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: veil.hairline,
   },
-  ghostAvatar: { width: 66, alignItems: 'center' },
   time: { marginLeft: 'auto' },
   body: { gap: 3 },
-  // Cœurs, niveau, série et « À toi » : sur deux lignes plutôt qu'une puce coupée au bord (langues plus longues).
+  mood: { gap: space.xs, alignItems: 'center' },
+  // Niveau, série et « À toi » : sur deux lignes plutôt qu'une puce coupée au bord (langues plus longues).
   meta: { marginTop: 2, flexWrap: 'wrap', rowGap: space.xs },
-  ghost: { opacity: 0.45 },
   // Même hauteur que les autres pastilles de la ligne.
   streak: { height: 24, paddingHorizontal: space.sm },
 });

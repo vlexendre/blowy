@@ -1,6 +1,6 @@
 import { levelLabel } from '@/locales/content';
 import type { Link } from '@blowy/contract';
-import { LEVEL_KEYS, MAX_LIVES } from '@blowy/domain';
+import { LEVEL_KEYS } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Avatar,
@@ -11,19 +11,19 @@ import {
   EmptyState,
   FeatureRow,
   Glyph,
-  GhostPanel,
   Header,
   LinkTemplate,
   LevelLadder,
   MemoryRecap,
   ShareCard,
   LinkTodayHero,
-  LivesPanel,
+  LinkMoodCard,
   MemoryGrid,
   MinimoaSwitch,
   PetImage,
   Pressable,
   ScreenTemplate,
+  SleepPanel,
   SheetTemplate,
   Skeleton,
   Stagger,
@@ -57,23 +57,25 @@ import {
   useMarkRead,
   useMinimoaGuide,
   useMemories,
-  useRevive,
   useUpdateLinkMinimoas,
-  weekStrip,
+  useWake,
 } from '@/features/links';
 import { croissance } from '@/locales/croissance';
 import {
   chat as chatText,
-  ghost as ghostText,
   levels as levelsText,
   link as t,
   memories as memText,
   minimoas as minimoaText,
+  sleep as sleepText,
   today as todayText,
+  warmth as warmthText,
 } from '@/locales/chats';
 
 /**
- * Deux onglets : le chat (par défaut) et « Le lien » (la journée, la semaine, les vies, le prochain niveau, les étapes).
+ * Deux onglets : le chat (par défaut) et « Le lien » (son état en une phrase, les niveaux, les étapes). Un lien
+ * endormi (`warmth` « endormi », ADA-2027 item 27) s'ouvre sur son écran de sieste : « Le réveiller » ou « Le laisser
+ * partir » ; rien n'est bloqué, réveillé il rouvre le chat.
  * Sans photo du jour, il n'y a plus rien à faire ailleurs que dans le chat : la journée et les souvenirs tiennent sur
  * une seule page. Les anciens liens profonds (`?tab=today`, `?tab=memories`) ouvrent « Le lien ».
  */
@@ -127,8 +129,8 @@ export default function LinkScreen() {
   const [defaultNoticeClosed, setDefaultNoticeClosed] = useState(false);
   const [rolesOpen, setRolesOpen] = useState(false);
   const [reporting, setReporting] = useState<Message | null>(null);
-  // Ranimé à l'instant : les cœurs reviennent un à un dans l'en-tête.
-  const [revived, setRevived] = useState(false);
+  // Lien endormi passé (« Le réveiller », ou « Retour » puis le chat) : on reste dans le chat pour cette visite.
+  const [awake, setAwake] = useState(false);
   const levelUps = useLevelUps(id, l?.level);
   const goChats = useCallback(
     () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chats')),
@@ -175,20 +177,19 @@ export default function LinkScreen() {
     );
   }
 
-  const ghost = l.status === 'ghost';
-  // Par défaut : le chat (maquettes : une ligne de la liste ouvre V6-Chat) ; un lien fantôme a son propre écran (V6-Fantome).
+  // Par défaut : le chat (maquettes : une ligne de la liste ouvre V6-Chat) ; un lien endormi s'ouvre sur sa sieste.
   const active: Tab = tab ?? 'chat';
   const shareStory = () => void story.share(memText.storyMessage(shareUrl), shareUrl);
 
-  // Lien fantôme : écran plein, sans onglets (V6-Fantome).
-  if (ghost) {
+  // Lien endormi : écran plein, sans onglets (ancien V6-Fantome, adouci).
+  if (l.warmth === 'endormi' && !awake) {
     return (
       <ScreenMotion>
-        <GhostBody
+        <SleepBody
           link={l}
           onBack={goChats}
           onLeft={() => router.replace('/(tabs)/chats')}
-          onRevived={() => setRevived(true)}
+          onWoken={() => setAwake(true)}
         />
       </ScreenMotion>
     );
@@ -213,15 +214,10 @@ export default function LinkScreen() {
       <LinkTemplate
         other={l.other}
         myPet={l.myPet}
-        lives={l.lives}
-        ghost={ghost}
         levelLabel={t.level(l.level)}
         onLevelPress={() => setTab('lien')}
         onBack={goChats}
         backLabel={t.back}
-        livesLabel={t.lives(l.lives)}
-        livesShort={todayText.livesCount(l.lives)}
-        livesFrom={revived ? 0 : undefined}
         levelUp={levelUps}
         onOptions={() => router.push(`/link/${l.id}/options`)}
         optionsLabel={t.options}
@@ -414,12 +410,16 @@ const HERO_GRADIENT = {
   fresh: 'violet',
 } as const;
 
-/** Souvenirs (V6-Souvenirs) : le lien en bref (meilleure série, messages), puis ses étapes et ses photos d'avant. */
+/**
+ * Souvenirs (V6-Souvenirs) : l'état du lien en une phrase (ADA-2027 item 27), le lien en bref (meilleure série,
+ * messages), puis ses étapes et ses photos d'avant.
+ */
 function SouvenirsBody({ link }: { link: Link }) {
   const memories = useMemories(link.id);
   const stats = memories.data?.stats;
   return (
     <View style={styles.body}>
+      {link.warmth ? <LinkMoodCard warmth={link.warmth} text={warmthText[link.warmth]} help={todayText.help} /> : null}
       <MemoryRecap
         title={memText.recapTitle}
         line={
@@ -598,7 +598,7 @@ function ChatComposer({
 }) {
   const [draft, setDraft] = useDraft(`link:${link.id}`);
   const { refusal, clear } = useRefusal(`link:${link.id}`);
-  const ghost = link.status !== 'active';
+  const closed = link.status !== 'active';
   const edit = (v: string) => {
     setDraft(v);
     if (refusal) clear();
@@ -624,7 +624,7 @@ function ChatComposer({
         <Banner
           tone="error"
           title={chatText.notSent}
-          text={errorText(refusal, chatText.sendError, { link_not_active: chatText.ghostDisabled })}
+          text={errorText(refusal, chatText.sendError, { link_not_active: chatText.closedDisabled })}
           onClose={clear}
           closeLabel={todayText.dismiss}
         />
@@ -651,58 +651,51 @@ function ChatComposer({
         onChangeText={edit}
         onSend={submit}
         placeholder={chatText.placeholder(link.other.displayName, link.myPet.name)}
-        disabled={ghost}
-        disabledText={chatText.ghostDisabled}
+        disabled={closed}
+        disabledText={chatText.closedDisabled}
         sendLabel={chatText.send}
       />
     </View>
   );
 }
 
-// ── Lien fantôme ────────────────────────────────────────────────────────────
-function GhostBody({
+// ── Lien endormi ────────────────────────────────────────────────────────────
+function SleepBody({
   link,
   onBack,
   onLeft,
-  onRevived,
+  onWoken,
 }: {
   link: Link;
   onBack: () => void;
   onLeft: () => void;
-  onRevived: () => void;
+  onWoken: () => void;
 }) {
-  const revive = useRevive(link.id);
+  const wake = useWake(link.id);
   const archive = useArchiveLink();
-  const error = revive.isError
-    ? errorText(revive.error, ghostText.reviveError, { cannot_revive: ghostText.cannotRevive })
+  const error = wake.isError
+    ? errorText(wake.error, sleepText.wakeError)
     : archive.isError
-      ? errorText(archive.error, ghostText.reviveError)
+      ? errorText(archive.error, sleepText.wakeError)
       : null;
   return (
-    <>
-      <GhostPanel
-        onBack={onBack}
-        backLabel={t.back}
-        badge={ghostText.badge(link.other.displayName)}
-        livesLabel={t.lives(0)}
-        pet={link.myPet}
-        title={ghostText.title}
-        text={ghostText.text(link.other.displayName)}
-        speech={ghostText.speech(link.other.displayName)}
-        speakerLabel={ghostText.speaker(link.myPet.name)}
-        canRevive={link.canRevive}
-        reviveLabel={ghostText.revive}
-        reviveHint={ghostText.reviveHint}
-        alreadyRevivedLabel={ghostText.already}
-        leaveLabel={ghostText.leave}
-        onRevive={() => revive.mutate(undefined, { onSuccess: onRevived })}
-        onLeave={() => archive.mutate(link.id, { onSuccess: onLeft })}
-        reviving={revive.isPending}
-        leaving={archive.isPending}
-        error={error}
-        revealKey={link.id}
-      />
-    </>
+    <SleepPanel
+      onBack={onBack}
+      backLabel={t.back}
+      badge={sleepText.badge(link.other.displayName)}
+      pet={link.myPet}
+      title={sleepText.title}
+      text={sleepText.text(link.other.displayName)}
+      speech={sleepText.speech(link.other.displayName)}
+      speakerLabel={sleepText.speaker(link.myPet.name)}
+      wakeLabel={sleepText.wake}
+      leaveLabel={sleepText.leave}
+      onWake={() => wake.mutate(undefined, { onSuccess: onWoken })}
+      onLeave={() => archive.mutate(link.id, { onSuccess: onLeft })}
+      waking={wake.isPending}
+      leaving={archive.isPending}
+      error={error}
+    />
   );
 }
 

@@ -1,10 +1,7 @@
-import { type Locale, type PetPair, systemText, ghostLine, labels, levelUpLine, lifeLostLine } from '@blowy/content';
+import { type Locale, type PetPair, systemText, labels, levelUpLine } from '@blowy/content';
 import { type Day, LEVEL_KEYS, type LinkState, type PetRole, tickLink } from '@blowy/domain';
 import { seedOf } from '../../../shared/seed';
 import type { AuthorKind, LinkRecord, MessageKind } from '../ports';
-
-/** Vies restantes à partir desquelles on prévient les deux personnes (spéc §12). */
-export const LINK_DANGER_LIVES = 2;
 
 export type PendingMessage = {
   authorKind: AuthorKind;
@@ -38,8 +35,6 @@ const sameState = (a: LinkState, b: LinkState): boolean =>
 export class LinkDraft {
   readonly pending: PendingMessage[] = [];
   private dirty = false;
-  /** Le rattrapage vient de faire passer le lien à 2 vies ou moins (notification « lien en danger »). */
-  enteredDanger = false;
 
   constructor(
     public link: LinkRecord,
@@ -128,20 +123,11 @@ export class LinkDraft {
   }
 
   /**
-   * Rattrapage des jours passés (vies perdues, passage en fantôme).
-   * Un seul message par rattrapage, dit par l'un des deux pets.
+   * Rattrapage des jours passés (série du jour, réveil d'un ancien lien endormi). Silencieux : le silence ne coûte
+   * rien et ne s'annonce pas (ADA-2027 item 27) ; le lien dit son état dans l'app (`warmth`).
    */
   tick(): void {
-    const before = this.link;
-    const after = tickLink(before, this.today);
-    if (after === before) return;
-    this.update(after);
-    if (after.status === 'active' && after.lives <= LINK_DANGER_LIVES && before.lives > LINK_DANGER_LIVES) this.enteredDanger = true;
-    const speaker = this.speaker('tick');
-    if (after.status === 'ghost' && before.status === 'active') {
-      this.pet(speaker, ghostLine(this.localeOf(speaker), this.pair(speaker), this.seed('ghost')));
-    } else if (after.lives < before.lives) {
-      this.pet(speaker, lifeLostLine(this.localeOf(speaker), this.pair(speaker), after.lives, this.seed('life-lost')));
-    }
+    const after = tickLink(this.link, this.today);
+    if (after !== this.link) this.update(after);
   }
 }

@@ -81,7 +81,8 @@ Injection explicite partout (`@Inject(JETON)`) : pas de `emitDecoratorMetadata`,
 |---|---|---|
 | `AuthVerifier`, `AuthAdmin`, `UserEmails` | Supabase Auth | jetons `test:<uuid>[:<e-mail>]` |
 | `AppleTokenClient`, `AppleTokenStore` (révocation de Sign in with Apple à la suppression, `docs/CONNEXION.md`) | `appleid.apple.com` (JWT ES256) · table `apple_tokens` ; désactivé sans clé | Apple imité · `MemoryDb` |
-| `Storage` | Supabase Storage (URL signées) | `/dev/uploads`, `/dev/media` |
+| `Storage` | Supabase Storage (URL signées, lecture et écriture par l'API pour les vignettes) | `/dev/uploads`, `/dev/media` |
+| `ImageProcessor` (vignette très floue des photos de profil, seule image montrée avant le lien : `AvatarBlurs`, décision 7 de `docs/ADA-2027.md`) | sharp (libvips) : réduction à 12 px, flou, JPEG 64 px | `MemoryImages` (petite image grise, sans un octet de la photo) |
 | `Mailer` | Resend | console (`outbox`) |
 | `AiGateway` → `ModelClient` | Anthropic (Haiku, Sonnet) | `MemoryModel` déterministe |
 | `Pusher` | Expo push | `MemoryPusher` (`outbox`) |
@@ -92,14 +93,14 @@ Injection explicite partout (`@Inject(JETON)`) : pas de `emitDecoratorMetadata`,
 | dépôts de chaque module | `supabase-*.repository.ts` | `memory-*` sur `MemoryDb` (cascades comprises) |
 
 ### Tâches du minuteur (`modules/tick/jobs.ts`, dans l'ordre)
-`links` (vies rattrapées, « lien en danger », relances de 72 h, le soir « à toi d'écrire ») · `notifications` (reports des heures calmes, défi du
+`links` (série rattrapée, réveil des anciens liens endormis, relances de 72 h, le soir « à toi d'écrire ») · `notifications` (reports des heures calmes, défi du
 jour à l'heure choisie — seul chemin d'envoi de `daily_challenge` —, activités en direct finies, reçus Expo, ménage) ·
 `rituels` (preuves demandées, besoin de sortir, série en danger, bilans du dimanche, photos privées de plus de 24 h) ·
 `billing` (rappel du jour 5 de l'essai, par push et par e-mail ; au revoir et relance unique après la fin de Minimoa+ ;
 journal des magasins > 30 j) · `admin-stats` (chiffres de chaque jour terminé,
 apports `ADMIN_INSIGHTS`) · `retention` (prévenance puis suppression après 2 ans sans connexion, exclusions > 3 ans,
 modération > 1 an) · `moderation` (récapitulatif des signalements à l'équipe, escalade après 24 h, photos de profil à
-vérifier) · `wardrobe` · `groups` (jour des groupes d'habitude jugé le lendemain à midi : vies, série, sommeil) · `fidelite` (premiers pas,
+vérifier) · `avatar-blurs` (vignettes floues manquantes des photos de profil, 20 au plus par passage, une passe par jour) · `wardrobe` · `groups` (jour des groupes d'habitude jugé le lendemain à midi : vies, série, sommeil) · `fidelite` (premiers pas,
 absences, anniversaires, une passe par demi-heure). Chaque travail est réservé par créneau d'une minute (`tick_runs`) et borné par `TICK_BUDGET_MS`.
 
 ## App (`apps/mobile`)
@@ -139,10 +140,12 @@ La V7 (minimoa, vision, rituels, Minimoa+) est décrite dans `docs/V7-SPEC.md` ;
 ### Base V6
 - Un pet par personne. 4 jauges à deux pôles (casanier↔sociable, posé↔joueur, piquant↔tendre, discret↔bavard) qui
   bougent avec l'activité et retombent vers 0.
-- Un lien = deux personnes et leurs pets. 7 vies (un jour entier de silence en coûte une ; un jour où les deux
-  s'écrivent en rend une — V7 §24 : plus de photo du jour, la série compte les jours d'affilée où les deux s'écrivent), lien fantôme à 0 (ranimable une fois), 7 niveaux (rendez-vous → l'œuf). Visages cachés avant
+- Un lien = deux personnes et leurs pets. Il ne se perd plus (ADA-2027 item 27, 23 nov. 2026) : plus de vies qui
+  baissent ni de lien fantôme ; il dit son état en une phrase (`linkWarmth` : vivant, calme, « ça fait un moment »,
+  endormi ; « Le réveiller » = un petit coucou du minimoa). `lives` reste à 7 dans le contrat pour les anciennes
+  versions. La série compte les jours d'affilée où les deux s'écrivent (V7 §24). 7 niveaux (rendez-vous → l'œuf). Visages cachés avant
   le niveau 4, flous au 4, nets au 5.
-- Dans chaque lien (V7) : chat · le lien (la journée, la semaine, les vies, le prochain niveau, les étapes). Les pets parlent dans le chat.
+- Dans chaque lien (V7) : chat · le lien (son état en une phrase, les niveaux, les étapes). Les pets parlent dans le chat.
 - Rencontres : ton pet croise d'autres pets (amis d'amis d'abord). Rien ne se passe sans ton tap : tu salues,
   l'autre accepte, le lien se crée.
 - « 3 mots » : un lien web où tes potes choisissent 3 mots sur toi ; ils font bouger les jauges.

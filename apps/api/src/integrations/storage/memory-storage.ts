@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import type { Clock } from '../../shared/clock';
-import type { PublicUrl, Storage, UploadTicket } from './ports';
+import type { PublicUrl, Storage, StoredBytes, UploadTicket } from './ports';
 
 interface StoredFile {
   bytes: Buffer;
@@ -33,12 +33,24 @@ export class MemoryStorage implements Storage {
     return `${this.publicUrl.current}/dev/media/${encodePath(path)}?token=${token}`;
   }
 
+  async signedUrls(paths: readonly string[], seconds: number): Promise<(string | null)[]> {
+    return Promise.all(paths.map((p) => (this.files.has(p) ? this.signedUrl(p, seconds) : null)));
+  }
+
   async remove(paths: readonly string[]): Promise<void> {
     for (const p of paths) this.files.delete(p);
   }
 
   async exists(path: string): Promise<boolean> {
     return this.files.has(path);
+  }
+
+  async read(path: string): Promise<StoredBytes | null> {
+    return this.files.get(path) ?? null;
+  }
+
+  async write(path: string, file: StoredBytes): Promise<void> {
+    this.files.set(path, { bytes: Buffer.from(file.bytes), contentType: file.contentType });
   }
 
   /** Reçoit le fichier envoyé avec un ticket ; faux si le ticket n'est pas valable. */
@@ -55,7 +67,7 @@ export class MemoryStorage implements Storage {
   }
 
   /** Lit un fichier avec un jeton de lecture encore valable. */
-  read(path: string, token: string): StoredFile | null {
+  readWithToken(path: string, token: string): StoredFile | null {
     const grant = this.readTokens.get(token);
     if (!grant || grant.path !== path || grant.until < this.clock.now().getTime()) return null;
     return this.files.get(path) ?? null;

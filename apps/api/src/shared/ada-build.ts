@@ -26,6 +26,9 @@ export const RETIRED_NOTIFICATION_KINDS: ReadonlySet<NotificationKindKey> = new 
   'group_life_lost',
   'group_asleep',
   'group_joined',
+  // « Un mot pour un lien » venait du lien qui perdait ses vies : la mécanique est retirée (ADA-2027 item 27) et l'API
+  // ne l'envoie plus à personne. Garde-fou si une file en contenait encore une.
+  'link_in_danger',
 ]);
 
 /** Premiers pas dont l'écran n'existe plus (habitudes, groupes) ; une ancienne clé (`d3`…) garde son ancien sujet. */

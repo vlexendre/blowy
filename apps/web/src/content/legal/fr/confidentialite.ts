@@ -64,11 +64,11 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Données :** la photo que tu choisis, si tu en ajoutes une (c’est facultatif), prise avec l’appareil photo ou choisie dans ta galerie.',
-        '**But :** te montrer à tes liens : elle reste cachée tant que vous ne vous êtes pas dit bonjour tous les deux ; une fois le lien noué, ton lien la voit nette. Les personnes avec qui tu n’as pas de lien ne la voient jamais, ni sur la carte ni dans les présentations : elles voient ton minimoa.',
+        '**But :** te montrer à tes liens, et donner une idée de toi aux personnes que ton minimoa te présente. Tant que vous ne vous êtes pas dit bonjour tous les deux, elles ne voient qu’une **version très floue**, fabriquée par nos serveurs à partir d’une copie réduite à quelques pixels, où l’on ne peut pas reconnaître un visage ; l’original ne leur est jamais envoyé, ni sur la carte ni dans les présentations, que tu sois en gratuit ou sur Minimoa+. Une fois le lien noué, ton lien la voit nette.',
         '**Vérification de sécurité :** avant d’être publiée, la photo est réduite et envoyée à notre prestataire d’IA, {{sub.ai.provider}}, qui vérifie qu’elle ne montre ni nudité, ni personne qui semble mineure, ni violence, ni haine, ni publicité. On te le dit dans l’app avant que tu choisisses la photo. Une photo refusée est effacée aussitôt, et l’équipe de modération reçoit un signalement automatique, sans la photo. Si la vérification n’est pas possible sur le moment, la photo est publiée et vérifiée un peu plus tard. Cette vérification ne se désactive pas : elle protège tout le monde. Sans photo de profil, rien n’est envoyé.',
         '**Base légale :** exécution du contrat pour l’afficher ; notre intérêt légitime et nos obligations de sécurité (filtrer les contenus publiés) pour la vérification.',
-        '**Durée :** tant que tu la gardes. Quand tu la changes, l’ancienne est effacée. Elle est effacée quand tu supprimes ton compte.',
-        '**Accès :** tes liens, selon le niveau du lien ; notre prestataire d’IA, le temps de la vérification.',
+        '**Durée :** tant que tu la gardes. Quand tu la changes, l’ancienne et sa version floue sont effacées. Les deux sont effacées quand tu supprimes ton compte.',
+        '**Accès :** tes liens (photo nette) ; les personnes que ton minimoa te présente (version très floue seulement) ; notre prestataire d’IA, le temps de la vérification. Les deux versions sont stockées dans un espace privé, accessibles seulement par des liens temporaires.',
       ],
     },
 
@@ -350,8 +350,8 @@ export const confidentialite: LegalPage = {
     { h2: '5. Ce que voient les autres', id: 'visibilite' },
     {
       ul: [
-        '**Les personnes que ton minimoa te présente** voient ton prénom, ton minimoa, son style, vos points communs et une différence, et ta position approximative sur la carte (sauf en mode discret).',
-        '**Tes liens** voient en plus vos messages, votre série, les étapes de votre lien, vos anciennes photos du jour s’il y en a, et ta photo de profil si tu en as une (visible dès que le lien est noué).',
+        '**Les personnes que ton minimoa te présente** voient ton prénom, ton minimoa, son style, vos points communs et une différence, une version très floue de ta photo de profil si tu en as une (jamais l’original), et ta position approximative sur la carte (sauf en mode discret).',
+        '**Tes liens** voient en plus vos messages, votre série, les étapes de votre lien, vos anciennes photos du jour s’il y en a, et ta photo de profil nette si tu en as une (dès que le lien est noué).',
         '**Les visiteurs de ta page « 3 mots » ou de ton invitation** voient ton prénom et ton minimoa.',
         'Personne ne voit ton adresse e-mail, ta date de naissance, ton sexe, ni tes réponses au test de vision. Ta position exacte n’est enregistrée nulle part. Tes photos de preuve ne sont vues par aucun humain, et elles sont supprimées sous 24 h (sauf si tu les gardes dans tes souvenirs privés).',
       ],

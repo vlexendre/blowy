@@ -23,7 +23,7 @@ export class DevMediaController {
 
   @Get('media/*path')
   media(@Req() req: Request, @Res() res: Response): void {
-    const file = this.storage.read(pathAfter(req, '/dev/media/'), tokenOf(req));
+    const file = this.storage.readWithToken(pathAfter(req, '/dev/media/'), tokenOf(req));
     if (!file) throw new DomainError('not_found');
     res.setHeader('content-type', file.contentType);
     res.setHeader('cache-control', 'private, max-age=3600');

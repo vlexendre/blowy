@@ -19,35 +19,14 @@ export type EncounterVia = 'friend_of_friend' | 'nearby' | 'new';
 type Line<A extends unknown[]> = readonly ((...args: A) => string)[];
 
 const fr = {
-  lifeLost: [
-    (other: string, lives: string) => `Une journée tranquille. Un petit mot, quand ça vous dit.`,
-    (other: string, lives: string) => `${other} et moi, on vous attend sans se presser.`,
-    (other: string, lives: string) => `Un mot suffit à nous remettre en route.`,
-    (other: string, lives: string) => `On vous garde de la place. Revenez quand vous voulez.`,
-  ] as Line<[string, string]>,
-  /** « 3 vies », « une seule vie ». */
-  lives: (n: number) => (n > 1 ? `${n} vies` : 'une seule vie'),
-  lifeGained: [
-    (other: string, lives: number) => `Une vie de plus. On remonte à ${lives}.`,
-    (other: string, lives: number) => `${other} et moi, on revit. ${lives} vies.`,
-    (other: string, lives: number) => `Ça, c’est de l’entretien de lien. ${lives} vies.`,
-  ] as Line<[string, number]>,
   levelUp: [
     (other: string, title: string) => `Nouveau niveau : « ${title} ». ${other}, on a grandi.`,
     (other: string, title: string) => `${title}. Je n’en attendais pas moins.`,
     (other: string, title: string) => `On passe à « ${title} ». Je fais la danse de la victoire. Discrètement.`,
     (other: string, title: string) => `Niveau suivant : « ${title} ». ${other} fait semblant de ne pas être fier.`,
   ] as Line<[string, string]>,
-  ghost: [
-    (other: string) => `Le lien fait la sieste. Un mot, et il se réveille.`,
-    (other: string) => `${other} et moi, on vous attend tranquillement.`,
-    (other: string) => `Rien ne presse. Le lien est là, au chaud.`,
-  ] as Line<[string]>,
-  revived: [
-    (other: string) => `On est de retour. ${other}, quelle joie de vous retrouver.`,
-    (other: string) => `Ça repart. Je suis content.`,
-    (other: string) => `Le lien est de nouveau là. Merci.`,
-  ] as Line<[string]>,
+  /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
+  wake: ['Je lui ai fait un petit coucou.'] as readonly string[],
   /** Palier de série d'un lien (3, 7, 14… jours d'affilée où les deux se sont écrit). */
   streakMilestone: [
     (other: string, days: number) => `${days} jours d’affilée à vous écrire. ${other} et moi, on le note quelque part.`,
@@ -71,7 +50,6 @@ const fr = {
   ] as Line<[string]>,
   /** Bandeaux du système dans un lien. */
   system: {
-    revived: 'Le lien est de retour. Content de vous retrouver.',
     levelUp: (title: string, text: string) => `Niveau atteint : « ${title} ». ${text}`,
   },
 };
@@ -79,34 +57,14 @@ const fr = {
 export const voiceText = defineMessages({
   fr,
   en: {
-    lifeLost: [
-      (other: string, lives: string) => `A quiet day. A word whenever you feel like it.`,
-      (other: string, lives: string) => `${other} and I are waiting, no rush.`,
-      (other: string, lives: string) => `One word is all it takes to get us going.`,
-      (other: string, lives: string) => `We’re saving you a spot. Come back whenever you like.`,
-    ],
-    lives: (n: number) => (n > 1 ? `${n} lives` : 'just one life'),
-    lifeGained: [
-      (other: string, lives: number) => `One more life. Back up to ${lives}.`,
-      (other: string, lives: number) => `${other} and I are alive again. ${lives} lives.`,
-      (other: string, lives: number) => `Now that’s link maintenance. ${lives} lives.`,
-    ],
     levelUp: [
       (other: string, title: string) => `New level: “${title}”. ${other}, we’ve grown up.`,
       (other: string, title: string) => `${title}. I expected nothing less.`,
       (other: string, title: string) => `On to “${title}”. I’m doing a victory dance. Discreetly.`,
       (other: string, title: string) => `Next level: “${title}”. ${other} is pretending not to be proud.`,
     ],
-    ghost: [
-      (other: string) => `The link is taking a nap. One word and it wakes up.`,
-      (other: string) => `${other} and I are waiting calmly.`,
-      (other: string) => `No rush. The link is right here, nice and warm.`,
-    ],
-    revived: [
-      (other: string) => `We’re back. ${other}, so good to see you again.`,
-      (other: string) => `Things are moving again. I’m happy.`,
-      (other: string) => `The link is back. Thank you.`,
-    ],
+    /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
+    wake: ['I sent them a little hello.'],
     streakMilestone: [
       (other: string, days: number) => `${days} days in a row writing to each other. ${other} and I are making a note of it.`,
       (other: string, days: number) => `${days} days without a gap in the conversation. Nice pair.`,
@@ -128,39 +86,18 @@ export const voiceText = defineMessages({
       (other: string) => `${other} keeps circling me. Smells like someone wants to play.`,
     ],
     system: {
-      revived: 'The link is back. So good to see you again.',
       levelUp: (title: string, text: string) => `Level reached: “${title}”. ${text}`,
     },
   },
   es: {
-    lifeLost: [
-      (other: string, lives: string) => `Un día tranquilo. Una palabra, cuando os apetezca.`,
-      (other: string, lives: string) => `${other} y yo os esperamos sin prisa.`,
-      (other: string, lives: string) => `Basta una palabra para ponernos en marcha.`,
-      (other: string, lives: string) => `Os guardamos sitio. Volved cuando queráis.`,
-    ],
-    lives: (n: number) => (n > 1 ? `${n} vidas` : 'una sola vida'),
-    lifeGained: [
-      (other: string, lives: number) => `Una vida más. Subimos a ${lives}.`,
-      (other: string, lives: number) => `${other} y yo revivimos. ${lives} vidas.`,
-      (other: string, lives: number) => `Eso es cuidar un vínculo. ${lives} vidas.`,
-    ],
     levelUp: [
       (other: string, title: string) => `Nuevo nivel: «${title}». ${other}, hemos crecido.`,
       (other: string, title: string) => `${title}. No esperaba menos.`,
       (other: string, title: string) => `Pasamos a «${title}». Hago el baile de la victoria. Con discreción.`,
       (other: string, title: string) => `Siguiente nivel: «${title}». ${other} finge que no está orgulloso.`,
     ],
-    ghost: [
-      (other: string) => `El vínculo echa una siesta. Una palabra y se despierta.`,
-      (other: string) => `${other} y yo os esperamos tranquilos.`,
-      (other: string) => `Sin prisa. El vínculo sigue ahí, calentito.`,
-    ],
-    revived: [
-      (other: string) => `Hemos vuelto. ${other}, qué alegría teneros de nuevo.`,
-      (other: string) => `Esto arranca otra vez. Estoy contento.`,
-      (other: string) => `El vínculo está de vuelta. Gracias.`,
-    ],
+    /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
+    wake: ['Le he mandado un saludito.'],
     streakMilestone: [
       (other: string, days: number) => `${days} días seguidos escribiéndose. ${other} y yo lo apuntamos en algún sitio.`,
       (other: string, days: number) => `${days} días sin un hueco en la conversación. Buen dúo.`,
@@ -182,39 +119,18 @@ export const voiceText = defineMessages({
       (other: string) => `${other} no para de rondarme. Huele a ganas de jugar.`,
     ],
     system: {
-      revived: 'El vínculo ha vuelto. Qué alegría teneros de nuevo.',
       levelUp: (title: string, text: string) => `Nivel alcanzado: «${title}». ${text}`,
     },
   },
   pt: {
-    lifeLost: [
-      (other: string, lives: string) => `Um dia tranquilo. Uma palavrinha, quando vocês quiserem.`,
-      (other: string, lives: string) => `${other} e eu esperamos vocês sem pressa.`,
-      (other: string, lives: string) => `Uma palavra basta para a gente voltar a andar.`,
-      (other: string, lives: string) => `Guardamos um lugar para vocês. Voltem quando quiserem.`,
-    ],
-    lives: (n: number) => (n > 1 ? `${n} vidas` : 'uma vida só'),
-    lifeGained: [
-      (other: string, lives: number) => `Uma vida a mais. Voltamos para ${lives}.`,
-      (other: string, lives: number) => `${other} e eu revivemos. ${lives} vidas.`,
-      (other: string, lives: number) => `Isso é que é cuidar de um vínculo. ${lives} vidas.`,
-    ],
     levelUp: [
       (other: string, title: string) => `Novo nível: “${title}”. ${other}, a gente cresceu.`,
       (other: string, title: string) => `${title}. Eu não esperava menos.`,
       (other: string, title: string) => `Passamos para “${title}”. Estou fazendo a dança da vitória. Discretamente.`,
       (other: string, title: string) => `Próximo nível: “${title}”. ${other} finge que não está orgulhoso.`,
     ],
-    ghost: [
-      (other: string) => `O vínculo está tirando uma soneca. Uma palavra e ele acorda.`,
-      (other: string) => `${other} e eu esperamos vocês numa boa.`,
-      (other: string) => `Sem pressa. O vínculo continua aqui, quentinho.`,
-    ],
-    revived: [
-      (other: string) => `Voltamos. ${other}, que alegria ter vocês de novo.`,
-      (other: string) => `Tudo andando de novo. Estou feliz.`,
-      (other: string) => `O vínculo está de volta. Obrigado.`,
-    ],
+    /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
+    wake: ['Mandei um oizinho.'],
     streakMilestone: [
       (other: string, days: number) => `${days} dias seguidos de conversa. ${other} e eu anotamos isso em algum lugar.`,
       (other: string, days: number) => `${days} dias sem nenhum buraco na conversa. Que dupla.`,
@@ -236,39 +152,18 @@ export const voiceText = defineMessages({
       (other: string) => `${other} está rondando por aqui. Tem cara de quem quer brincar.`,
     ],
     system: {
-      revived: 'O vínculo voltou. Que alegria ter vocês de novo.',
       levelUp: (title: string, text: string) => `Nível alcançado: “${title}”. ${text}`,
     },
   },
   nl: {
-    lifeLost: [
-      (other: string, lives: string) => `Een rustige dag. Een berichtje, wanneer jullie willen.`,
-      (other: string, lives: string) => `${other} en ik wachten zonder haast op jullie.`,
-      (other: string, lives: string) => `Eén woord en we zijn weer op weg.`,
-      (other: string, lives: string) => `We houden een plekje voor jullie vrij. Kom wanneer je wilt.`,
-    ],
-    lives: (n: number) => (n > 1 ? `${n} levens` : 'één leven'),
-    lifeGained: [
-      (other: string, lives: number) => `Eén leven erbij. We zitten weer op ${lives}.`,
-      (other: string, lives: number) => `${other} en ik leven weer op. ${lives} levens.`,
-      (other: string, lives: number) => `Dat noem ik een band onderhouden. ${lives} levens.`,
-    ],
     levelUp: [
       (other: string, title: string) => `Nieuw niveau: „${title}”. ${other}, we zijn gegroeid.`,
       (other: string, title: string) => `${title}. Ik had niet minder verwacht.`,
       (other: string, title: string) => `Door naar „${title}”. Ik doe een overwinningsdansje. Onopvallend.`,
       (other: string, title: string) => `Volgend niveau: „${title}”. ${other} doet alsof hij niet trots is.`,
     ],
-    ghost: [
-      (other: string) => `De band doet een dutje. Eén woord en hij is wakker.`,
-      (other: string) => `${other} en ik wachten rustig op jullie.`,
-      (other: string) => `Geen haast. De band is er, lekker warm.`,
-    ],
-    revived: [
-      (other: string) => `We zijn er weer. ${other}, wat fijn om jullie terug te zien.`,
-      (other: string) => `Het gaat weer lopen. Ik ben blij.`,
-      (other: string) => `De band is er weer. Dank je.`,
-    ],
+    /** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre. */
+    wake: ['Ik heb even dag gezegd.'],
     streakMilestone: [
       (other: string, days: number) => `${days} dagen op rij contact. ${other} en ik schrijven het ergens op.`,
       (other: string, days: number) => `${days} dagen zonder gat in het gesprek. Mooi duo.`,
@@ -290,7 +185,6 @@ export const voiceText = defineMessages({
       (other: string) => `${other} draait om me heen. Volgens mij wil hij spelen.`,
     ],
     system: {
-      revived: 'De band is er weer. Fijn om jullie terug te zien.',
       levelUp: (title: string, text: string) => `Niveau bereikt: „${title}”. ${text}`,
     },
   },
@@ -301,18 +195,10 @@ const pick = <T>(variants: readonly T[], seed: number): T => {
   return (variants[((Math.trunc(seed) % n) + n) % n] ?? variants[0]) as T;
 };
 
-export const lifeLostLine = (locale: Locale, p: PetPair, livesLeft: number, seed: number): string => {
-  const t = voiceText.in(locale);
-  return pick(t.lifeLost, seed)(p.other, t.lives(livesLeft));
-};
-
-export const lifeGainedLine = (locale: Locale, p: PetPair, lives: number, seed: number): string => pick(voiceText.in(locale).lifeGained, seed)(p.other, lives);
-
 export const levelUpLine = (locale: Locale, p: PetPair, levelTitle: string, seed: number): string => pick(voiceText.in(locale).levelUp, seed)(p.other, levelTitle);
 
-export const ghostLine = (locale: Locale, p: PetPair, seed: number): string => pick(voiceText.in(locale).ghost, seed)(p.other);
-
-export const revivedLine = (locale: Locale, p: PetPair, seed: number): string => pick(voiceText.in(locale).revived, seed)(p.other);
+/** « Le réveiller » : la réplique du minimoa de la personne qui réveille le lien (ADA-2027 item 27). */
+export const wakeLine = (locale: Locale, seed: number): string => pick(voiceText.in(locale).wake, seed);
 
 /** Palier de série d'un lien atteint (`LINK_STREAK_MILESTONES`). */
 export const streakMilestoneLine = (locale: Locale, p: PetPair, streak: number, seed: number): string =>

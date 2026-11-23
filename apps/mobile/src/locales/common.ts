@@ -27,7 +27,7 @@ export const common = messages({
     invite: {
       kicker: 'Invitation',
       title: (name: string, pet: string) => [{ text: `${name.toUpperCase()} ET ${pet.toUpperCase()}\n` }, { text: 'T’INVITENT.', dim: true }],
-      text: (pet: string) => `${pet} veut rencontrer ton minimoa. Si tu acceptes, vous avez un lien : 7 vies, une série à tenir en vous écrivant chaque jour, et deux minimoas qui papotent.`,
+      text: (pet: string) => `${pet} veut rencontrer ton minimoa. Si tu acceptes, vous avez un lien : une conversation, une série qui grandit chaque jour où vous vous écrivez, et deux minimoas qui papotent.`,
       speech: (pet: string) => `On s’est déjà croisés, non ? Moi, c’est ${pet}.`,
       accept: 'Accepter',
       later: 'Pas maintenant',
@@ -70,7 +70,7 @@ export const common = messages({
     invite: {
       kicker: 'Invitation',
       title: (name: string, pet: string) => [{ text: `${name.toUpperCase()} AND ${pet.toUpperCase()}\n` }, { text: 'ARE INVITING YOU.', dim: true }],
-      text: (pet: string) => `${pet} wants to meet your minimoa. If you accept, you share a link: 7 lives, a streak to keep by writing to each other every day, and two minimoas who chat.`,
+      text: (pet: string) => `${pet} wants to meet your minimoa. If you accept, you share a link: a conversation, a streak that grows every day you write to each other, and two minimoas who chat.`,
       speech: (pet: string) => `Haven’t we met before? I’m ${pet}.`,
       accept: 'Accept',
       later: 'Not now',
@@ -112,7 +112,7 @@ export const common = messages({
     invite: {
       kicker: 'Invitación',
       title: (name: string, pet: string) => [{ text: `${name.toUpperCase()} Y ${pet.toUpperCase()}\n` }, { text: 'TE INVITAN.', dim: true }],
-      text: (pet: string) => `${pet} quiere conocer a tu minimoa. Si aceptas, se crea un vínculo: 7 vidas, una racha que mantener escribiéndose cada día y dos minimoas charlando.`,
+      text: (pet: string) => `${pet} quiere conocer a tu minimoa. Si aceptas, se crea un vínculo: una conversación, una racha que crece cada día que se escriben y dos minimoas charlando.`,
       speech: (pet: string) => `¿No nos hemos visto antes? Soy ${pet}.`,
       accept: 'Aceptar',
       later: 'Ahora no',
@@ -154,7 +154,7 @@ export const common = messages({
     invite: {
       kicker: 'Convite',
       title: (name: string, pet: string) => [{ text: `${name.toUpperCase()} E ${pet.toUpperCase()}\n` }, { text: 'CONVIDAM VOCÊ.', dim: true }],
-      text: (pet: string) => `${pet} quer conhecer seu minimoa. Se você aceitar, vocês terão um vínculo: 7 vidas, uma sequência para manter escrevendo um para o outro todo dia, e dois minimoas batendo papo.`,
+      text: (pet: string) => `${pet} quer conhecer seu minimoa. Se você aceitar, vocês terão um vínculo: uma conversa, uma sequência que cresce a cada dia em que vocês se escrevem, e dois minimoas batendo papo.`,
       speech: (pet: string) => `A gente já se cruzou, não? Eu sou ${pet}.`,
       accept: 'Aceitar',
       later: 'Agora não',
@@ -196,7 +196,7 @@ export const common = messages({
     invite: {
       kicker: 'Uitnodiging',
       title: (name: string, pet: string) => [{ text: `${name.toUpperCase()} EN ${pet.toUpperCase()}\n` }, { text: 'NODIGEN JE UIT.', dim: true }],
-      text: (pet: string) => `${pet} wil je minimoa leren kennen. Als je accepteert, hebben jullie een band: 7 levens, een reeks die je volhoudt door elkaar elke dag te schrijven, en twee minimoas die kletsen.`,
+      text: (pet: string) => `${pet} wil je minimoa leren kennen. Als je accepteert, hebben jullie een band: een gesprek, een reeks die groeit op elke dag dat jullie elkaar schrijven, en twee minimoas die kletsen.`,
       speech: (pet: string) => `Hebben wij elkaar niet al eens gezien? Ik ben ${pet}.`,
       accept: 'Accepteren',
       later: 'Niet nu',

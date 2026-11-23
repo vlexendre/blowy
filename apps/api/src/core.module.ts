@@ -19,6 +19,8 @@ import {
 } from './integrations/auth/apple-revocation';
 import { AllowListMailer, ConsoleMailer, type Mailer, ResendMailer } from './integrations/mailer/mailer';
 import { Notifier } from './integrations/mailer/notifier';
+import { MemoryImages } from './integrations/images/memory-images';
+import { SharpImages } from './integrations/images/sharp-images';
 import { MemoryStorage } from './integrations/storage/memory-storage';
 import type { PublicUrl } from './integrations/storage/ports';
 import { SupabaseStorage } from './integrations/storage/supabase-storage';
@@ -34,6 +36,7 @@ import { visionProviders } from './modules/vision/infrastructure/providers';
 import { billingProviders } from './modules/billing/infrastructure/providers';
 import { adminProviders } from './modules/admin/infrastructure/providers';
 import { Audience } from './modules/safety/application/audience';
+import { AvatarBlurs } from './modules/me/application/avatar-blurs';
 import { retentionProviders } from './modules/retention/infrastructure/providers';
 import { groupsRepositories } from './modules/groups/infrastructure/providers';
 import { fideliteProviders } from './modules/fidelite/infrastructure/providers';
@@ -50,6 +53,7 @@ import {
   CLOCK,
   ENV,
   IDS,
+  IMAGES,
   MAILER,
   MEMORY_DB,
   PUBLIC_URL,
@@ -104,6 +108,8 @@ export class CoreModule {
       ...quartierRepositories(env.adapters),
       // Qui est « utilisable » pour qui (supprimé, suspendu, bloqué, discret) : une seule règle, partout.
       Audience,
+      // Vignette floue des photos de profil, seule photo montrée avant le lien (docs/ADA-2027.md, décision 7).
+      AvatarBlurs,
       // Sign in with Apple : jetons gardés à la connexion, révoqués à la suppression du compte.
       {
         provide: APPLE_TOKEN_CLIENT,
@@ -128,6 +134,7 @@ function memoryAdapters(): Provider[] {
     { provide: AUTH_ADMIN, useFactory: (db: MemoryDb) => new MemoryAuthAdmin(db), inject: [MEMORY_DB] },
     { provide: USER_EMAILS, useFactory: (db: MemoryDb) => new MemoryUserEmails(db), inject: [MEMORY_DB] },
     { provide: STORAGE, useFactory: (url: PublicUrl, clock: Clock) => new MemoryStorage(url, clock), inject: [PUBLIC_URL, CLOCK] },
+    { provide: IMAGES, useValue: new MemoryImages() },
     { provide: APPLE_TOKEN_STORE, useFactory: (db: MemoryDb) => new MemoryAppleTokenStore(db), inject: [MEMORY_DB] },
   ];
 }
@@ -141,6 +148,7 @@ function supabaseAdapters(env: Env): Provider[] {
     { provide: AUTH_ADMIN, useFactory: (c: Db) => new SupabaseAuthAdmin(c), inject: [SUPABASE] },
     { provide: USER_EMAILS, useFactory: (c: Db) => new SupabaseUserEmails(c), inject: [SUPABASE] },
     { provide: STORAGE, useFactory: (c: Db) => new SupabaseStorage(c), inject: [SUPABASE] },
+    { provide: IMAGES, useValue: new SharpImages() },
     { provide: APPLE_TOKEN_STORE, useFactory: (c: Db) => new SupabaseAppleTokenStore(c), inject: [SUPABASE] },
   ];
 }

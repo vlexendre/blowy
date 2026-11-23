@@ -1,6 +1,6 @@
 /**
  * Vérification des photos de profil (App Review 1.2). Approche la moins chère que la pile permet déjà : la même chaîne
- * que les preuves d'habitude — image réduite à 512 px par le service d'images de Supabase Storage (le serveur ne décode
+ * que les preuves d'habitude — image réduite à 512 px par le service d'images de Supabase Storage (pour la vérification, le serveur ne décode
  * jamais d'image), petit modèle de vision via `AiGateway` (fonction `moderation`, palier `small`, réponse d'un mot,
  * consigne stable), ≈ 600 jetons en entrée : ~0,00006 $ par photo.
  *

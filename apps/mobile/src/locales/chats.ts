@@ -1,4 +1,4 @@
-/** Textes des chats et des liens (liste, chat, « Le lien » et ses étapes, fantôme, niveaux, options). */
+/** Textes des chats et des liens (liste, chat, « Le lien » et ses étapes, état du lien, lien endormi, niveaux, options). */
 import type { TitleSegment } from '@blowy/ui';
 import { messages } from './runtime';
 
@@ -99,7 +99,8 @@ export const chats = messages({
     streakUnit: 'j',
     turn: 'À toi',
     level: (n: number): string => `Niv. ${n}`,
-    ghost: 'Lien endormi 💤',
+    /** L'état du lien quand il demande un peu d'attention (ADA-2027 item 27), sous l'aperçu. */
+    mood: { moment: 'Un mot lui ferait plaisir', endormi: 'Lien endormi' },
     isNew: 'Nouveau',
     introducedBy: (pet: string): string => `Présentés par ${pet}`,
     emptyPreview: 'Dites-vous bonjour.',
@@ -143,7 +144,8 @@ export const chats = messages({
     streakUnit: 'd',
     turn: 'Your turn',
     level: (n: number): string => `Lv. ${n}`,
-    ghost: 'Sleeping link 💤',
+    /** L'état du lien quand il demande un peu d'attention (ADA-2027 item 27), sous l'aperçu. */
+    mood: { moment: 'A word would make their day', endormi: 'Sleeping link' },
     isNew: 'New',
     introducedBy: (pet: string): string => `Introduced by ${pet}`,
     emptyPreview: 'Say hello.',
@@ -188,7 +190,8 @@ export const chats = messages({
     streakUnit: 'd',
     turn: 'Te toca',
     level: (n: number): string => `Niv. ${n}`,
-    ghost: 'Vínculo dormido 💤',
+    /** L'état du lien quand il demande un peu d'attention (ADA-2027 item 27), sous l'aperçu. */
+    mood: { moment: 'Un mensaje le haría ilusión', endormi: 'Vínculo dormido' },
     isNew: 'Nuevo',
     introducedBy: (pet: string): string => `Presentados por ${pet}`,
     emptyPreview: 'Salúdense.',
@@ -233,7 +236,8 @@ export const chats = messages({
     streakUnit: 'd',
     turn: 'Sua vez',
     level: (n: number): string => `Nív. ${n}`,
-    ghost: 'Vínculo dormindo 💤',
+    /** L'état du lien quand il demande un peu d'attention (ADA-2027 item 27), sous l'aperçu. */
+    mood: { moment: 'Uma mensagem ia alegrar o dia', endormi: 'Vínculo dormindo' },
     isNew: 'Novo',
     introducedBy: (pet: string): string => `Apresentados por ${pet}`,
     emptyPreview: 'Digam oi.',
@@ -278,7 +282,8 @@ export const chats = messages({
     streakUnit: 'd',
     turn: 'Aan jou',
     level: (n: number): string => `Niv. ${n}`,
-    ghost: 'Slapende band 💤',
+    /** L'état du lien quand il demande un peu d'attention (ADA-2027 item 27), sous l'aperçu. */
+    mood: { moment: 'Een berichtje doet vast goed', endormi: 'Slapende band' },
     isNew: 'Nieuw',
     introducedBy: (pet: string): string => `Voorgesteld door ${pet}`,
     emptyPreview: 'Zeg hallo.',
@@ -300,7 +305,6 @@ export const link = messages({
     level: (n: number): string => `Niveau ${n} ›`,
     /** En-tête chargé (interrupteur des minimoas) : version courte. */
     levelShort: (n: number): string => `Niv. ${n} ›`,
-    lives: (n: number): string => `${n} ${n > 1 ? 'vies' : 'vie'} sur 7`,
     options: 'Options du lien : signaler, bloquer, quitter',
     tabs: { chat: 'Chat', lien: 'Le lien', souvenirs: 'Souvenirs' },
     loadError: 'Impossible d’ouvrir ce lien',
@@ -312,7 +316,6 @@ export const link = messages({
     back: 'Back to chats',
     level: (n: number): string => `Level ${n} ›`,
     levelShort: (n: number): string => `Lv. ${n} ›`,
-    lives: (n: number): string => `${n} ${n === 1 ? 'life' : 'lives'} out of 7`,
     options: 'Link options: report, block, leave',
     tabs: { chat: 'Chat', lien: 'The link', souvenirs: 'Memories' },
     loadError: 'Couldn’t open this link',
@@ -324,7 +327,6 @@ export const link = messages({
     back: 'Volver a los chats',
     level: (n: number): string => `Nivel ${n} ›`,
     levelShort: (n: number): string => `Niv. ${n} ›`,
-    lives: (n: number): string => `${n} ${n === 1 ? 'vida' : 'vidas'} de 7`,
     options: 'Opciones del vínculo: reportar, bloquear, salir',
     tabs: { chat: 'Chat', lien: 'El vínculo', souvenirs: 'Recuerdos' },
     loadError: 'No se pudo abrir este vínculo',
@@ -336,7 +338,6 @@ export const link = messages({
     back: 'Voltar aos chats',
     level: (n: number): string => `Nível ${n} ›`,
     levelShort: (n: number): string => `Nív. ${n} ›`,
-    lives: (n: number): string => `${n} ${n === 1 ? 'vida' : 'vidas'} de 7`,
     options: 'Opções do vínculo: denunciar, bloquear, sair',
     tabs: { chat: 'Chat', lien: 'O vínculo', souvenirs: 'Lembranças' },
     loadError: 'Não foi possível abrir este vínculo',
@@ -348,7 +349,6 @@ export const link = messages({
     back: 'Terug naar chats',
     level: (n: number): string => `Niveau ${n} ›`,
     levelShort: (n: number): string => `Niv. ${n} ›`,
-    lives: (n: number): string => `${n} ${n === 1 ? 'leven' : 'levens'} van 7`,
     options: 'Opties van de band: melden, blokkeren, verlaten',
     tabs: { chat: 'Chat', lien: 'De band', souvenirs: 'Herinneringen' },
     loadError: 'Deze band kon niet worden geopend',
@@ -359,7 +359,7 @@ export const link = messages({
 });
 
 /**
- * Onglet « Le lien » : la journée du lien (spéc §24), sa semaine, ses vies, le prochain niveau.
+ * Onglet « Le lien » : la journée du lien (spéc §24), la ligne d'aide de son état, le prochain niveau.
  * La série compte les jours d’affilée où vous vous êtes écrit, vous deux.
  */
 export const today = messages({
@@ -403,11 +403,8 @@ export const today = messages({
     ctaWrite: (name: string): string => `Écrire à ${name}`,
     ctaBack: 'Retourner au chat',
     dismiss: 'Fermer',
-    weekTitle: 'Cette semaine',
-    weekDays: ['D', 'L', 'M', 'M', 'J', 'V', 'S'] as const,
-    halfMark: '1/2',
-    livesCount: (n: number): string => `${n}/7`,
-    livesText:
+    /** Une seule ligne d'aide sous l'état du lien (onglet « Le lien »). */
+    help:
       'Chaque jour où vous vous écrivez fait grandir le lien. Après une pause, il se réveille dès qu’un mot arrive.',
   },
   en: {
@@ -450,11 +447,7 @@ export const today = messages({
     ctaWrite: (name: string): string => `Write to ${name}`,
     ctaBack: 'Back to the chat',
     dismiss: 'Close',
-    weekTitle: 'This week',
-    weekDays: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    halfMark: '1/2',
-    livesCount: (n: number): string => `${n}/7`,
-    livesText:
+    help:
       'Every day you write to each other makes the link grow. After a break, it wakes up the moment a word arrives.',
   },
   es: {
@@ -496,11 +489,7 @@ export const today = messages({
     ctaWrite: (name: string): string => `Escribir a ${name}`,
     ctaBack: 'Volver al chat',
     dismiss: 'Cerrar',
-    weekTitle: 'Esta semana',
-    weekDays: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
-    halfMark: '1/2',
-    livesCount: (n: number): string => `${n}/7`,
-    livesText:
+    help:
       'Cada día que se escriben hace crecer el vínculo. Tras una pausa, se despierta en cuanto llega una palabra.',
   },
   pt: {
@@ -543,11 +532,7 @@ export const today = messages({
     ctaWrite: (name: string): string => `Escrever para ${name}`,
     ctaBack: 'Voltar ao chat',
     dismiss: 'Fechar',
-    weekTitle: 'Esta semana',
-    weekDays: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
-    halfMark: '1/2',
-    livesCount: (n: number): string => `${n}/7`,
-    livesText:
+    help:
       'Cada dia em que vocês se escrevem faz o vínculo crescer. Depois de uma pausa, ele acorda assim que chega uma palavra.',
   },
   nl: {
@@ -589,11 +574,7 @@ export const today = messages({
     ctaWrite: (name: string): string => `${name} schrijven`,
     ctaBack: 'Terug naar de chat',
     dismiss: 'Sluiten',
-    weekTitle: 'Deze week',
-    weekDays: ['Z', 'M', 'D', 'W', 'D', 'V', 'Z'],
-    halfMark: '1/2',
-    livesCount: (n: number): string => `${n}/7`,
-    livesText:
+    help:
       'Elke dag dat jullie elkaar schrijven laat de band groeien. Na een pauze wordt hij wakker zodra er een woord komt.',
   },
 });
@@ -606,7 +587,7 @@ export const chat = messages({
     sending: 'Envoi…',
     failed: 'Pas envoyé · Réessayer',
     send: 'Envoyer',
-    ghostDisabled: 'Lien endormi : réveille-le pour écrire',
+    closedDisabled: 'Ce lien n’est plus ouvert',
     sendError: 'Ton message n’est pas parti. Il est toujours là, réessaie.',
     /** Titre d'un envoi raté (hors refus du filtre, dont la raison vient de l'API). */
     notSent: 'Message non envoyé',
@@ -632,7 +613,7 @@ export const chat = messages({
     /** Interrupteur de l'en-tête. */
     switchOn: 'Minimoas activés dans ce chat. Toucher pour les couper.',
     switchOff: 'Minimoas coupés dans ce chat. Toucher pour les réactiver.',
-    mutedNotice: 'Vos minimoas se taisent ici. Les annonces du lien (niveau, vies) restent.',
+    mutedNotice: 'Vos minimoas se taisent ici. Les annonces du lien (niveau, série) restent.',
     unmutedNotice: 'Vos minimoas peuvent reparler ici.',
     muteError: 'Le réglage n’est pas passé. Réessaie.',
     /** Signaler un message (appui long). */
@@ -650,7 +631,7 @@ export const chat = messages({
     sending: 'Sending…',
     failed: 'Not sent · Retry',
     send: 'Send',
-    ghostDisabled: 'Sleeping link: wake it up to write',
+    closedDisabled: 'This link is no longer open',
     sendError: 'Your message didn’t go out. It’s still here, try again.',
     notSent: 'Message not sent',
     refusedKeep: 'Your text is still in the box: edit it before sending it again.',
@@ -670,7 +651,7 @@ export const chat = messages({
     rhythmMuted: 'Minimoas muted in this chat.',
     switchOn: 'Minimoas on in this chat. Tap to mute them.',
     switchOff: 'Minimoas muted in this chat. Tap to turn them back on.',
-    mutedNotice: 'Your minimoas go quiet here. Link announcements (level, lives) stay.',
+    mutedNotice: 'Your minimoas go quiet here. Link announcements (level, streak) stay.',
     unmutedNotice: 'Your minimoas can talk here again.',
     muteError: 'The setting didn’t go through. Try again.',
     longPressHint: 'Report this message',
@@ -686,7 +667,7 @@ export const chat = messages({
     sending: 'Enviando…',
     failed: 'No enviado · Reintentar',
     send: 'Enviar',
-    ghostDisabled: 'Vínculo dormido: despiértalo para escribir',
+    closedDisabled: 'Este vínculo ya no está abierto',
     sendError: 'Tu mensaje no se envió. Sigue aquí, inténtalo de nuevo.',
     notSent: 'Mensaje no enviado',
     refusedKeep: 'Tu texto sigue en el campo: modifícalo antes de volver a enviarlo.',
@@ -706,7 +687,7 @@ export const chat = messages({
     rhythmMuted: 'Minimoas silenciados en este chat.',
     switchOn: 'Minimoas activados en este chat. Toca para silenciarlos.',
     switchOff: 'Minimoas silenciados en este chat. Toca para reactivarlos.',
-    mutedNotice: 'Los minimoas se callan aquí. Los avisos del vínculo (nivel, vidas) se mantienen.',
+    mutedNotice: 'Los minimoas se callan aquí. Los avisos del vínculo (nivel, racha) se mantienen.',
     unmutedNotice: 'Los minimoas pueden volver a hablar aquí.',
     muteError: 'El ajuste no se guardó. Inténtalo de nuevo.',
     longPressHint: 'Reportar este mensaje',
@@ -722,7 +703,7 @@ export const chat = messages({
     sending: 'Enviando…',
     failed: 'Não enviado · Tentar de novo',
     send: 'Enviar',
-    ghostDisabled: 'Vínculo dormindo: acorde para escrever',
+    closedDisabled: 'Este vínculo não está mais aberto',
     sendError: 'Sua mensagem não foi enviada. Ela continua aqui, tente de novo.',
     notSent: 'Mensagem não enviada',
     refusedKeep: 'Seu texto continua no campo: edite antes de enviar de novo.',
@@ -742,7 +723,7 @@ export const chat = messages({
     rhythmMuted: 'Minimoas silenciados neste chat.',
     switchOn: 'Minimoas ativados neste chat. Toque para silenciá-los.',
     switchOff: 'Minimoas silenciados neste chat. Toque para reativá-los.',
-    mutedNotice: 'Os minimoas de vocês ficam quietos aqui. Os avisos do vínculo (nível, vidas) continuam.',
+    mutedNotice: 'Os minimoas de vocês ficam quietos aqui. Os avisos do vínculo (nível, sequência) continuam.',
     unmutedNotice: 'Os minimoas de vocês podem voltar a falar aqui.',
     muteError: 'A configuração não foi salva. Tente de novo.',
     longPressHint: 'Denunciar esta mensagem',
@@ -758,7 +739,7 @@ export const chat = messages({
     sending: 'Versturen…',
     failed: 'Niet verstuurd · Opnieuw',
     send: 'Versturen',
-    ghostDisabled: 'Slapende band: maak hem wakker om te schrijven',
+    closedDisabled: 'Deze band is niet meer open',
     sendError: 'Je bericht is niet verstuurd. Het staat er nog, probeer het opnieuw.',
     notSent: 'Bericht niet verstuurd',
     refusedKeep: 'Je tekst staat nog in het veld: pas hem aan voor je hem opnieuw verstuurt.',
@@ -778,7 +759,7 @@ export const chat = messages({
     rhythmMuted: 'Minimoas staan uit in deze chat.',
     switchOn: 'Minimoas staan aan in deze chat. Tik om ze uit te zetten.',
     switchOff: 'Minimoas staan uit in deze chat. Tik om ze weer aan te zetten.',
-    mutedNotice: 'Jullie minimoas zwijgen hier. Meldingen van de band (niveau, levens) blijven.',
+    mutedNotice: 'Jullie minimoas zwijgen hier. Meldingen van de band (niveau, reeks) blijven.',
     unmutedNotice: 'Jullie minimoas mogen hier weer praten.',
     muteError: 'De instelling is niet opgeslagen. Probeer het opnieuw.',
     longPressHint: 'Dit bericht melden',
@@ -907,71 +888,94 @@ export const memories = messages({
   },
 });
 
-export const ghost = messages({
+/**
+ * L'état d'un lien, en une phrase douce (ADA-2027 item 27, cahier LOT2 §2.4) : jamais de chiffre, de jauge ni de perte.
+ * `vivant` : quelqu'un a écrit ces deux derniers jours ; `calme` ; `moment` : une semaine de silence ; `endormi` : deux.
+ */
+export const warmth = messages({
+  fr: {
+    vivant: 'Vous vous parlez souvent.',
+    calme: 'C’est calme en ce moment.',
+    moment: 'Ça fait un moment. Un mot lui ferait plaisir.',
+    endormi: 'Le lien fait la sieste. Il se réveille au premier mot.',
+  },
+  en: {
+    vivant: 'You two talk often.',
+    calme: 'It’s quiet right now.',
+    moment: 'It’s been a while. A word would make their day.',
+    endormi: 'The link is napping. It wakes up with the first word.',
+  },
+  es: {
+    vivant: 'Hablan a menudo.',
+    calme: 'Está todo tranquilo por ahora.',
+    moment: 'Hace tiempo. Un mensaje le haría ilusión.',
+    endormi: 'El vínculo está de siesta. Se despierta con la primera palabra.',
+  },
+  pt: {
+    vivant: 'Vocês conversam sempre.',
+    calme: 'Está tudo tranquilo por agora.',
+    moment: 'Faz um tempo. Uma mensagem ia alegrar o dia.',
+    endormi: 'O vínculo está tirando uma soneca. Acorda com a primeira palavra.',
+  },
+  nl: {
+    vivant: 'Jullie praten vaak met elkaar.',
+    calme: 'Het is even rustig.',
+    moment: 'Het is even geleden. Een berichtje doet vast goed.',
+    endormi: 'De band doet een dutje. Bij het eerste woord wordt hij wakker.',
+  },
+});
+
+/** Lien endormi en plein écran (ancien écran « fantôme ») : « Le réveiller » ou « Le laisser partir ». */
+export const sleep = messages({
   fr: {
     title: [{ text: 'UNE PETITE\n' }, { text: 'PAUSE.', dim: true }] as TitleSegment[],
     badge: (name: string): string => `${name} · lien endormi`,
-    text: (name: string): string => `7 jours sans message avec ${name}. Le lien fait la sieste, il se réveille quand tu veux.`,
+    text: (name: string): string => `Ça fait un moment avec ${name}. Le lien fait la sieste, il se réveille quand tu veux.`,
     speech: (name: string): string => `J’ai pensé à ${name} cette semaine. Un petit mot, quand tu veux.`,
     speaker: (pet: string): string => `${pet}, en pleine sieste`,
-    revive: 'Le réveiller',
-    reviveHint: '(une seule fois)',
-    already: 'Déjà réveillé une fois',
+    wake: 'Le réveiller',
     leave: 'Le laisser partir',
-    reviveError: 'Impossible de le réveiller.',
-    cannotRevive: 'Ce lien a déjà été réveillé une fois.',
+    wakeError: 'Impossible de le réveiller.',
   },
   en: {
     title: [{ text: 'A LITTLE\n' }, { text: 'BREAK.', dim: true }],
     badge: (name: string): string => `${name} · sleeping link`,
-    text: (name: string): string => `7 days without messages with ${name}. The link is napping and wakes up whenever you like.`,
+    text: (name: string): string => `It’s been a while with ${name}. The link is napping and wakes up whenever you like.`,
     speech: (name: string): string => `I’ve been thinking about ${name} this week. A little word, whenever you like.`,
     speaker: (pet: string): string => `${pet}, napping`,
-    revive: 'Wake it up',
-    reviveHint: '(only once)',
-    already: 'Already woken once',
+    wake: 'Wake it up',
     leave: 'Let it go',
-    reviveError: 'Couldn’t wake it up.',
-    cannotRevive: 'This link has already been woken once.',
+    wakeError: 'Couldn’t wake it up.',
   },
   es: {
     title: [{ text: 'UNA PEQUEÑA\n' }, { text: 'PAUSA.', dim: true }],
     badge: (name: string): string => `${name} · vínculo dormido`,
-    text: (name: string): string => `7 días sin mensajes con ${name}. El vínculo echa una siesta y se despierta cuando quieras.`,
+    text: (name: string): string => `Hace tiempo con ${name}. El vínculo echa una siesta y se despierta cuando quieras.`,
     speech: (name: string): string => `He pensado en ${name} esta semana. Una palabrita, cuando quieras.`,
     speaker: (pet: string): string => `${pet}, de siesta`,
-    revive: 'Despertarlo',
-    reviveHint: '(solo una vez)',
-    already: 'Ya despertado una vez',
+    wake: 'Despertarlo',
     leave: 'Dejarlo ir',
-    reviveError: 'No se pudo despertar.',
-    cannotRevive: 'Este vínculo ya se despertó una vez.',
+    wakeError: 'No se pudo despertar.',
   },
   pt: {
     title: [{ text: 'UMA PEQUENA\n' }, { text: 'PAUSA.', dim: true }],
     badge: (name: string): string => `${name} · vínculo dormindo`,
-    text: (name: string): string => `7 dias sem mensagens com ${name}. O vínculo está tirando uma soneca e acorda quando você quiser.`,
+    text: (name: string): string => `Faz um tempo com ${name}. O vínculo está tirando uma soneca e acorda quando você quiser.`,
     speech: (name: string): string => `Pensei em ${name} esta semana. Uma palavrinha, quando você quiser.`,
     speaker: (pet: string): string => `${pet}, de soneca`,
-    revive: 'Acordar',
-    reviveHint: '(só uma vez)',
-    already: 'Já acordado uma vez',
+    wake: 'Acordar',
     leave: 'Deixar ir',
-    reviveError: 'Não foi possível acordar.',
-    cannotRevive: 'Este vínculo já foi acordado uma vez.',
+    wakeError: 'Não foi possível acordar.',
   },
   nl: {
     title: [{ text: 'EVEN\n' }, { text: 'PAUZE.', dim: true }],
     badge: (name: string): string => `${name} · slapende band`,
-    text: (name: string): string => `7 dagen zonder berichten met ${name}. De band doet een dutje en wordt wakker wanneer jij wilt.`,
+    text: (name: string): string => `Het is even geleden met ${name}. De band doet een dutje en wordt wakker wanneer jij wilt.`,
     speech: (name: string): string => `Ik heb deze week aan ${name} gedacht. Een berichtje, wanneer jij wilt.`,
     speaker: (pet: string): string => `${pet}, even dutten`,
-    revive: 'Wakker maken',
-    reviveHint: '(maar één keer)',
-    already: 'Al een keer wakker gemaakt',
+    wake: 'Wakker maken',
     leave: 'Laten gaan',
-    reviveError: 'Wakker maken is niet gelukt.',
-    cannotRevive: 'Deze band is al een keer wakker gemaakt.',
+    wakeError: 'Wakker maken is niet gelukt.',
   },
 });
 
@@ -1331,8 +1335,7 @@ export const options = messages({
       { text: `${name.toUpperCase()} ` },
       { text: `ET ${pet.toUpperCase()}`, dim: true },
     ],
-    meta: (created: string, level: number, lives: number): string =>
-      `Lien créé le ${created} · niveau ${level} · ${lives} ${lives > 1 ? 'vies' : 'vie'}`,
+    meta: (created: string, level: number): string => `Lien créé le ${created} · niveau ${level}`,
     report: (name: string): string => `Signaler ${name}`,
     reportSub: 'On regarde chaque signalement',
     block: (name: string): string => `Bloquer ${name}`,
@@ -1377,8 +1380,7 @@ export const options = messages({
       { text: `${name.toUpperCase()} ` },
       { text: `AND ${pet.toUpperCase()}`, dim: true },
     ],
-    meta: (created: string, level: number, lives: number): string =>
-      `Link created ${created} · level ${level} · ${lives} ${lives === 1 ? 'life' : 'lives'}`,
+    meta: (created: string, level: number): string => `Link created ${created} · level ${level}`,
     report: (name: string): string => `Report ${name}`,
     reportSub: 'We look at every report',
     block: (name: string): string => `Block ${name}`,
@@ -1422,8 +1424,7 @@ export const options = messages({
       { text: `${name.toUpperCase()} ` },
       { text: `Y ${pet.toUpperCase()}`, dim: true },
     ],
-    meta: (created: string, level: number, lives: number): string =>
-      `Vínculo creado el ${created} · nivel ${level} · ${lives} ${lives === 1 ? 'vida' : 'vidas'}`,
+    meta: (created: string, level: number): string => `Vínculo creado el ${created} · nivel ${level}`,
     report: (name: string): string => `Reportar a ${name}`,
     reportSub: 'Revisamos cada reporte',
     block: (name: string): string => `Bloquear a ${name}`,
@@ -1467,8 +1468,7 @@ export const options = messages({
       { text: `${name.toUpperCase()} ` },
       { text: `E ${pet.toUpperCase()}`, dim: true },
     ],
-    meta: (created: string, level: number, lives: number): string =>
-      `Vínculo criado em ${created} · nível ${level} · ${lives} ${lives === 1 ? 'vida' : 'vidas'}`,
+    meta: (created: string, level: number): string => `Vínculo criado em ${created} · nível ${level}`,
     report: (name: string): string => `Denunciar ${name}`,
     reportSub: 'Analisamos cada denúncia',
     block: (name: string): string => `Bloquear ${name}`,
@@ -1513,8 +1513,7 @@ export const options = messages({
       { text: `${name.toUpperCase()} ` },
       { text: `EN ${pet.toUpperCase()}`, dim: true },
     ],
-    meta: (created: string, level: number, lives: number): string =>
-      `Band gemaakt op ${created} · niveau ${level} · ${lives} ${lives === 1 ? 'leven' : 'levens'}`,
+    meta: (created: string, level: number): string => `Band gemaakt op ${created} · niveau ${level}`,
     report: (name: string): string => `${name} melden`,
     reportSub: 'We bekijken elke melding',
     block: (name: string): string => `${name} blokkeren`,

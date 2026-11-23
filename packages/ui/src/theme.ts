@@ -19,11 +19,11 @@ export const extra = {
   roseLight: ['#FF8FC6', '#FFC4DF'] as const,
   /** Contour d'un bouton radio éteint (`.rad`). */
   radioOff: '#5A5480',
-  /** Fond plein écran d'un lien fantôme (V6-Fantome). */
-  ghost: ['#2A0F2E', '#8C1D4F'] as const,
-  /** Disque de l'avatar fantôme et nom au-dessus de sa bulle. */
-  ghostDisc: '#3A3550',
-  ghostInk: '#E9E4FF',
+  /** Fond plein écran d'un lien endormi (nuit violette, jamais de rouge : ADA-2027 item 27). */
+  sleep: ['#1B1640', '#3B1B78'] as const,
+  /** Disque de l'avatar qui dort et nom au-dessus de sa bulle. */
+  sleepDisc: '#3A3550',
+  sleepInk: '#E9E4FF',
   /** Corail clair des baisses (flèche ↓, puce « −5 bavard »). */
   coralSoft: '#FF8F6B',
   /** Plan stylisé du quartier (écran Carte, maquette V6-Carte). */

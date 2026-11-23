@@ -7,13 +7,15 @@ import type { Ids } from '../../../shared/ids';
 import { CLOCK, IDS, PROFILES, STORAGE } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../ports';
 import { AvatarModeration } from '../../moderation/avatar-moderation';
+import { AvatarBlurs } from './avatar-blurs';
 
 const avatarPattern = (userId: string): RegExp => new RegExp(`^avatars/${userId}/[0-9a-f-]{36}\\.(jpg|png|webp|heic)$`);
 
 /**
  * Photo de profil : ticket d'envoi sous avatars/<personne>/, puis confirmation (l'ancienne est supprimée). À la
  * confirmation, la photo passe au filtre (`AvatarModeration`) : rejetée, elle est effacée et la personne reçoit un refus
- * clair ; non vérifiable (IA indisponible), elle est publiée et sera vérifiée par le minuteur.
+ * clair ; non vérifiable (IA indisponible), elle est publiée et sera vérifiée par le minuteur. Publiée, elle reçoit sa
+ * vignette très floue (`AvatarBlurs`, seule image montrée avant le lien) ; l'ancienne photo et sa vignette sont effacées.
  */
 @Injectable()
 export class Avatar {
@@ -23,6 +25,7 @@ export class Avatar {
     @Inject(IDS) private readonly ids: Ids,
     @Inject(AvatarModeration) private readonly moderation: AvatarModeration,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(AvatarBlurs) private readonly blurs: AvatarBlurs,
   ) {}
 
   async ticket(userId: string, contentType: string): Promise<UploadTicket> {
@@ -40,7 +43,12 @@ export class Avatar {
     if (profile.avatarPath === path) return;
     const outcome = await this.moderation.review(profile, path);
     if (outcome === 'rejected') throw new DomainError('content_refused', (l) => refusedText(l, 'photo', null));
+    // Vignette d'abord : dès que la photo est publiée, les personnes sans lien voient le flou (ou le minimoa si raté).
+    await this.blurs.makeQuietly(path);
     await this.profiles.update(userId, { avatarPath: path, avatarCheckedAt: outcome === 'ok' ? this.clock.now().toISOString() : null });
-    if (profile.avatarPath && profile.avatarPath !== path) await this.storage.remove([profile.avatarPath]);
+    if (profile.avatarPath && profile.avatarPath !== path) {
+      await this.storage.remove([profile.avatarPath]);
+      await this.blurs.remove(profile.avatarPath);
+    }
   }
 }

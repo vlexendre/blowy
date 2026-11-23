@@ -67,6 +67,14 @@ export class MemoryProfilesRepository implements ProfilesRepository {
       .map((p) => ({ ...p }));
   }
 
+  async listAvatarsAfter(afterId: string | null, limit: number): Promise<Profile[]> {
+    return [...this.db.profiles.values()]
+      .filter((p) => p.avatarPath !== null && (afterId === null || p.id > afterId))
+      .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+      .slice(0, limit)
+      .map((p) => ({ ...p }));
+  }
+
   private find(predicate: (p: Profile) => boolean): Profile | null {
     for (const p of this.db.profiles.values()) if (predicate(p)) return { ...p };
     return null;

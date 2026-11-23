@@ -11,6 +11,7 @@ import { AdminStatsJobs } from '../admin/application/stats.jobs';
 import { RetentionJobs } from '../retention/application/retention.jobs';
 import { WardrobeJobs } from '../pets/application/wardrobe.jobs';
 import { ModerationJobs } from '../moderation/moderation.jobs';
+import { AvatarBlurJobs } from '../me/application/avatar-blur.jobs';
 import { GroupJobs } from '../groups/application/group.jobs';
 import { FideliteJobs } from '../fidelite/application/fidelite.jobs';
 import { QuartierJobs } from '../quartiers/application/quartier.jobs';
@@ -25,6 +26,7 @@ export const TICK_JOBS: ReadonlyArray<{ name: string; job: TickJobClass }> = [
   { name: 'admin-stats', job: AdminStatsJobs },
   { name: 'retention', job: RetentionJobs },
   { name: 'moderation', job: ModerationJobs },
+  { name: 'avatar-blurs', job: AvatarBlurJobs },
   { name: 'wardrobe', job: WardrobeJobs },
   { name: 'groups', job: GroupJobs },
   { name: 'fidelite', job: FideliteJobs },

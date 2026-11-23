@@ -122,7 +122,8 @@ export function useLinkChat(id: string) {
   return { thread, looks, send, retry: outbox.retry, pending: outbox.pending };
 }
 
-export function useRevive(id: string) {
+/** « Le réveiller » (lien endormi) : ton minimoa fait un petit coucou à l'autre ; le lien redevient calme. */
+export function useWake(id: string) {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({ mutationFn: () => api.links.revive(id), onSuccess: (action) => applyAction(qc, id, action) });
@@ -171,7 +172,7 @@ export function useArchiveLink() {
 /** Nombre total de messages non lus (pastille de l'onglet Chats). */
 export const totalUnread = (links: Link[] | undefined): number => (links ?? []).reduce((n, l) => n + l.unread, 0);
 
-export { chatDayLabel, isMyTurn, isNewLink, linkDayState, type LinkDayState, shortDay, sortLinks, streaksWaitingOnMe, timeLabel, weekStrip } from './format';
+export { chatDayLabel, isMyTurn, isNewLink, linkDayState, type LinkDayState, shortDay, sortLinks, streaksWaitingOnMe, timeLabel } from './format';
 export { ConfirmSheet, ReportSheet } from './sheets';
 export { useBackToLink } from './navigation';
 export { useLevelUps } from './levels';

@@ -14,9 +14,11 @@ import { BillingJobs } from '../src/modules/billing/application/billing.jobs';
 import type { SubscriptionsRepository } from '../src/modules/billing/ports';
 import { SUBSCRIPTIONS } from '../src/modules/billing/tokens';
 import { ModerationJobs } from '../src/modules/moderation/moderation.jobs';
+import { blurPathOf } from '../src/modules/me/application/avatar-blurs';
+import type { Storage } from '../src/integrations/storage/ports';
 import type { MemoryDb } from '../src/persistence/memory-db';
 import { Background } from '../src/shared/background';
-import { MEMORY_DB } from '../src/shared/tokens';
+import { MEMORY_DB, STORAGE } from '../src/shared/tokens';
 import { type TestWorld, PARIS, apiError, errorCode, onboardBody, startWorld, upload } from './helpers';
 
 const REVIEW_EMAIL = 'review@minimoa.app';
@@ -88,12 +90,12 @@ describe('audit App Store — côté serveur', () => {
         expect(s.compatibility).toBeGreaterThanOrEqual(70);
         expect(s.explanation.common).toHaveLength(3);
       }
-      // Liens : un lien ouvert avec une conversation (chaque rôle de minimoa), un lien en danger.
+      // Liens : un lien ouvert avec une conversation (chaque rôle de minimoa), un lien après quelques jours de silence.
       const links = await reviewer.api.links.list();
       expect(links).toHaveLength(2);
-      const danger = links.find((l) => l.lives === 2);
-      expect(danger).toBeTruthy();
-      const active = links.find((l) => l.lives !== 2);
+      const quiet = links.find((l) => l.warmth === 'calme');
+      expect(quiet).toMatchObject({ status: 'active', lives: 7 });
+      const active = links.find((l) => l.warmth !== 'calme');
       const page = await reviewer.api.links.messages(active?.id ?? '');
       const roles = new Set(page.messages.map((m) => m.petRole).filter(Boolean));
       for (const role of ['icebreaker', 'nudge', 'guard']) expect(roles.has(role as never), role).toBe(true);
@@ -148,7 +150,7 @@ describe('audit App Store — côté serveur', () => {
     });
 
     it('les personnes fictives répondent ; signaler et bloquer marchent, sans alerter l’équipe', async () => {
-      const [active] = (await reviewer.api.links.list()).filter((l) => l.lives !== 2);
+      const [active] = (await reviewer.api.links.list()).filter((l) => l.warmth !== 'calme');
       const before = (await reviewer.api.links.messages(active?.id ?? '')).messages.length;
       await reviewer.api.links.send(active?.id ?? '', { body: 'Avec plaisir, mardi alors !' });
       await settle();
@@ -369,6 +371,34 @@ describe('audit App Store — côté serveur', () => {
       while (w.clock.now().getUTCMinutes() >= 5) w.clock.advanceMinutes(5);
       await tick();
       expect(db.profiles.get(p.id)?.avatarCheckedAt).toBeTruthy();
+
+      // Publiée sans vérification, puis rejetée par le minuteur : la photo et sa vignette floue sont effacées.
+      // (Une autre personne : Iris a usé son budget de vérifications du jour.)
+      const storage = w.app.get<Storage>(STORAGE);
+      const q = w.client();
+      await q.api.me.onboard(onboardBody({ displayName: 'Jade' }));
+      model.failWith(true);
+      let unchecked = '';
+      try {
+        const t = await q.api.me.avatarTicket('image/jpeg');
+        await upload(t.uploadUrl);
+        unchecked = t.path;
+        await q.api.me.setAvatar(unchecked);
+      } finally {
+        model.failWith(false);
+      }
+      expect(await storage.exists(blurPathOf(unchecked))).toBe(true);
+      model.respondWith((c) => (c.system.includes('photos de profil') ? 'SEXUAL' : 'oui'));
+      try {
+        w.clock.advanceHours(1);
+        while (w.clock.now().getUTCMinutes() >= 5) w.clock.advanceMinutes(5);
+        await tick();
+      } finally {
+        model.respondWith(null);
+      }
+      expect(db.profiles.get(q.id)?.avatarPath).toBeNull();
+      expect(await storage.exists(unchecked)).toBe(false);
+      expect(await storage.exists(blurPathOf(unchecked))).toBe(false);
     });
   });
 

@@ -10,7 +10,7 @@
  * - un texte vu par les gens (app et `packages/content`, cinq langues) contient une formule punitive : « en danger »,
  *   « boude », « tu vas perdre », « dernière chance »… (liste `FORBIDDEN`, section 5) ;
  * - un texte de l'app (cinq langues) parle d'une fonction retirée : défi, habitude, ligue, trophée, étincelle, bilan,
- *   preuve… (liste `RETIRED`, exceptions écrites dans `RETIRED_ALLOWED`, section 6) ;
+ *   preuve, vies d'un lien… (liste `RETIRED`, exceptions écrites dans `RETIRED_ALLOWED`, section 6) ;
  * Affiche ensuite, pour chaque langue, le nombre de textes encore en français (`TODO`) par dictionnaire.
  * `--list` affiche aussi les clés non traduites.
  */
@@ -223,16 +223,29 @@ for (const [name, m] of Object.entries(all)) {
 /**
  * Règle App Store 2.5.19 (docs/ADA-2027.md) : une fonction retirée de l'app ne laisse aucun texte (pas de fonction cachée
  * ou en sommeil). Un texte de l'app (`apps/mobile/src/locales`, cinq langues) ne parle donc plus de défis, d'habitudes, de
- * ligue, de trophées, d'étincelles, de bilans ni de preuves. Une expression par langue ; les exceptions sont écrites
+ * ligue, de trophées, d'étincelles, de bilans, de preuves ni de vies d'un lien. Une expression par langue ; les exceptions sont écrites
  * dans `RETIRED_ALLOWED`, avec leur raison.
  */
 const word = (alts: string): RegExp => new RegExp(`(?<![\\p{L}])(?:${alts})(?![\\p{L}])`, 'iu');
+/**
+ * Vies d'un lien (ADA-2027 item 27) : seulement au sens mécanique (« 3 vies », « vies sur 7 », « une vie de plus »,
+ * « coûte une vie », « 7 lives », « lives left »…). « La vie », « comment tu vois la vie », « lives nearby »,
+ * « la vida », « het leven » restent des mots courants et ne sont pas visés.
+ */
+const N = '\\d+[\\s\\u00a0\\u202f]';
+const LIVES: Record<(typeof LOCALES)[number], string> = {
+  fr: `${N}vies?|vies sur|vies? du lien|une vie de plus|une seule vie|(?:perd|perdu|coûte|regagne|rend)\\S* une vie|plus de vies?|cœurs? du lien`,
+  en: `${N}lives?|lives? (?:out of|left)|one more life|extra life|(?:lose|lost|costs?|gain|regain)s? (?:the link )?a life`,
+  es: `${N}vidas?|vidas? de \\d|una vida más|una sola vida|(?:pierde|cuesta|gana)\\S* una vida`,
+  pt: `${N}vidas?|vidas? de \\d|uma vida a mais|uma vida só|(?:perde|custa|ganha)\\S* uma vida`,
+  nl: `${N}levens?|levens? van \\d|één leven erbij|kost (?:\\S+ ){0,2}een leven`,
+};
 const RETIRED: Record<(typeof LOCALES)[number], RegExp> = {
-  fr: word('défis?|habitudes?|ligues?|trophées?|étincelles?|bilans?|preuves?'),
-  en: word('challenges?|habits?|leagues?|trophy|trophies|sparks?|recaps?|reviews?|proofs?'),
-  es: word('retos?|desafíos?|hábitos?|ligas?|trofeos?|chispas?|balances?|pruebas?(?! gratu| gratis)'),
-  pt: word('desafios?|hábitos?|ligas?|troféus?|faíscas?|balanços?|provas?'),
-  nl: word('uitdagingen|uitdaging|gewoontes?|gewoonte|competities?|trofee(?:ën|ëen|s)?|vonken|vonk|terugblikken?|bewijs'),
+  fr: word(`défis?|habitudes?|ligues?|trophées?|étincelles?|bilans?|preuves?|${LIVES.fr}`),
+  en: word(`challenges?|habits?|leagues?|trophy|trophies|sparks?|recaps?|reviews?|proofs?|${LIVES.en}`),
+  es: word(`retos?|desafíos?|hábitos?|ligas?|trofeos?|chispas?|balances?|pruebas?(?! gratu| gratis)|${LIVES.es}`),
+  pt: word(`desafios?|hábitos?|ligas?|troféus?|faíscas?|balanços?|provas?|${LIVES.pt}`),
+  nl: word(`uitdagingen|uitdaging|gewoontes?|gewoonte|competities?|trofee(?:ën|ëen|s)?|vonken|vonk|terugblikken?|bewijs|${LIVES.nl}`),
 };
 /**
  * Exceptions : le texte reste, avec la raison. `dict` = dictionnaire (`app/<fichier>.<nom>`), `at` = chemin de la clé.

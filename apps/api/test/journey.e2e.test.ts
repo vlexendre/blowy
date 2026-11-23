@@ -5,6 +5,8 @@
 import type { ApiClient } from '@blowy/api-client';
 import { HealthZ, type Link } from '@blowy/contract';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import type { MemoryDb } from '../src/persistence/memory-db';
+import { MEMORY_DB } from '../src/shared/tokens';
 import { type TestWorld, errorCode, onboardBody, seedPastPhoto, startWorld } from './helpers';
 
 describe('parcours : rencontre, chat, vies, série de la conversation, niveaux', () => {
@@ -108,33 +110,26 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     expect(second.messages.at(-1)?.at.localeCompare(first.messages[0]?.at ?? '')).toBe(-1);
   });
 
-  it('perd une vie par jour entier de silence (une seule réplique par rattrapage)', async () => {
-    world.clock.advanceDays(1);
-    expect((await bob.api.links.get(link.id)).lives).toBe(7);
-    world.clock.advanceDays(2);
-    const hurt = await bob.api.links.get(link.id);
-    expect(hurt.lives).toBe(5);
-    expect(hurt.myPet.mood).toBe('neutre');
-    const again = await alice.api.links.messages(link.id);
-    // Le texte ne chiffre plus les vies (voice.lifeLost) : on reconnaît la réplique à son ton.
-    const lines = again.messages.filter((m) =>
-      /Une journée tranquille|on vous attend sans se presser|Un mot suffit à nous remettre|On vous garde de la place/.test(m.body ?? ''),
-    );
-    expect(lines).toHaveLength(1);
+  it('le silence ne coûte rien : le lien dit seulement son état, sans réplique ni chiffre (ADA-2027 item 27)', async () => {
+    const before = (await alice.api.links.messages(link.id)).messages.length;
+    expect((await bob.api.links.get(link.id)).warmth).toBe('vivant');
+    world.clock.advanceDays(3);
+    const quiet = await bob.api.links.get(link.id);
+    expect(quiet).toMatchObject({ status: 'active', lives: 7, canRevive: false, warmth: 'calme', myPet: { mood: 'joie' } });
+    // Aucune réplique de minimoa ne vient annoncer le silence.
+    expect((await alice.api.links.messages(link.id)).messages).toHaveLength(before);
   });
 
-  it('série de la conversation : un jour compte quand les deux ont écrit, et rend une vie', async () => {
+  it('série de la conversation : un jour compte quand les deux ont écrit', async () => {
     // Samedi 14 novembre : Alice écrit seule, la série (tombée pendant le silence) n'avance pas.
     const solo = await alice.api.links.send(link.id, { body: 'tu es là ?' });
-    expect(solo.link).toMatchObject({ lives: 5, streak: 0, bestStreak: 1 });
+    expect(solo.link).toMatchObject({ lives: 7, streak: 0, bestStreak: 1, warmth: 'vivant' });
     expect(solo.link.today).toMatchObject({ day: '2026-11-14', mine: true, theirs: false, atStake: false });
     expect((await bob.api.links.get(link.id)).today).toMatchObject({ mine: false, theirs: true });
 
     const duo = await bob.api.links.send(link.id, { body: 'oui !' });
-    expect(duo.link).toMatchObject({ lives: 6, streak: 1, bestStreak: 1 });
+    expect(duo.link).toMatchObject({ lives: 7, streak: 1, bestStreak: 1 });
     expect(duo.link.today).toMatchObject({ mine: true, theirs: true, atStake: false });
-    // La vie rendue est dite par un minimoa (comme le faisait la photo à deux).
-    expect(duo.messages.some((m) => m.author === 'my_pet' && m.petRole === 'event' && /\b6\b/.test(m.body ?? ''))).toBe(true);
     // La semaine, du lundi 9 au dimanche 15 : le lien est né mercredi 11, écrit à deux ce jour-là et aujourd'hui.
     expect(duo.link.today.week.map((d) => `${d.day.slice(8)}:${d.when}:${d.beforeLink ? 'avant' : d.mine && d.theirs ? 'deux' : d.mine || d.theirs ? 'un' : '-'}`)).toEqual([
       '09:past:avant',
@@ -196,19 +191,34 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     }
   });
 
-  it('devient fantôme, se ranime une fois, pas deux', async () => {
-    world.clock.advanceDays(10);
-    const ghost = await alice.api.links.get(link.id);
-    expect(ghost).toMatchObject({ status: 'ghost', lives: 0, canRevive: true, myPet: { mood: 'triste' } });
-    expect(await errorCode(alice.api.links.send(link.id, { body: 'tu es là ?' }))).toBe('link_not_active');
+  it('un long silence : le lien s’endort sans rien bloquer ; « Le réveiller » fait un petit coucou, autant de fois qu’on veut', async () => {
+    world.clock.advanceDays(8);
+    expect((await alice.api.links.get(link.id)).warmth).toBe('moment');
+    world.clock.advanceDays(7);
+    const asleep = await alice.api.links.get(link.id);
+    expect(asleep).toMatchObject({ status: 'active', lives: 7, canRevive: false, warmth: 'endormi', myPet: { mood: 'joie' } });
+    const woken = await bob.api.links.revive(link.id);
+    expect(woken.link).toMatchObject({ status: 'active', lives: 7, warmth: 'calme', streak: 0, bestStreak: 2 });
+    expect(woken.messages.map((m) => [m.author, m.body])).toEqual([['my_pet', 'Je lui ai fait un petit coucou.']]);
+    // Pas de « une seule fois » : deux semaines plus tard, il se réveille encore.
+    world.clock.advanceDays(15);
+    expect((await alice.api.links.get(link.id)).warmth).toBe('endormi');
+    expect((await alice.api.links.revive(link.id)).link.warmth).toBe('calme');
+    // Et un premier mot suffit, sans passer par « Le réveiller ».
+    world.clock.advanceDays(15);
+    const back = await alice.api.links.send(link.id, { body: 'tu es là ?' });
+    expect(back.link.warmth).toBe('vivant');
+  });
 
-    const revived = await bob.api.links.revive(link.id);
-    expect(revived.link).toMatchObject({ status: 'active', lives: 3, canRevive: false, streak: 0, bestStreak: 2 });
-    expect(revived.messages.map((m) => m.author)).toEqual(['system', 'my_pet', 'other_pet']);
-
-    world.clock.advanceDays(10);
-    expect((await alice.api.links.get(link.id)).status).toBe('ghost');
-    expect(await errorCode(alice.api.links.revive(link.id))).toBe('cannot_revive');
+  it('un ancien lien endormi (du temps des vies) se réveille à la lecture, sans un mot', async () => {
+    const db = world.app.get<MemoryDb>(MEMORY_DB);
+    const row = db.links.get(link.id);
+    if (!row) throw new Error('lien absent');
+    db.links.set(link.id, { ...row, status: 'ghost', lives: 0 });
+    const before = (await alice.api.links.messages(link.id)).messages.length;
+    expect(await alice.api.links.get(link.id)).toMatchObject({ status: 'active', lives: 7, canRevive: false });
+    expect(db.links.get(link.id)).toMatchObject({ status: 'active', lives: 7 });
+    expect((await alice.api.links.messages(link.id)).messages).toHaveLength(before);
   });
 
   it('archive un lien (il disparaît de la liste)', async () => {

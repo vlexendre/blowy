@@ -45,7 +45,7 @@ export default function LinkOptionsScreen() {
       <View style={styles.grow}>
         <Title text={t.title(l.other.displayName, l.other.pet.name)} size={28} numberOfLines={1} />
         <Text variant="body" size={12} muted>
-          {t.meta(shortDay(dayOf(new Date(l.createdAt))), l.level, l.lives)}
+          {t.meta(shortDay(dayOf(new Date(l.createdAt))), l.level)}
         </Text>
       </View>
     </View>

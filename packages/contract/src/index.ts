@@ -10,6 +10,7 @@ import {
   ITEM_SLOTS,
   LEVEL_KEYS,
   LINK_STATUSES,
+  LINK_WARMTHS,
   MOODS,
   PET_EVENT_KINDS,
   SHAPES,
@@ -276,7 +277,9 @@ export const LinkZ = z.object({
   id: Uuid,
   other: PersonZ,
   myPet: PublicPetZ,
+  /** `ghost` n'est plus jamais envoyé (ADA-2027 item 27) : un ancien lien endormi se réveille au rattrapage. */
   status: z.enum(LINK_STATUSES),
+  /** Obsolète, toujours 7 : les vies ne baissent plus (ADA-2027 item 27). Gardé pour les anciennes versions de l'app. */
   lives: z.number().int(),
   level: z.number().int(),
   xp: z.number().int(),
@@ -288,7 +291,14 @@ export const LinkZ = z.object({
   streak: z.number().int(),
   /** Meilleure série du lien. */
   bestStreak: z.number().int(),
+  /** Obsolète, toujours faux (plus de lien endormi à ranimer). Gardé pour les anciennes versions de l'app. */
   canRevive: z.boolean(),
+  /**
+   * L'état du lien, sans chiffre ni perte (`linkWarmth`, ADA-2027 item 27) : `vivant` (quelqu'un a écrit ces deux
+   * derniers jours), `calme`, `moment` (une semaine de silence), `endormi` (deux semaines ; il se réveille au premier mot
+   * ou par `POST /v1/links/:id/revive`). Absent d'une API plus ancienne.
+   */
+  warmth: z.enum(LINK_WARMTHS).optional(),
   unread: z.number().int(),
   /** `author` : qui a écrit le dernier message, vu de toi (préfixe « Nino : » de l'aperçu) ; absent d'une API plus ancienne. */
   lastMessage: z

@@ -5,12 +5,27 @@ export interface UploadTicket {
   token: string;
 }
 
+/** Un fichier lu ou écrit par l'API elle-même (vignettes floues des photos de profil). */
+export interface StoredBytes {
+  bytes: Buffer;
+  contentType: string;
+}
+
 /** Stockage privé des médias (compartiment `media`). */
 export interface Storage {
   createUploadTicket(path: string): Promise<UploadTicket>;
   signedUrl(path: string, seconds: number): Promise<string>;
+  /**
+   * URL de lecture signées, en un seul appel, dans l'ordre de `paths` ; null pour un fichier absent (jamais d'erreur
+   * pour un fichier manquant : c'est ainsi que l'API sait qu'une vignette n'existe pas encore).
+   */
+  signedUrls(paths: readonly string[], seconds: number): Promise<(string | null)[]>;
   remove(paths: readonly string[]): Promise<void>;
   exists(path: string): Promise<boolean>;
+  /** Contenu d'un fichier (usage interne de l'API) ; null s'il n'existe pas. */
+  read(path: string): Promise<StoredBytes | null>;
+  /** Écrit (ou remplace) un fichier produit par l'API. */
+  write(path: string, file: StoredBytes): Promise<void>;
 }
 
 /** Durée de validité des URL de lecture. */

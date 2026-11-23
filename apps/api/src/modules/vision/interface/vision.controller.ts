@@ -17,6 +17,7 @@ import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser, Public } from '../../../shared/auth.guard';
 import { RateLimit } from '../../../shared/user-rate-limit';
 import { ZodPipe } from '../../../shared/zod.pipe';
+import { AvatarBlurs, type BlurredFaces, NO_BLURRED_FACES, faceOf } from '../../me/application/avatar-blurs';
 import { toPerson } from '../../me/interface/person.presenter';
 import { moodForShape } from '../../pets/application/pet-catch-up';
 import { toPublicPet } from '../../pets/interface/pet.presenter';
@@ -29,16 +30,22 @@ const status = (s: LocationState): LocationStatus => toLocationStatus(s.profile,
 
 const latLng = (p: { lat: number; lng: number }) => ({ latitude: p.lat, longitude: p.lng });
 
-export const toMapDto = (r: MapResult, locale: Locale = 'fr'): MapDto => ({
+const pinPerson = (p: MapResult['pins'][number], faces: BlurredFaces) => {
+  const { face, avatarUrl } = faceOf(faces, p.profile.id);
+  return toPerson(p.profile, toPublicPet(p.pet, moodForShape(shapeOf(p.pet.needs))), face, avatarUrl);
+};
+
+export const toMapDto = (r: MapResult, locale: Locale = 'fr', faces: BlurredFaces = NO_BLURRED_FACES): MapDto => ({
   status: r.status,
   message: r.status === 'no_location' ? visionText.in(locale).map.noLocation : null,
   scope: r.scope,
   center: r.center ? latLng(r.center) : null,
   radiusKm: r.radiusKm,
   pins: r.pins.map((p) => ({
-    // Sur la carte : jamais de photo avant le lien noué (décision 7, docs/ADA-2027.md : gratuit ou Minimoa+). Aucune URL
-    // n'est signée : un flou fait sur le téléphone laisserait partir la photo nette. Et l'activité du jour.
-    user: toPerson(p.profile, toPublicPet(p.pet, moodForShape(shapeOf(p.pet.needs))), 'hidden', null),
+    // Sur la carte, personne n'a de lien noué avec toi (les liens n'ont pas d'épingle) : jamais la photo d'origine
+    // (décision 7, docs/ADA-2027.md : gratuit ou Minimoa+), seulement la vignette très floue faite par le serveur, ou le
+    // minimoa tant qu'elle n'existe pas. Et l'activité du jour.
+    user: pinPerson(p, faces),
     activeToday: p.activeToday,
     position: latLng(p.match.shown),
     compatibility: p.match.score,
@@ -57,6 +64,7 @@ export class VisionController {
     @Inject(MyVision) private readonly vision: MyVision,
     @Inject(Locations) private readonly locations: Locations,
     @Inject(GetMap) private readonly getMap: GetMap,
+    @Inject(AvatarBlurs) private readonly blurs: AvatarBlurs,
   ) {}
 
   /** Public : le test se passe avant la connexion (les réponses partent avec l'inscription). */
@@ -114,6 +122,7 @@ export class VisionController {
 
   @Get('map')
   async map(@CurrentUser() user: AuthUser, @Query(new ZodPipe(MapQuery)) query: z.infer<typeof MapQuery>, @ReqLocale() locale: Locale): Promise<MapDto> {
-    return toMapDto(await this.getMap.execute(user.userId, query), locale);
+    const map = await this.getMap.execute(user.userId, query);
+    return toMapDto(map, locale, await this.blurs.urls(map.pins.map((p) => p.profile)));
   }
 }

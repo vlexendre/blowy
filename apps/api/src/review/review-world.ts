@@ -8,7 +8,7 @@
  *   zone (épingles, rencontres expliquées), 3 au-delà (compteur « plus loin » et paywall), amis d'amis entre elles ;
  * - un coucou reçu ; un lien ouvert avec une conversation (répliques des minimoas de chaque rôle : brise-glace,
  *   relance, remarque, garde-fou visible de lui seul) et l'accord de lecture par l'IA déjà donné par l'autre ; un lien
- *   en danger (2 vies) ;
+ *   après quelques jours de silence (`warmth` « calme », ADA-2027 item 27) ;
  * - sa série du défi du jour avec son historique, deux habitudes, le bilan de la semaine passée ; son minimoa en forme.
  * Les personnes fictives n'ont pas de vrai compte (comptes d'authentification bannis, adresses `.invalid`) ; `Audience`
  * ne les montre qu'au compte de revue ; elles sont hors statistiques, hors alertes et hors e-mails.
@@ -281,7 +281,7 @@ export class ReviewWorld implements OnboardedHook {
     await this.minimoas.update(link.id, other, { consent: true });
   }
 
-  /** Lien en danger : dernier échange il y a 6 jours ; le rattrapage à la lecture lui laisse 2 vies. */
+  /** Lien après quelques jours de silence : dernier échange il y a 6 jours (`warmth` « calme »). */
   private async dangerLink(world: string, other: string, today: Day, reviewer: Profile): Promise<void> {
     const [userA, userB] = this.ordered(world, other);
     const ago = (n: number): Day => addDays(today, -n);

@@ -53,6 +53,8 @@ export interface ProfilesRepository {
   deleteFixtures(world: string): Promise<string[]>;
   /** Photos de profil pas encore vérifiées par le filtre, les plus anciennes d'abord. */
   listUncheckedAvatars(limit: number): Promise<Profile[]>;
+  /** Profils qui ont une photo, par identifiant croissant après `afterId` (parcours par pages, vignettes floues). */
+  listAvatarsAfter(afterId: string | null, limit: number): Promise<Profile[]>;
 }
 
 /** Appelé après une création de pet réussie (monde de démo en local ; rien en production). */

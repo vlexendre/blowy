@@ -155,7 +155,7 @@ export default function ChatsScreen() {
                   timeLabel={l.lastMessage ? timeLabel(l.lastMessage.at, now) : undefined}
                   levelLabel={t.level(l.level)}
                   emptyPreview={t.emptyPreview}
-                  ghostLabel={t.ghost}
+                  mood={l.warmth === 'moment' || l.warmth === 'endormi' ? { warmth: l.warmth, label: t.mood[l.warmth] } : undefined}
                   newLabel={isNewLink(l, now) ? t.isNew : undefined}
                   noteLabel={isNewLink(l, now) ? t.introducedBy(l.myPet.name) : undefined}
                   previewAuthor={

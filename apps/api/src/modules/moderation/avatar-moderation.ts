@@ -1,7 +1,7 @@
 /**
  * Photo de profil passée au filtre (`PhotoCheck`) : à l'envoi (refus clair si elle est rejetée) et, pour celles qui
  * n'ont pas pu être vérifiées (IA indisponible) ou qui datent d'avant le filtre, par le minuteur.
- * Une photo rejetée est retirée et effacée du stockage ; l'équipe reçoit un signalement automatique (urgent si la
+ * Une photo rejetée est retirée et effacée du stockage, sa vignette floue avec ; l'équipe reçoit un signalement automatique (urgent si la
  * personne semble mineure) sans la photo elle-même.
  */
 import { Inject, Injectable } from '@nestjs/common';
@@ -9,6 +9,7 @@ import type { AiModerationLabel } from '@blowy/domain';
 import type { Storage } from '../../integrations/storage/ports';
 import type { Clock } from '../../shared/clock';
 import { CLOCK, PROFILES, STORAGE } from '../../shared/tokens';
+import { AvatarBlurs } from '../me/application/avatar-blurs';
 import type { Profile, ProfilesRepository } from '../me/ports';
 import { PhotoCheck } from './photo-check';
 import { ReportDesk } from './report-desk';
@@ -23,6 +24,7 @@ export class AvatarModeration {
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(AvatarBlurs) private readonly blurs: AvatarBlurs,
   ) {}
 
   /** Vérifie `path` pour `profile`. Une photo rejetée est effacée (et retirée du profil si c'était la sienne). */
@@ -35,6 +37,7 @@ export class AvatarModeration {
       return 'ok';
     }
     await this.storage.remove([path]);
+    await this.blurs.remove(path);
     if (profile.avatarPath === path) await this.profiles.update(profile.id, { avatarPath: null, avatarCheckedAt: now });
     await this.desk.file({
       reporter: null,

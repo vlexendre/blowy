@@ -8,6 +8,8 @@ export const AUTH_VERIFIER = Symbol('AUTH_VERIFIER');
 export const AUTH_ADMIN = Symbol('AUTH_ADMIN');
 export const USER_EMAILS = Symbol('USER_EMAILS');
 export const STORAGE = Symbol('STORAGE');
+/** Traitement d'image (vignette floue des photos de profil) : `integrations/images/ports.ts`. */
+export const IMAGES = Symbol('IMAGES');
 export const MAILER = Symbol('MAILER');
 export const SUPABASE = Symbol('SUPABASE');
 export const MEMORY_DB = Symbol('MEMORY_DB');

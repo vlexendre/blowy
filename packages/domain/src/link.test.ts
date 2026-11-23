@@ -10,16 +10,17 @@ import {
   type LinkSide,
   type LinkState,
   applyLinkMessage,
-  canRevive,
+  faceBeforeLink,
   faceVisibility,
   isWriteReminderHour,
   lateSide,
   levelForXp,
   linkToday,
+  linkWarmth,
+  wakeLink,
   linkWeek,
   newLink,
   nextLevel,
-  reviveLink,
   tickLink,
 } from './link';
 
@@ -43,40 +44,63 @@ function write(s: LinkState, side: LinkSide, day: Day, n = 1, xpToday = { day: '
 /** Les deux s'écrivent ce jour-là (a d'abord). */
 const both = (s: LinkState, day: Day): LinkState => write(write(s, 'a', day).state, 'b', day).state;
 
-describe('lien : vies (inchangées)', () => {
-  it('ne perd rien le lendemain d’un jour actif', () => {
-    expect(tickLink(newLink(d0), addDays(d0, 1)).lives).toBe(7);
-  });
-  it('perd une vie par jour entier sans aucun message', () => {
-    expect(tickLink(newLink(d0), addDays(d0, 2)).lives).toBe(6);
-    expect(tickLink(newLink(d0), addDays(d0, 4)).lives).toBe(4);
-    // rattrapage en deux fois = même résultat qu'en une fois
-    expect(tickLink(tickLink(newLink(d0), addDays(d0, 2)), addDays(d0, 4)).lives).toBe(4);
-  });
-  it('un jour où un seul écrit ne coûte pas de vie', () => {
-    let s = newLink(d0);
-    for (let i = 1; i <= 5; i++) s = write(s, 'a', addDays(d0, i)).state;
-    expect(tickLink(s, addDays(d0, 6)).lives).toBe(MAX_LIVES);
+describe('lien : rien ne se perd (ADA-2027 item 27)', () => {
+  it('le silence ne coûte rien : `lives` reste à 7, le lien reste actif', () => {
+    expect(tickLink(newLink(d0), addDays(d0, 2)).lives).toBe(MAX_LIVES);
+    const later = tickLink(newLink(d0), addDays(d0, 60));
+    expect(later.lives).toBe(MAX_LIVES);
+    expect(later.status).toBe('active');
   });
   it('rattrapage idempotent le même jour', () => {
     const s = tickLink(newLink(d0), addDays(d0, 3));
     expect(tickLink(s, addDays(d0, 3))).toBe(s);
   });
-  it('devient fantôme puis se ranime une seule fois', () => {
-    const ghost = tickLink(newLink(d0), addDays(d0, 30));
-    expect(ghost.status).toBe('ghost');
-    expect(canRevive(ghost)).toBe(true);
-    const back = reviveLink(ghost, addDays(d0, 30))!;
-    expect(back.lives).toBe(3);
-    const again = tickLink(back, addDays(d0, 60));
-    expect(again.status).toBe('ghost');
-    expect(reviveLink(again, addDays(d0, 60))).toBeNull();
+  it('un ancien lien endormi (du temps des vies) se réveille au rattrapage, record gardé', () => {
+    let s = newLink(d0);
+    for (let i = 0; i < 4; i++) s = both(s, addDays(d0, i));
+    const old: LinkState = { ...s, status: 'ghost', lives: 0, lastTickOn: addDays(d0, 12) };
+    const woken = tickLink(old, addDays(d0, 12));
+    expect(woken).toMatchObject({ status: 'active', lives: MAX_LIVES, bestStreak: 4 });
+    expect(linkToday(woken, 'a', addDays(d0, 12)).streak).toBe(0);
+    const again = both(woken, addDays(d0, 12));
+    expect(again.streak).toBe(1);
   });
-  it('un lien fantôme ne bouge plus : un message n’y fait rien', () => {
-    const ghost = tickLink(newLink(d0), addDays(d0, 30));
-    const r = applyLinkMessage(ghost, 'a', addDays(d0, 30));
-    expect(r.state).toBe(ghost);
-    expect(r.duoDay).toBe(false);
+  it('un ancien lien à 3 vies remonte à 7 sans rien dire', () => {
+    const s = { ...newLink(d0), lives: 3 };
+    expect(tickLink(s, d0).lives).toBe(MAX_LIVES);
+  });
+  it('un lien rangé ne bouge plus', () => {
+    const s: LinkState = { ...newLink(d0), status: 'archived' };
+    expect(tickLink(s, addDays(d0, 30))).toBe(s);
+    expect(applyLinkMessage(s, 'a', addDays(d0, 30)).state).toBe(s);
+  });
+});
+
+describe('lien : son état, dit avec douceur', () => {
+  it('tout neuf : calme, puis « un moment », puis endormi, sans jamais rien bloquer', () => {
+    expect(linkWarmth(newLink(d0), d0)).toBe('calme');
+    expect(linkWarmth(newLink(d0), addDays(d0, 6))).toBe('calme');
+    expect(linkWarmth(newLink(d0), addDays(d0, 7))).toBe('moment');
+    expect(linkWarmth(newLink(d0), addDays(d0, 13))).toBe('moment');
+    expect(linkWarmth(newLink(d0), addDays(d0, 14))).toBe('endormi');
+  });
+  it('vivant tant que quelqu’un a écrit ces deux derniers jours', () => {
+    const s = write(newLink(d0), 'a', d0).state;
+    expect(linkWarmth(s, d0)).toBe('vivant');
+    expect(linkWarmth(s, addDays(d0, 2))).toBe('vivant');
+    expect(linkWarmth(s, addDays(d0, 3))).toBe('calme');
+    expect(linkWarmth(s, addDays(d0, 7))).toBe('moment');
+    expect(linkWarmth(s, addDays(d0, 90))).toBe('endormi');
+  });
+  it('un mot le réveille ; « Le réveiller » le rend calme, sans série ni expérience', () => {
+    const s = both(newLink(d0), d0);
+    const later = addDays(d0, 40);
+    expect(linkWarmth(write(tickLink(s, later), 'b', later).state, later)).toBe('vivant');
+    const woken = wakeLink(s, later);
+    expect(woken).not.toBeNull();
+    expect(linkWarmth(woken!, later)).toBe('calme');
+    expect(woken).toMatchObject({ xp: s.xp, bestStreak: 1, streak: 0, status: 'active' });
+    expect(wakeLink({ ...s, status: 'archived' }, later)).toBeNull();
   });
 });
 
@@ -141,37 +165,11 @@ describe('lien : série de la conversation (spéc §24)', () => {
     const s = both(newLink(d0), d0);
     expect(linkToday(s, 'a', addDays(d0, 2)).streak).toBe(0);
   });
-  it('un jour entier de silence fait aussi tomber la série et coûte une vie', () => {
+  it('un jour entier de silence fait aussi tomber la série (sans rien coûter d’autre)', () => {
     const s = both(both(newLink(d0), d0), addDays(d0, 1));
     const later = tickLink(s, addDays(d0, 3));
     expect(later.streak).toBe(0);
-    expect(later.lives).toBe(MAX_LIVES - 1);
-  });
-  it('le jour à deux rend une vie perdue, jamais au-delà de 7', () => {
-    const hurt = tickLink(newLink(d0), addDays(d0, 3));
-    expect(hurt.lives).toBe(5);
-    const a = write(hurt, 'a', addDays(d0, 3));
-    expect(a.lifeGained).toBe(false);
-    const b = write(a.state, 'b', addDays(d0, 3));
-    expect(b.lifeGained).toBe(true);
-    expect(b.state.lives).toBe(6);
-    const full = write(write(newLink(d0), 'a', d0).state, 'b', d0);
-    expect(full.lifeGained).toBe(false);
-    expect(full.state.lives).toBe(MAX_LIVES);
-  });
-  it('après un ranimage : la série repart de 0, le record reste, puis compte normalement', () => {
-    let s = newLink(d0);
-    for (let i = 0; i < 4; i++) s = both(s, addDays(d0, i));
-    const ghostDay = addDays(d0, 20);
-    const ghost = tickLink(s, ghostDay);
-    expect(ghost.status).toBe('ghost');
-    const back = reviveLink(ghost, ghostDay)!;
-    expect(back.streak).toBe(0);
-    expect(back.bestStreak).toBe(4);
-    expect(linkToday(back, 'a', ghostDay)).toEqual({ mine: false, theirs: false, streak: 0, atStake: false });
-    const again = both(back, ghostDay);
-    expect(again.streak).toBe(1);
-    expect(both(again, addDays(ghostDay, 1)).streak).toBe(2);
+    expect(later.lives).toBe(MAX_LIVES);
   });
 });
 
@@ -251,6 +249,9 @@ describe('lien : expérience (rééquilibrage de la photo du jour)', () => {
     // Lien noué : visage net dès le niveau 1 (règle du 21 nov. 2026).
     expect(faceVisibility(1)).toBe('clear');
     expect(faceVisibility(6)).toBe('clear');
+    // Avant le lien : jamais net ; flou seulement quand la vignette du serveur existe.
+    expect(faceBeforeLink(true)).toBe('blurred');
+    expect(faceBeforeLink(false)).toBe('hidden');
   });
 });
 

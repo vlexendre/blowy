@@ -1,5 +1,5 @@
 import type { Db } from '../../persistence/database.types';
-import type { Storage, UploadTicket } from './ports';
+import type { Storage, StoredBytes, UploadTicket } from './ports';
 
 const BUCKET = 'media';
 
@@ -22,6 +22,15 @@ export class SupabaseStorage implements Storage {
     return data.signedUrl;
   }
 
+  async signedUrls(paths: readonly string[], seconds: number): Promise<(string | null)[]> {
+    if (paths.length === 0) return [];
+    const { data, error } = await this.bucket.createSignedUrls([...paths], seconds);
+    if (error) throw new Error(`URL signées impossibles : ${error.message}`);
+    // Un fichier absent revient avec une erreur et sans URL ; l'ordre suit `paths` (on le vérifie par le chemin).
+    const byPath = new Map(data.map((d) => [d.path, d.error ? null : d.signedUrl]));
+    return paths.map((p) => byPath.get(p) ?? null);
+  }
+
   async remove(paths: readonly string[]): Promise<void> {
     if (paths.length === 0) return;
     const { error } = await this.bucket.remove([...paths]);
@@ -32,5 +41,16 @@ export class SupabaseStorage implements Storage {
     const { data, error } = await this.bucket.exists(path);
     if (error) return false;
     return data;
+  }
+
+  async read(path: string): Promise<StoredBytes | null> {
+    const { data, error } = await this.bucket.download(path);
+    if (error || !data) return null;
+    return { bytes: Buffer.from(await data.arrayBuffer()), contentType: data.type };
+  }
+
+  async write(path: string, file: StoredBytes): Promise<void> {
+    const { error } = await this.bucket.upload(path, file.bytes, { contentType: file.contentType, upsert: true, cacheControl: '3600' });
+    if (error) throw new Error(`écriture de média impossible : ${error.message}`);
   }
 }

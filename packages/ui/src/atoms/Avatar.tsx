@@ -18,7 +18,10 @@ export interface AvatarProps {
   name?: string;
   /** Pet montré à la place du visage (visage caché, pas de photo, ou avatar de pet). */
   pet?: PetLook;
-  /** Visibilité du visage selon le niveau du lien (`hidden` → pet, `blurred` → photo floue). */
+  /**
+   * Visibilité du visage : `hidden` → pet ; `blurred` → vignette déjà très floue faite par le serveur (seule photo
+   * envoyée avant le lien), à peine adoucie ici, avec le pet en petit médaillon ; `clear` → photo nette.
+   */
   face?: FaceVisibility;
   /** Flou forcé, sur la photo comme sur le pet (aperçu verrouillé). */
   blurred?: boolean;
@@ -38,6 +41,11 @@ export interface AvatarProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/** Au-dessous de ce diamètre, la vignette floue n'a pas de médaillon du pet (illisible). */
+const MARK_MIN = 30;
+/** Adoucissement de la vignette floue (déjà floue côté serveur : on lisse seulement l'agrandissement). */
+const SOFTEN = 2;
+
 /** Disque : photo (nette ou floue), visage de pet sur sa couleur, ou initiale. */
 export function Avatar({ size = 44, uri, name, pet, face, blurred, hidden, pose = 'face', bg: discBg, ring, cutout, dimmed, dressed = true, accessibilityLabel, style }: AvatarProps) {
   const isHidden = hidden ?? face === 'hidden';
@@ -53,16 +61,25 @@ export function Avatar({ size = 44, uri, name, pet, face, blurred, hidden, pose 
     ) : showPet && pet ? (
       <Image source={petImage(pet.species, pose)} contentFit="cover" blurRadius={blurred ? Math.round(size / 6) : 0} style={styles.fill} />
     ) : uri ? (
-      <Image source={{ uri }} contentFit="cover" blurRadius={isBlurred ? Math.round(size / 4) : 0} transition={150} style={styles.fill} />
+      <Image source={{ uri }} contentFit="cover" blurRadius={blurred ? Math.round(size / 4) : isBlurred ? SOFTEN : 0} transition={150} style={styles.fill} />
     ) : (
       <Text variant="h3" size={Math.round(size * 0.42)}>{(name ?? '?').slice(0, 1)}</Text>
     );
   let node = <View style={[styles.disc, { width: size, height: size, backgroundColor: bg }]}>{content}</View>;
   if (ring || cutout) node = <View style={[styles.gap, { backgroundColor: color.night }]}>{node}</View>;
   if (ring) node = <View style={[styles.gap, { backgroundColor: ring }]}>{node}</View>;
+  // Vignette floue d'une personne pas encore liée : son minimoa en petit, en bas à droite, pour la reconnaître.
+  const markSize = Math.round(size * 0.42);
+  const mark =
+    !showPet && uri && isBlurred && !blurred && pet && size >= MARK_MIN ? (
+      <View style={[styles.mark, { borderRadius: radius.pill }]}>
+        <PetBadge species={pet.species} outfit={pet.outfit} size={markSize} background={petTint[pet.species]} />
+      </View>
+    ) : null;
   return (
     <View accessible={!!label} accessibilityRole={label ? 'image' : undefined} accessibilityLabel={label} style={[styles.self, dimmed && styles.dimmed, style]}>
       {node}
+      {mark}
     </View>
   );
 }
@@ -72,5 +89,6 @@ const styles = StyleSheet.create({
   gap: { padding: sizes.ring, borderRadius: radius.pill },
   disc: { borderRadius: radius.pill, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   fill: { width: '100%', height: '100%' },
+  mark: { position: 'absolute', right: -2, bottom: -2, padding: sizes.ring, backgroundColor: color.night },
   dimmed: { opacity: opacity.ghost },
 });

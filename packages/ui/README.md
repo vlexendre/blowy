@@ -24,7 +24,7 @@ import { Button, LinkRow, LinkTodayHero, ScreenTemplate } from '@blowy/ui';
 - Pictogrammes : `Glyph` dessinés en vues ; pictos SVG (`react-native-svg`) pour la barre d'onglets et les soins (`CareIcon`) ; les icônes 3D sont des images (`Icon`).
 
 ## Images (`src/assets/pets.ts`)
-Chaque espèce (`nino`, `suzie`, `gaston`, `pia`) a le même jeu : bustes d'humeur, corps entiers, visage, fantôme, malade, formes.
+Chaque espèce (`nino`, `suzie`, `gaston`, `pia`) a le même jeu : bustes d'humeur, corps entiers, visage, dodo, malade, formes.
 ```ts
 type Src = number;                                    // asset Metro
 type PetPose = Mood | 'colere' | 'dodo' | 'fantome' | 'malade' | 'debout' | 'trois_quarts' | 'cote' | 'dos' | 'face';
@@ -254,9 +254,9 @@ FeatureRowProps = { icon: IconName; title: string; text?: string; style?: StyleP
 ```ts
 HeaderProps = { onBack?: () => void; backLabel?: string; backGlyph?: 'back' | 'close'; title?: string; subtitle?: string; center?: ReactNode; right?: ReactNode; style?: StyleProp<ViewStyle>; }
 ```
-#### `LifeSparks` — `src/molecules/LifeSparks.tsx`
+#### `LinkMoodIcon` — `src/molecules/LinkMoodIcon.tsx`
 ```ts
-LifeSparksProps = { lives: number; max?: number; size?: number; ghost?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+LinkMoodIconProps = { warmth: LinkWarmth; size?: number; color?: string; style?: StyleProp<ViewStyle>; }   // une forme par état : deux bulles (vivant), une bulle (calme), bulle en pointillé (moment), lune (endormi) ; décoratif
 ```
 #### `ItemTile` — `src/molecules/ItemTile.tsx`
 ```ts
@@ -375,9 +375,13 @@ ChatThreadProps = { messages: readonly MessageLook[]; myPet: PetLook; other: Pic
 ```ts
 ComposerProps = { value: string; onChangeText: (text: string) => void; onSend: () => void; placeholder: string; disabled?: boolean; disabledText?: string; sending?: boolean; onAttach?: () => void; attachLabel?: string; sendLabel?: string; maxLength?: number; }
 ```
-#### `GhostPanel` — `src/organisms/GhostPanel.tsx`
+#### `SleepPanel` — `src/organisms/SleepPanel.tsx`
 ```ts
-GhostPanelProps = { pet: PetLook; title: TitleContent; text?: string; speech?: string; speakerLabel?: string; canRevive: boolean; reviveLabel: string; reviveHint?: string; alreadyRevivedLabel: string; leaveLabel?: string; onRevive?: () => void; onLeave?: () => void; reviving?: boolean; }
+SleepPanelProps = { pet: PetLook; title: TitleContent; text?: string; speech?: string; speakerLabel?: string; wakeLabel: string; leaveLabel?: string; onWake?: () => void; onLeave?: () => void; waking?: boolean; leaving?: boolean; error?: string | null; onBack?: () => void; backLabel?: string; badge?: string; }   // lien endormi plein écran (nuit violette, minimoa qui dort)
+```
+#### `LinkMoodCard` — `src/organisms/LinkMoodCard.tsx`
+```ts
+LinkMoodCardProps = { warmth: LinkWarmth; text: string; help?: string; }   // l'état du lien en une phrase (onglet « Le lien ») ; jamais de chiffre ni de jauge
 ```
 #### `IncomingCard` — `src/organisms/IncomingCard.tsx`
 ```ts
@@ -389,7 +393,7 @@ LevelLadderProps = { level: number; labels: Record<LevelKey, { title: string; te
 ```
 #### `LinkRow` — `src/organisms/LinkRow.tsx`
 ```ts
-LinkRowProps = { link: LinkLook; timeLabel?: string; levelLabel: string; previewAuthor?: string; previewAuthorColor?: string; emptyPreview?: string; ghostLabel?: string; newLabel?: string; highlight?: boolean; onPress: () => void; onLongPress?: () => void; accessibilityLabel?: string; }
+LinkRowProps = { link: LinkLook; timeLabel?: string; levelLabel: string; previewAuthor?: string; previewAuthorColor?: string; emptyPreview?: string; mood?: { warmth: LinkWarmth; label: string }; newLabel?: string; highlight?: boolean; onPress: () => void; onLongPress?: () => void; accessibilityLabel?: string; }
 ```
 #### `LivesPanel` — `src/organisms/LivesPanel.tsx`
 ```ts
@@ -498,7 +502,7 @@ WordsShareCardProps = { title: string; countLabel?: string; badge?: string; word
 ### Gabarits
 #### `LinkTemplate` — `src/templates/LinkTemplate.tsx`
 ```ts
-LinkTemplateProps<K extends string = string> = { other: PersonLook; myPet: PetLook; lives: number; ghost?: boolean; levelLabel: string; onLevelPress?: () => void; onBack: () => void; backLabel?: string; livesLabel?: string; tabs: readonly SegmentedTabItem<K>[]; activeTab: K; onTabChange: (key: K) => void; children?: ReactNode; footer?: ReactNode; scroll?: boolean; onOptions?: () => void; optionsLabel?: string; refreshControl?: ReactElement<RefreshControlProps>; }
+LinkTemplateProps<K extends string = string> = { other: PersonLook; myPet: PetLook; levelLabel: string; onLevelPress?: () => void; onBack: () => void; backLabel?: string; tabs: readonly SegmentedTabItem<K>[]; activeTab: K; onTabChange: (key: K) => void; children?: ReactNode; footer?: ReactNode; scroll?: boolean; onOptions?: () => void; optionsLabel?: string; refreshControl?: ReactElement<RefreshControlProps>; }
 ```
 #### `OnboardingTemplate` — `src/templates/OnboardingTemplate.tsx`
 ```ts
@@ -705,11 +709,10 @@ MessageBubble { …; fade?: true; typing?: boolean; enter?: 'send' | 'receive'; 
 ChatThread { …; typingLabel?: (name) => string }  // message arrivé : le mien monte du champ, celui d'un pet écrit « … » d'abord
 NudgeBanner { …; reveal?: string }        // s'ouvre depuis le haut, le pet jaillit et fait signe (1re apparition de la clé)
 LinkTodayHero { …; motionKey?: string }  // id du lien : flamme (StreakPill `growKey`) qui grandit ; la série qui monte fait défiler le chiffre, sauter la flamme, confettis
-LivesPanel { …; animateKey?: string }     // jours de la semaine cochés un à un
 MemoryGrid { …; animateKey?: string }     // photos qui se posent comme des cartes
 CountTitle { title; count; from?: 0; size?: 24; hint? }   // « VOS ÉTAPES · 4 », le nombre défile
 LevelLadder { …; animateKey?: string; celebrate?: boolean }   // rail qui monte, marche atteinte qui s'allume, confettis
-LinkTemplate { …; livesFrom?: number; levelUp?: number }       // étincelles qui se rallument (ranimé) ; pastille + confettis au passage
+LinkTemplate { …; levelUp?: number }       // pastille + confettis au passage de niveau
 GhostPanel { …; revealKey?: string }      // le pet perd ses couleurs et flotte ; « ranimer » : il les reprend
 EncounterStage { …; waveKey?: number }    ref: EncounterStageHandle { petRects(); hidePets() }
 EncounterHead { …; waveKey?: number }     // l'avatar fait coucou

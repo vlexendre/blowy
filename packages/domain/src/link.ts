@@ -1,17 +1,20 @@
 /**
- * Un lien = la relation entre deux personnes (et leurs deux minimoas).
- * 7 vies : un jour entier sans échange en coûte une. À 0, le lien devient fantôme ;
- * on peut le ranimer une seule fois. 7 niveaux débloqués par l'expérience.
+ * Un lien = la relation entre deux personnes (et leurs deux minimoas). 7 niveaux débloqués par l'expérience.
+ * Le lien ne se perd plus (ADA-2027 item 27, 23 nov. 2026) : plus de vies qui baissent, plus de lien « fantôme » à
+ * ranimer une seule fois. Il dit seulement son état avec douceur (`linkWarmth` : vivant, calme, un moment, endormi).
+ * Le champ `lives` reste dans l'état et dans le contrat pour les anciennes versions de l'app : il vaut toujours
+ * `MAX_LIVES`, et un ancien lien endormi (`ghost`) se réveille au premier rattrapage.
  * La série du lien vit avec la conversation (spéc V7 §24) : elle compte les jours d'affilée où les deux se sont écrit.
  * Moteur pur : le rattrapage des jours passés se fait à la lecture (`tickLink`) ; le jour (heure de Paris) est un paramètre.
  */
 import { type Day, addDays, daysBetween } from './days';
 import { weekDaysOf } from './rituels/week';
 
+/** Valeur fixe du champ `lives`, gardé pour les anciennes versions de l'app (qui dessinaient 7 cœurs). */
 export const MAX_LIVES = 7;
-export const REVIVE_LIVES = 3;
 export const MAX_LEVEL = 7;
 
+/** `ghost` : ancien état « endormi », plus jamais atteint ; un lien encore marqué ainsi se réveille au rattrapage. */
 export const LINK_STATUSES = ['active', 'ghost', 'archived'] as const;
 export type LinkStatus = (typeof LINK_STATUSES)[number];
 
@@ -20,6 +23,7 @@ export type LinkSide = 'a' | 'b';
 
 export interface LinkState {
   status: LinkStatus;
+  /** Toujours `MAX_LIVES` (anciennes versions de l'app). */
   lives: number;
   xp: number;
   level: number;
@@ -29,7 +33,7 @@ export interface LinkState {
   bestStreak: number;
   /** Dernier jour où quelqu'un a écrit. */
   lastActiveOn: Day;
-  /** Dernier jour déjà pris en compte pour les vies. */
+  /** Dernier jour déjà pris en compte par le rattrapage (`tickLink`). */
   lastTickOn: Day;
   /** Nombre de jours où les deux se sont écrit, depuis la création du lien. */
   duoDays: number;
@@ -39,7 +43,7 @@ export interface LinkState {
   recentDays: LinkDay[];
   /** Étapes du lien : niveaux passés et paliers de série, avec leur jour (null : passé avant qu'on le note). */
   milestones: LinkMilestone[];
-  /** Vrai si le lien a déjà été ranimé. */
+  /** Vrai si le lien a été ranimé du temps des vies (historique, plus utilisé). */
   revived: boolean;
 }
 
@@ -71,11 +75,15 @@ export const LEVEL_KEYS = ['rendezvous', 'jouent', 'emmenagent', 'visage_flou', 
 export type LevelKey = (typeof LEVEL_KEYS)[number];
 
 /**
- * Visage d'une personne. Lien noué (bonjour accepté des deux côtés) : net, dès le premier jour. Sur la carte, avant le
- * lien : flou pour tout le monde, gratuit ou Minimoa+ (décision 7, docs/ADA-2027.md). Ailleurs, sans lien : caché. (Avant le 21 nov. 2026, le visage d'un lien ne se révélait qu'au niveau 5.)
+ * Visage d'une personne. Lien noué (bonjour accepté des deux côtés) : net, dès le premier jour. Avant le lien (carte,
+ * présentations, coucous) : une vignette très floue faite par le serveur, pour tout le monde, gratuit ou Minimoa+
+ * (décision 7, docs/ADA-2027.md) ; caché (le minimoa) tant que cette vignette n'existe pas. (Avant le 21 nov. 2026, le
+ * visage d'un lien ne se révélait qu'au niveau 5.)
  */
 export type FaceVisibility = 'hidden' | 'blurred' | 'clear';
 export const faceVisibility = (_level: number): FaceVisibility => 'clear';
+/** Visage d'une personne sans lien noué : la vignette floue si elle existe, jamais la photo d'origine. */
+export const faceBeforeLink = (hasBlurredThumbnail: boolean): Exclude<FaceVisibility, 'clear'> => (hasBlurredThumbnail ? 'blurred' : 'hidden');
 
 export const levelForXp = (xp: number): number => {
   let level = 1;
@@ -121,19 +129,54 @@ export function newLink(today: Day): LinkState {
 const streakAlive = (s: Pick<LinkState, 'lastDuoDayOn'>, today: Day): boolean => s.lastDuoDayOn !== null && daysBetween(s.lastDuoDayOn, today) <= 1;
 
 /**
- * Applique les jours écoulés : chaque jour entier sans aucun message coûte une vie ; la série retombe à 0 au premier
- * jour (passé minuit) qui n'a pas été écrit par les deux. Un lien fantôme ou rangé ne bouge plus.
+ * Applique les jours écoulés : la série retombe à 0 au premier jour (passé minuit) qui n'a pas été écrit par les deux.
+ * Le silence ne coûte rien : `lives` reste à `MAX_LIVES`, et un ancien lien endormi (`ghost`, du temps des vies) se
+ * réveille. Un lien rangé ne bouge plus.
  */
 export function tickLink(s: LinkState, today: Day): LinkState {
-  if (s.status !== 'active') return s;
+  if (s.status === 'archived') return s;
   const elapsed = daysBetween(s.lastTickOn, today);
-  if (elapsed <= 0) return s;
-  // Jours entiers de silence comptés jusqu'à un jour donné, moins ceux déjà facturés.
-  const silentUntil = (d: Day): number => Math.max(0, daysBetween(s.lastActiveOn, d) - 1);
-  const lost = Math.min(s.lives, silentUntil(today) - silentUntil(s.lastTickOn));
-  const lives = s.lives - lost;
-  const streak = streakAlive(s, today) ? s.streak : 0;
-  return { ...s, lives, streak, lastTickOn: today, status: lives === 0 ? 'ghost' : 'active' };
+  const wakes = s.status !== 'active' || s.lives !== MAX_LIVES;
+  if (elapsed <= 0 && !wakes) return s;
+  const streak = elapsed > 0 && !streakAlive(s, today) ? 0 : s.streak;
+  return { ...s, status: 'active', lives: MAX_LIVES, streak, lastTickOn: elapsed > 0 ? today : s.lastTickOn };
+}
+
+// ── L'état du lien, dit avec douceur ──────────────────────────────────────
+
+/**
+ * Où en est le lien, sans chiffre, jauge ni perte (ADA-2027 item 27, cahier LOT2 §2.4) :
+ * - `vivant` : quelqu'un a vraiment écrit ces deux derniers jours ;
+ * - `calme` : sinon, moins de `LINK_MOMENT_DAYS` jours depuis le dernier signe (un lien tout neuf, ou juste réveillé,
+ *   est « calme ») ;
+ * - `moment` : de `LINK_MOMENT_DAYS` à `LINK_ASLEEP_DAYS` jours de silence ;
+ * - `endormi` : au-delà. Il se réveille au premier mot, ou par « Le réveiller » (`wakeLink`). Rien n'est bloqué.
+ */
+export const LINK_WARMTHS = ['vivant', 'calme', 'moment', 'endormi'] as const;
+export type LinkWarmth = (typeof LINK_WARMTHS)[number];
+/** Jours sans signe à partir desquels le lien dit « ça fait un moment », puis fait la sieste. */
+export const LINK_MOMENT_DAYS = 7;
+export const LINK_ASLEEP_DAYS = 14;
+/** Jours (aujourd'hui compris : 0, 1, 2) où un message écrit rend le lien `vivant`. */
+const LIVELY_DAYS = 2;
+
+export function linkWarmth(s: Pick<LinkState, 'lastActiveOn' | 'recentDays'>, today: Day): LinkWarmth {
+  const lastWritten = s.recentDays.filter((d) => d.a || d.b).at(-1)?.day;
+  if (lastWritten !== undefined && daysBetween(lastWritten, today) <= LIVELY_DAYS) return 'vivant';
+  const silent = Math.max(0, daysBetween(s.lastActiveOn, today));
+  if (silent >= LINK_ASLEEP_DAYS) return 'endormi';
+  if (silent >= LINK_MOMENT_DAYS) return 'moment';
+  return 'calme';
+}
+
+/**
+ * « Le réveiller » : ton minimoa fait un petit coucou à l'autre (réplique dans le chat). Le lien redevient `calme` ;
+ * la série et l'expérience ne bougent pas (seuls les vrais messages comptent). Un lien rangé ne se réveille pas.
+ */
+export function wakeLink(prev: LinkState, today: Day): LinkState | null {
+  const s = tickLink(prev, today);
+  if (s.status !== 'active') return null;
+  return { ...s, lastActiveOn: today > s.lastActiveOn ? today : s.lastActiveOn };
 }
 
 /**
@@ -157,8 +200,6 @@ export const MESSAGE_XP_PER_DAY = 20;
 export interface LinkMessageEffect {
   state: LinkState;
   leveledUp: boolean;
-  /** Le jour « à deux » a rendu une vie. */
-  lifeGained: boolean;
   /** Premier message du jour de ce côté. */
   firstToday: boolean;
   /** Ce message fait de la journée un jour où les deux se sont écrit (une fois par jour) : la série avance. */
@@ -194,37 +235,30 @@ function withMilestones(list: readonly LinkMilestone[], fromLevel: number, toLev
  *
  * Règles de la série (spéc §24) :
  * - un jour compte quand chacun a envoyé au moins un message ce jour-là (heure de Paris) ;
- * - quand le deuxième écrit, la série avance d'un cran (hier aussi à deux → +1, sinon elle repart à 1), le record suit,
- *   et le lien regagne une vie s'il en a perdu (comme la photo à deux le faisait) ;
- * - un jour où un seul écrit garde le lien en vie mais n'allonge pas la série : affichée telle quelle jusqu'à minuit
+ * - quand le deuxième écrit, la série avance d'un cran (hier aussi à deux → +1, sinon elle repart à 1), le record suit ;
+ * - un jour où un seul écrit n'allonge pas la série : affichée telle quelle jusqu'à minuit
  *   (« en jeu »), elle retombe à 0 au rattrapage du lendemain (`tickLink`) ;
  * - un lien créé aujourd'hui part de 0 : si les deux s'écrivent dès le premier jour, la série vaut 1.
  */
 export function applyLinkMessage(prev: LinkState, side: LinkSide, today: Day, messageXpToday = 0): LinkMessageEffect {
   const s = tickLink(prev, today);
-  if (s.status !== 'active') return { state: s, leveledUp: false, lifeGained: false, firstToday: false, duoDay: false, messageXp: 0 };
+  if (s.status !== 'active') return { state: s, leveledUp: false, firstToday: false, duoDay: false, messageXp: 0 };
   const firstToday = !wrote(s, side, today);
   const duoDay = firstToday && wrote(s, other(side), today) && s.lastDuoDayOn !== today;
   const messageXp = messageXpToday >= MESSAGE_XP_PER_DAY ? 0 : LINK_XP.message;
   const xp = s.xp + messageXp + (firstToday ? LINK_XP.firstOfDay : 0) + (duoDay ? LINK_XP.duoDay : 0);
   const level = Math.max(s.level, levelForXp(xp));
-  let { lives, streak, bestStreak, duoDays, lastDuoDayOn } = s;
-  let lifeGained = false;
+  let { streak, bestStreak, duoDays, lastDuoDayOn } = s;
   if (duoDay) {
     streak = streakAlive(s, today) ? streak + 1 : 1;
     bestStreak = Math.max(bestStreak, streak);
     duoDays += 1;
     lastDuoDayOn = today;
-    if (lives < MAX_LIVES) {
-      lives += 1;
-      lifeGained = true;
-    }
   }
   const state: LinkState = {
     ...s,
     xp,
     level,
-    lives,
     streak,
     bestStreak,
     duoDays,
@@ -234,16 +268,9 @@ export function applyLinkMessage(prev: LinkState, side: LinkSide, today: Day, me
     recentDays: markWritten(s.recentDays, side, today),
     milestones: withMilestones(s.milestones, s.level, level, streak, today),
   };
-  return { state, leveledUp: level > s.level, lifeGained, firstToday, duoDay, messageXp };
+  return { state, leveledUp: level > s.level, firstToday, duoDay, messageXp };
 }
 
-/** Ranimer un lien fantôme : possible une seule fois. La série repart de zéro (le record reste). */
-export function reviveLink(prev: LinkState, today: Day): LinkState | null {
-  const s = tickLink(prev, today);
-  if (s.status !== 'ghost' || s.revived) return null;
-  return { ...s, status: 'active', lives: REVIVE_LIVES, revived: true, streak: 0, lastActiveOn: today, lastTickOn: today };
-}
-export const canRevive = (s: LinkState): boolean => s.status === 'ghost' && !s.revived;
 
 // ── La journée d'un lien, vue par l'un des deux ───────────────────────────
 

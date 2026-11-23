@@ -135,6 +135,14 @@ export class SupabaseProfilesRepository implements ProfilesRepository {
     return (data as ProfileRow[]).map(fromRow);
   }
 
+  async listAvatarsAfter(afterId: string | null, limit: number): Promise<Profile[]> {
+    let q = this.table.select('*').not('avatar_path', 'is', null);
+    if (afterId !== null) q = q.gt('id', afterId);
+    const { data, error } = await q.order('id', { ascending: true }).limit(limit);
+    check(error, 'lecture des photos de profil');
+    return (data as ProfileRow[]).map(fromRow);
+  }
+
   private async findOne(column: 'id' | 'invite_code' | 'words_code', value: string): Promise<Profile | null> {
     const { data, error } = await this.table.select('*').eq(column, value).maybeSingle();
     check(error, 'lecture du profil');

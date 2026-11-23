@@ -7,7 +7,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { hapticFor } from '../lib/haptics';
 import { ease, fadeTo, springs, useLoop, useReducedMotion } from '../lib/motion';
-import { alpha, color, petTint, space } from '../theme';
+import { alpha, color, petTint, radius, space } from '../theme';
 import type { PetLook } from '../types';
 
 export interface MapStickerProps {
@@ -28,7 +28,10 @@ export interface MapStickerProps {
   floatDelay?: number;
   /** Diamètre du visage. Défaut 56. */
   size?: number;
-  /** Sa photo (à la place du minimoa). Floue tant que le lien n'est pas noué des deux côtés (`blurred`). */
+  /**
+   * Sa photo (à la place du minimoa). Avant le lien, c'est la vignette déjà très floue faite par le serveur (`blurred` :
+   * à peine adoucie ici, minimoa en petit médaillon) ; jamais la photo d'origine.
+   */
   photo?: string | null;
   blurred?: boolean;
   /** Venu dans l'app aujourd'hui : pastille verte, comme un statut en ligne. */
@@ -77,10 +80,15 @@ export function MapSticker({ pet, label, selected, me, hot, onPress, accessibili
       <View style={[styles.face, { width: size + 8, height: size + 8, borderRadius: (size + 8) / 2 }, hot ? styles.faceHot : null, selected ? styles.faceOn : null]}>
         {/* Le médaillon (tête et épaules, objets de la tête compris), cadré pareil pour les 4 espèces, habillé ou non. */}
         {photo ? (
-          <Image source={{ uri: photo }} blurRadius={blurred ? 14 : 0} style={{ width: size, height: size, borderRadius: size / 2 }} accessibilityIgnoresInvertColors />
+          <Image source={{ uri: photo }} blurRadius={blurred ? 2 : 0} style={{ width: size, height: size, borderRadius: size / 2 }} accessibilityIgnoresInvertColors />
         ) : (
           <PetBadge species={pet.species} outfit={pet.outfit} size={size} background={me ? color.accent : tint} roomy style={styles.badge} />
         )}
+        {photo && blurred ? (
+          <View style={[styles.mark, { right: -size * 0.04, bottom: -size * 0.04 }]}>
+            <PetBadge species={pet.species} outfit={pet.outfit} size={Math.round(size * 0.4)} background={tint} />
+          </View>
+        ) : null}
         {online ? <View style={[styles.online, { top: size * 0.02, right: size * 0.02 }]} /> : null}
       </View>
       {/* La pointe de l'épingle, sous le visage (blanche, jaune pour un présenté du jour). */}
@@ -173,6 +181,7 @@ const styles = StyleSheet.create({
   faceHot: { borderWidth: 3, borderColor: color.accentSoft, shadowColor: color.accentSoft, shadowOpacity: 0.5, shadowRadius: 6 },
   tail: { width: 12, height: 12, marginTop: -11, backgroundColor: color.white, transform: [{ rotate: '45deg' }] },
   tailHot: { backgroundColor: color.accentSoft },
+  mark: { position: 'absolute', padding: 2, borderRadius: radius.pill, backgroundColor: color.white },
   faceOn: { borderWidth: 3, borderColor: color.accent, transform: [{ scale: 1.1 }] },
   chip: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 999, backgroundColor: color.white, maxWidth: 160, transform: [{ rotate: '-3deg' }] },
   chipOn: { backgroundColor: color.accent },

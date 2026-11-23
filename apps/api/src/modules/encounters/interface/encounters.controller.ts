@@ -10,7 +10,8 @@ import { AnswerEncounter } from '../application/answer-encounter.usecase';
 import { ListEncounterHistory } from '../application/list-encounter-history.usecase';
 import { ListEncounters } from '../application/list-encounters.usecase';
 import { Wave } from '../application/wave.usecase';
-import { toEncounterHistoryDto, toEncountersDto } from './encounters.presenter';
+import { encounterProfiles, toEncounterHistoryDto, toEncountersDto } from './encounters.presenter';
+import { AvatarBlurs } from '../../me/application/avatar-blurs';
 import type { Locale } from '@blowy/content';
 import { ReqLocale } from '../../../shared/locale';
 import { HabitSharing } from '../../groups/sharing/habit-sharing';
@@ -27,11 +28,13 @@ export class EncountersController {
     @Inject(AnswerEncounter) private readonly answer: AnswerEncounter,
     @Inject(LinkPresenter) private readonly links: LinkPresenter,
     @Inject(HabitSharing) private readonly sharing: HabitSharing,
+    @Inject(AvatarBlurs) private readonly blurs: AvatarBlurs,
   ) {}
 
   @Get()
   async list(@CurrentUser() user: AuthUser, @ReqLocale() locale: Locale): Promise<Encounters> {
-    const dto = toEncountersDto(await this.listEncounters.execute(user.userId), locale);
+    const result = await this.listEncounters.execute(user.userId);
+    const dto = toEncountersDto(result, locale, await this.blurs.urls(encounterProfiles(result)));
     // Habitudes tenues tous les deux (spéc §25) ; à vision égale, une habitude commune passe devant (ordre stable sinon).
     const shown = new Set(dto.suggestions.map((s) => s.user.id));
     const shared = await this.sharing.sharedWith(user.userId, [...shown, ...dto.incoming.map((i) => i.from.id)], shown);
@@ -52,7 +55,8 @@ export class EncountersController {
 
   @Get('history')
   async history(@CurrentUser() user: AuthUser, @Query('before', Before) before?: string): Promise<EncounterHistory> {
-    return toEncounterHistoryDto(await this.listHistory.execute(user.userId, before ? new Date(before).toISOString() : null));
+    const page = await this.listHistory.execute(user.userId, before ? new Date(before).toISOString() : null);
+    return toEncounterHistoryDto(page, await this.blurs.urls(page.entries.map((e) => e.profile)));
   }
 
   @RateLimit('write')

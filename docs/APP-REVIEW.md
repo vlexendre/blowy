@@ -26,7 +26,7 @@ Review Information. Le reste d'App Store Connect (classement d'âge, App Privacy
     du seul compte de revue) ; l'autre personne a **déjà accepté la lecture par l'IA**, l'examinateur voit donc la
     demande d'accord (prestataire nommé) à la première ouverture ; quand il écrit, la personne fictive **répond** et
     les minimoas réagissent ;
-  - un **lien en danger** (2 vies sur 7) ;
+  - un lien après **quelques jours de silence** (« C’est calme en ce moment. ») ;
   - sa **série** du défi du jour (6 jours, historique), **deux habitudes**, le **bilan de la semaine passée** ;
   - la **carte** : épingles dans la zone, « 3 minimoas plus loin » ; le **paywall** compte les personnes compatibles ;
   - **Signaler** et **Bloquer** marchent sur ces personnes (le signalement est enregistré, marqué « compte de revue »

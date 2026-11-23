@@ -154,7 +154,7 @@ export const moi = messages({
     compte: {
       title: [{ text: 'MON ' }, { text: 'COMPTE.', dim: true }],
       photoLabel: 'Ta photo de profil',
-      photoHint: 'Ta photo reste cachée pour l’autre jusqu’à ce que vous vous soyez dit bonjour tous les deux.',
+      photoHint: 'Avant que vous vous soyez dit bonjour tous les deux, l’autre ne voit qu’une version très floue de ta photo.',
       photoChange: 'Changer la photo',
       photoAdd: 'Ajouter une photo',
       sheetTitle: [{ text: 'TA ' }, { text: 'PHOTO', dim: true }],
@@ -486,7 +486,7 @@ export const moi = messages({
     compte: {
       title: [{ text: 'MY ' }, { text: 'ACCOUNT.', dim: true }],
       photoLabel: 'Your profile photo',
-      photoHint: 'Your photo stays hidden from the other person until you’ve both said hello.',
+      photoHint: 'Until you’ve both said hello, the other person only sees a very blurred version of your photo.',
       photoChange: 'Change photo',
       photoAdd: 'Add a photo',
       sheetTitle: [{ text: 'YOUR ' }, { text: 'PHOTO', dim: true }],
@@ -794,7 +794,7 @@ export const moi = messages({
       title: [{ text: 'MI ' }, { text: 'CUENTA.', dim: true }],
       photoLabel: 'Tu foto de perfil',
       photoHint:
-        'Tu foto queda oculta para la otra persona hasta que os hayáis saludado los dos.',
+        'Hasta que os hayáis saludado los dos, la otra persona solo ve una versión muy borrosa de tu foto.',
       photoChange: 'Cambiar la foto',
       photoAdd: 'Añadir una foto',
       sheetTitle: [{ text: 'TU ' }, { text: 'FOTO', dim: true }],
@@ -1106,7 +1106,7 @@ export const moi = messages({
     compte: {
       title: [{ text: 'MINHA ' }, { text: 'CONTA.', dim: true }],
       photoLabel: 'Sua foto de perfil',
-      photoHint: 'Sua foto fica oculta para a outra pessoa até vocês dois se cumprimentarem.',
+      photoHint: 'Até vocês dois se cumprimentarem, a outra pessoa só vê uma versão bem desfocada da sua foto.',
       photoChange: 'Trocar a foto',
       photoAdd: 'Adicionar uma foto',
       sheetTitle: [{ text: 'SUA ' }, { text: 'FOTO', dim: true }],
@@ -1416,7 +1416,7 @@ export const moi = messages({
     compte: {
       title: [{ text: 'MIJN ' }, { text: 'ACCOUNT.', dim: true }],
       photoLabel: 'Je profielfoto',
-      photoHint: 'Je foto blijft verborgen voor de ander tot jullie elkaar allebei gedag hebben gezegd.',
+      photoHint: 'Tot jullie elkaar allebei gedag hebben gezegd, ziet de ander alleen een heel wazige versie van je foto.',
       photoChange: 'Foto wijzigen',
       photoAdd: 'Foto toevoegen',
       sheetTitle: [{ text: 'JE ' }, { text: 'FOTO', dim: true }],

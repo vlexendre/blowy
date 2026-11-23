@@ -1,7 +1,7 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import { Growth } from '../../growth/application/growth';
 import { chatSystemText, linkCreatedEmail } from '@blowy/content';
-import { newLink } from '@blowy/domain';
+import { MAX_LIVES, newLink } from '@blowy/domain';
 import { Notifier } from '../../../integrations/mailer/notifier';
 import { NOTIFIER, type Notifier as PushNotifier } from '../../../integrations/push/notifier';
 import type { Env } from '../../../config/env';
@@ -110,8 +110,8 @@ export class CreateLink {
   private async restore(link: LinkRecord): Promise<LinkRecord> {
     const [draft] = await this.session.draftsFor([link]);
     if (!draft) throw new Error('brouillon de lien manquant');
-    const alive = link.lives > 0;
-    draft.update({ status: alive ? 'active' : 'ghost', lastTickOn: draft.today, ...(alive ? { lastActiveOn: draft.today } : {}) });
+    // Un lien rangé revient actif, quel que soit son passé (plus de lien endormi : ADA-2027 item 27).
+    draft.update({ status: 'active', lives: MAX_LIVES, lastTickOn: draft.today, lastActiveOn: draft.today });
     draft.system(chatSystemText(draft.systemLocale).linkCreated);
     await this.session.commit(draft);
     return draft.link;

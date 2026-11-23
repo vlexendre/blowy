@@ -1,9 +1,8 @@
 /** Dates lisibles pour les chats (fuseau de l'app : Europe/Paris, comme le domaine). */
 import type { Link } from '@blowy/contract';
 import { APP_TIMEZONE, dayOf, daysBetween } from '@blowy/domain';
-import type { WeekDayState } from '@blowy/ui';
 
-import { dates, today as todayText } from '@/locales/chats';
+import { dates } from '@/locales/chats';
 import { formatDate, upperFirst } from '@/locales/runtime';
 
 const weekdayOf = (day: string): number => new Date(`${day}T12:00:00Z`).getUTCDay();
@@ -32,18 +31,6 @@ export function timeLabel(at: string, now: Date = new Date()): string {
   if (diff === 1) return upperFirst(dates.yesterday);
   if (diff < 7) return dates.weekdaysShort[weekdayOf(day)] ?? '';
   return shortDay(day);
-}
-
-/**
- * La semaine en cours du lien (lundi → dimanche, maquette « cette semaine ») : coche quand vous vous êtes écrit tous les
- * deux, « 1/2 » quand un seul a écrit. Les jours à venir et ceux d'avant le lien restent vides.
- */
-export function weekStrip(today: Link['today']): { day: string; state: WeekDayState; mark?: string }[] {
-  return today.week.map((d) => {
-    const count = d.when === 'future' || d.beforeLink ? 0 : Number(d.mine) + Number(d.theirs);
-    const state: WeekDayState = count === 2 ? 'done' : count === 1 ? 'half' : 'none';
-    return { day: todayText.weekDays[weekdayOf(d.day)] ?? '', state, mark: state === 'half' ? todayText.halfMark : undefined };
-  });
 }
 
 /** État de la journée d'un lien, vu par toi (onglet « Le lien »). */

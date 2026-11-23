@@ -2,14 +2,13 @@ import { surpriseOf } from '@blowy/content';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Link, Message } from '@blowy/contract';
 import {
-  canRevive,
   dayOf,
   faceVisibility,
   levelProgress,
   linkToday,
+  linkWarmth,
   linkWeek,
   type Mood,
-  moodForLives,
   nextLevel,
 } from '@blowy/domain';
 import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/ports';
@@ -53,7 +52,8 @@ const authorOf = (m: MessageRecord, viewerId: string): Message['author'] => {
         : 'other';
 };
 
-const linkMood = (link: LinkRecord): Mood => (link.status === 'ghost' ? 'triste' : moodForLives(link.lives));
+/** Les minimoas d'un lien sont contents : un lien ne se perd plus, jamais de minimoa triste comme levier (ADA-2027). */
+const LINK_MOOD: Mood = 'joie';
 
 /** Assemble les DTO de liens et de messages, relatifs à la personne qui regarde. */
 @Injectable()
@@ -92,7 +92,7 @@ export class LinkPresenter {
         const myPet = petByOwner.get(viewerId);
         const theirPet = petByOwner.get(otherId);
         if (!other || !myPet || !theirPet) return null;
-        const mood = linkMood(link);
+        const mood = LINK_MOOD;
         const face = faceVisibility(link.level);
         const [latest, lastRead, avatarUrl] = await Promise.all([
           this.messages.latest(link.id, viewerId),
@@ -122,7 +122,9 @@ export class LinkPresenter {
           next: nextLevel(link.xp),
           streak: day.streak,
           bestStreak: Math.max(link.bestStreak, day.streak),
-          canRevive: canRevive(link),
+          // Plus de lien endormi à ranimer (ADA-2027 item 27) : faux pour les anciennes versions de l'app.
+          canRevive: false,
+          warmth: linkWarmth(link, today),
           unread,
           lastMessage: latest
             ? { preview: preview(latest), at: latest.createdAt, author: authorOf(latest, viewerId) }

@@ -66,7 +66,6 @@ export interface LinkLook {
   other: PersonLook;
   myPet: PetLook;
   status: LinkStatus;
-  lives: number;
   level: number;
   unread: number;
   lastMessage: { preview: string; at: string; author?: MessageAuthor } | null;

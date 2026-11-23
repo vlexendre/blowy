@@ -1,0 +1,99 @@
+/**
+ * Vignette très floue des photos de profil (docs/ADA-2027.md, décision 7 et item 26) : la seule image d'une personne
+ * envoyée à quelqu'un qui n'a pas encore de lien noué avec elle (carte, présentations, coucous, personne du jour),
+ * gratuit ou Minimoa+. L'original ne part jamais avant le lien.
+ *
+ * - Fabriquée par le serveur (`ImageProcessor`) à la confirmation d'une photo, et par le minuteur pour les photos
+ *   d'avant (`AvatarBlurJobs`). Rangée à part dans le stockage privé, sous `blurred/` : son chemin se déduit de celui de
+ *   la photo (pas de colonne en base), et l'app ne peut jamais la choisir comme photo de profil (motif de `Avatar`).
+ * - Effacée avec la photo : changement de photo, photo refusée par le filtre, suppression du compte (`DeleteMe`).
+ * - Tant qu'elle n'existe pas (image illisible, envoi d'avant le déploiement pas encore rattrapé) : visage caché, le
+ *   minimoa à la place, comme avant.
+ */
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { type FaceVisibility, faceBeforeLink } from '@blowy/domain';
+import { BLURRED_CONTENT_TYPE, type ImageProcessor } from '../../../integrations/images/ports';
+import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/ports';
+import { IMAGES, STORAGE } from '../../../shared/tokens';
+import type { Profile } from '../ports';
+
+/** `avatars/<personne>/<id>.jpg` → `blurred/<personne>/<id>.jpg`. */
+export const blurPathOf = (avatarPath: string): string =>
+  `blurred/${avatarPath.replace(/^avatars\//, '').replace(/\.[A-Za-z0-9]+$/, '')}.jpg`;
+
+/** URL signée de la vignette floue de chaque personne qui en a une, par identifiant. */
+export type BlurredFaces = ReadonlyMap<string, string>;
+
+export const NO_BLURRED_FACES: BlurredFaces = new Map();
+
+/** Visage d'une personne sans lien noué : vignette floue si elle existe, sinon caché. Jamais l'original. */
+export const faceOf = (faces: BlurredFaces, userId: string): { face: Exclude<FaceVisibility, 'clear'>; avatarUrl: string | null } => {
+  const url = faces.get(userId) ?? null;
+  return { face: faceBeforeLink(url !== null), avatarUrl: url };
+};
+
+export type BlurOutcome = 'exists' | 'made' | 'unreadable';
+
+@Injectable()
+export class AvatarBlurs {
+  private readonly logger = new Logger('AvatarBlurs');
+
+  constructor(
+    @Inject(STORAGE) private readonly storage: Storage,
+    @Inject(IMAGES) private readonly images: ImageProcessor,
+  ) {}
+
+  /** Fabrique (ou refait) la vignette de `avatarPath`. Faux si la photo manque ou ne se lit pas. */
+  async make(avatarPath: string): Promise<boolean> {
+    const original = await this.storage.read(avatarPath);
+    if (!original) return false;
+    const blurred = await this.images.blurredThumbnail(original.bytes);
+    if (!blurred) return false;
+    await this.storage.write(blurPathOf(avatarPath), { bytes: blurred, contentType: BLURRED_CONTENT_TYPE });
+    return true;
+  }
+
+  /** Idempotent : ne fabrique la vignette que si elle manque. */
+  async ensure(avatarPath: string): Promise<BlurOutcome> {
+    if (await this.storage.exists(blurPathOf(avatarPath))) return 'exists';
+    return (await this.make(avatarPath)) ? 'made' : 'unreadable';
+  }
+
+  /** À la confirmation d'une photo : une panne ne bloque pas l'envoi (le minuteur rattrape, visage caché d'ici là). */
+  async makeQuietly(avatarPath: string): Promise<void> {
+    try {
+      await this.make(avatarPath);
+    } catch (err) {
+      this.logger.warn(`vignette floue reportée : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+    }
+  }
+
+  /** Efface la vignette d'une photo (photo changée ou refusée). */
+  async remove(avatarPath: string | null): Promise<void> {
+    if (avatarPath) await this.storage.remove([blurPathOf(avatarPath)]);
+  }
+
+  /**
+   * URL signées des vignettes existantes, en un appel au stockage. Une panne du stockage rend une table vide : tout le
+   * monde reste caché (le minimoa), la carte et les rencontres s'affichent quand même.
+   */
+  async urls(profiles: readonly Pick<Profile, 'id' | 'avatarPath'>[]): Promise<BlurredFaces> {
+    const withPhoto = profiles.filter((p): p is Pick<Profile, 'id'> & { avatarPath: string } => !!p.avatarPath);
+    if (withPhoto.length === 0) return NO_BLURRED_FACES;
+    try {
+      const urls = await this.storage.signedUrls(
+        withPhoto.map((p) => blurPathOf(p.avatarPath)),
+        MEDIA_URL_SECONDS,
+      );
+      const out = new Map<string, string>();
+      withPhoto.forEach((p, i) => {
+        const url = urls[i];
+        if (url) out.set(p.id, url);
+      });
+      return out;
+    } catch (err) {
+      this.logger.warn(`vignettes floues non signées : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+      return NO_BLURRED_FACES;
+    }
+  }
+}

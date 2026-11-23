@@ -2,8 +2,8 @@
  * Démo (mode mémoire) de la série des liens (spéc §24), à la demande (`POST /dev/demo/links`, local
  * seulement) : la personne a, en plus du lien avec Malo (qui lui écrit à l'inscription : « à toi d'écrire »), trois
  * liens d'avant qui montrent chaque état de l'écran
- * « Aujourd'hui » : Sasha (série de 6 jours en jeu, personne n'a encore écrit aujourd'hui), Inès (lien en danger : le
- * rattrapage lui laisse 2 vies) et Yanis (lien fantôme). Les liens sont posés tels qu'au dernier jour où quelqu'un a
+ * « Aujourd'hui » : Sasha (série de 6 jours en jeu, personne n'a encore écrit aujourd'hui), Inès (6 jours de silence :
+ * `warmth` « calme ») et Yanis (11 jours : « moment »). Les liens sont posés tels qu'au dernier jour où quelqu'un a
  * écrit ; le rattrapage normal (`tickLink`) fait le reste à la première lecture.
  */
 import { Body, Controller, Inject, Injectable, Post } from '@nestjs/common';
