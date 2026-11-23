@@ -1,5 +1,5 @@
 // Widgets de l'écran verrouillé : rond (le visage du minimoa dans la jauge de sociabilité) et rectangulaire
-// (la série, le défi du jour à faire). Rendu « vibrant » : monochrome, le système teinte tout.
+// (la série, le séance du jour à faire). Rendu « vibrant » : monochrome, le système teinte tout.
 
 import SwiftUI
 import WidgetKit

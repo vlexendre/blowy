@@ -32,6 +32,7 @@ export interface MapPinCardProps {
   actionDone?: boolean;
   /** Action impossible pour l'instant (trop de coucous aujourd'hui) : bouton désactivé, et `actionNote` dit pourquoi. */
   actionDisabled?: boolean;
+  /** Une ligne sous le bouton : pourquoi il est désactivé, ou pourquoi il ouvre Minimoa+. */
   actionNote?: string;
   /** Bouton secondaire (« Voir de plus près »). */
   secondaryLabel?: string;
@@ -74,7 +75,7 @@ export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, ac
             )}
           </View>
         </View>
-        {actionDisabled && actionNote && !actionDone ? (
+        {actionNote && !actionDone ? (
           <Text size={14} muted>
             {actionNote}
           </Text>

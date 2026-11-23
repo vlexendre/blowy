@@ -1,5 +1,9 @@
 # Habitudes partagées, rigueur et groupes
 
+> **Retiré de l'app (règle App Store 2.5.19, pas de fonction cachée).** Ce document ne décrit plus que l'API, qui garde ses
+> routes pour les anciennes versions de l'app. Plus aucun écran, composant ni texte de l'app ne s'y rapporte ; les anciens
+> liens (`/g/…`) mènent à l'accueil. Voir `docs/ADA-2027.md`.
+
 Spéc : `docs/V7-SPEC.md` §25 et §26. Contrat : `packages/contract/src/v7/groupes.ts` (groupes, « ensemble »,
 administration) et `v7/rituels.ts` (`RigourZ`, `SharedHabitsZ`, `OnboardHabitZ`). Règles pures :
 `packages/domain/src/groups.ts`. API : `apps/api/src/modules/groups`. Migration : `20261117120000_groupes.sql`.

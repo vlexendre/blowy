@@ -1,4 +1,4 @@
-// Activités en direct (V6-GWidget, écran verrouillé et île déployée) : le défi du jour accepté (temps restant
+// Activités en direct (V6-GWidget, écran verrouillé et île déployée) : le séance du jour accepté (temps restant
 // jusqu'à minuit, série en jeu ; l'activité part au plus 8 h après son début), la série d'un lien le soir (« À toi
 // d'écrire », sans prénom : l'écran verrouillé est visible de tous), une sortie en cours.
 // Démarrées et terminées par l'app ; mises à jour par l'app ou par push APNs (type `liveactivity`).
@@ -94,7 +94,7 @@ private struct LockScreenActivityView: View {
 
 // MARK: - Morceaux
 
-/// « Défi accepté · Minimoa » puis le titre (« Un café dehors », « À toi d'écrire », « Nino est de sortie »).
+/// « Séance commencée · Minimoa » puis le titre (« Un café dehors », « À toi d'écrire », « Nino est de sortie »).
 private struct ActivityTitle: View {
   let context: Context
   let compact: Bool

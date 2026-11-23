@@ -6,6 +6,10 @@
  * - `APP_<PLATEFORME>_STORE_URL` : fiche du magasin (iPhone : la fiche de Minimoa par défaut) ;
  * - `APP_<PLATEFORME>_CHEMIN_BUILD` : premier build qui a « Ton chemin » (docs/CHEMIN.md). À partir de lui, le défi du
  *   jour n'est plus proposé et le rappel du matin parle de la séance du jour. Défaut très haut : inactif.
+ * - `APP_<PLATEFORME>_ADA_BUILD` : premier build de la version simplifiée (docs/ADA-2027.md) d'où ligue, défis,
+ *   habitudes avec photo, bilans et groupes sont retirés. À partir de lui, l'API n'envoie plus leurs notifications
+ *   (`shared/ada-build.ts`) et le build a forcément Ton chemin. Défaut très haut : inactif. Les numéros de build sont
+ *   ceux d'EAS (`appVersionSource: remote`) : à renseigner à la sortie, comme `APP_<PLATEFORME>_CHEMIN_BUILD`.
  */
 import type { AppBuildPolicy, AppPlatform } from '@blowy/domain';
 import { z } from 'zod';
@@ -18,6 +22,9 @@ const url = z.preprocess(emptyToUndefined, z.string().url().optional());
 /** Désactivé par défaut : aucun build n'atteint ce numéro. */
 export const CHEMIN_BUILD_OFF = 999_999_999;
 const cheminBuild = z.preprocess(emptyToUndefined, z.coerce.number().int().min(1).max(CHEMIN_BUILD_OFF).default(CHEMIN_BUILD_OFF));
+/** Désactivé par défaut : aucun build n'atteint ce numéro. */
+export const ADA_BUILD_OFF = 999_999_999;
+const adaBuild = z.preprocess(emptyToUndefined, z.coerce.number().int().min(1).max(ADA_BUILD_OFF).default(ADA_BUILD_OFF));
 
 const Schema = z.object({
   APP_IOS_MIN_SUPPORTED_BUILD: build,
@@ -28,12 +35,16 @@ const Schema = z.object({
   APP_ANDROID_STORE_URL: url,
   APP_IOS_CHEMIN_BUILD: cheminBuild,
   APP_ANDROID_CHEMIN_BUILD: cheminBuild,
+  APP_IOS_ADA_BUILD: adaBuild,
+  APP_ANDROID_ADA_BUILD: adaBuild,
 });
 
 export interface AppPlatformVersions extends AppBuildPolicy {
   storeUrl: string | null;
   /** Premier build avec Ton chemin (CHEMIN_BUILD_OFF : inactif). */
   cheminBuild: number;
+  /** Premier build de la version simplifiée, docs/ADA-2027.md (ADA_BUILD_OFF : inactif). */
+  adaBuild: number;
 }
 export type AppVersionsEnv = Record<AppPlatform, AppPlatformVersions>;
 
@@ -45,8 +56,8 @@ export function loadAppVersionsEnv(source: Record<string, string | undefined>): 
   }
   const e = parsed.data;
   const out: AppVersionsEnv = {
-    ios: { minSupportedBuild: e.APP_IOS_MIN_SUPPORTED_BUILD, latestBuild: e.APP_IOS_LATEST_BUILD, storeUrl: e.APP_IOS_STORE_URL ?? DEFAULT_IOS_STORE_URL, cheminBuild: e.APP_IOS_CHEMIN_BUILD },
-    android: { minSupportedBuild: e.APP_ANDROID_MIN_SUPPORTED_BUILD, latestBuild: e.APP_ANDROID_LATEST_BUILD, storeUrl: e.APP_ANDROID_STORE_URL ?? null, cheminBuild: e.APP_ANDROID_CHEMIN_BUILD },
+    ios: { minSupportedBuild: e.APP_IOS_MIN_SUPPORTED_BUILD, latestBuild: e.APP_IOS_LATEST_BUILD, storeUrl: e.APP_IOS_STORE_URL ?? DEFAULT_IOS_STORE_URL, cheminBuild: e.APP_IOS_CHEMIN_BUILD, adaBuild: e.APP_IOS_ADA_BUILD },
+    android: { minSupportedBuild: e.APP_ANDROID_MIN_SUPPORTED_BUILD, latestBuild: e.APP_ANDROID_LATEST_BUILD, storeUrl: e.APP_ANDROID_STORE_URL ?? null, cheminBuild: e.APP_ANDROID_CHEMIN_BUILD, adaBuild: e.APP_ANDROID_ADA_BUILD },
   };
   for (const [platform, v] of Object.entries(out)) {
     // Un minimum au-dessus du dernier build publié bloquerait tout le monde, même les personnes à jour.

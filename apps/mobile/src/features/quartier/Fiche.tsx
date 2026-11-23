@@ -11,6 +11,7 @@ import { openPlus } from '@/features/plus';
 import { common } from '@/locales/common';
 import { carte as t, rencontres as listText } from '@/locales/rencontres';
 import { ui } from '@/locales/ui';
+import { voisins as v } from '@/locales/voisins';
 
 import { canWave, type Neighbor } from './people';
 
@@ -32,6 +33,8 @@ export function NeighborFiche({
   const markWaved = useMarkWaved();
   const p = person;
   const allowed = canWave(p, plus);
+  // Une épingle qui n'est pas présentée aujourd'hui (gratuit) : le bouton ouvre Minimoa+, et le dit (jamais « Saluer »).
+  const sells = !allowed && p.relation === 'none';
   return (
     <MapPinCard
       motionKey={p.id}
@@ -48,18 +51,19 @@ export function NeighborFiche({
           accessibilityLabel={whyA11y(p.explanation, listText.whyJoin)}
         />
       }
-      actionLabel={p.relation === 'waved' ? t.waved : p.relation === 'waved_you' ? t.wavedYou(p.user.displayName) : t.wave(p.user.pet.name)}
+      actionLabel={
+        p.relation === 'waved' ? t.waved : p.relation === 'waved_you' ? t.wavedYou(p.user.displayName) : sells ? v.plusAction : t.wave(p.user.pet.name)
+      }
       actionLoading={wave.isPending && wave.variables === p.id}
       actionDone={p.relation === 'waved'}
       actionDisabled={allowed && p.relation === 'none' && !!waveBlock}
-      actionNote={allowed && p.relation === 'none' ? (waveBlock ?? undefined) : undefined}
+      actionNote={sells ? v.plusNote(p.user.displayName) : allowed && p.relation === 'none' ? (waveBlock ?? undefined) : undefined}
       onClose={onClose}
       closeLabel={common.close}
       onAction={() => {
         if (p.relation === 'waved') return;
         if (p.relation === 'waved_you') return router.push(`/rencontre/${p.id}`);
-        // Une épingle qui n'est pas présentée aujourd'hui : saluer depuis la carte, c'est Minimoa+.
-        if (!allowed) return openPlus('map');
+        if (sells) return openPlus('map');
         wave.mutate(p.id, { onSuccess: () => markWaved(p.id) });
       }}
       secondaryLabel={p.presented || p.relation === 'waved_you' ? t.open : undefined}

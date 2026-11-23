@@ -13,7 +13,7 @@ import { useLinks } from '@/features/links';
 import { usePet } from '@/features/pet';
 import type { Gate } from '@/features/session';
 
-import { challengeActivity, decideRunning, linkActivity, outingActivity, widgetSnapshot, type ActivityInputs, type DesiredActivity } from './state';
+import { decideRunning, linkActivity, outingActivity, widgetSnapshot, type ActivityInputs, type DesiredActivity } from './state';
 
 export { outingActivity } from './state';
 
@@ -38,7 +38,7 @@ async function syncActivities(i: ActivityInputs, push: boolean): Promise<void> {
       await widgets.activities.end(activity.id, decision.state, decision.dismissAfterSeconds === 0 ? { immediate: true } : { afterSeconds: decision.dismissAfterSeconds });
     }
   }
-  const wanted = [challengeActivity(i), linkActivity(i)].filter((a): a is DesiredActivity => a !== null);
+  const wanted = [linkActivity(i)].filter((a): a is DesiredActivity => a !== null);
   for (const a of wanted) {
     if (running.some((r) => r.attributes.kind === a.kind)) continue;
     await widgets.activities.start(a.key, a.attributes, a.state, push);

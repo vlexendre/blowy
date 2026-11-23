@@ -94,7 +94,11 @@ export interface ActivityInputs {
 
 const nowS = (now: Date): number => Math.floor(now.getTime() / 1000);
 
-/** Le défi du jour accepté et pas encore fait : jusqu'à minuit, série en jeu. */
+/**
+ * Le défi du jour accepté et pas encore fait. N'est plus démarrée par l'app (`index.ts`) : le défi n'existe plus à
+ * l'écran ; gardée seulement pour terminer proprement une activité déjà lancée par une ancienne version.
+ * Le redessin complet des widgets (séance) viendra plus tard.
+ */
 export function challengeActivity(i: ActivityInputs): DesiredActivity | null {
   const day = dayOf(i.now);
   const c = i.today?.day === day ? i.today.challenge : null;

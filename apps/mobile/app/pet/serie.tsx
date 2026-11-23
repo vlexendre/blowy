@@ -30,7 +30,6 @@ import { RefreshControl } from 'react-native';
 import { ScreenMotion } from '@/core';
 import { hasSessionToDo, useCheminMap } from '@/features/chemin';
 import { usePet } from '@/features/pet';
-import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
 import { chemin } from '@/locales/chemin';
 import { rituels } from '@/locales/rituels';
@@ -98,7 +97,6 @@ export default function StreakScreen() {
       accessibilityLabel: t.milestoneA11y(name, m.days, state),
     };
   });
-  const plus = map.data?.plus ?? false;
   const isRecord = s.current > 0 && s.current >= s.best;
   const todo = hasSessionToDo(map.data) && !s.doneToday;
 
@@ -135,7 +133,6 @@ export default function StreakScreen() {
                 tone="sky"
                 size="sm"
                 accessibilityLabel={t.freezeA11y(s.freezesLeft)}
-                onPress={plus ? undefined : () => openPlus('jokers')}
               />
             }
             days={week}

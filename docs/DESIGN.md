@@ -7,8 +7,8 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 ## Texte
 | Rôle | Taille | Graisse | Exemple |
 |---|---|---|---|
-| Grand titre d'écran | Allo ExtraBold 40–64 en taille de maquette, rendue × 0,74 (`displaySize`) (onglets 48–64, écrans poussés 40) | `Title`, capitales, 2ᵉ ligne `dim` | « SES / BILANS » |
-| Titre de carte, de ligne | 16 | `bodyHeavy` / `bodyBold` | « Ses habitudes » |
+| Grand titre d'écran | Allo ExtraBold 40–64 en taille de maquette, rendue × 0,74 (`displaySize`) (onglets 48–64, écrans poussés 40) | `Title`, capitales, 2ᵉ ligne `dim` | « TON / LIEN » |
+| Titre de carte, de ligne | 16 | `bodyHeavy` / `bodyBold` | « Ce que Nino sait de toi » |
 | Corps | 17 | `body` | une phrase de l'API |
 | Secondaire | 13–15 (13 dans les cartes et lignes) | `body`, `muted` | « Rien à faire aujourd'hui. » |
 | Petite mention, légende, intertitre en capitales | 13 (jamais moins) | `small` / `label` | « CONFIDENTIALITÉ » |
@@ -23,14 +23,14 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 - Échelle : 4 · 8 · 12 · 16 · 24 · 32 · 48 (`space`). Marges latérales d'écran 14–16 (accueil : 14, comme la maquette).
 - **Densité** (passe « affiner », `density` dans `packages/ui/src/theme.ts`, appliquée par les composants partagés — un
   écran ne remet pas de marges à lui) : intérieur d'une carte 12–14 (`cardPad` 14), écart entre cartes 8 (`gap`, défaut de
-  `TabTemplate` et `SettingsTemplate`), ligne d'entrée 56 (`EntryCard`), ligne de liste 52 (`ListRow`), titre de carte 16,
+  `TabTemplate` et `SettingsTemplate`), ligne de liste 52 (`ListRow`), titre de carte 16,
   secondaire 13 ; grand titre d'onglet 56, d'écran poussé 40.
 - Rayons : panneaux de couleur 32–36 (la scène du minimoa garde 32), cartes ordinaires 22 (`radius.card`), tuiles 18,
   pilules 999 (`radius`). `radius.lg` (28) reste celui du site et de la barre d'onglets.
 - Toute cible touchable fait au moins 44 × 44 pt (`size.touch`) ; boutons 40 / 48 / 52 de haut.
 - Un écran = un travail, faisable dans le premier écran (390×844 et 375×667) ; une carte = un titre et au plus une ligne
-  grise ; les entrées secondaires deviennent des tuiles (`ShortcutTile` : picto + un mot, pastille ou point) ou passent
-  derrière un tap.
+  grise ; les entrées secondaires passent derrière un tap (ligne de liste `ListRow`, ou réglage dans Moi) ; on ne
+  les empile pas à l'écran. (Les anciennes `EntryCard`, `EntryGroup`, `ShortcutTile` ont été supprimées avec les écrans qu'elles servaient.)
 
 ## Couleurs (rôles)
 - Fond `night`, cartes `panel` (un cran : `card`), filets `line` / `veil.hairline`.
@@ -45,10 +45,9 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 ## Motifs
 - **Titre d'écran** : `Title` avec seconde ligne estompée ; écran poussé : bouton retour rond à gauche du titre
   (`SettingsTemplate`, `ScreenTemplate`) ; feuille : croix en haut à droite.
-- **Entrées vers d'autres écrans** : plusieurs à la suite → une seule carte `EntryGroup` de `EntryCard inGroup` (filet entre
-  les lignes) plutôt qu'une pile de cartes, ou des tuiles `ShortcutRow` quand le libellé suffit. Une entrée seule et urgente
-  (test de vision, bilan non lu) reste une `EntryCard` ; à l'accueil, une seule à la fois.
-- **Listes de réglages et d'historique** : `SettingsSection` (carte groupée, titre de section en capitales 13).
+- **Entrées vers d'autres écrans** : des lignes `ListRow` dans une `SettingsSection` (filet entre les lignes) plutôt qu'une
+  pile de cartes. À l'accueil, une seule action principale (l'étape du jour, `CheminPath`) ; rien d'autre n'y vend ni n'y relance.
+- **Listes de réglages** : `SettingsSection` (carte groupée, titre de section en capitales 13).
 - **Puces** : `Chip` ; puces d'étiquette inclinées sur les panneaux (−6° / +5°) ; jamais de puce translucide posée sur
   un minimoa (fond sombre opaque).
 - **Boutons** : `Button` ; deux boutons côte à côte = deux moitiés égales (`flexBasis: 0`) ; un état « déjà fait » est un
@@ -69,5 +68,5 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 ## À faire / à ne pas faire
 - Faire : une action principale jaune par écran ; dire la conséquence avant de demander (autorisations) ; textes courts,
   adultes, au tutoiement, sans genre supposé ; les avantages Minimoa+ lus d'une seule source (`usePlusPerks`).
-- Ne pas faire : texte sous 13 pt ; texte blanc fin sur corail ; pourcentage sans explication ; empiler des cartes d'entrée ;
+- Ne pas faire : texte sous 13 pt ; texte blanc fin sur corail ; pourcentage sans explication ; empiler des cartes d'entrée ; deux éléments jaunes visibles (exception : la pilule jaune de l'onglet actif ne compte pas) ;
   `push` vers un onglet ; animation qui bloque ; un minimoa par-dessus une carte ; un prix écrit dans une phrase.

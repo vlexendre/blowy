@@ -10,17 +10,19 @@ import {
   Banner,
   Button,
   EmptyState,
+  LinkList,
+  LinkListEmpty,
+  LinkListSkeleton,
   EncounterHistory,
   IconButton,
   LinkRow,
   NudgeBanner,
-  Skeleton,
   staggerDelay,
   TabTemplate,
 } from '@blowy/ui';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { historyEntry, useEncounterHistory, useEncounters, useShareInvite } from '@/features/encounters';
@@ -123,24 +125,14 @@ export default function ChatsScreen() {
         ) : null}
 
         {links.isPending ? (
-          <View style={styles.list}>
-            {[0, 1, 2, 3].map((i) => (
-              <View key={i} style={styles.skeletonRow}>
-                <Skeleton width={72} height={44} radius="pill" />
-                <View style={styles.grow}>
-                  <Skeleton width="50%" height={16} />
-                  <Skeleton width="85%" height={12} style={styles.skeletonLine} />
-                </View>
-              </View>
-            ))}
-          </View>
+          <LinkListSkeleton />
         ) : list.length === 0 && !links.isError ? (
-          <View style={styles.empty}>
+          <LinkListEmpty>
             <EmptyState
               peek
               seed={pet.data?.pet.id}
               species={pet.data?.pet.species ?? 'nino'}
-              mood="triste"
+              mood="neutre"
               title={t.emptyTitle}
               text={t.emptyText(petName || t.yourPet)}
               actionLabel={t.emptyAction}
@@ -153,9 +145,9 @@ export default function ChatsScreen() {
               onPress={() => void invite.share()}
               disabled={!invite.ready}
             />
-          </View>
+          </LinkListEmpty>
         ) : (
-          <View style={styles.list}>
+          <LinkList>
             {list.map((l, i) => (
               <Appear key={l.id} once={`chats:${l.id}`} delay={(waitingFirst ? 140 : 0) + staggerDelay(i)}>
                 <LinkRow
@@ -186,7 +178,7 @@ export default function ChatsScreen() {
                 />
               </Appear>
             ))}
-          </View>
+          </LinkList>
         )}
         {/* Rencontres passées (liés, rangés, pas cette fois, en attente), repliées en bas : jamais une personne bloquée. */}
         <EncounterHistory
@@ -201,12 +193,3 @@ export default function ChatsScreen() {
     </ScreenMotion>
   );
 }
-
-const styles = StyleSheet.create({
-  grow: { flex: 1, minWidth: 0, gap: 4 },
-  // Maquette : 6 pt entre le bandeau et la liste (le gabarit en met 12) ; les lignes se touchent, séparées par un filet.
-  list: { marginTop: -6 },
-  skeletonRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
-  skeletonLine: { marginTop: 8 },
-  empty: { gap: 12, paddingTop: 24 },
-});

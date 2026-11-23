@@ -116,36 +116,23 @@ export const moi = messages({
       mute: 'Ne plus recevoir ce genre',
       reply: { action: 'Répondre', send: 'Envoyer', placeholder: 'Ta réponse…' },
       sections: { pet: 'Ton minimoa', links: 'Tes liens', plus: 'Minimoa+' },
-      morning: { title: 'Heure du défi', value: (h: number) => `${h} h` },
+      morning: { title: 'Heure de la séance', value: (h: number) => `${h} h` },
       quiet: {
         title: 'Heures calmes',
         value: (start: number, end: number) => `${start} h – ${end} h`,
         text: (start: number, end: number) =>
           `Rien entre ${start} h et ${end} h. Ce qui peut attendre arrive le matin.`,
       },
-      morningTitle: [{ text: 'HEURE ' }, { text: 'DU DÉFI', dim: true }],
-      morningText: 'Ton défi du jour arrive à cette heure-là (heure de ton téléphone).',
+      morningTitle: [{ text: 'HEURE ' }, { text: 'DE LA SÉANCE', dim: true }],
+      morningText: 'Ta séance du jour t’attend à cette heure-là (heure de ton téléphone).',
       hour: (h: number) => `${h} h`,
       rows: {
-        daily_challenge: { title: 'Défi du jour' },
-        needs_out: { title: (pet: string) => `${pet} aimerait sortir`, subtitle: '1 par jour au plus' },
+        daily_challenge: { title: 'Séance du jour' },
         streak_in_danger: { title: 'Un rappel pour ta série', subtitle: 'Le soir, 1 par jour au plus' },
-        unlocked: { title: 'Objet débloqué, 3 mots reçus' },
         encounters: { title: 'Nouvelle rencontre, on te fait signe' },
         messages: { title: 'Messages' },
-        your_turn: { title: 'À toi d’écrire', subtitle: 'Le soir, 1 par jour au plus' },
         link_in_danger: { title: 'Un mot pour un lien', subtitle: 'Quand ça fait un moment' },
-        trial_reminder: {
-          title: 'Fin de l’essai',
-          subtitle: 'Toujours envoyé, 2 jours avant le premier paiement',
-        },
         marketing: { title: 'Offres Minimoa+', subtitle: 'Une relance au plus, seulement si tu le veux' },
-        first_steps: { title: 'Premiers pas', subtitle: 'Tes 7 premiers jours, 3 idées' },
-        minimoa_news: {
-          title: 'Nouvelles de ton minimoa',
-          subtitle: 'Quand tu t’absentes, vos anniversaires',
-        },
-        plus_account: { title: 'Ton abonnement Minimoa+', subtitle: 'Bienvenue, paiement, fin' },
       },
       /** Accord du téléphone. */
       permission: {
@@ -167,7 +154,7 @@ export const moi = messages({
     compte: {
       title: [{ text: 'MON ' }, { text: 'COMPTE.', dim: true }],
       photoLabel: 'Ta photo de profil',
-      photoHint: 'Ta photo reste cachée dans un lien jusqu’au niveau 4, puis floue, puis nette au niveau 5.',
+      photoHint: 'Ta photo reste floue pour l’autre jusqu’à ce que vous vous soyez dit bonjour tous les deux.',
       photoChange: 'Changer la photo',
       photoAdd: 'Ajouter une photo',
       sheetTitle: [{ text: 'TA ' }, { text: 'PHOTO', dim: true }],
@@ -220,7 +207,7 @@ export const moi = messages({
         {
           key: 'pet',
           title: 'Ton minimoa',
-          subtitle: 'Sa vision, son style, ses objets, tes habitudes, ta série',
+          subtitle: 'Sa vision, son style, ses objets, ta série',
         },
         { key: 'place', title: 'Ta position', subtitle: 'Arrondie, et ta zone ou ta ville choisie' },
         {
@@ -459,33 +446,26 @@ export const moi = messages({
       mute: 'Stop this kind',
       reply: { action: 'Reply', send: 'Send', placeholder: 'Your reply…' },
       sections: { pet: 'Your minimoa', links: 'Your links', plus: 'Minimoa+' },
-      morning: { title: 'Challenge time', value: (h: number) => usHour(h) },
+      morning: { title: 'Session time', value: (h: number) => usHour(h) },
       quiet: {
         title: 'Quiet hours',
         value: (start: number, end: number) => `${usHour(start)} – ${usHour(end)}`,
         text: (start: number, end: number) =>
           `Nothing between ${usHour(start)} and ${usHour(end)}. Whatever can wait arrives in the morning.`,
       },
-      morningTitle: [{ text: 'CHALLENGE ' }, { text: 'TIME', dim: true }],
-      morningText: 'Your daily challenge arrives at this time (your phone’s time).',
+      morningTitle: [{ text: 'SESSION ' }, { text: 'TIME', dim: true }],
+      morningText: 'Your daily session is waiting at this time (your phone’s time).',
       hour: (h: number) => usHour(h),
       rows: {
-        daily_challenge: { title: 'Daily challenge' },
-        needs_out: { title: (pet: string) => `${pet} would like to go out`, subtitle: '1 a day at most' },
+        daily_challenge: { title: 'Daily session' },
         streak_in_danger: {
           title: 'A nudge for your streak',
           subtitle: 'In the evening, 1 a day at most',
         },
-        unlocked: { title: 'Item unlocked, 3 words received' },
         encounters: { title: 'New encounter, someone waved' },
         messages: { title: 'Messages' },
-        your_turn: { title: 'Your turn to write', subtitle: 'In the evening, 1 a day at most' },
         link_in_danger: { title: 'A word for a link', subtitle: 'When it’s been a while' },
-        trial_reminder: { title: 'End of trial', subtitle: 'Always sent, 2 days before the first payment' },
         marketing: { title: 'Minimoa+ offers', subtitle: 'One reminder at most, only if you want it' },
-        first_steps: { title: 'First steps', subtitle: 'Your first 7 days, 3 ideas' },
-        minimoa_news: { title: 'News from your minimoa', subtitle: 'When you’re away, your anniversaries' },
-        plus_account: { title: 'Your Minimoa+ subscription', subtitle: 'Welcome, payment, end' },
       },
       permission: {
         undetermined: {
@@ -506,7 +486,7 @@ export const moi = messages({
     compte: {
       title: [{ text: 'MY ' }, { text: 'ACCOUNT.', dim: true }],
       photoLabel: 'Your profile photo',
-      photoHint: 'In a link, your photo stays hidden until level 4, then blurred, then sharp at level 5.',
+      photoHint: 'Your photo stays blurred for the other person until you’ve both said hello.',
       photoChange: 'Change photo',
       photoAdd: 'Add a photo',
       sheetTitle: [{ text: 'YOUR ' }, { text: 'PHOTO', dim: true }],
@@ -553,7 +533,7 @@ export const moi = messages({
         {
           key: 'pet',
           title: 'Your minimoa',
-          subtitle: 'Its vision, its style, its items, your habits, your streak',
+          subtitle: 'Its vision, its style, its items, your streak',
         },
         { key: 'place', title: 'Your location', subtitle: 'Rounded, and your area or chosen city' },
         {
@@ -776,33 +756,23 @@ export const moi = messages({
       mute: 'No recibir más de este tipo',
       reply: { action: 'Responder', send: 'Enviar', placeholder: 'Tu respuesta…' },
       sections: { pet: 'Tu minimoa', links: 'Tus vínculos', plus: 'Minimoa+' },
-      morning: { title: 'Hora del reto', value: (h: number) => `${h}:00` },
+      morning: { title: 'Hora de la sesión', value: (h: number) => `${h}:00` },
       quiet: {
         title: 'Horas de calma',
         value: (start: number, end: number) => `${start}:00 – ${end}:00`,
         text: (start: number, end: number) =>
           `Nada entre las ${start}:00 y las ${end}:00. Lo que puede esperar llega por la mañana.`,
       },
-      morningTitle: [{ text: 'HORA ' }, { text: 'DEL RETO', dim: true }],
-      morningText: 'Tu reto del día llega a esta hora (la de tu teléfono).',
+      morningTitle: [{ text: 'HORA ' }, { text: 'DE LA SESIÓN', dim: true }],
+      morningText: 'Tu sesión del día te espera a esta hora (la de tu teléfono).',
       hour: (h: number) => `${h}:00`,
       rows: {
-        daily_challenge: { title: 'Reto del día' },
-        needs_out: { title: (pet: string) => `A ${pet} le apetece salir`, subtitle: '1 al día como máximo' },
+        daily_challenge: { title: 'Sesión del día' },
         streak_in_danger: { title: 'Un recordatorio de tu racha', subtitle: 'Por la noche, 1 al día como máximo' },
-        unlocked: { title: 'Objeto desbloqueado, 3 palabras recibidas' },
         encounters: { title: 'Nuevo encuentro, alguien te saluda' },
         messages: { title: 'Mensajes' },
-        your_turn: { title: 'Te toca escribir', subtitle: 'Por la noche, 1 al día como máximo' },
         link_in_danger: { title: 'Un mensaje para un vínculo', subtitle: 'Cuando hace un tiempo' },
-        trial_reminder: {
-          title: 'Fin de la prueba',
-          subtitle: 'Siempre se envía, 2 días antes del primer pago',
-        },
         marketing: { title: 'Ofertas de Minimoa+', subtitle: 'Un recordatorio como máximo, solo si quieres' },
-        first_steps: { title: 'Primeros pasos', subtitle: 'Tus 7 primeros días, 3 ideas' },
-        minimoa_news: { title: 'Noticias de tu minimoa', subtitle: 'Cuando no estás, vuestros aniversarios' },
-        plus_account: { title: 'Tu suscripción a Minimoa+', subtitle: 'Bienvenida, pago, final' },
       },
       permission: {
         undetermined: {
@@ -824,7 +794,7 @@ export const moi = messages({
       title: [{ text: 'MI ' }, { text: 'CUENTA.', dim: true }],
       photoLabel: 'Tu foto de perfil',
       photoHint:
-        'En un vínculo, tu foto queda oculta hasta el nivel 4, luego borrosa y nítida en el nivel 5.',
+        'Tu foto se queda borrosa para la otra persona hasta que os hayáis dicho hola los dos.',
       photoChange: 'Cambiar la foto',
       photoAdd: 'Añadir una foto',
       sheetTitle: [{ text: 'TU ' }, { text: 'FOTO', dim: true }],
@@ -871,7 +841,7 @@ export const moi = messages({
         {
           key: 'pet',
           title: 'Tu minimoa',
-          subtitle: 'Su visión, su estilo, sus objetos, tus hábitos, tu racha',
+          subtitle: 'Su visión, su estilo, sus objetos, tu racha',
         },
         { key: 'place', title: 'Tu ubicación', subtitle: 'Redondeada, y tu zona o la ciudad elegida' },
         {
@@ -1099,36 +1069,23 @@ export const moi = messages({
       mute: 'Não receber mais deste tipo',
       reply: { action: 'Responder', send: 'Enviar', placeholder: 'Sua resposta…' },
       sections: { pet: 'Seu minimoa', links: 'Seus vínculos', plus: 'Minimoa+' },
-      morning: { title: 'Hora do desafio', value: (h: number) => `${h}h` },
+      morning: { title: 'Hora da sessão', value: (h: number) => `${h}h` },
       quiet: {
         title: 'Horas de silêncio',
         value: (start: number, end: number) => `${start}h – ${end}h`,
         text: (start: number, end: number) =>
           `Nada entre ${start}h e ${end}h. O que pode esperar chega de manhã.`,
       },
-      morningTitle: [{ text: 'HORA ' }, { text: 'DO DESAFIO', dim: true }],
-      morningText: 'Seu desafio do dia chega neste horário (o do seu celular).',
+      morningTitle: [{ text: 'HORA ' }, { text: 'DA SESSÃO', dim: true }],
+      morningText: 'Sua sessão do dia espera por você neste horário (o do seu celular).',
       hour: (h: number) => `${h}h`,
       rows: {
-        daily_challenge: { title: 'Desafio do dia' },
-        needs_out: { title: (pet: string) => `${pet} quer tomar um ar`, subtitle: 'No máximo 1 por dia' },
+        daily_challenge: { title: 'Sessão do dia' },
         streak_in_danger: { title: 'Um lembrete da sua sequência', subtitle: 'À noite, no máximo 1 por dia' },
-        unlocked: { title: 'Item desbloqueado, 3 palavras recebidas' },
         encounters: { title: 'Novo encontro, alguém acenou' },
         messages: { title: 'Mensagens' },
-        your_turn: { title: 'Sua vez de escrever', subtitle: 'À noite, no máximo 1 por dia' },
         link_in_danger: { title: 'Uma mensagem para um vínculo', subtitle: 'Quando faz um tempo' },
-        trial_reminder: {
-          title: 'Fim do teste gratuito',
-          subtitle: 'Sempre enviado, 2 dias antes da primeira cobrança',
-        },
         marketing: { title: 'Ofertas do Minimoa+', subtitle: 'No máximo um lembrete, só se você quiser' },
-        first_steps: { title: 'Primeiros passos', subtitle: 'Seus 7 primeiros dias, 3 ideias' },
-        minimoa_news: {
-          title: 'Notícias do seu minimoa',
-          subtitle: 'Quando você some, os aniversários de vocês',
-        },
-        plus_account: { title: 'Sua assinatura do Minimoa+', subtitle: 'Boas-vindas, pagamento, fim' },
       },
       permission: {
         undetermined: {
@@ -1149,7 +1106,7 @@ export const moi = messages({
     compte: {
       title: [{ text: 'MINHA ' }, { text: 'CONTA.', dim: true }],
       photoLabel: 'Sua foto de perfil',
-      photoHint: 'Num vínculo, sua foto fica escondida até o nível 4, depois desfocada, e nítida no nível 5.',
+      photoHint: 'Sua foto fica desfocada para a outra pessoa até vocês dois se dizerem oi.',
       photoChange: 'Trocar a foto',
       photoAdd: 'Adicionar uma foto',
       sheetTitle: [{ text: 'SUA ' }, { text: 'FOTO', dim: true }],
@@ -1196,7 +1153,7 @@ export const moi = messages({
         {
           key: 'pet',
           title: 'Seu minimoa',
-          subtitle: 'A visão, o estilo e os itens dele, seus hábitos, sua sequência',
+          subtitle: 'A visão, o estilo e os itens dele, sua sequência',
         },
         { key: 'place', title: 'Sua localização', subtitle: 'Arredondada, e sua área ou a cidade escolhida' },
         {
@@ -1416,39 +1373,29 @@ export const moi = messages({
       mute: 'Dit soort niet meer ontvangen',
       reply: { action: 'Antwoorden', send: 'Versturen', placeholder: 'Je antwoord…' },
       sections: { pet: 'Je minimoa', links: 'Je banden', plus: 'Minimoa+' },
-      morning: { title: 'Tijd van de uitdaging', value: (h: number) => `${h}:00` },
+      morning: { title: 'Tijd van de sessie', value: (h: number) => `${h}:00` },
       quiet: {
         title: 'Rustige uren',
         value: (start: number, end: number) => `${start}:00 – ${end}:00`,
         text: (start: number, end: number) =>
           `Niets tussen ${start}:00 en ${end}:00. Wat kan wachten, komt ’s ochtends.`,
       },
-      morningTitle: [{ text: 'TIJD VAN ' }, { text: 'DE UITDAGING', dim: true }],
-      morningText: 'Je uitdaging van de dag komt op dit tijdstip (tijd van je telefoon).',
+      morningTitle: [{ text: 'TIJD VAN ' }, { text: 'DE SESSIE', dim: true }],
+      morningText: 'Je sessie van de dag wacht op dit tijdstip (tijd van je telefoon).',
       hour: (h: number) => `${h}:00`,
       rows: {
-        daily_challenge: { title: 'Uitdaging van de dag' },
-        needs_out: { title: (pet: string) => `${pet} wil graag naar buiten`, subtitle: 'Hooguit 1 per dag' },
+        daily_challenge: { title: 'Sessie van de dag' },
         streak_in_danger: {
           title: 'Een zetje voor je reeks',
           subtitle: '’s Avonds, hooguit 1 per dag',
         },
-        unlocked: { title: 'Item ontgrendeld, 3 woorden ontvangen' },
         encounters: { title: 'Nieuwe ontmoeting, iemand zwaait' },
         messages: { title: 'Berichten' },
-        your_turn: { title: 'Jouw beurt om te schrijven', subtitle: '’s Avonds, hooguit 1 per dag' },
         link_in_danger: { title: 'Een berichtje voor een band', subtitle: 'Als het even geleden is' },
-        trial_reminder: {
-          title: 'Einde van de proefperiode',
-          subtitle: 'Altijd verstuurd, 2 dagen voor de eerste betaling',
-        },
         marketing: {
           title: 'Minimoa+-aanbiedingen',
           subtitle: 'Hooguit één herinnering, alleen als je dat wilt',
         },
-        first_steps: { title: 'Eerste stappen', subtitle: 'Je eerste 7 dagen, 3 ideeën' },
-        minimoa_news: { title: 'Nieuws van je minimoa', subtitle: 'Als je weg bent, jullie verjaardagen' },
-        plus_account: { title: 'Je Minimoa+-abonnement', subtitle: 'Welkom, betaling, einde' },
       },
       permission: {
         undetermined: {
@@ -1469,7 +1416,7 @@ export const moi = messages({
     compte: {
       title: [{ text: 'MIJN ' }, { text: 'ACCOUNT.', dim: true }],
       photoLabel: 'Je profielfoto',
-      photoHint: 'In een band blijft je foto verborgen tot niveau 4, daarna wazig, en scherp vanaf niveau 5.',
+      photoHint: 'Je foto blijft wazig voor de ander tot jullie allebei hallo hebben gezegd.',
       photoChange: 'Foto wijzigen',
       photoAdd: 'Foto toevoegen',
       sheetTitle: [{ text: 'JE ' }, { text: 'FOTO', dim: true }],
@@ -1518,7 +1465,7 @@ export const moi = messages({
         {
           key: 'pet',
           title: 'Je minimoa',
-          subtitle: 'Zijn visie, zijn stijl, zijn items, je gewoontes, je reeks',
+          subtitle: 'Zijn visie, zijn stijl, zijn items, je reeks',
         },
         { key: 'place', title: 'Je locatie', subtitle: 'Afgerond, en je gebied of gekozen stad' },
         {

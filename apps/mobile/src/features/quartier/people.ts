@@ -98,3 +98,18 @@ export function quartierPeople(input: {
  * autres épingles ; sinon, l'avantage (`openPlus('map')`).
  */
 export const canWave = (n: Pick<Neighbor, 'presented'>, plus: boolean): boolean => n.presented || plus;
+
+/** La proposition Minimoa+ de la liste du Quartier : « Vu de loin », celle de la carte, « Plus de présentations ». */
+export type QuartierOffer = 'far' | 'screen' | 'more';
+
+/**
+ * Une seule proposition Minimoa+ par liste, et aucune sur une liste vide (docs/ADA-2027.md, point 4) ni sans test de
+ * vision, ni avec Minimoa+. « Vu de loin » d'abord (de vraies personnes), puis celle de l'écran (la carte), puis
+ * « Plus de présentations » quand quelqu'un est présenté aujourd'hui.
+ */
+export function quartierOffer(o: { plus: boolean; loaded: boolean; empty: boolean; noVision: boolean; far: boolean; screen: boolean; today: number }): QuartierOffer | null {
+  if (o.plus || !o.loaded || o.empty || o.noVision) return null;
+  if (o.far) return 'far';
+  if (o.screen) return 'screen';
+  return o.today > 0 ? 'more' : null;
+}

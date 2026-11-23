@@ -36,8 +36,8 @@ export interface StreakTierProps {
 
 /**
  * La fête d'un palier de série (7, 30, 100, 365 jours), plein écran orange : le minimoa, le grand chiffre, une phrase.
- * Moins de 3 s, puis elle se ferme seule ; un tap n'importe où la coupe. Une vibration, des confettis ; animations
- * réduites : ni confettis ni défilement, un simple fondu. VoiceOver : la fête est annoncée, puis rend la main.
+ * Moins de 3 s, puis elle se ferme seule (sauf avec un lecteur d'écran : elle attend le tap) ; un tap n'importe où la coupe. Une vibration, des confettis ; animations
+ * réduites : ni confettis ni défilement, un simple fondu. VoiceOver : la fête est annoncée et reste jusqu'au tap.
  */
 export function StreakTier({ visible, species, count, unit, line, tapLabel, accessibilityLabel, onDone }: StreakTierProps) {
   const insets = useSafeAreaInsets();
@@ -55,8 +55,16 @@ export function StreakTier({ visible, species, count, unit, line, tapLabel, acce
     hapticFor('celebrate');
     if (!reduced) setConfetti((n) => n + 1);
     AccessibilityInfo.announceForAccessibility(line ? `${accessibilityLabel}. ${line}` : accessibilityLabel);
-    const timer = setTimeout(() => done.current(), STREAK_TIER_MS);
-    return () => clearTimeout(timer);
+    // Lecteur d'écran actif : pas de fermeture automatique (on n'a pas fini d'écouter), elle se ferme au tap.
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    void AccessibilityInfo.isScreenReaderEnabled().then((on) => {
+      if (!cancelled && !on) timer = setTimeout(() => done.current(), STREAK_TIER_MS);
+    });
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 

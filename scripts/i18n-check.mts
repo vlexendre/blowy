@@ -9,6 +9,8 @@
  *   (`TODO` : interdit sur le site, chaque langue est publiée), ou dit « pet » dans une langue.
  * - un texte vu par les gens (app et `packages/content`, cinq langues) contient une formule punitive : « en danger »,
  *   « boude », « tu vas perdre », « dernière chance »… (liste `FORBIDDEN`, section 5) ;
+ * - un texte de l'app (cinq langues) parle d'une fonction retirée : défi, habitude, ligue, trophée, étincelle, bilan,
+ *   preuve… (liste `RETIRED`, exceptions écrites dans `RETIRED_ALLOWED`, section 6) ;
  * Affiche ensuite, pour chaque langue, le nombre de textes encore en français (`TODO`) par dictionnaire.
  * `--list` affiche aussi les clés non traduites.
  */
@@ -212,6 +214,47 @@ for (const [name, m] of Object.entries(all)) {
       if (!hit) continue;
       seen.add(at);
       problems.push(`${name} [${locale}].${at} : formule punitive (${hit.source}) dans « ${text.slice(0, 90)} »`);
+    }
+  }
+}
+
+// ── 6. Fonctions retirées : aucun mot de ligue, défi, habitude… dans les textes de l'app ───
+
+/**
+ * Règle App Store 2.5.19 (docs/ADA-2027.md) : une fonction retirée de l'app ne laisse aucun texte (pas de fonction cachée
+ * ou en sommeil). Un texte de l'app (`apps/mobile/src/locales`, cinq langues) ne parle donc plus de défis, d'habitudes, de
+ * ligue, de trophées, d'étincelles, de bilans ni de preuves. Une expression par langue ; les exceptions sont écrites
+ * dans `RETIRED_ALLOWED`, avec leur raison.
+ */
+const word = (alts: string): RegExp => new RegExp(`(?<![\\p{L}])(?:${alts})(?![\\p{L}])`, 'iu');
+const RETIRED: Record<(typeof LOCALES)[number], RegExp> = {
+  fr: word('défis?|habitudes?|ligues?|trophées?|étincelles?|bilans?|preuves?'),
+  en: word('challenges?|habits?|leagues?|trophy|trophies|sparks?|recaps?|reviews?|proofs?'),
+  es: word('retos?|desafíos?|hábitos?|ligas?|trofeos?|chispas?|balances?|pruebas?(?! gratu| gratis)'),
+  pt: word('desafios?|hábitos?|ligas?|troféus?|faíscas?|balanços?|provas?'),
+  nl: word('uitdagingen|uitdaging|gewoontes?|gewoonte|competities?|trofee(?:ën|ëen|s)?|vonken|vonk|terugblikken?|bewijs'),
+};
+/**
+ * Exceptions : le texte reste, avec la raison. `dict` = dictionnaire (`app/<fichier>.<nom>`), `at` = chemin de la clé.
+ * Rien d'autre n'est toléré : un texte de fonction retirée se supprime, il ne se met pas ici.
+ */
+const RETIRED_ALLOWED: { dict: RegExp; at: RegExp; why: string }[] = [
+  { dict: /^app\/moi\.moi$/, at: /^supprimer\./, why: 'écran de suppression du compte : liste honnête de ce qui est effacé (RGPD), y compris les données d’anciennes versions' },
+  { dict: /^app\/moi\.moi$/, at: /^notifications\.rows\.trial_reminder\./, why: 'es : « prueba » = l’essai gratuit de Minimoa+ (faux ami de « preuve »)' },
+  { dict: /^app\/plus\.plus$/, at: /^timeline\[/, why: 'es : « prueba » = l’essai gratuit de Minimoa+ (faux ami de « preuve »)' },
+];
+for (const [name, m] of Object.entries(appDictionaries)) {
+  for (const locale of LOCALES) {
+    const found: { at: string; text: string }[] = [];
+    strings((m.dictionaries as Record<string, unknown>)[locale], '', found);
+    const seen = new Set<string>();
+    for (const { at, text } of found) {
+      if (seen.has(at) || isIdentifier(text)) continue;
+      const hit = RETIRED[locale].exec(text);
+      if (!hit) continue;
+      if (RETIRED_ALLOWED.some((a) => a.dict.test(name) && a.at.test(at))) continue;
+      seen.add(at);
+      problems.push(`fonction retirée : ${name}.${at} [${locale}] « ${hit[0]} » dans « ${text.slice(0, 90)} »`);
     }
   }
 }

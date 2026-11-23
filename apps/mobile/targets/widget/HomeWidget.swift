@@ -1,5 +1,5 @@
 // Widgets de l'écran d'accueil (V6-GWidget) : petit (le minimoa dans l'anneau de sociabilité, la série)
-// et moyen (le minimoa dans son panneau, sa sociabilité, la série et le défi du jour). Toucher ouvre l'accueil.
+// et moyen (le minimoa dans son panneau, sa sociabilité, la série et le séance du jour). Toucher ouvre l'accueil.
 
 import SwiftUI
 import WidgetKit
@@ -125,7 +125,7 @@ private struct MediumView: View {
   }
 }
 
-/// « Défi : un café dehors / Touche pour y aller », ou « Défi relevé / Reviens demain ».
+/// « Séance : … / Touche pour y aller », ou « Séance faite / Reviens demain ».
 struct ChallengeLines: View {
   let frame: BlowyFrame
 

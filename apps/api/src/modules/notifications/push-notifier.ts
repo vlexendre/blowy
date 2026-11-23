@@ -28,8 +28,12 @@ import {
 } from '@blowy/domain';
 import type { NotificationKind, Notifier } from '../../integrations/push/notifier';
 import { PUSHER, type PushMessage, type Pusher } from '../../integrations/push/pusher';
+import type { Env } from '../../config/env';
+import { buildIsAda, isRetiredNotification } from '../../shared/ada-build';
 import type { Clock } from '../../shared/clock';
-import { CLOCK, PROFILES } from '../../shared/tokens';
+import { CLOCK, ENV, PROFILES } from '../../shared/tokens';
+import type { CheminProgressRepository } from '../chemin/ports';
+import { CHEMIN_PROGRESS } from '../chemin/tokens';
 import type { ProfilesRepository } from '../me/ports';
 import type { RetentionRepository } from '../retention/ports';
 import { RETENTION } from '../retention/ports';
@@ -208,8 +212,21 @@ export class PushNotifier implements Notifier {
     @Inject(Audience) private readonly audience: Audience,
     @Inject(LiveActivities) private readonly live: LiveActivities,
     @Inject(NotificationPresence) private readonly presence: NotificationPresence,
+    @Inject(ENV) private readonly env: Env,
+    @Inject(CHEMIN_PROGRESS) private readonly cheminProgress: CheminProgressRepository,
     @Optional() @Inject(RETENTION) private readonly activity: RetentionRepository | null = null,
   ) {}
+
+  /**
+   * Notification d'une fonction supprimée de l'app (ligue, défi hors Ton chemin, habitudes, bilans, groupes) pour un
+   * compte dont la dernière app vue est la version simplifiée (docs/ADA-2027.md) : elle ne part pas. Les anciennes
+   * versions la reçoivent toujours. Dernière app vue : celle retenue par Ton chemin (même source que le rappel du matin).
+   */
+  private async retiredFor(userId: string, kind: NotificationKind, vars: Readonly<Record<string, string>>): Promise<boolean> {
+    if (!isRetiredNotification(kind, vars)) return false;
+    const progress = await this.cheminProgress.find(userId);
+    return !!progress && buildIsAda(this.env.appVersions, progress.lastPlatform, progress.lastBuild);
+  }
 
   async notify(userId: string, kind: NotificationKind, vars: Record<string, string> = {}): Promise<void> {
     try {
@@ -311,6 +328,8 @@ export class PushNotifier implements Notifier {
     const devices = (await this.devices.forUser(userId)).filter((d) => d.kind === 'expo');
     // Compte suspendu : aucun push (Audience) ; un report en attente est abandonné.
     if (devices.length === 0 || !(await this.audience.canNotify(userId))) return drop();
+    // Fonction supprimée de la version d'app du compte : rien (un report en attente est abandonné).
+    if (await this.retiredFor(userId, kind, input)) return drop();
     // Jamais une notification au sujet d'une personne bloquée (dans un sens ou l'autre), suspendue ou supprimée.
     const about = input.about;
     if (about && about !== userId && !(await this.audience.visibleIds(userId, [about], 'group')).has(about))

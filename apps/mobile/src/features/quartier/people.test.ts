@@ -1,7 +1,7 @@
 import type { Encounters, MapPin, Person } from '@blowy/contract';
 import { describe, expect, it } from 'vitest';
 
-import { canWave, quartierPeople } from './people';
+import { canWave, quartierOffer, quartierPeople } from './people';
 
 const person = (id: string): Person => ({
   id,
@@ -52,5 +52,21 @@ describe('quartierPeople', () => {
     expect(c?.relation).toBe('waved_you');
     expect(c && canWave(c, false)).toBe(false);
     expect(c && canWave(c, true)).toBe(true);
+  });
+});
+
+describe('quartierOffer', () => {
+  const base = { plus: false, loaded: true, empty: false, noVision: false, far: false, screen: false, today: 2 };
+  it('une seule proposition : vu de loin, puis celle de la carte, puis plus de présentations', () => {
+    expect(quartierOffer({ ...base, far: true, screen: true })).toBe('far');
+    expect(quartierOffer({ ...base, screen: true })).toBe('screen');
+    expect(quartierOffer(base)).toBe('more');
+    expect(quartierOffer({ ...base, today: 0 })).toBeNull();
+  });
+  it('aucune sur une liste vide, sans test de vision, avec Minimoa+ ou avant le chargement', () => {
+    expect(quartierOffer({ ...base, far: true, screen: true, empty: true })).toBeNull();
+    expect(quartierOffer({ ...base, far: true, noVision: true })).toBeNull();
+    expect(quartierOffer({ ...base, far: true, plus: true })).toBeNull();
+    expect(quartierOffer({ ...base, far: true, loaded: false })).toBeNull();
   });
 });

@@ -1,4 +1,5 @@
 import { useTabBarSpace } from '../organisms/BottomTabBar';
+import { SheetBottomInset } from '../organisms/PeopleSheet';
 import { LinearGradient } from 'expo-linear-gradient';
 import { type ReactNode, useState } from 'react';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
@@ -48,11 +49,12 @@ export interface MapTemplateProps {
   /** Pied : fiche choisie, bandeau Minimoa+, boutons. */
   bottom?: ReactNode;
   /**
-   * Feuille à crans (`PeopleSheet`, onglet Quartier) : posée au-dessus de la barre d'onglets, elle peut monter jusque
-   * sous l'encoche. Le pied (fiche, puce) se range au-dessus de sa partie visible.
+   * Feuille à crans (`PeopleSheet`, onglet Quartier) : pleine largeur, elle descend jusqu'au bas de l'écran (sous la
+   * barre d'onglets flottante, qu'elle compte dans ses crans) et peut monter jusque sous l'encoche. Le pied (fiche,
+   * puce) se range au-dessus de sa partie visible.
    */
   sheet?: ReactNode;
-  /** Hauteur visible de la feuille (0 : cachée), telle que la feuille la donne une fois posée. */
+  /** Hauteur visible de la feuille depuis le bas de l'écran (0 : cachée), telle que la feuille la donne une fois posée. */
   sheetVisible?: number;
 }
 
@@ -66,8 +68,9 @@ export function MapTemplate({ map, title, subtitle, zone, onBack, backLabel, rig
   const [head, setHead] = useState<number | null>(null);
   const [foot, setFoot] = useState<number | null>(null);
   const sheetGap = inTabs ? tabSpace + space.xs : space.md + insets.bottom;
+  // La feuille compte déjà la barre d'onglets dans sa hauteur visible : le pied se pose juste au-dessus.
   const lifted = sheet && sheetVisible > 0 ? sheetVisible + space.sm : 0;
-  const footGap = sheetGap + lifted;
+  const footGap = lifted > 0 ? lifted : sheetGap;
   const frame: MapFrame = {
     // Le fondu sous l'en-tête laisse voir la carte : on n'en garde que le haut.
     top: Math.round((head ?? insets.top + 220) - space.xxl + space.sm),
@@ -102,8 +105,8 @@ export function MapTemplate({ map, title, subtitle, zone, onBack, backLabel, rig
         {zone ? <View style={styles.zone}>{zone}</View> : null}
       </LinearGradient>
       {sheet ? (
-        <View pointerEvents="box-none" style={[styles.sheet, { top: insets.top + space.md, bottom: sheetGap - space.xs }]}>
-          {sheet}
+        <View pointerEvents="box-none" style={[styles.sheet, { top: insets.top + space.md }]}>
+          <SheetBottomInset.Provider value={inTabs ? tabSpace : insets.bottom}>{sheet}</SheetBottomInset.Provider>
         </View>
       ) : null}
       {bottom || badge ? (
@@ -129,7 +132,7 @@ const styles = StyleSheet.create({
   subtitle: { maxWidth: 300 },
   zone: { marginTop: space.xs },
   bottom: { position: 'absolute', left: 14, right: 14 },
-  sheet: { position: 'absolute', left: space.sm, right: space.sm },
+  sheet: { position: 'absolute', left: 0, right: 0, bottom: 0 },
   footCol: { gap: space.sm },
   badge: { flexDirection: 'row', justifyContent: 'center', paddingBottom: space.xs },
 });

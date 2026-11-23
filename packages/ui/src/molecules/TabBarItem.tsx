@@ -138,6 +138,8 @@ export function TabBarItem({ label, glyph, active, badge, onPress, onLongPress, 
       accessibilityRole="tab"
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ selected: !!active }}
+      accessibilityShowsLargeContentViewer
+      accessibilityLargeContentTitle={label}
       style={[styles.base, active && !sliding && styles.active]}
     >
       <Animated.View style={[styles.stretch, bounce]}>

@@ -1,6 +1,5 @@
 /**
- * Notifications (V6-GNotifs) : l'heure du défi, les heures calmes, un interrupteur par type (regroupés comme sur la
- * maquette), et l'accord du téléphone (pas encore demandé → le demander ; refusé → passer par les Réglages).
+ * Notifications (V6-GNotifs) : l'heure de la séance, les heures calmes, un interrupteur par type (6 lignes au plus), et l'accord du téléphone (pas encore demandé → le demander ; refusé → passer par les Réglages).
  * Les réglages vivent sur le serveur (`api.notifications`) : ils valent pour tous tes appareils.
  */
 import type { NotificationKindDto, NotificationSettings } from '@blowy/contract';
@@ -10,7 +9,6 @@ import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
 import { ScreenMotion } from '@/core';
-import { useMe } from '@/features/me';
 import { useNotificationSettings, usePushPermission, useUpdateNotificationSettings } from '@/features/notifications';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
@@ -24,32 +22,22 @@ type Row = { key: string; kinds: readonly NotificationKindDto[]; title: string; 
 const HOURS = Array.from({ length: MORNING_HOUR_MAX - MORNING_HOUR_MIN + 1 }, (_, i) => MORNING_HOUR_MIN + i);
 
 export default function Notifications() {
-  const me = useMe();
   const settings = useNotificationSettings();
   const update = useUpdateNotificationSettings();
   const { permission, ask } = usePushPermission();
   const [hourSheet, setHourSheet] = useState(false);
   const [quietSheet, setQuietSheet] = useState(false);
-  const pet = me.data?.pet;
-  const petName = pet?.name ?? common.speciesNames.nino;
   const back = () => goBack('/moi/reglages');
 
   const petRows: Row[] = [
-    { key: 'challenge', kinds: ['daily_challenge'], ...t.rows.daily_challenge },
-    { key: 'out', kinds: ['needs_out'], title: t.rows.needs_out.title(petName), subtitle: t.rows.needs_out.subtitle },
+    { key: 'session', kinds: ['daily_challenge'], ...t.rows.daily_challenge },
     { key: 'streak', kinds: ['streak_in_danger'], ...t.rows.streak_in_danger },
-    { key: 'unlocked', kinds: ['item_unlocked', 'words_received'], ...t.rows.unlocked },
-    // Fidélisation (docs/FIDELISATION.md) : coupe aussi les e-mails du même genre.
-    { key: 'first_steps', kinds: ['first_steps'], ...t.rows.first_steps },
-    { key: 'news', kinds: ['minimoa_news'], ...t.rows.minimoa_news },
   ];
   const linkRows: Row[] = [
     { key: 'encounters', kinds: ['new_encounter', 'waved'], ...t.rows.encounters },
     { key: 'messages', kinds: ['message'], ...t.rows.messages },
-    { key: 'turn', kinds: ['your_turn'], ...t.rows.your_turn },
-    { key: 'danger', kinds: ['link_in_danger'], ...t.rows.link_in_danger },
+    { key: 'word', kinds: ['your_turn', 'link_in_danger'], ...t.rows.link_in_danger },
   ];
-  const plusRows: Row[] = [{ key: 'plus_account', kinds: ['plus_account'], ...t.rows.plus_account }];
 
   const toRows = (s: NotificationSettings, rows: Row[]) =>
     rows.map((r) => ({
@@ -102,9 +90,6 @@ export default function Notifications() {
               key="plus"
               title={t.sections.plus}
               rows={[
-                // Rappel de fin d'essai : promis par le paywall, toujours envoyé (pas d'interrupteur).
-                { key: 'trial', ...t.rows.trial_reminder },
-                ...toRows(s, plusRows),
                 // Offres : accord explicite, désactivé par défaut (App Review 4.5.4).
                 { key: 'marketing', ...t.rows.marketing, switchValue: s.marketing === true, onSwitchChange: (on: boolean) => update.mutate({ marketing: on }) },
               ]}

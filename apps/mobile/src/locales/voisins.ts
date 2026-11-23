@@ -13,7 +13,7 @@ export const voisins = messages({
     /** Titre de la feuille, toujours visible (le plafond est quotidien). */
     sheetTitle: (n: number): string => (n === 0 ? 'Aujourd’hui · personne pour l’instant' : `Aujourd’hui · ${n} ${n > 1 ? 'personnes' : 'personne'}`),
     /** Décision 7 : les visages flous sont une protection, pour tout le monde. */
-    sheetNote: 'Visages flous jusqu’à votre bonjour. Positions arrondies.',
+    sheetNote: 'Visages flous jusqu’à ce que vous vous soyez dit bonjour tous les deux. Positions arrondies.',
     expandA11y: 'Ouvrir la liste',
     collapseA11y: 'Replier la liste',
     /** Les autres épingles de la carte, dans la vue en liste. */
@@ -25,11 +25,16 @@ export const voisins = messages({
     activate: 'Activer',
     chooseCity: 'Choisir ma ville',
     history: 'Déjà croisés',
+    /** Chargement raté : jamais le message brut de l'erreur. */
+    loadErrorText: 'Vérifie ta connexion, puis réessaie.',
+    /** Fiche d'une épingle non présentée aujourd'hui (gratuit) : le bouton ouvre Minimoa+, il le dit. */
+    plusAction: 'Découvrir Minimoa+',
+    plusNote: (name: string): string => `${name} n’est pas dans tes présentations du jour : le saluer depuis la carte, c’est avec Minimoa+.`,
   },
   en: {
     title: [{ text: 'YOUR ' }, { text: 'NEIGHBORHOOD', dim: true }],
     sheetTitle: (n: number): string => (n === 0 ? 'Today · no one yet' : `Today · ${n} ${n === 1 ? 'person' : 'people'}`),
-    sheetNote: 'Faces stay blurred until you say hello. Locations are rounded.',
+    sheetNote: 'Faces stay blurred until you’ve both said hello. Locations are rounded.',
     expandA11y: 'Open the list',
     collapseA11y: 'Collapse the list',
     around: (n: number): string => `On the map · ${n}`,
@@ -39,11 +44,14 @@ export const voisins = messages({
     activate: 'Turn on',
     chooseCity: 'Choose my city',
     history: 'Already met',
+    loadErrorText: 'Check your connection, then try again.',
+    plusAction: 'Discover Minimoa+',
+    plusNote: (name: string): string => `${name} isn’t in today’s introductions: waving from the map comes with Minimoa+.`,
   },
   es: {
     title: [{ text: 'TU ' }, { text: 'BARRIO', dim: true }],
     sheetTitle: (n: number): string => (n === 0 ? 'Hoy · nadie por ahora' : `Hoy · ${n} ${n === 1 ? 'persona' : 'personas'}`),
-    sheetNote: 'Caras borrosas hasta vuestro hola. Posiciones redondeadas.',
+    sheetNote: 'Caras borrosas hasta que os hayáis saludado los dos. Posiciones redondeadas.',
     expandA11y: 'Abrir la lista',
     collapseA11y: 'Plegar la lista',
     around: (n: number): string => `En el mapa · ${n}`,
@@ -53,11 +61,14 @@ export const voisins = messages({
     activate: 'Activar',
     chooseCity: 'Elegir mi ciudad',
     history: 'Ya os habéis cruzado',
+    loadErrorText: 'Comprueba tu conexión y vuelve a intentarlo.',
+    plusAction: 'Descubrir Minimoa+',
+    plusNote: (name: string): string => `${name} no está en tus presentaciones de hoy: saludar desde el mapa es con Minimoa+.`,
   },
   pt: {
     title: [{ text: 'SEU ' }, { text: 'BAIRRO', dim: true }],
     sheetTitle: (n: number): string => (n === 0 ? 'Hoje · ninguém por enquanto' : `Hoje · ${n} ${n === 1 ? 'pessoa' : 'pessoas'}`),
-    sheetNote: 'Rostos desfocados até o primeiro oi. Posições arredondadas.',
+    sheetNote: 'Rostos desfocados até vocês dois terem dito oi. Posições arredondadas.',
     expandA11y: 'Abrir a lista',
     collapseA11y: 'Recolher a lista',
     around: (n: number): string => `No mapa · ${n}`,
@@ -67,11 +78,14 @@ export const voisins = messages({
     activate: 'Ativar',
     chooseCity: 'Escolher minha cidade',
     history: 'Já se cruzaram',
+    loadErrorText: 'Verifique sua conexão e tente de novo.',
+    plusAction: 'Conhecer o Minimoa+',
+    plusNote: (name: string): string => `${name} não está nas suas apresentações de hoje: acenar pelo mapa é com o Minimoa+.`,
   },
   nl: {
     title: [{ text: 'JOUW ' }, { text: 'BUURT', dim: true }],
     sheetTitle: (n: number): string => (n === 0 ? 'Vandaag · nog niemand' : `Vandaag · ${n} ${n === 1 ? 'persoon' : 'mensen'}`),
-    sheetNote: 'Gezichten blijven wazig tot jullie hallo zeggen. Posities zijn afgerond.',
+    sheetNote: 'Gezichten blijven wazig tot jullie allebei hallo hebben gezegd. Posities zijn afgerond.',
     expandA11y: 'Lijst openen',
     collapseA11y: 'Lijst inklappen',
     around: (n: number): string => `Op de kaart · ${n}`,
@@ -81,5 +95,8 @@ export const voisins = messages({
     activate: 'Aanzetten',
     chooseCity: 'Mijn stad kiezen',
     history: 'Al ontmoet',
+    loadErrorText: 'Controleer je verbinding en probeer het opnieuw.',
+    plusAction: 'Ontdek Minimoa+',
+    plusNote: (name: string): string => `${name} zit niet in je voorstellingen van vandaag: zwaaien vanaf de kaart kan met Minimoa+.`,
   },
 });

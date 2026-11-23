@@ -33,7 +33,7 @@ import { quartier as quartierText } from '@/locales/quartier';
 import { rencontres as t } from '@/locales/rencontres';
 import { voisins as v } from '@/locales/voisins';
 
-import type { Neighbor, QuartierPeople } from './people';
+import { type Neighbor, type QuartierPeople, quartierOffer } from './people';
 
 /** Silhouettes du « vu de loin » : un décor, jamais les formes des vraies personnes. */
 const FAR_SPECIES = ['suzie', 'gaston', 'pia', 'nino'] as const;
@@ -51,11 +51,17 @@ export interface QuartierListProps {
   waveBlock: string | null;
   /** En haut de la liste (action « Activer » sans position, erreurs). */
   header?: ReactNode;
-  /** Sous la liste (Minimoa+ : changer de ville ; gratuit : la carte au-delà de ta zone). */
+  /** Sous la liste, jamais une vente (Minimoa+ : changer de ville). */
   footer?: ReactNode;
+  /**
+   * La proposition Minimoa+ de l'écran (gratuit, sur la carte : la carte au-delà de ta zone). Une seule proposition par
+   * liste : « Vu de loin » d'abord s'il y en a, sinon celle-ci, sinon « Plus de présentations » ; aucune si la liste
+   * est vide (on ne vend pas sur un état vide, docs/ADA-2027.md point 4).
+   */
+  plusOffer?: ReactNode;
 }
 
-export function QuartierList({ me, people, showAround = false, selected, fiche, onSelect, waveBlock, header, footer }: QuartierListProps) {
+export function QuartierList({ me, people, showAround = false, selected, fiche, onSelect, waveBlock, header, footer, plusOffer }: QuartierListProps) {
   const router = useRouter();
   const encounters = useLiveEncounters();
   const accept = useAcceptEncounter();
@@ -73,6 +79,39 @@ export function QuartierList({ me, people, showAround = false, selected, fiche, 
   const noVision = me ? !me.visionTestDone : false;
   const empty = !!encounters.data && incoming.length + people.today.length === 0;
   const failed = accept.error ?? decline.error;
+  // Une seule proposition Minimoa+, jamais sur une liste vide.
+  const far = encounters.data?.far ?? null;
+  const offerKind = quartierOffer({
+    plus: !!me?.plus,
+    loaded: !!encounters.data && !!me,
+    empty,
+    noVision,
+    far: !!far,
+    screen: !!plusOffer,
+    today: people.today.length,
+  });
+  const offer =
+    offerKind === 'far' && far ? (
+      // Vu de loin : de vraies personnes compatibles hors de ta zone, comptées par le serveur (docs/DESIR.md).
+      <FarAwayCard
+        kicker={t.far.kicker}
+        title={far.label}
+        text={t.far.text(petName)}
+        ctaLabel={t.far.cta}
+        onPress={() => openPlus('far_away')}
+        species={FAR_SPECIES}
+        count={far.count}
+      />
+    ) : offerKind === 'screen' ? (
+      plusOffer
+    ) : offerKind === 'more' ? (
+      <EncounterMore
+        pets={FAR_SPECIES.slice(0, 2).map((species) => ({ name: '', species }))}
+        title={t.screen.moreTitle}
+        text={t.screen.moreText(entitlements(true).presentationsPerDay)}
+        onPress={() => openPlus('encounters')}
+      />
+    ) : null;
 
   const row = (n: Neighbor) => {
     if (selected === n.id && fiche) return <Fragment key={n.id}>{fiche}</Fragment>;
@@ -95,7 +134,7 @@ export function QuartierList({ me, people, showAround = false, selected, fiche, 
     <>
       {header}
       {encounters.isError && !encounters.data ? (
-        <Banner tone="error" title={t.loadError} text={encounters.error.message} actionLabel={t.retry} onAction={() => void encounters.refetch()} />
+        <Banner tone="error" title={t.loadError} text={v.loadErrorText} actionLabel={t.retry} onAction={() => void encounters.refetch()} />
       ) : null}
       {failed ? (
         <Banner
@@ -143,14 +182,7 @@ export function QuartierList({ me, people, showAround = false, selected, fiche, 
 
       {waveBlock && people.today.some((n) => n.relation === 'none') ? <Banner tone="info" text={waveBlock} /> : null}
       {people.today.map(row)}
-      {encounters.data && me && !me.plus && !noVision && !encounters.data.far && people.today.length > 0 ? (
-        <EncounterMore
-          pets={FAR_SPECIES.slice(0, 2).map((species) => ({ name: '', species }))}
-          title={t.screen.moreTitle}
-          text={t.screen.moreText(entitlements(true).presentationsPerDay)}
-          onPress={() => openPlus('encounters')}
-        />
-      ) : null}
+      {offer}
 
       {showAround && people.around.length > 0 ? <EncounterSection title={v.around(people.around.length)} /> : null}
       {showAround ? people.around.map(row) : null}
@@ -191,18 +223,6 @@ export function QuartierList({ me, people, showAround = false, selected, fiche, 
         />
       ) : null}
 
-      {/* Vu de loin : de vraies personnes compatibles hors de ta zone, comptées par le serveur (docs/DESIR.md). */}
-      {encounters.data?.far && me && !me.plus ? (
-        <FarAwayCard
-          kicker={t.far.kicker}
-          title={encounters.data.far.label}
-          text={t.far.text(petName)}
-          ctaLabel={t.far.cta}
-          onPress={() => openPlus('far_away')}
-          species={FAR_SPECIES}
-          count={encounters.data.far.count}
-        />
-      ) : null}
       {footer}
 
       {/* Demain, quelqu'un d'autre : la séance du jour aide le minimoa à mieux chercher. */}

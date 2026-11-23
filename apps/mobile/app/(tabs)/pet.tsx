@@ -13,7 +13,6 @@ import { careLabel, shapeLabel } from '@/locales/content';
 import {
   CARE_ACTIONS,
   type CareAction,
-  STREAK_MILESTONES,
   WELCOME_BACK_AFTER_DAYS,
   urgentNeed,
 } from '@blowy/domain';
@@ -35,7 +34,6 @@ import {
   PetStage,
   SessionBanner,
   Skeleton,
-  StreakCelebration,
   TabTemplate,
   formBodyPose,
   useHelloWave,
@@ -71,9 +69,9 @@ import {
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { WelcomeBack } from '@/features/pet/WelcomeBack';
 import { FirstWeekMoment, StreakMoment, useShareMomentPending } from '@/features/moments';
-import { openPlus, usePlusMoment } from '@/features/plus';
-import { maybeAskForReview, useReviewMemory } from '@/features/review';
-import { usePrivateMemories, useRitualsToday, useStreakParty } from '@/features/rituals';
+import { usePlusMoment } from '@/features/plus';
+import { useReviewMemory } from '@/features/review';
+import { useRitualsToday } from '@/features/rituals';
 import {
   hasSessionToDo,
   pathChapters,
@@ -86,7 +84,6 @@ import { accueil as a } from '@/locales/accueil';
 import { home as t } from '@/locales/pet';
 import { carte } from '@/locales/rencontres';
 import { chemin as c } from '@/locales/chemin';
-import { rituels as r } from '@/locales/rituels';
 
 /** Durée d'affichage d'une réplique après un soin (« miam. », « il n'a plus faim. »). */
 const SAID_MS = 3500;
@@ -191,9 +188,7 @@ export default function PetHome() {
   const lastResult = useCheminResults((x) => x.last);
   const params = useLocalSearchParams<{ chemin?: string }>();
   const fresh = useUnlocks((s) => s.fresh);
-  const party = useStreakParty((s) => s.party);
   const unlocksWaiting = useUnlocks((s) => s.queue.length > 0);
-  const clearParty = useStreakParty((s) => s.clear);
   const [reaction, setReaction] = useState<PetReaction | null>(null);
   // Objet du soin (la nourriture et le jouet tournent d'un soin à l'autre) : glissé jusqu'au pet, puis tenu par lui.
   const [careTurn, setCareTurn] = useState(() => new Date().getDate());
@@ -204,8 +199,6 @@ export default function PetHome() {
   const [welcomeBack, setWelcomeBack] = useState(false);
   // Petit habitat de la scène (flou d'arrière-plan) : pas sur les petits écrans.
   const roomy = winHeight >= 700;
-  const memories = usePrivateMemories();
-  const lastPhoto = memories.data?.pages[0]?.items[0]?.url ?? null;
   const [reactionKey, setReactionKey] = useState(0);
   const [said, setSaid] = useState<{ text: string; key: number } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -280,7 +273,7 @@ export default function PetHome() {
       void refetchChemin();
     }, [refetchChemin]),
   );
-  const busyCelebrating = unlocksWaiting || !!party;
+  const busyCelebrating = unlocksWaiting;
 
   // `blowy://chemin` (rappel du matin) : l'accueil, puis la séance du jour s'il y en a une à faire (une fois).
   useEffect(() => {
@@ -482,7 +475,7 @@ export default function PetHome() {
                   reactionKey={reactionKey}
                   reactionItem={reactionItem}
                   mood={homeRest({ form: p.form, needs: p.needs, sulking, neglected }) ?? formBodyPose(p.form)}
-                  habitat={roomy ? { photo: lastPhoto, night: sleep.night } : null}
+                  habitat={roomy ? { night: sleep.night } : null}
                   petLabel={a.petA11yCuddle(p.name)}
                   onPetPress={onPetPress}
                   lure={lure}
@@ -557,17 +550,6 @@ export default function PetHome() {
                       view.kind === 'todo' || view.kind === 'bonus'
                         ? c.home.startA11y(view.unitTitle)
                         : undefined
-                    }
-                    footer={
-                      view.kind === 'done' && !me.data?.plus ? (
-                        <Button
-                          label={c.home.morePlus}
-                          variant="glass"
-                          size="md"
-                          icon="plus"
-                          onPress={() => openPlus('chemin_more')}
-                        />
-                      ) : undefined
                     }
                   />
                   <View onLayout={(e) => setPathInBlock(e.nativeEvent.layout.y)}>
@@ -656,31 +638,11 @@ export default function PetHome() {
               </Appear>
             ) : null}
 
-            {party ? (
-              <StreakCelebration
-                visible
-                pet={look}
-                streak={party.streak}
-                kicker={r.celebrate.kicker}
-                title={r.celebrate.title(party.streak)}
-                line={party.line ?? r.celebrate.fallback}
-                record={party.streak > 1 && party.streak >= party.best ? r.celebrate.record : null}
-                milestone={(STREAK_MILESTONES as readonly number[]).includes(party.streak)}
-                tapLabel={r.celebrate.tap}
-                onClose={() => {
-                  // Palier de série (7, 30, 100 jours…) fêté : un bon moment pour une note, juste après la fête.
-                  if ((STREAK_MILESTONES as readonly number[]).includes(party.streak))
-                    maybeAskForReview('streak_milestone', 900);
-                  clearParty();
-                }}
-              />
-            ) : (
-              <UnlockCelebration />
-            )}
+            <UnlockCelebration />
             {/* Palier 7 / 30 / 100 jours : une carte à partager, une fois, après la fête (docs/VIRALITE.md). */}
-            {!party && !welcomeBack ? <StreakMoment streak={streak?.current} /> : null}
+            {!welcomeBack ? <StreakMoment streak={streak?.current} /> : null}
             {/* J7 : une semaine avec lui, une carte à partager (une fois ; pas le jour d'un palier de série). */}
-            {!party && !welcomeBack && (streak?.current ?? 0) < 7 ? (
+            {!welcomeBack && (streak?.current ?? 0) < 7 ? (
               <FirstWeekMoment bornAt={p.bornAt} />
             ) : null}
           </TabTemplate>

@@ -44,7 +44,7 @@ Les noms historiques (`motion.press`, `motion.pop`, `fast`, `base`, `slow`, `bre
 ## Primitives (`packages/ui/src/motion/`, exportées par `@blowy/ui`)
 `Appear` (fondu + montée + légère échelle, `delay`, `once` pour les listes), `Stagger` (cascade d'enfants), `PopIn`,
 `Shake` (erreur), `Pulse` (attirer l'œil, 2 battements puis repos), `CountUp` (nombre qui défile comme un compteur
-mécanique), barres animées (`ProgressBar`, `NeedMeter`, `GaugeBar` : dépassement léger, transformations seulement),
+mécanique), barres animées (`ProgressBar`, `NeedMeter` : dépassement léger, transformations seulement),
 `Shimmer` (squelettes, `Skeleton`), `Loader` (chargement en ligne : trois boules de poils qui rebondissent), `Burst` (cœurs — seulement pour l'affection envers son propre minimoa, jamais pour une relation (spéc. §27) —, étoiles, étincelles, confettis, « z » en vues simples),
 `TypingDots`, `useFlyTo` (un objet vole d'un point à un autre), `useBurst` (explosion au-dessus de tout), `useReveal`
 (mot à mot : bulles, titres), feuille à ressort (`SheetTemplate`), interrupteur à ressort (`Toggle`), indicateur d'onglet
@@ -127,23 +127,19 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Compte (code) | chaque chiffre fait « pop » | secousse sur code faux ; coche dessinée sur code bon ; connexion : le pet regarde par-dessus le clavier |
 | Préparation | les lignes se cochent une à une (`PrepChecklist`) | pourcentage qui défile, barre avec dépassement ; erreur : tout s'arrête, le pet s'inquiète |
 | Tout est prêt | le pet saute de joie, confettis (`ReadyHero`) | titre mot à mot puis la phrase |
-| Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) ; défi relevé : `StreakCelebration` (le chiffre défile d'un cran, la mèche se rallume plus grande, il saute de joie, confettis ; tap pour fermer) | mèche (`StreakFlame`) qui vacille sur sa tête et le suit (sauts, buste quand il dort), plus basse tant que le défi n'est pas fait ; jauge de sociabilité (`HeroMeter`) : chiffre compté, barre avec dépassement ; réponses de sortie qui rebondissent, réponse du minimoa qui monte ; puce de série qui bat deux fois ; barres, bulle qui s'écrit ; pet attrapable ; il s'endort ; tirer pour rafraîchir ; soin glissé jusqu'au pet |
-| Défi du jour | la carte monte du bas en ressort, le minimoa jaillit derrière son bord haut (mèche allumée) | puce inclinée en « pop », tuiles de ce que ça rapporte en cascade ; réponse choisie qui s'incline ; voile qui s'assombrit |
+| Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) ; séance faite : `StreakCelebration` (le chiffre défile d'un cran, la mèche se rallume plus grande, il saute de joie, confettis ; tap pour fermer) | mèche (`StreakFlame`) qui vacille sur sa tête et le suit (sauts, buste quand il dort), plus basse tant que la séance du jour n'est pas faite ; jauge de sociabilité (`HeroMeter`) : chiffre compté, barre avec dépassement ; réponses de sortie qui rebondissent, réponse du minimoa qui monte ; puce de série qui bat deux fois ; barres, bulle qui s'écrit ; pet attrapable ; il s'endort ; tirer pour rafraîchir ; soin glissé jusqu'au pet |
 | Série | la mèche se rallume (braise → jaillit → se pose, étincelles) à la 1re visite, chiffre qui défile depuis 0 ; record : confettis | jours faits cochés un à un ; prochain objet qui bat deux fois ; objets en cascade |
 | Accueil (Ton chemin) | l'étape du jour bat deux fois (`CheminPath`, `Pulse`) | bulle « Commencer » en « pop » ; le minimoa attend à côté ; rien en boucle |
 | Séance | la bulle du minimoa se réécrit à chaque question | carte choisie qui s'incline ; curseur à ressort ; réaction du minimoa d'après le nom du serveur (`namedMotion` : `hop` → saute de joie, `confetti` → fête ; inconnu : rien) ; réaction écrite qui monte (`PopIn`) ; minimoa animé (Masko, s'il est réglé) : il réfléchit à chaque question, rit ou applaudit à chaque réponse (`mascotMomentFor`) |
 | Fin de séance | le chiffre de la série défile d'un cran, la flamme fait « pop » (`StreakRise`) ; minimoa animé : il applaudit dans la révélation | palier : confettis et puce (moins de 3 s, coupée d'un tap) ; révélation puis personne du jour en cascade ; objets gagnés : `UnlockCelebration` |
-| Preuve | le verdict monte sur la photo, le minimoa en autocollant saute de joie (ou fait non, gentiment), étoiles | bulle de la demande qui s'écrit ; trois boules pendant la vérification |
-| Habitudes | — | cartes en cascade (une fois) ; pastille de rythme qui glisse au toucher (rebond de confirmation) |
-| Bilan | — | chiffres qui défilent, cartes en cascade (une fois par bilan) |
 | Son caractère | les barres de la vision se remplissent depuis le centre, l'une après l'autre | jauges du style en petit, même mouvement ; entrées en cascade |
 | Garde-robe | l'objet vole de sa tuile jusqu'au pet, qui rebondit | tuiles en cascade ; objet verrouillé qui tremble ; « bientôt » qui brille ; indicateur d'emplacement glissant ; « nouveau » qui scintille ; retirer : l'objet saute du pet et rentre dans sa case |
 | Objet débloqué | l'objet tombe, rebondit, confettis | titre mot à mot ; tap pour passer |
-| Chats | bandeau « Nino a croisé quelqu’un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; étincelles de vie qui palpitent quand une vie est en danger ; bandeau « Série en jeu » qui arrive après celui des rencontres |
-| Chat | la bulle envoyée monte depuis le champ | « … » avant un message de minimoa ; tête du minimoa qui sort avec sa bulle ; bouton envoyer qui se transforme ; étincelle de vie qui se brise ou revient ; interrupteur des minimoas (en-tête) qui fait « pop » et pâlit quand on les coupe ; accord de lecture : feuille à ressort, les deux minimoas montent du bas du panneau rose ; appui long sur un message : la bulle s'enfonce, la feuille « signaler » monte |
+| Chats | bandeau « Nino a croisé quelqu’un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; étincelles de vie qui palpitent quand une vie est en danger ; bandeau « Déjà croisés » replié en bas |
+| Chat | la bulle envoyée monte depuis le champ | « … » avant un message de minimoa ; tête du minimoa qui sort avec sa bulle ; bouton envoyer qui se transforme ; étincelle de vie qui se brise ou revient ; interrupteur des minimoas (en-tête) qui fait « pop » et pâlit quand on les coupe ; appui long sur un message : la bulle s'enfonce, la feuille « signaler » monte |
 | Le lien | la série avance sous tes yeux quand le deuxième écrit : le chiffre défile d'un cran, la flamme saute (ressort `plush`), confettis depuis elle, vibration de fête (`LinkTodayHero`) | à la 1re visite, la flamme grandit et le chiffre défile depuis 0 ; jours de la semaine cochés un à un ; cartes en cascade (une fois par lien) |
 | Le lien : étapes | — | étapes en cascade ; photos d'avant qui se posent comme des cartes |
-| Niveaux | la marche atteinte s'allume | barre vers le niveau suivant ; confettis au passage |
+| Le lien : niveaux (dans l'onglet « Le lien ») | la marche atteinte s'allume | barre vers le niveau suivant ; confettis au passage |
 | Lien fantôme | le pet devient transparent et flotte | ranimer : les étincelles de vie se rallument une à une |
 | Rencontres | les cartes arrivent en éventail | « saluer » : le minimoa fait signe, onde autour du bouton ; accepté : les deux minimoas se courent dessus et se cognent |
 | Une rencontre | les deux minimoas entrent par leur côté | les repères « toi » et l'autre glissent du centre de chaque piste vers leur tiers, l'un après l'autre (ressort `pop`) ; « saluer » : ton minimoa fait signe, onde |
@@ -188,8 +184,6 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   réduites : fondu, repères déjà posés.
 - **Interrupteur des minimoas** (`MinimoaSwitch`) : au changement, le visage s'écrase puis rebondit (`pop`) ; coupé, il
   pâlit et une pastille rouge apparaît. L'appel part tout de suite (optimiste), un refus le remet.
-- **Accord de lecture** (`MinimoaConsent`) : les deux minimoas montent du bas du panneau rose, décalés de 120 ms ; la feuille
-  défile sur un petit écran (`SheetTemplate scroll`), la poignée reste dans la barre du haut.
 - **Répliques des minimoas** : même entrée que les autres bulles (« … » puis texte en « pop ») ; leur style (voile coloré,
   pointillés pour une relance, cadenas pour un garde-fou) est statique.
 - **Carte** (`ZoneMap`, `MapSticker`, `MapBlob`) : les autocollants atterrissent (ressort `plush`) du plus proche au plus

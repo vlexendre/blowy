@@ -101,7 +101,7 @@ export default function QuartierScreen() {
             <Banner
               tone="error"
               title={t.loadError}
-              text={(me.error ?? q.map.error)?.message ?? ''}
+              text={v.loadErrorText}
               actionLabel={t.retry}
               onAction={() => void Promise.all([me.refetch(), q.map.refetch()])}
             />
@@ -204,10 +204,10 @@ export default function QuartierScreen() {
   );
   // Les silhouettes et leur nombre viennent du serveur : rien à zéro.
   const beyond = data.beyond.count > 0 ? data.beyond : null;
-  const footer = plus ? (
-    // Un seul bouton : revenir à sa zone se fait depuis la pilule de zone, en haut.
-    <Button label={t.city} variant="glass" size="md" onPress={() => setCitySheet(true)} />
-  ) : beyond ? (
+  // Minimoa+ : un seul bouton (revenir à sa zone se fait depuis la pilule de zone, en haut). Gratuit : la proposition
+  // de la carte, que la liste ne montre que si elle n'en a pas déjà une, et jamais quand elle est vide.
+  const footer = plus ? <Button label={t.city} variant="glass" size="md" onPress={() => setCitySheet(true)} /> : undefined;
+  const plusOffer = plus ? undefined : beyond ? (
     <MapPlusStrip title={t.plusFar(beyond.count)} text={t.plusFarText(beyond.strong)} ctaLabel={t.plusCta} onPress={() => openPlus('far_away')} />
   ) : (
     <MapPlusStrip title={t.plusTitle} text={t.plusText} ctaLabel={t.plusCta} onPress={() => openPlus('map')} />
@@ -283,7 +283,7 @@ export default function QuartierScreen() {
             collapseA11y={v.collapseA11y}
             onVisibleChange={setSheetVisible}
           >
-            <QuartierList me={m} people={people} onSelect={select} waveBlock={waveBlock} header={banners} footer={footer} />
+            <QuartierList me={m} people={people} onSelect={select} waveBlock={waveBlock} header={banners} footer={footer} plusOffer={plusOffer} />
           </PeopleSheet>
         }
         sheetVisible={current ? 0 : sheetVisible}

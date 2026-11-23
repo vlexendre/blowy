@@ -3,8 +3,7 @@ import { textOf, visionText } from '@blowy/content';
 import { BLUR_GRID_METERS, type GeoPoint, MATCH_RADIUS_KM, ZONE_RADIUS_KM, dayOf, entitlements, farSummary, snapToGrid } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
-import { CLOCK, ENCOUNTERS, LINKS, PETS, PROFILES, STORAGE } from '../../../shared/tokens';
-import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/ports';
+import { CLOCK, ENCOUNTERS, LINKS, PETS, PROFILES } from '../../../shared/tokens';
 import { RITUAL_STATES } from '../../rituels/tokens';
 import type { RitualStatesRepository } from '../../rituels/ports';
 import type { EncountersRepository } from '../../encounters/ports';
@@ -37,13 +36,12 @@ export interface MapPinResult {
   pet: PetRecord;
   match: CachedMatch;
   relation: PinRelation;
-  /** Sa photo (lien de lecture d'une heure), montrée floue sur la carte ; null sans photo. */
-  avatarUrl: string | null;
   /** Venu dans l'app aujourd'hui (pastille verte, jamais l'heure). */
   activeToday: boolean;
   /**
-   * Photo nette : jamais sur la carte (docs/ADA-2027.md, décision 7 : visages flous pour tout le monde, gratuit ou
-   * Minimoa+, jusqu'au lien noué ; les liens n'ont pas d'épingle). Gardé pour la forme du résultat.
+   * Photo : jamais sur la carte, ni nette ni floue (docs/ADA-2027.md, décision 7 : visages cachés pour tout le monde,
+   * gratuit ou Minimoa+, jusqu'au lien noué ; les liens n'ont pas d'épingle). Le flou ne peut pas se faire sur le
+   * téléphone (l'URL nette partirait quand même) et l'API ne transforme pas d'images : aucune URL n'est donc signée.
    */
   clearFace: false;
 }
@@ -78,7 +76,6 @@ export class GetMap {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(LINKS) private readonly links: LinksRepository,
     @Inject(ENCOUNTERS) private readonly encounters: EncountersRepository,
-    @Inject(STORAGE) private readonly storage: Storage,
     @Inject(RITUAL_STATES) private readonly states: RitualStatesRepository,
   ) {}
 
@@ -141,18 +138,10 @@ export class GetMap {
     const pets = new Map((await this.pets.findByOwners(shownInside.map((m) => m.userId))).map((p) => [p.ownerId, livePet(p, now)]));
     const today = dayOf(now);
     const seen = new Map((await this.states.findMany(shownInside.map((m) => m.userId))).map((s) => [s.userId, s.lastSeenOn]));
-    const photos = new Map(
-      await Promise.all(
-        shownInside.map(async (m): Promise<[string, string | null]> => {
-          const path = visible.get(m.userId)?.avatarPath;
-          return [m.userId, path ? await this.storage.signedUrl(path, MEDIA_URL_SECONDS) : null];
-        }),
-      ),
-    );
     const pins = shownInside.flatMap((m): MapPinResult[] => {
       const p = visible.get(m.userId);
       const pet = pets.get(m.userId);
-      return p && pet ? [{ profile: p, pet, match: m, relation: relationOf(m.userId), avatarUrl: photos.get(m.userId) ?? null, activeToday: seen.get(m.userId) === today, clearFace: false }] : [];
+      return p && pet ? [{ profile: p, pet, match: m, relation: relationOf(m.userId), activeToday: seen.get(m.userId) === today, clearFace: false }] : [];
     });
 
     const blurred = new Map<string, GeoPoint>();

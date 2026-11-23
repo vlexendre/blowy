@@ -30,18 +30,21 @@ import { goBack } from '@/features/session';
 import { wardrobe as t } from '@/locales/pet';
 import { formatDate } from '@/locales/runtime';
 
+/** Objets liés à des fonctions retirées de l'app (défis, habitudes) : visibles seulement s'ils sont déjà possédés. */
+const RETIRED_STATS: readonly StatKey[] = ['challenges', 'habitsKept'];
+const isRetired = (i: WardrobeItem) => {
+  const unlock = itemById(i.id)?.unlock;
+  return i.state !== 'owned' && unlock?.kind === 'stat' && RETIRED_STATS.includes(unlock.stat);
+};
+
 /** Où l'on avance vers chaque étape. */
-const SHORTCUT: Record<StatKey, Href | null> = {
+const SHORTCUT: Partial<Record<StatKey, Href | null>> = {
   careDays: '/(tabs)/pet',
   links: '/(tabs)/quartier',
   bestLevel: '/(tabs)/chats',
   bestStreak: '/(tabs)/chats',
-  // Défi du jour et habitudes : hors de l'interface V1 (Ton chemin) : pas de raccourci (l'objet se gagne encore par
-  // l'ancienne app). La série, elle, avance avec la séance du jour.
-  challenges: null,
   words: '/(tabs)/moi',
   ritualStreak: '/pet/serie',
-  habitsKept: null,
   referrals: '/(tabs)/moi',
   founded: '/(tabs)/quartier',
 };
@@ -98,9 +101,10 @@ export default function WardrobeScreen() {
   const tryItem = trying ? itemById(trying) : undefined;
   const shown = tryItem ? { ...w.outfit, [tryItem.slot]: tryItem.id } : w.outfit;
   const season = w.collection;
-  const owned = w.items.filter((i) => i.state === 'owned').length;
-  const total = w.items.length;
-  const badges = Object.fromEntries(ITEM_SLOTS.map((s) => [s, w.items.some((i) => i.slot === s && newIds.includes(i.id))])) as Record<ItemSlot, boolean>;
+  const items = w.items.filter((i) => !isRetired(i));
+  const owned = items.filter((i) => i.state === 'owned').length;
+  const total = items.length;
+  const badges = Object.fromEntries(ITEM_SLOTS.map((s) => [s, items.some((i) => i.slot === s && newIds.includes(i.id))])) as Record<ItemSlot, boolean>;
 
   /** Ce qui vole : l'image de l'objet, à la taille du départ. */
   const render =
@@ -213,7 +217,7 @@ export default function WardrobeScreen() {
         <SlotTabs labels={slotLabel} active={slot} onChange={setSlot} badges={badges} />
         {setOutfit.isError ? <Banner tone="error" text={errorText(setOutfit.error, t.outfitError)} onClose={() => setOutfit.reset()} /> : null}
         <WardrobeGrid
-          items={w.items}
+          items={items}
           slot={slot}
           worn={w.outfit[slot] ?? null}
           itemLabels={itemLabel}
@@ -257,7 +261,7 @@ export default function WardrobeScreen() {
                   open.state === 'premium'
                     ? { label: t.premiumCta, onPress: toPlus }
                     : goal && SHORTCUT[goal.stat]
-                      ? { label: t.shortcut[goal.stat], onPress: () => go(SHORTCUT[goal.stat] as Href) }
+                      ? { label: t.shortcut[goal.stat] ?? '', onPress: () => go(SHORTCUT[goal.stat] as Href) }
                       : undefined
                 }
                 secondary={open.state === 'premium' ? { label: t.tryOn(p.name), onPress: tryIt } : undefined}

@@ -30,7 +30,6 @@ import {
   type PushPermission,
   pushPlatform,
   registerMuteCategory,
-  registerMuteLeagueCategory,
   requestPermission,
   setForegroundHandler,
   storedPushToken,
@@ -116,7 +115,6 @@ export function useNotificationsBridge(gate: Gate): void {
   useEffect(() => {
     setForegroundHandler(isOpenNow);
     void registerMuteCategory(moi.notifications.mute);
-    void registerMuteLeagueCategory(moi.notifications.mute);
     void registerReplyCategory({ ...moi.notifications.reply, mute: moi.notifications.mute });
   }, []);
 
@@ -176,15 +174,6 @@ export function useNotificationsBridge(gate: Gate): void {
             () => undefined,
           );
         router.push(`/link/${linkId}`);
-        return;
-      }
-      if (tap.action === MUTE_ACTION && parsed.data.topic === 'league') {
-        // Ligue (envoyée sous un type plus ancien) : on coupe la ligue seulement.
-        void api.notifications.updateSettings({ league: false }).then(
-          (s) => qc.setQueryData(notificationKeys.settings, s),
-          () => undefined,
-        );
-        router.push('/moi/notifications');
         return;
       }
       if (tap.action === MUTE_ACTION) {

@@ -42,31 +42,31 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Défi accepté · Minimoa"
+            "value": "Séance commencée · Minimoa"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Challenge accepted · Minimoa"
+            "value": "Session started · Minimoa"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reto aceptado · Minimoa"
+            "value": "Sesión empezada · Minimoa"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Desafio aceito · Minimoa"
+            "value": "Sessão começada · Minimoa"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uitdaging aangenomen · Minimoa"
+            "value": "Sessie begonnen · Minimoa"
           }
         }
       },
@@ -468,31 +468,31 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Défi relevé"
+            "value": "Séance faite"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Challenge done"
+            "value": "Session done"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reto superado"
+            "value": "Sesión hecha"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Desafio cumprido"
+            "value": "Sessão feita"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uitdaging gehaald"
+            "value": "Sessie gedaan"
           }
         }
       },
@@ -538,31 +538,31 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ton défi du jour t’attend"
+            "value": "Ta séance du jour t’attend"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your daily challenge awaits"
+            "value": "Your daily session awaits"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tu reto del día te espera"
+            "value": "Tu sesión del día te espera"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seu desafio do dia te espera"
+            "value": "Sua sessão do dia te espera"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Je uitdaging van de dag wacht"
+            "value": "Je sessie van de dag wacht"
           }
         }
       },
@@ -573,36 +573,36 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Défi : %@"
+            "value": "Séance : %@"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Challenge: %@"
+            "value": "Session: %@"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reto: %@"
+            "value": "Sesión: %@"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Desafio: %@"
+            "value": "Sessão: %@"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uitdaging: %@"
+            "value": "Sessie: %@"
           }
         }
       },
       "extractionState": "manual",
-      "comment": "%@ : texte du défi envoyé par le serveur"
+      "comment": "%@ : texte de la séance envoyé par le serveur"
     },
     "challenge.tap": {
       "localizations": {
@@ -644,31 +644,31 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Défi du jour à faire"
+            "value": "Séance du jour à faire"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Daily challenge to do"
+            "value": "Daily session to do"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reto del día pendiente"
+            "value": "Sesión del día pendiente"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Desafio do dia pendente"
+            "value": "Sessão do dia pendente"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uitdaging nog te doen"
+            "value": "Sessie nog te doen"
           }
         }
       },
@@ -1055,31 +1055,31 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ton minimoa, sa sociabilité, ta série et le défi du jour."
+            "value": "Ton minimoa, sa sociabilité, ta série et la séance du jour."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your minimoa, its sociability, your streak and the daily challenge."
+            "value": "Your minimoa, its sociability, your streak and the daily session."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tu minimoa, su sociabilidad, tu racha y el reto del día."
+            "value": "Tu minimoa, su sociabilidad, tu racha y la sesión del día."
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seu minimoa, a sociabilidade dele, sua sequência e o desafio do dia."
+            "value": "Seu minimoa, a sociabilidade dele, sua sequência e a sessão do dia."
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Je minimoa, zijn sociale energie, je reeks en de uitdaging van de dag."
+            "value": "Je minimoa, zijn sociale energie, je reeks en de sessie van de dag."
           }
         }
       },
@@ -1126,31 +1126,31 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ta série et le défi du jour, sur l’écran verrouillé."
+            "value": "Ta série et la séance du jour, sur l’écran verrouillé."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your streak and the daily challenge, on the lock screen."
+            "value": "Your streak and the daily session, on the lock screen."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tu racha y el reto del día, en la pantalla bloqueada."
+            "value": "Tu racha y la sesión del día, en la pantalla bloqueada."
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sua sequência e o desafio do dia, na tela bloqueada."
+            "value": "Sua sequência e a sessão do dia, na tela bloqueada."
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Je reeks en de uitdaging van de dag, op het toegangsscherm."
+            "value": "Je reeks en de sessie van de dag, op het toegangsscherm."
           }
         }
       },

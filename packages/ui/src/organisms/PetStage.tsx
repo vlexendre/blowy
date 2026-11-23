@@ -83,10 +83,9 @@ export interface PetStageProps {
   /** Pose de repos du pet (forme d'évolution en pied, `malade`, `danger`) ; défaut `neutre` (`boude` quand il boude). */
   mood?: Mood | PetPose | BodyPose;
   /**
-   * Petit habitat, flou d'arrière-plan : tapis sous le pet, plante et lampe de part et d'autre, cadre au mur (la
-   * dernière photo des souvenirs dedans, s'il y en a), veilleuse la nuit. Absent : rien (petits écrans).
+   * Petit habitat, flou d'arrière-plan : tapis sous le pet, plante et lampe de part et d'autre, cadre au mur, veilleuse la nuit. Absent : rien (petits écrans).
    */
-  habitat?: { photo?: string | null; night?: boolean } | null;
+  habitat?: { night?: boolean } | null;
   /** @deprecated Les « z » sont dessinés par `PetActor`. */
   sleepGlyph?: string;
   /** Panneau ; défaut celui de l'espèce, lie-de-vin quand il boude. */
@@ -216,7 +215,7 @@ export function PetStage({
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.night, night]} />
       {habitat ? (
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, fade]}>
-          <Habitat petSize={petSize} photo={habitat.photo ?? null} night={!!habitat.night} />
+          <Habitat petSize={petSize} night={!!habitat.night} />
         </Animated.View>
       ) : null}
       <Animated.View style={[styles.pet, styles.petOrigin, petFold]} pointerEvents="box-none">
@@ -311,21 +310,13 @@ function Decor({ name, width, style, blur = 2, opacity = 0.7 }: { name: CareProp
 
 /**
  * L'habitat de la scène, derrière le pet et discret : le tapis sous ses pieds, la plante à sa gauche, la lampe à sa
- * droite, le cadre au mur avec la dernière photo des souvenirs, la veilleuse allumée la nuit. Rien ne capte le toucher.
+ * droite, le cadre au mur, la veilleuse allumée la nuit. Rien ne capte le toucher.
  */
-function Habitat({ petSize, photo, night }: { petSize: number; photo: string | null; night: boolean }) {
+function Habitat({ petSize, night }: { petSize: number; night: boolean }) {
   const frame = petSize * 0.2;
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Decor name="cadre" width={frame} blur={1} opacity={0.55} style={{ right: petSize * 0.08, top: 58, transform: [{ rotate: '4deg' }] }} />
-      {photo ? (
-        <Image
-          source={{ uri: photo }}
-          contentFit="cover"
-          blurRadius={2}
-          style={[styles.decor, { right: petSize * 0.08 + frame * 0.22, top: 58 + frame * 0.22, width: frame * 0.56, height: frame * 0.56, opacity: 0.6, transform: [{ rotate: '4deg' }] }]}
-        />
-      ) : null}
       <Decor name="tapis" width={petSize * 0.86} blur={0} opacity={0.5} style={{ right: 6 + petSize * 0.07, bottom: -petSize * 0.04 }} />
       <Decor name="plante" width={petSize * 0.24} style={{ right: petSize * 0.86, bottom: 4 }} />
       <Decor name={night ? 'veilleuse' : 'lampe'} width={petSize * (night ? 0.16 : 0.2)} blur={night ? 0 : 2} opacity={night ? 0.95 : 0.6} style={{ right: 2, bottom: 6 }} />

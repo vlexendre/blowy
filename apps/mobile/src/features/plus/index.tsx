@@ -33,13 +33,14 @@ import { noteReviewPurchase } from '@/features/review';
 export const PLUS_REASONS = PLUS_TRIGGERS;
 export type PlusReason = PlusTrigger;
 
+/** Avantages qui existent vraiment dans l'app (l'API et le domaine en listent encore d'autres : habitudes, bilan). */
+const SHOWN_PERKS: readonly PlusPerk[] = ['more_encounters', 'map_everywhere', 'premium_items', 'streak_jokers', 'free_rename'];
+
 const REASON_PERK: Partial<Record<PlusReason, PlusPerk>> = {
   premium_item: 'premium_items',
   map: 'map_everywhere',
   change_city: 'map_everywhere',
-  habits_limit: 'more_habits',
   rename: 'free_rename',
-  detailed_review: 'detailed_review',
   jokers: 'streak_jokers',
   encounters: 'more_encounters',
   far_away: 'map_everywhere',
@@ -99,10 +100,14 @@ export function useStoreProducts(productIds: readonly string[]) {
  */
 export function usePlusPerks(petName: string): { key: PlusPerk; label: string | null; short: readonly string[] }[] {
   const paywall = usePaywall();
-  const short = t.perks(petName) as Record<PlusPerk, readonly string[]>;
+  const short = t.perks(petName) as Partial<Record<PlusPerk, readonly string[]>>;
   const fromApi = paywall.data?.perks;
-  if (fromApi?.length) return fromApi.map((p) => ({ key: p.key, label: p.label, short: short[p.key] ?? [p.label] }));
-  return PLUS_PERKS.map((key) => ({ key, label: null, short: short[key] }));
+  // Seuls les avantages qui existent dans l'app ; la phrase de l'API pour les gels dit encore « 3 jokers » : on la remplace.
+  if (fromApi?.length)
+    return fromApi
+      .filter((p) => SHOWN_PERKS.includes(p.key) && short[p.key])
+      .map((p) => ({ key: p.key, label: p.key === 'streak_jokers' ? null : p.label, short: short[p.key] ?? [p.label] }));
+  return SHOWN_PERKS.map((key) => ({ key, label: null, short: short[key] ?? [] }));
 }
 
 /** Les avantages en une ligne (« Toute la carte · Changer de ville · … »), pour un bandeau. */
@@ -289,15 +294,13 @@ function floatingFor(item: string | undefined): string[] {
 const TEASER_SPECIES: readonly Species[] = ['suzie', 'gaston', 'pia'];
 
 /** Ordre des lignes d'avantages (après celui de la raison). */
-const PERK_ORDER: readonly PlusPerk[] = ['more_encounters', 'map_everywhere', 'premium_items', 'streak_jokers', 'detailed_review', 'more_habits', 'free_rename'];
+const PERK_ORDER = SHOWN_PERKS;
 /** Icône 3D de chaque avantage. */
-const PERK_ICON: Record<PlusPerk, IconName> = {
+const PERK_ICON: Partial<Record<PlusPerk, IconName>> = {
   more_encounters: 'coeurs',
   map_everywhere: 'balle',
   premium_items: 'cadeau',
   streak_jokers: 'flamme',
-  detailed_review: 'eclair',
-  more_habits: 'etoiles',
   free_rename: 'confettis',
 };
 /** Les trois avantages illustrés par une pose du minimoa, sous le titre (le dernier en tenue premium). */
@@ -332,6 +335,7 @@ function headlineFor(reason: PlusReason, petName: string, item?: string, collect
   }
   // La date de fin vient du serveur ; hors saison, le titre général.
   if (reason === 'collection') return collectionUntil ? t.headline.collection(collectionUntil) : t.headline.generic(petName);
+  if (reason === 'habits_limit' || reason === 'detailed_review') return typeof t.headline.generic === 'function' ? t.headline.generic(petName) : t.headline.generic;
   const h = t.headline[reason];
   return typeof h === 'function' ? h(petName) : h;
 }
@@ -366,19 +370,19 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
   const highlight = REASON_PERK[reason];
   // Une phrase « Titre : explication » par avantage (celle de l'API reste celle du lecteur d'écran), celui de la raison en tête.
   // Objets premium : les permanents, plus ceux de la collection en cours (jamais ceux d'une collection finie).
-  const lines: Record<PlusPerk, readonly string[]> = t.perkLines(pet.name, PREMIUM.length + (data?.collection?.items.length ?? 0));
-  const perkKeys: PlusPerk[] = data?.perks.length ? data.perks.map((p) => p.key).filter((k) => k in lines) : [...PLUS_PERKS];
+  const lines: Partial<Record<PlusPerk, readonly string[]>> = t.perkLines(pet.name, PREMIUM.length + (data?.collection?.items.length ?? 0));
+  const perkKeys: PlusPerk[] = data?.perks.length ? data.perks.map((p) => p.key).filter((k) => SHOWN_PERKS.includes(k)) : [...SHOWN_PERKS];
   const perks: PlusPerkView[] = perkKeys
     .map((key) => {
-      const [title = '', text = ''] = lines[key];
-      return { key, icon: PERK_ICON[key], title: t.colon(title), text, label: data?.perks.find((p) => p.key === key)?.label, highlight: key === highlight };
+      const [title = '', text = ''] = lines[key] ?? [];
+      return { key, icon: PERK_ICON[key] ?? 'etoiles', title: t.colon(title), text, label: key === 'streak_jokers' ? undefined : data?.perks.find((p) => p.key === key)?.label, highlight: key === highlight };
     })
     .sort((a, b) => Number(!!b.highlight) - Number(!!a.highlight) || PERK_ORDER.indexOf(a.key as PlusPerk) - PERK_ORDER.indexOf(b.key as PlusPerk));
-  const short = t.perks(pet.name) as Record<PlusPerk, readonly string[]>;
+  const short = t.perks(pet.name) as Partial<Record<PlusPerk, readonly string[]>>;
   const poses: PlusHeroPose[] = HERO.map((h) => ({
     key: h.perk,
     pose: h.pose,
-    label: short[h.perk][0] ?? '',
+    label: short[h.perk]?.[0] ?? '',
     outfit: h.perk === 'premium_items' ? showcaseFor(item, data?.collection?.items ?? null) : (pet.outfit ?? null),
   }));
 
