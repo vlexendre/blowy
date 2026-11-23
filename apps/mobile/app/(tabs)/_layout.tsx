@@ -36,7 +36,7 @@ export default function TabsLayout() {
   const hellos = encounters.data?.incoming.length ?? 0;
   const unread = totalUnread(links.data);
   const items: BottomTabItem<TabKey>[] = [
-    { key: 'pet', label: tabs.pet, glyph: 'heart' },
+    { key: 'pet', label: tabs.pet, glyph: 'minimoa' },
     {
       key: 'quartier',
       label: tabs.quartier,

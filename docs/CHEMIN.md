@@ -197,7 +197,7 @@ Fait dans `apps/mobile` et `packages/ui` (détail par écran : docs/SCREENS.md) 
 | Logique d'affichage (fenêtre du chemin, bandeau du jour, file des questions et « Passer », corps des réponses, réaction du curseur, distance à gros grains, jauges) | `apps/mobile/src/features/chemin/logic.ts` (tests : `logic.test.ts`) |
 | Données (`useCheminMap`, `useCheminSession` avec `formats=choice,slider`, `useAnswerSeance` optimiste, `useHelloFromChemin` = `useWave`, `useProfil`) | `apps/mobile/src/features/chemin/index.ts` |
 | Écrans | accueil `app/(tabs)/pet.tsx`, `app/chemin/seance.tsx`, `app/chemin/fin.tsx`, `app/pet/serie.tsx`, Moi, Chats (« On t’a dit bonjour »), carte, inscription (`localisation.tsx`, `pret.tsx`, « Étape 1 ») |
-| Composants | `CheminPath`, `SessionBanner`, `SeanceBar`, `SeanceQuestion`, `AnswerSlider`, `StreakRise`, `RevelationCard`, `PersonOfDayCard`, `CheminEmptyCard`, `HelloCard`, `MinimoaTypeCard`, `KnowsPanel`, `PreviewPeople` ; épingles `MapSticker hot` |
+| Composants | `CheminStepRow` (accueil, liste virtualisée de `HomeTemplate`), `SessionBanner`, `SeanceBar`, `SeanceQuestion`, `AnswerSlider`, `StreakRise`, `RevelationCard`, `PersonOfDayCard`, `CheminEmptyCard`, `HelloCard`, `MinimoaTypeCard`, `KnowsPanel`, `PreviewPeople` ; épingles `MapSticker hot` |
 | Animations nommées | `packages/ui/src/motion/named.ts` (`namedMotion` : `hop`, `confetti`, `stars`… ; inconnu → repli neutre, texte seul) |
 | Minimoa animé (Masko) | `AnimatedMascot` ; séance : réfléchit à chaque question, rit ou applaudit à chaque réponse (`mascotMomentFor`, repli : rit) ; fin : applaudit. Réglé par l'API (`mascot`), Nino seul pour l'instant. Ajouter une espèce : docs/MOTION.md « Minimoa animé » |
 | Textes | `apps/mobile/src/locales/chemin.ts` (5 langues) |

@@ -10,32 +10,9 @@ const daysEn = (n: number) => (n === 1 ? 'day' : 'days');
 
 export const chemin = messages({
   fr: {
+    /** Accueil : le reste vit dans `accueil.ts` ; la fin de séance perdue reprend ce titre. */
     home: {
-      kicker: (n: number): string => `Séance du jour · ${n} questions · 2 min`,
-      bonusKicker: (n: number): string => `Étape suivante · ${n} questions · Minimoa+`,
-      path: (i: number, n: number): string => `Ton chemin · étape ${i} sur ${n}`,
-      note: 'À la fin : ta personne du jour',
-      start: 'Commencer',
-      startA11y: (unit: string): string => `Commencer la séance du jour : ${unit}`,
       doneKicker: 'Séance du jour faite',
-      doneTitle: 'Ta personne du jour',
-      doneNote: 'Demain, une nouvelle séance',
-      unitKicker: (i: number, done: number, total: number): string => `Univers ${i} · ${done} sur ${total}`,
-      unitSignup: 'Univers 1 · fait pendant ton inscription ✓',
-      nodeSignup: (title: string): string => `${title}, fait pendant ton inscription`,
-      restKicker: 'C’est tout pour aujourd’hui',
-      restTitle: 'À demain',
-      streak: (n: number): string => `${n} ${days(n)} d’affilée`,
-      streakA11y: (n: number): string => `Ta série : ${n} ${days(n)} d’affilée. Ouvrir la série`,
-      node: {
-        done: (step: string): string => `${step}, étape faite`,
-        current: (step: string): string => `${step}, étape du jour`,
-        chest: (unit: string): string => `Coffre de l’unité ${unit}`,
-        chestOpen: (unit: string): string => `${unit}, unité finie`,
-        locked: (step: string): string => `${step}, étape verrouillée`,
-      },
-      loadError: 'Ton chemin ne s’affiche pas pour l’instant.',
-      retry: 'Réessayer',
     },
     seance: {
       close: 'Fermer la séance',
@@ -156,32 +133,9 @@ export const chemin = messages({
     },
   },
   en: {
+    /** Accueil : le reste vit dans `accueil.ts` ; la fin de séance perdue reprend ce titre. */
     home: {
-      kicker: (n: number): string => `Today’s session · ${n} questions · 2 min`,
-      bonusKicker: (n: number): string => `Next step · ${n} questions · Minimoa+`,
-      path: (i: number, n: number): string => `Your path · step ${i} of ${n}`,
-      note: 'At the end: your person of the day',
-      start: 'Start',
-      startA11y: (unit: string): string => `Start today’s session: ${unit}`,
       doneKicker: 'Today’s session done',
-      doneTitle: 'Your person of the day',
-      doneNote: 'Tomorrow, a new session',
-      unitKicker: (i: number, done: number, total: number): string => `World ${i} · ${done} of ${total}`,
-      unitSignup: 'World 1 · done when you signed up ✓',
-      nodeSignup: (title: string): string => `${title}, done when you signed up`,
-      restKicker: 'That’s all for today',
-      restTitle: 'See you tomorrow',
-      streak: (n: number): string => `${n}-day streak`,
-      streakA11y: (n: number): string => `Your streak: ${n} ${daysEn(n)} in a row. Open your streak`,
-      node: {
-        done: (step: string): string => `${step}, done`,
-        current: (step: string): string => `${step}, today’s step`,
-        chest: (unit: string): string => `Chest for ${unit}`,
-        chestOpen: (unit: string): string => `${unit}, unit complete`,
-        locked: (step: string): string => `${step}, locked`,
-      },
-      loadError: 'Your path can’t be shown right now.',
-      retry: 'Try again',
     },
     seance: {
       close: 'Close the session',
@@ -299,33 +253,9 @@ export const chemin = messages({
     },
   },
   es: {
+    /** Accueil : le reste vit dans `accueil.ts` ; la fin de séance perdue reprend ce titre. */
     home: {
-      kicker: (n: number): string => `Sesión del día · ${n} preguntas · 2 min`,
-      bonusKicker: (n: number): string => `Siguiente paso · ${n} preguntas · Minimoa+`,
-      path: (i: number, n: number): string => `Tu camino · paso ${i} de ${n}`,
-      note: 'Al final: tu persona del día',
-      start: 'Empezar',
-      startA11y: (unit: string): string => `Empezar la sesión del día: ${unit}`,
       doneKicker: 'Sesión del día hecha',
-      doneTitle: 'Tu persona del día',
-      doneNote: 'Mañana, una nueva sesión',
-      unitKicker: (i: number, done: number, total: number): string => `Universo ${i} · ${done} de ${total}`,
-      unitSignup: 'Universo 1 · hecho al registrarte ✓',
-      nodeSignup: (title: string): string => `${title}, hecho al registrarte`,
-      restKicker: 'Eso es todo por hoy',
-      restTitle: 'Hasta mañana',
-      streak: (n: number): string => `${n} ${n === 1 ? 'día' : 'días'} seguidos`,
-      streakA11y: (n: number): string =>
-        `Tu racha: ${n} ${n === 1 ? 'día' : 'días'} seguidos. Abrir la racha`,
-      node: {
-        done: (step: string): string => `${step}, etapa hecha`,
-        current: (step: string): string => `${step}, etapa del día`,
-        chest: (unit: string): string => `Cofre de la unidad ${unit}`,
-        chestOpen: (unit: string): string => `${unit}, unidad terminada`,
-        locked: (step: string): string => `${step}, etapa bloqueada`,
-      },
-      loadError: 'Tu camino no se puede mostrar ahora mismo.',
-      retry: 'Reintentar',
     },
     seance: {
       close: 'Cerrar la sesión',
@@ -442,33 +372,9 @@ export const chemin = messages({
     },
   },
   pt: {
+    /** Accueil : le reste vit dans `accueil.ts` ; la fin de séance perdue reprend ce titre. */
     home: {
-      kicker: (n: number): string => `Sessão do dia · ${n} perguntas · 2 min`,
-      bonusKicker: (n: number): string => `Próxima etapa · ${n} perguntas · Minimoa+`,
-      path: (i: number, n: number): string => `Seu caminho · etapa ${i} de ${n}`,
-      note: 'No final: sua pessoa do dia',
-      start: 'Começar',
-      startA11y: (unit: string): string => `Começar a sessão do dia: ${unit}`,
       doneKicker: 'Sessão do dia feita',
-      doneTitle: 'Sua pessoa do dia',
-      doneNote: 'Amanhã, uma nova sessão',
-      unitKicker: (i: number, done: number, total: number): string => `Universo ${i} · ${done} de ${total}`,
-      unitSignup: 'Universo 1 · feito no seu cadastro ✓',
-      nodeSignup: (title: string): string => `${title}, feito no seu cadastro`,
-      restKicker: 'Por hoje é só',
-      restTitle: 'Até amanhã',
-      streak: (n: number): string => `${n} ${n === 1 ? 'dia' : 'dias'} seguidos`,
-      streakA11y: (n: number): string =>
-        `Sua sequência: ${n} ${n === 1 ? 'dia' : 'dias'} seguidos. Abrir a sequência`,
-      node: {
-        done: (step: string): string => `${step}, etapa feita`,
-        current: (step: string): string => `${step}, etapa do dia`,
-        chest: (unit: string): string => `Baú da unidade ${unit}`,
-        chestOpen: (unit: string): string => `${unit}, unidade concluída`,
-        locked: (step: string): string => `${step}, etapa bloqueada`,
-      },
-      loadError: 'Seu caminho não pode ser exibido agora.',
-      retry: 'Tentar de novo',
     },
     seance: {
       close: 'Fechar a sessão',
@@ -587,32 +493,9 @@ export const chemin = messages({
     },
   },
   nl: {
+    /** Accueil : le reste vit dans `accueil.ts` ; la fin de séance perdue reprend ce titre. */
     home: {
-      kicker: (n: number): string => `Sessie van vandaag · ${n} vragen · 2 min`,
-      bonusKicker: (n: number): string => `Volgende stap · ${n} vragen · Minimoa+`,
-      path: (i: number, n: number): string => `Je pad · stap ${i} van ${n}`,
-      note: 'Aan het eind: je persoon van de dag',
-      start: 'Beginnen',
-      startA11y: (unit: string): string => `De sessie van vandaag beginnen: ${unit}`,
       doneKicker: 'Sessie van vandaag gedaan',
-      doneTitle: 'Je persoon van de dag',
-      doneNote: 'Morgen een nieuwe sessie',
-      unitKicker: (i: number, done: number, total: number): string => `Wereld ${i} · ${done} van ${total}`,
-      unitSignup: 'Wereld 1 · gedaan bij je inschrijving ✓',
-      nodeSignup: (title: string): string => `${title}, gedaan bij je inschrijving`,
-      restKicker: 'Dat was het voor vandaag',
-      restTitle: 'Tot morgen',
-      streak: (n: number): string => `${n} ${n === 1 ? 'dag' : 'dagen'} op rij`,
-      streakA11y: (n: number): string => `Je reeks: ${n} ${n === 1 ? 'dag' : 'dagen'} op rij. Reeks openen`,
-      node: {
-        done: (step: string): string => `${step}, stap gedaan`,
-        current: (step: string): string => `${step}, stap van vandaag`,
-        chest: (unit: string): string => `Schatkist van ${unit}`,
-        chestOpen: (unit: string): string => `${unit}, onderdeel klaar`,
-        locked: (step: string): string => `${step}, stap op slot`,
-      },
-      loadError: 'Je pad kan nu niet worden getoond.',
-      retry: 'Opnieuw proberen',
     },
     seance: {
       close: 'Sessie sluiten',

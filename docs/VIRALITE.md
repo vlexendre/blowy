@@ -155,11 +155,11 @@ bout en bout (API, app, site, administration). Migration : `supabase/migrations/
 ### 3. Moments capture d'écran
 - `ShareCard` (`packages/ui`, même capture que `StoryCard`, docs/PARTAGE-STORY.md) et `MomentSheet`
   (`apps/mobile/src/features/moments`).
-- (a) Résultat du test à l'inscription (« Mon minimoa est spontané et voyageur ») : bouton facultatif sur « Ta vision » ;
-  jamais l'axe « foyer », deux traits nets au plus (`visionTraits`). (b) Série du défi à 7 / 30 / 100 jours, à
-  l'accueil. (c) Groupe d'habitude à 7 et 30 jours, à l'ouverture du groupe (sans prénoms).
-- Une seule fois par palier (gardé sur le téléphone), jamais bloquant (« Plus tard »), désactivable (« Ne plus me
-  proposer », ou Moi › Réglages › « Proposer de partager mes moments »).
+- Résultat du test à l'inscription (« Mon minimoa est spontané et voyageur ») : bouton facultatif sur « Ta vision » ;
+  jamais l'axe « foyer », deux traits nets au plus (`visionTraits`). Seulement à la demande, jamais bloquant (« Plus
+  tard »). Les cartes proposées d'office sur l'accueil (série 7 / 30 / 100 jours, première semaine) et leur réglage
+  « Proposer de partager mes moments » sont supprimés (ADA-2027 item 6 : une seule action sur l'accueil ; les paliers
+  se fêtent en fin de séance).
 
 ### 4. Codes créateurs, parrainage, attribution
 - `minimoa.app/c/<code>` (page `apps/web/src/pages/c`, visite comptée) et `?ref=<code>` sur n'importe quel lien. Le

@@ -1,154 +1,15 @@
 /**
  * Ton chemin, côté app (docs/CHEMIN.md) : ce qui se calcule sans écran ni réseau. Le serveur décide de tout (unités,
- * étapes, séance, quota, personne du jour) ; ici, seulement la manière de l'afficher : quelles étapes montrer sur
- * l'accueil, l'état du bandeau, l'ordre des questions quand on en passe une, la réponse à envoyer, la réaction du
- * curseur, et une distance dite à gros grains (« dans ton quartier », jamais au mètre).
+ * étapes, séance, quota, personne du jour) ; ici, seulement la manière de l'afficher : le titre de l'univers du jour,
+ * l'ordre des questions quand on en passe une, la réponse à envoyer, la réaction du curseur, et une distance dite à gros
+ * grains (« dans ton quartier », jamais au mètre). L'accueil : `@/features/home`.
  */
 import type { CheminMap, CheminQuestion, CheminResult, LatLng, Profil } from '@blowy/contract';
 import { CHEMIN_STREAK_MILESTONES } from '@blowy/domain';
 
-// ── Accueil : la portion du chemin montrée ────────────────────────────────────
-export type PathNodeKind = 'done' | 'current' | 'chest' | 'chestOpen' | 'locked' | 'unit';
-export interface PathNode {
-  key: string;
-  kind: PathNodeKind;
-  /** Titre de l'étape (ou de l'unité pour un coffre ou un bandeau). */
-  title: string;
-  unitTitle: string;
-  /** Bandeau d'univers : son rang (1-based), étapes faites et total. */
-  unitIndex?: number;
-  done?: number;
-  total?: number;
-}
-
-/**
- * Tout le chemin, de la première case à la dernière (façon Duolingo) : un bandeau par univers, ses étapes, son coffre.
- * Le premier univers est fait pendant l'inscription (le test) : son bandeau le dit. L'écran défile jusqu'à l'étape du jour.
- */
-export function pathAll(map: Pick<CheminMap, 'units' | 'currentStepId'>): PathNode[] {
-  const all: PathNode[] = [];
-  map.units.forEach((u, i) => {
-    if (i > 0)
-      all.push({
-        key: `${u.id}:unit`,
-        kind: 'unit',
-        title: u.title,
-        unitTitle: u.title,
-        unitIndex: i + 1,
-        done: u.done,
-        total: u.total,
-      });
-    for (const s of u.steps) {
-      const kind: PathNodeKind =
-        s.id === map.currentStepId
-          ? 'current'
-          : s.state === 'done'
-            ? 'done'
-            : s.state === 'current'
-              ? 'current'
-              : 'locked';
-      all.push({ key: `${u.id}:${s.id}`, kind, title: s.title, unitTitle: u.title });
-    }
-    if (u.steps.length > 0)
-      all.push({
-        key: `${u.id}:chest`,
-        kind: u.state === 'done' ? 'chestOpen' : 'chest',
-        title: u.title,
-        unitTitle: u.title,
-      });
-  });
-  let seen = false;
-  for (const n of all) {
-    if (n.kind !== 'current') continue;
-    if (seen) n.kind = 'locked';
-    seen = true;
-  }
-  return all;
-}
-
-/** Étapes faites gardées avant celle du jour, et étapes montrées en tout. */
-const BEFORE = 2;
-const WINDOW = 7;
-
-/**
- * La suite d'étapes du chemin (un coffre à la fin de chaque unité), puis une fenêtre autour de l'étape du jour : deux
- * faites avant, elle, et la suite (coffre, verrouillées). Parcours fini : les dernières, toutes faites.
- */
-export function pathWindow(map: Pick<CheminMap, 'units' | 'currentStepId'>): PathNode[] {
-  const all: PathNode[] = [];
-  for (const u of map.units) {
-    for (const s of u.steps) {
-      const kind: PathNodeKind =
-        s.id === map.currentStepId
-          ? 'current'
-          : s.state === 'done'
-            ? 'done'
-            : s.state === 'current'
-              ? 'current'
-              : 'locked';
-      all.push({ key: `${u.id}:${s.id}`, kind, title: s.title, unitTitle: u.title });
-    }
-    if (u.steps.length > 0)
-      all.push({
-        key: `${u.id}:chest`,
-        kind: u.state === 'done' ? 'chestOpen' : 'chest',
-        title: u.title,
-        unitTitle: u.title,
-      });
-  }
-  // Une seule étape « du jour » : la première rencontrée (le serveur n'en donne qu'une).
-  let seen = false;
-  for (const n of all) {
-    if (n.kind !== 'current') continue;
-    if (seen) n.kind = 'locked';
-    seen = true;
-  }
-  const at = all.findIndex((n) => n.kind === 'current');
-  if (at < 0) return all.slice(Math.max(0, all.length - WINDOW));
-  const start = Math.max(0, Math.min(at - BEFORE, all.length - WINDOW));
-  return all.slice(start, start + WINDOW);
-}
-
-/**
- * Le chemin par chapitres (un univers = un chapitre), dans l'ordre : son bandeau, ses étapes, son coffre. L'écran les
- * montre du bas vers le haut (on monte en avançant) : à l'affichage, la liste est retournée.
- */
-export function pathChapters(map: Pick<CheminMap, 'units' | 'currentStepId'>): { unitId: string; current: boolean; nodes: PathNode[] }[] {
-  const all = pathAll(map);
-  const out: { unitId: string; current: boolean; nodes: PathNode[] }[] = [];
-  for (const n of all) {
-    const unitId = n.key.split(':')[0] ?? '';
-    let ch = out[out.length - 1];
-    if (!ch || ch.unitId !== unitId) {
-      ch = { unitId, current: false, nodes: [] };
-      out.push(ch);
-    }
-    ch.nodes.push(n);
-    if (n.kind === 'current') ch.current = true;
-  }
-  return out;
-}
-
-// ── Accueil : le bandeau de la séance ─────────────────────────────────────────
-export type TodayView =
-  /** La séance du jour attend. */
-  | { kind: 'todo'; unitTitle: string; questions: number }
-  /** La séance bonus attend (gagnée par un geste social). */
-  | { kind: 'bonus'; unitTitle: string; questions: number }
-  /** Séance faite : la personne du jour (ou l'état vide) et « Demain, une nouvelle séance ». */
-  | { kind: 'done'; hint: string | null }
-  /** Tout est fait (séance et bonus), ou plus rien à poser aujourd'hui. */
-  | { kind: 'rest'; hint: string | null };
-
+// ── Accueil ─────────────────────────────────────────────────────────────────────
+// L'état du moment et les étapes montrées vivent dans `@/features/home` (`homeState`, `homeSteps`).
 export const SESSION_SIZE = 5;
-
-/** L'étape du jour sur tout le chemin (« étape 4 sur 12 ») : rang 1-based, sinon le nombre d'étapes faites. */
-export function stepOf(map: Pick<CheminMap, 'units' | 'currentStepId'>): { step: number; steps: number } {
-  const all = map.units.flatMap((u) => u.steps);
-  const at = map.currentStepId ? all.findIndex((s) => s.id === map.currentStepId) : -1;
-  const done = all.filter((s) => s.state === 'done').length;
-  return { step: at >= 0 ? at + 1 : Math.max(1, done), steps: all.length };
-}
 
 /** Le titre de l'unité en cours (celle de l'étape du jour), sinon la dernière commencée. */
 export function currentUnitTitle(map: Pick<CheminMap, 'units' | 'currentStepId' | 'title'>): string {
@@ -157,20 +18,6 @@ export function currentUnitTitle(map: Pick<CheminMap, 'units' | 'currentStepId' 
     map.units.find((u) => u.state === 'current') ??
     map.units[map.units.length - 1];
   return unit?.title ?? map.title;
-}
-
-export function todayView(map: Pick<CheminMap, 'units' | 'currentStepId' | 'title' | 'today'>): TodayView {
-  const unitTitle = currentUnitTitle(map);
-  switch (map.today.state) {
-    case 'todo':
-      return { kind: 'todo', unitTitle, questions: SESSION_SIZE };
-    case 'bonus':
-      return { kind: 'bonus', unitTitle, questions: SESSION_SIZE };
-    case 'done':
-      return { kind: 'done', hint: map.today.quota.bonusHint };
-    default:
-      return { kind: 'rest', hint: null };
-  }
 }
 
 /** Une séance à faire maintenant (du jour ou bonus). */

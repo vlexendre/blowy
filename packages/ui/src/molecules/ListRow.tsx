@@ -23,8 +23,6 @@ export interface ListRowProps {
   /** Interrupteur à droite (préférences). */
   switchValue?: boolean;
   onSwitchChange?: (value: boolean) => void;
-  /** Piste de l'interrupteur éteint (défaut `.sw.off`). */
-  switchOffColor?: string;
   /** Filet sous la ligne. Défaut vrai. */
   divider?: boolean;
   disabled?: boolean;
@@ -43,7 +41,6 @@ export function ListRow({
   chevron,
   switchValue,
   onSwitchChange,
-  switchOffColor,
   divider = true,
   disabled,
   accessibilityLabel,
@@ -66,7 +63,7 @@ export function ListRow({
       </View>
       {right}
       {hasSwitch ? (
-        <Toggle value={switchValue} onValueChange={onSwitchChange} disabled={disabled} offColor={switchOffColor} accessibilityLabel={accessibilityLabel ?? title} />
+        <Toggle value={switchValue} onValueChange={onSwitchChange} disabled={disabled} accessibilityLabel={accessibilityLabel ?? title} />
       ) : null}
       {showChevron ? <Glyph name="chevron" size={16} color={color.mute} /> : null}
     </>

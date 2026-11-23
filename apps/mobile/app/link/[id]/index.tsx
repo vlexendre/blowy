@@ -41,9 +41,7 @@ import { RefreshControl, StyleSheet, View } from 'react-native';
 import { inviteUrl, ScreenMotion } from '@/core';
 import { useDraft, useRefusal } from '@/features/chat';
 import { displayUrl, useMe, useStoryShare } from '@/features/me';
-import { MEET_LEVEL, useMeetReminders } from '@/features/safety';
 import { confirmAction } from '@/features/session';
-import { home as homeText } from '@/locales/pet';
 import {
   chatDayLabel,
   chronological,

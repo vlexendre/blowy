@@ -4,16 +4,15 @@ import {
   answerQuestion,
   answersBody,
   canSkip,
+  currentUnitTitle,
   currentQuestionId,
   distanceBand,
   milestoneToCelebrate,
-  pathWindow,
   profilGauges,
   reactionFor,
   seanceDone,
   skipQuestion,
   startSeance,
-  todayView,
 } from './logic';
 
 const step = (id: string, state: 'done' | 'current' | 'locked') => ({ id, title: id, state });
@@ -26,29 +25,13 @@ const units = [
   unit('d', 'locked', [step('d1', 'locked'), step('d2', 'locked')]),
 ];
 
-describe('pathWindow', () => {
-  it('montre deux étapes faites, celle du jour, puis la suite avec un coffre par unité', () => {
-    const w = pathWindow({ units, currentStepId: 'b2' });
-    expect(w.map((n) => `${n.key}=${n.kind}`)).toEqual(['a:chest=chestOpen', 'b:b1=done', 'b:b2=current', 'b:chest=chest', 'c:c1=locked', 'c:c2=locked', 'c:chest=chest']);
+describe('currentUnitTitle', () => {
+  it("le titre réel de l'univers de l'étape du jour (bandeau de l'accueil)", () => {
+    expect(currentUnitTitle({ units, currentStepId: 'b2', title: 'Ton chemin' })).toBe('U b');
   });
-  it('parcours fini : les dernières étapes, toutes faites', () => {
-    const done = units.map((u) => ({ ...u, state: 'done' as const, steps: u.steps.map((s) => ({ ...s, state: 'done' as const })) }));
-    const w = pathWindow({ units: done, currentStepId: null });
-    expect(w).toHaveLength(7);
-    expect(w.every((n) => n.kind === 'done' || n.kind === 'chestOpen')).toBe(true);
-  });
-});
-
-describe('todayView', () => {
-  const quota = { free: 1, bonus: 0, bonusReason: null, used: 1, left: 0, nextSlot: null, bonusHint: 'Invite un pote.' };
-  const map = (state: 'todo' | 'done' | 'bonus' | 'all_done') => ({ units, currentStepId: 'b2', title: 'Ton chemin', today: { day: '2026-11-19', state, quota, line: '' } });
-  it("dit le thème de l'unité en cours quand la séance attend", () => {
-    expect(todayView(map('todo'))).toEqual({ kind: 'todo', unitTitle: 'U b', questions: 5 });
-    expect(todayView(map('bonus')).kind).toBe('bonus');
-  });
-  it('séance faite : comment gagner le bonus ; tout fait : repos', () => {
-    expect(todayView(map('done'))).toEqual({ kind: 'done', hint: 'Invite un pote.' });
-    expect(todayView(map('all_done'))).toEqual({ kind: 'rest', hint: null });
+  it("parcours fini : le dernier univers ; sans univers : le titre du chemin", () => {
+    expect(currentUnitTitle({ units: units.map((u) => ({ ...u, state: 'done' as const })), currentStepId: null, title: 'Ton chemin' })).toBe('U d');
+    expect(currentUnitTitle({ units: [], currentStepId: null, title: 'Ton chemin' })).toBe('Ton chemin');
   });
 });
 

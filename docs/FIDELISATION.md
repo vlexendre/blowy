@@ -64,7 +64,7 @@ Ce que l'API ne sait pas, ou ne fait pas exprès :
 | Premiers pas, J2 (« 3 mots ») | Inscription il y a 2 jours | Push (`words`) → ouvre « Tes 3 mots » | Jour 2 seulement | « Nino veut savoir qui tu es » / « Envoie ton lien « 3 mots » à 3 potes : ils te décrivent, sans compte, et il te connaît mieux. » | Une fois |
 | Premiers pas, J3 (habitude) | Inscription il y a 3 jours | Push (`habit`) → ouvre Habitudes | Jour 3 (jusqu'au jour 4) | « Nino a une idée » / « Choisis une habitude à tenir : il la suivra avec toi, et des gens près de chez toi la tiennent peut-être aussi. » | Une fois |
 | Premiers pas, J5 (groupe) | Inscription il y a 5 jours | Push (`group`) → ouvre « Nouveau groupe » (on peut le créer seul et envoyer son lien) | Jour 5 (jusqu'au jour 6) | « À plusieurs, c’est plus simple » / « Rejoins un groupe par son lien, ou crée le tien et envoie-le à 2 potes. Il démarre à 3. » | Une fois |
-| Premiers pas, J7 | Inscription il y a 7 jours | Push (`week`) → ouvre l'accueil, où la carte « Une semaine avec Nino » est proposée une fois (`FirstWeekMoment`) avec le bilan s'il est là | Jour 7 (jusqu'au jour 8) | « Une semaine avec Nino » / « Ta première semaine est là : ce qui a bougé, et une carte à partager. » | Une fois |
+| Premiers pas, J7 | Inscription il y a 7 jours | Push (`week`) → ouvre l'accueil (plus de carte à partager proposée d'office : ADA-2027 item 6) | Jour 7 (jusqu'au jour 8) | « Une semaine avec Nino » / « Ta première semaine est là : ce qui a bougé, et une carte à partager. » | Une fois |
 | Absence de 3 jours | 3 jours sans ouvrir l'app (`profiles.last_active_on`) ; compte de plus de 10 jours | Push (`minimoa_news`) → ouvre l'accueil | Jours 3 à 5 d'absence | « Nino se demande ce que tu deviens » / « Rien ne presse. Passe quand tu veux, il te garde ta place. » | Une fois par absence |
 | Absence de 7 jours | 7 jours sans ouvrir l'app | Push | Jours 7 à 9 | « Nino s’ennuie un peu » / « Il compte les nuages en t’attendant. Un petit tour quand tu as le temps ? » | Une fois par absence |
 | Absence de 14 jours | 14 jours sans ouvrir l'app | Push + e-mail (coupé avec « Nouvelles de ton minimoa ») | Jours 14 à 16 | Push : « Deux semaines déjà » / « Nino t’attend, sans rancune. Tes liens ont peut-être des nouvelles pour toi. » — E-mail « Nino te garde ta place » : « Deux semaines sans nouvelles de toi sur Minimoa. Rien de grave : la vie, ça occupe. » puis ce qui s'est passé (messages non lus, personnes qui ont fait signe, seulement celles qu'on peut encore lui montrer) ou « Rien ne presse : tout est là où tu l’as laissé. », et « si tu préfères faire une pause, c’est très bien aussi » | Une fois par absence ; rien au-delà (pas de relance à 30, 60, 90 jours) |
@@ -97,7 +97,7 @@ feuille), `apps/mobile/src/locales/moi.ts` (libellés des réglages).
   mémoire) et la lecture des personnes (`FidelitePeople`).
 - `modules/billing` : `PlusNews` (appelé par `Subscriptions.apply` après chaque événement du magasin, et par
   `BillingJobs` pour l'au revoir et la relance).
-- App : `features/pet/WelcomeBack.tsx` (accueil), réglages dans `app/moi/notifications.tsx`.
+- App : réglages dans `app/moi/notifications.tsx` (plus de carte « Te revoilà » sur l'accueil : ADA-2027 item 6 ; le minimoa t'accueille bras ouverts après 3 jours, `homeEntrance`).
 - Tests en mémoire : `apps/api/test/fidelite.e2e.test.ts`.
 
 ## 4. Textes pour Apple (à saisir dans App Store Connect seulement si le propriétaire le décide)

@@ -31,6 +31,7 @@ export const GLYPHS = [
   'copy',
   'pin',
   'gear',
+  'minimoa',
 ] as const;
 export type GlyphName = (typeof GLYPHS)[number];
 
@@ -227,6 +228,15 @@ function draw(name: GlyphName, s: number, c: string, sw: number, filled: boolean
       );
     case 'heart':
       return heart(s, c);
+    case 'minimoa':
+      // Tête de minimoa à antennes (onglet Minimoa, V6-GAccueil) ; pleine sur l'onglet actif.
+      return (
+        <Svg width={s} height={s} viewBox="0 0 24 24">
+          <Path d="M4.5 19.5c0-6 3.4-10 7.5-10s7.5 4 7.5 10z" stroke={c} strokeWidth={2.2} fill={filled ? c : 'none'} strokeLinejoin="round" />
+          <Path d="M9.5 9.8L7.6 4.6M14.5 9.8l1.9-5.2" stroke={c} strokeWidth={2.2} strokeLinecap="round" fill="none" />
+          <Path d="M7.4 2.4a1.6 1.6 0 1 0 0 3.2a1.6 1.6 0 1 0 0-3.2zM16.6 2.4a1.6 1.6 0 1 0 0 3.2a1.6 1.6 0 1 0 0-3.2z" fill={c} />
+        </Svg>
+      );
     case 'chat':
       return (
         <View style={{ width: s * 0.86, height: s * 0.8 }}>

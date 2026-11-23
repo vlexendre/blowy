@@ -1,5 +1,5 @@
 /**
- * Croissance (docs/VIRALITE.md) : résultat « 3 mots », moments à partager (cartes au format story) et leur réglage.
+ * Croissance (docs/VIRALITE.md) : résultat « 3 mots », résultat du test à partager (cartes au format story).
  */
 import type { TitleSegment } from '@blowy/ui';
 
@@ -16,7 +16,6 @@ export const croissance = messages({
       story: 'Partager en story',
       sheet: 'Autre app',
       later: 'Plus tard',
-      never: 'Ne plus me proposer',
       close: 'Fermer',
     },
     /** Ton lien « 3 mots » et ton résultat. */
@@ -40,23 +39,6 @@ export const croissance = messages({
     },
     /** Moments à partager. */
     moments: {
-      /** J7 : une semaine avec son minimoa (une fois). */
-      week: {
-        sheetTitle: 'Une semaine ensemble',
-        text: 'Ta première semaine. Une carte pour ta story, ou pour toi.',
-        title: (pet: string): TitleSegment[] => [{ text: 'UNE SEMAINE\n' }, { text: `AVEC ${pet.toUpperCase()}.`, dim: true }],
-        unit: 'JOURS ENSEMBLE',
-        callout: 'Le tien te présente du monde :',
-        message: (pet: string, url: string): string => `Une semaine avec ${pet}, mon minimoa. Il me présente du monde près de chez moi. Viens\u00a0: ${url}`,
-      },
-      streak: {
-        sheetTitle: (n: number): string => `${n} jours d’affilée`,
-        text: 'Une carte pour ta story. Tu peux aussi la garder pour toi.',
-        title: [{ text: 'MA SÉRIE\n' }, { text: 'TIENT.', dim: true }] as TitleSegment[],
-        unit: (n: number): string => (n > 1 ? 'JOURS D’AFFILÉE' : 'JOUR'),
-        callout: 'Élève ton minimoa toi aussi :',
-        message: (n: number, url: string): string => `${n} jours d’affilée avec mon minimoa. Viens : ${url}`,
-      },
       vision: {
         cta: 'Partager mon résultat',
         sheetTitle: 'Ton résultat',
@@ -75,12 +57,6 @@ export const croissance = messages({
         and: ' et ',
       },
     },
-    /** Moi › Réglages. */
-    settings: {
-      title: 'Proposer de partager mes moments',
-      on: 'Ta série, ton résultat : une carte pour ta story, une fois',
-      off: 'Désactivé',
-    },
   },
   en: {
     brand: 'minimoa',
@@ -88,7 +64,6 @@ export const croissance = messages({
       story: 'Share to story',
       sheet: 'Other app',
       later: 'Later',
-      never: 'Don’t suggest this again',
       close: 'Close',
     },
     words: {
@@ -110,22 +85,6 @@ export const croissance = messages({
       more: 'See my result',
     },
     moments: {
-      week: {
-        sheetTitle: 'One week together',
-        text: 'Your first week. A card for your story, or just for you.',
-        title: (pet: string): TitleSegment[] => [{ text: 'ONE WEEK\n' }, { text: `WITH ${pet.toUpperCase()}.`, dim: true }],
-        unit: 'DAYS TOGETHER',
-        callout: 'Yours introduces you to people:',
-        message: (pet: string, url: string): string => `One week with ${pet}, my minimoa. It introduces me to people near me. Come: ${url}`,
-      },
-      streak: {
-        sheetTitle: (n: number): string => `${n} days in a row`,
-        text: 'A card for your story. You can also keep it to yourself.',
-        title: [{ text: 'MY STREAK\n' }, { text: 'IS ON.', dim: true }] as TitleSegment[],
-        unit: (n: number): string => (n > 1 ? 'DAYS IN A ROW' : 'DAY'),
-        callout: 'Raise your own minimoa:',
-        message: (n: number, url: string): string => `${n} days in a row with my minimoa. Come along: ${url}`,
-      },
       vision: {
         cta: 'Share my result',
         sheetTitle: 'Your result',
@@ -143,11 +102,6 @@ export const croissance = messages({
         and: ' and ',
       },
     },
-    settings: {
-      title: 'Suggest sharing my moments',
-      on: 'Your streak, your result: a card for your story, once',
-      off: 'Off',
-    },
   },
   es: {
     brand: 'minimoa',
@@ -155,7 +109,6 @@ export const croissance = messages({
       story: 'Compartir en historia',
       sheet: 'Otra app',
       later: 'Más tarde',
-      never: 'No volver a proponerlo',
       close: 'Cerrar',
     },
     words: {
@@ -177,22 +130,6 @@ export const croissance = messages({
       more: 'Ver mi resultado',
     },
     moments: {
-      week: {
-        sheetTitle: 'Una semana juntos',
-        text: 'Tu primera semana. Una tarjeta para tu story, o para ti.',
-        title: (pet: string): TitleSegment[] => [{ text: 'UNA SEMANA\n' }, { text: `CON ${pet.toUpperCase()}.`, dim: true }],
-        unit: 'DÍAS JUNTOS',
-        callout: 'El tuyo te presenta gente:',
-        message: (pet: string, url: string): string => `Una semana con ${pet}, mi minimoa. Me presenta gente cerca de casa. Ven: ${url}`,
-      },
-      streak: {
-        sheetTitle: (n: number): string => `${n} días seguidos`,
-        text: 'Una tarjeta para tu historia. También puedes guardarla para ti.',
-        title: [{ text: 'MI RACHA\n' }, { text: 'SIGUE.', dim: true }] as TitleSegment[],
-        unit: (n: number): string => (n > 1 ? 'DÍAS SEGUIDOS' : 'DÍA'),
-        callout: 'Cuida tu propio minimoa:',
-        message: (n: number, url: string): string => `${n} días seguidos con mi minimoa. Ven: ${url}`,
-      },
       vision: {
         cta: 'Compartir mi resultado',
         sheetTitle: 'Tu resultado',
@@ -210,11 +147,6 @@ export const croissance = messages({
         and: ' y ',
       },
     },
-    settings: {
-      title: 'Proponer compartir mis momentos',
-      on: 'Tu racha, tu resultado: una tarjeta para tu historia, una vez',
-      off: 'Desactivado',
-    },
   },
   pt: {
     brand: 'minimoa',
@@ -222,7 +154,6 @@ export const croissance = messages({
       story: 'Compartilhar nos stories',
       sheet: 'Outro app',
       later: 'Depois',
-      never: 'Não sugerir de novo',
       close: 'Fechar',
     },
     words: {
@@ -244,22 +175,6 @@ export const croissance = messages({
       more: 'Ver meu resultado',
     },
     moments: {
-      week: {
-        sheetTitle: 'Uma semana juntos',
-        text: 'Sua primeira semana. Um cartão para o seu story, ou só para você.',
-        title: (pet: string): TitleSegment[] => [{ text: 'UMA SEMANA\n' }, { text: `COM ${pet.toUpperCase()}.`, dim: true }],
-        unit: 'DIAS JUNTOS',
-        callout: 'O seu te apresenta gente:',
-        message: (pet: string, url: string): string => `Uma semana com ${pet}, meu minimoa. Ele me apresenta gente perto de casa. Vem: ${url}`,
-      },
-      streak: {
-        sheetTitle: (n: number): string => `${n} dias seguidos`,
-        text: 'Um card para os seus stories. Você também pode guardar só para você.',
-        title: [{ text: 'MINHA SEQUÊNCIA\n' }, { text: 'CONTINUA.', dim: true }] as TitleSegment[],
-        unit: (n: number): string => (n > 1 ? 'DIAS SEGUIDOS' : 'DIA'),
-        callout: 'Cuide do seu minimoa também:',
-        message: (n: number, url: string): string => `${n} dias seguidos com meu minimoa. Vem: ${url}`,
-      },
       vision: {
         cta: 'Compartilhar meu resultado',
         sheetTitle: 'Seu resultado',
@@ -277,11 +192,6 @@ export const croissance = messages({
         and: ' e ',
       },
     },
-    settings: {
-      title: 'Sugerir compartilhar meus momentos',
-      on: 'Sua sequência, seu resultado: um card para os stories, uma vez',
-      off: 'Desativado',
-    },
   },
   nl: {
     brand: 'minimoa',
@@ -289,7 +199,6 @@ export const croissance = messages({
       story: 'Delen in story',
       sheet: 'Andere app',
       later: 'Later',
-      never: 'Niet meer voorstellen',
       close: 'Sluiten',
     },
     words: {
@@ -311,22 +220,6 @@ export const croissance = messages({
       more: 'Mijn resultaat bekijken',
     },
     moments: {
-      week: {
-        sheetTitle: 'Een week samen',
-        text: 'Je eerste week. Een kaart voor je story, of voor jezelf.',
-        title: (pet: string): TitleSegment[] => [{ text: 'EEN WEEK\n' }, { text: `MET ${pet.toUpperCase()}.`, dim: true }],
-        unit: 'DAGEN SAMEN',
-        callout: 'De jouwe stelt je aan mensen voor:',
-        message: (pet: string, url: string): string => `Een week met ${pet}, mijn minimoa. Hij stelt me voor aan mensen bij mij in de buurt. Kom: ${url}`,
-      },
-      streak: {
-        sheetTitle: (n: number): string => `${n} dagen op rij`,
-        text: 'Een kaart voor je story. Je mag hem ook voor jezelf houden.',
-        title: [{ text: 'MIJN REEKS\n' }, { text: 'HOUDT STAND.', dim: true }] as TitleSegment[],
-        unit: (n: number): string => (n > 1 ? 'DAGEN OP RIJ' : 'DAG'),
-        callout: 'Zorg ook voor je eigen minimoa:',
-        message: (n: number, url: string): string => `${n} dagen op rij met mijn minimoa. Kom erbij: ${url}`,
-      },
       vision: {
         cta: 'Mijn resultaat delen',
         sheetTitle: 'Je resultaat',
@@ -343,11 +236,6 @@ export const croissance = messages({
         fallback: 'uniek',
         and: ' en ',
       },
-    },
-    settings: {
-      title: 'Voorstellen om mijn momenten te delen',
-      on: 'Je reeks, je resultaat: één keer een kaart voor je story',
-      off: 'Uit',
     },
   },
 });

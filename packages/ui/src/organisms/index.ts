@@ -46,14 +46,7 @@ export { WordsShareCard, type WordsShareCardProps } from './WordsShareCard';
 export { CareBar, type CareBarProps } from './CareBar';
 export { NeedsPanel, type NeedsPanelProps } from './NeedsPanel';
 export { OutfitPreview, type OutfitPreviewHandle, type OutfitPreviewProps } from './OutfitPreview';
-export {
-  type PetReaction,
-  PetStage,
-  type PetStageAction,
-  type PetStageProps,
-  type PetStageSleep,
-  type PetStageSpeechAction,
-} from './PetStage';
+export { type PetReaction, PetStage, type PetStageAction, type PetStageProps, type PetStageSleep } from './PetStage';
 export { UnlockSheet, type UnlockSheetProps } from './UnlockSheet';
 export { ItemDetail, type ItemDetailProps } from './ItemDetail';
 export { UnlockToast, type UnlockToastProps } from './UnlockToast';
@@ -101,7 +94,6 @@ export { ZonePreview, type ZonePreviewProps } from './ZonePreview';
 export { NotifPreview, type NotifPreviewProps } from './NotifPreview';
 export { VisionHero, type VisionHeroProps } from './VisionHero';
 export { ShareCard, type ShareCardProps } from './ShareCard';
-export { PeopleCard, type PeopleCardProps } from './PeopleCard';
 export { PlusHero, type PlusHeroPose, type PlusHeroProps } from './PlusHero';
 export { type PlusPlanCard, PlusPlanCards, type PlusPlanCardsProps } from './PlusPlanCards';
 export { TrialTimeline, type TrialStepView, type TrialTimelineProps } from './TrialTimeline';
@@ -116,16 +108,17 @@ export {
   type WornPremiumProps,
 } from './DesireCards';
 export { UpdateBanner, type UpdateBannerProps } from './UpdateBanner';
+export { cheminRowHeight, type CheminStep, type CheminStepKind, CheminStepRow, type CheminStepRowProps, cheminSwing } from './CheminPath';
 export {
-  type CheminNodeKind,
-  CheminBadges,
-  type CheminBadgesProps,
-  CheminPath,
-  cheminStackHeight,
-  type CheminPathNode,
-  type CheminPathProps,
-  cheminSwing,
-} from './CheminPath';
+  type HelloRowProps,
+  HelloRow,
+  type HomeLink,
+  RestCard,
+  SessionDoneCard,
+  type SessionDoneCardProps,
+  StreakLine,
+  type StreakLineProps,
+} from './HomeNow';
 export { optionIcon, type SeanceOption, SeanceQuestion, type SeanceQuestionProps } from './SeanceQuestion';
 export {
   CheminEmptyCard,

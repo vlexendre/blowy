@@ -36,7 +36,6 @@ export function SettingsSection({ title, rows, children, footer, variant = 'grou
             key={key}
             divider={i < rows.length - 1}
             {...row}
-            switchOffColor={row.switchOffColor ?? (plain ? veil.off : undefined)}
             style={[plain && styles.plainRow, rowStyle]}
           />
         ))}

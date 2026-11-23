@@ -46,7 +46,7 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 - **Titre d'écran** : `Title` avec seconde ligne estompée ; écran poussé : bouton retour rond à gauche du titre
   (`SettingsTemplate`, `ScreenTemplate`) ; feuille : croix en haut à droite.
 - **Entrées vers d'autres écrans** : des lignes `ListRow` dans une `SettingsSection` (filet entre les lignes) plutôt qu'une
-  pile de cartes. À l'accueil, une seule action principale (l'étape du jour, `CheminPath`) ; rien d'autre n'y vend ni n'y relance.
+  pile de cartes. À l'accueil, une seule action principale (l'étape du jour, `CheminStepRow`) ; rien d'autre n'y vend ni n'y relance.
 - **Listes de réglages** : `SettingsSection` (carte groupée, titre de section en capitales 13).
 - **Puces** : `Chip` ; puces d'étiquette inclinées sur les panneaux (−6° / +5°) ; jamais de puce translucide posée sur
   un minimoa (fond sombre opaque).
@@ -54,6 +54,10 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
   bouton calme désactivé avec coche (« En attente »), pas un bouton jaune.
 - **Compatibilité** : le pourquoi d'abord (`MatchWhy` : une ligne « 3 points communs · 1 différence à explorer », puis les
   axes, pleins en commun, cerclé à explorer), le chiffre ensuite en petit (`CompatPill inline`), jamais seul.
+- **Interrupteurs** : un seul style, l'atome `Toggle` : violet `toggle.on` (#7A45F0) allumé, piste éteinte `toggle.off`
+  (#3E3862) avec contour intérieur de 1,5 pt `toggle.edge` (#6F6990) ; jamais jaune.
+- **Barre d'onglets** : pilule jaune de l'onglet actif (ne compte pas comme élément jaune), pictogramme plein, libellé
+  10 pt / 800, pastilles blanches à encre sombre.
 - **Feuilles** : `SheetTemplate` ; une feuille d'achat garde son action dans une barre fixe en bas (Minimoa+ : bouton,
   ligne de renouvellement, « Restaurer mes achats · Conditions · Confidentialité »), le reste au-dessus (Minimoa+ :
   `docs/PAYWALL.md`).

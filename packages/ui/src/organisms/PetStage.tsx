@@ -1,15 +1,14 @@
-import type { Mood, Shape } from '@blowy/domain';
+import type { Mood } from '@blowy/domain';
 import { Image } from 'expo-image';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { Platform, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { interpolate, type SharedValue, useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
+import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
 
 import { type CareProp, PROP_RATIO, propImage } from '../assets/misc';
 import type { BodyPose, PetPose } from '../assets/pets';
 import { Button } from '../atoms/Button';
 import { Chip } from '../atoms/Chip';
 import { Panel } from '../atoms/Panel';
-import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { ease, fadeTo, useReducedMotion } from '../lib/motion';
 import { SpeechBubble } from '../molecules/SpeechBubble';
@@ -25,29 +24,20 @@ export interface PetStageAction {
   label: string;
   onPress: () => void;
   accessibilityLabel?: string;
-  /** Pastille jaune en coin du bouton (« 2 » objets nouveaux dans la garde-robe). */
-  badge?: string;
-}
-
-/** Un bouton sous la bulle : ce que le pet propose (« Voir qui »), ou « Le réveiller » quand il dort. */
-export interface PetStageSpeechAction {
-  label: string;
-  onPress: () => void;
-  accessibilityLabel?: string;
 }
 
 /**
  * Le pet peut s'endormir au repos (`after`, de `petSleep` : jamais les premières 24 h ni la nuit). Endormi, l'écran le
- * dit : sa bulle (`speech`) et un bouton visible pour le réveiller (`wakeLabel`) ; le toucher le réveille aussi.
+ * dit : à la place des soins, un bouton blanc « Le réveiller » (`wakeLabel`) ; le toucher le réveille aussi.
+ * `onSleepChange` prévient l'écran (puce d'humeur, bulle « Zzz… » hors du panneau).
  */
 export interface PetStageSleep {
   /** Délai sans toucher avant qu'il s'endorme (ms) ; `null` : jamais. */
   after: number | null;
-  /** Sa bulle pendant qu'il dort (« Zzz… Je fais un somme. Réveille-moi ! »). */
-  speech: string;
-  /** Bouton sous la bulle (« Le réveiller »). */
+  /** Bouton à la place des soins (« Le réveiller »). */
   wakeLabel: string;
   wakeA11y?: string;
+  onSleepChange?: (asleep: boolean) => void;
 }
 
 export interface PetStageProps {
@@ -55,21 +45,15 @@ export interface PetStageProps {
   pet: PetLook & { id?: string };
   /** Titre ; défaut le nom du pet. */
   title?: TitleContent;
-  /** Forme du pet (`Pet.shape`) : un pet qui boude passe sur le panneau lie-de-vin, couleurs éteintes. */
-  shape?: Shape;
-  /** Puce sous le nom (`shapeLabel[shape].title` : « en pleine forme »). */
-  shapeLabel?: string;
-  /** Toucher la puce de forme (« Il boude » : il dit dans sa bulle ce que ça change). */
-  onShapePress?: () => void;
-  /** Libellé lu de la puce touchable. */
-  shapeA11y?: string;
-  /** Ce que dit le pet (bulle sombre) ; chaque nouvelle phrase s'écrit mot à mot. */
+  /** Taille de maquette du nom (rendue × 0,74, `displaySize`). Défaut 40. */
+  titleSize?: number;
+  /** Puce d'humeur sous le nom (« En pleine forme », « Fait la sieste »), inclinée, sur fond sombre. */
+  moodLabel?: string;
+  /** Ce que dit le pet (bulle sombre dans le panneau) ; chaque nouvelle phrase s'écrit mot à mot. */
   speech?: string;
-  /** Bouton sous la bulle : ce que propose le pet (la nuit, « Voir qui » : les présentations). */
-  speechAction?: PetStageSpeechAction | null;
   /** Sommeil au repos, avec son réveil visible. Absent : il ne s'endort jamais. */
   sleep?: PetStageSleep | null;
-  /** Bouton blanc en haut à droite (« garde-robe »). */
+  /** Bouton blanc en haut à droite (« Garde-robe »), 44 pt, sans pastille. */
   action?: PetStageAction;
   /**
    * Réaction à jouer : `feed` (une fraise tombe, il croque), `play` (une balle rebondit, il saute après),
@@ -80,15 +64,13 @@ export interface PetStageProps {
   reactionKey?: number;
   /** Objet du soin joué (la nourriture, le jouet glissé jusqu'au pet) : tenu dans la pose `mange` / `joue`. */
   reactionItem?: CareProp | null;
-  /** Pose de repos du pet (forme d'évolution en pied, `malade`, `danger`) ; défaut `neutre` (`boude` quand il boude). */
+  /** Pose de repos du pet (forme d'évolution en pied) ; défaut `neutre`. */
   mood?: Mood | PetPose | BodyPose;
   /**
    * Petit habitat, flou d'arrière-plan : tapis sous le pet, plante et lampe de part et d'autre, cadre au mur, veilleuse la nuit. Absent : rien (petits écrans).
    */
   habitat?: { night?: boolean } | null;
-  /** @deprecated Les « z » sont dessinés par `PetActor`. */
-  sleepGlyph?: string;
-  /** Panneau ; défaut celui de l'espèce, lie-de-vin quand il boude. */
+  /** Panneau ; défaut celui de l'espèce. */
   gradient?: GradientName;
   /** Largeur du pet. Défaut 236. */
   petSize?: number;
@@ -103,45 +85,23 @@ export interface PetStageProps {
   petLabel?: string;
   /** Soin porté vers le pet (`usePetLure`, partagé avec `CareBar`) : le pet le suit des yeux et ouvre la bouche quand il approche. */
   lure?: PetLure;
-  /** Décor posé sur la tête du pet et qui le suit (la mèche de la série : `StreakFlame`). */
-  crest?: ReactNode;
-  /** Jauge vedette en bas à gauche du panneau (la sociabilité : `HeroMeter`). La bulle remonte un peu. */
-  meter?: ReactNode;
-  /** En bas à gauche de la carte : la pastille des soins (`CareBar compact`, V6-GAccueil). */
+  /** En bas à gauche du panneau : la pastille des soins (`CareBar compact`, V6-GAccueil `.soins`). Cachée pendant qu'il dort. */
   care?: ReactNode;
   style?: StyleProp<ViewStyle>;
-  /**
-   * Repli animé (0 : grande, 1 : petite). La carte passe de `height` à `compactHeight`, le minimoa de `petSize` à
-   * `compactPetSize` ; les actions (garde-robe, soins) et le décor s'effacent.
-   */
-  collapse?: SharedValue<number>;
-  compactHeight?: number;
-  compactPetSize?: number;
-  /** Repliée : les actions effacées ne se touchent plus. */
-  compact?: boolean;
 }
 
 /**
- * Pet qui boude : `filter: saturate(.55) brightness(.8)` de V6-Boude, sur le web seulement.
- * Sur iPhone, `filter` ne sait pas désaturer, et `brightness` pose un rectangle gris opaque sur toute la toile
- * (le fond transparent du pet devient gris clair). On l'éteint donc par l'opacité : il se fond dans le panneau sombre.
- */
-const SULK_STYLE = Platform.OS === 'web' ? { filter: 'saturate(0.55) brightness(0.8)' } : { opacity: 0.78 };
-
-/**
- * Scène de l'accueil (V6-Accueil, V6-Boude) : grand panneau, nom en capitales (police des titres), puce de forme, bouton garde-robe,
- * bulle du pet (qui s'écrit), et le pet vivant (`PetActor`) en bas à droite qui réagit aux soins et au toucher.
- * Attrapé, le pet sort du panneau (il passe au premier plan le temps du geste).
+ * Panneau du minimoa (V6-GAccueil `.panneau`) : nom en capitales (police des titres), puce d'humeur inclinée, bouton
+ * blanc « Garde-robe », le pet vivant (`PetActor`) en bas à droite qui réagit aux soins et au toucher, les soins en bas
+ * à gauche. Aucun jaune. Endormi : « Le réveiller » (blanc) à la place des soins. Attrapé, le pet sort du panneau (il
+ * passe au premier plan le temps du geste).
  */
 export function PetStage({
   pet,
   title,
-  shape,
-  shapeLabel,
-  onShapePress,
-  shapeA11y,
+  titleSize = 40,
+  moodLabel,
   speech,
-  speechAction,
   sleep,
   action,
   reaction,
@@ -157,26 +117,20 @@ export function PetStage({
   onPetTouch,
   petLabel,
   lure,
-  crest,
-  meter,
   care,
   style,
-  collapse,
-  compactHeight,
-  compactPetSize,
-  compact = false,
 }: PetStageProps) {
   const reduced = useReducedMotion();
   const actor = useRef<PetActorHandle>(null);
   const [lifted, setLifted] = useState(false);
   const [asleep, setAsleep] = useState(false);
   const dozing = asleep && !!sleep;
-  const said = dozing ? sleep.speech : speech;
-  const button: PetStageSpeechAction | null = dozing
-    ? { label: sleep.wakeLabel, accessibilityLabel: sleep.wakeA11y, onPress: () => actor.current?.wake() }
-    : (speechAction ?? null);
   const dim = useSharedValue(0);
-  const sulking = shape === 'boude';
+  const onSleep = sleep?.onSleepChange;
+  const sleepChange = (on: boolean) => {
+    setAsleep(on);
+    onSleep?.(on);
+  };
 
   // Chaque nouvelle réaction (même identique) rejoue la chorégraphie ; la sieste baisse la lumière.
   const played = useRef(reactionKey);
@@ -193,33 +147,20 @@ export function PetStage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reaction, reactionKey, reduced, dim]);
   const night = useAnimatedStyle(() => ({ opacity: dim.value }));
-  const fold = useAnimatedStyle(() => {
-    const c = collapse?.value ?? 0;
-    return { height: interpolate(c, [0, 1], [height, compactHeight ?? height]) };
-  });
-  const petFold = useAnimatedStyle(() => {
-    const c = collapse?.value ?? 0;
-    return { transform: [{ scale: interpolate(c, [0, 1], [1, (compactPetSize ?? petSize) / petSize]) }] };
-  });
-  const fade = useAnimatedStyle(() => ({ opacity: interpolate(collapse?.value ?? 0, [0, 0.6], [1, 0], 'clamp') }));
 
   return (
-    <Animated.View style={[{ height }, fold, lifted && styles.lifted, style]}>
+    <View style={[{ height }, lifted && styles.lifted, style]}>
     <Panel
-      gradient={gradient ?? (sulking ? 'wine' : speciesGradient[pet.species])}
+      gradient={gradient ?? speciesGradient[pet.species]}
       radius={32}
       padding="none"
       overflow={lifted}
-      style={[styles.panel, styles.fill]}
+      style={styles.fill}
     >
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.night, night]} />
-      {habitat ? (
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, fade]}>
-          <Habitat petSize={petSize} night={!!habitat.night} />
-        </Animated.View>
-      ) : null}
-      <Animated.View style={[styles.pet, styles.petOrigin, petFold]} pointerEvents="box-none">
-      <View ref={lure?.target} collapsable={false} style={[{ width: petSize, height: Math.round(petSize / 0.9) }, sulking && styles.sulk]}>
+      {habitat ? <Habitat petSize={petSize} night={!!habitat.night} /> : null}
+      <View style={styles.pet} pointerEvents="box-none">
+      <View ref={lure?.target} collapsable={false} style={{ width: petSize, height: Math.round(petSize / 0.9) }}>
         <PetActor
           ref={actor}
           species={pet.species}
@@ -227,13 +168,11 @@ export function PetStage({
           mood={mood}
           size={petSize}
           seed={pet.id ?? pet.name}
-          sulking={sulking}
           grabbable={grabbable}
           onGrabChange={setLifted}
           lure={lure}
-          crest={crest}
           sleepAfter={sleep?.after ?? null}
-          onSleepChange={setAsleep}
+          onSleepChange={sleepChange}
           onTouch={(t) => {
             onPetTouch?.(t);
             if (t === 'tap') onPetPress?.();
@@ -241,65 +180,52 @@ export function PetStage({
           accessibilityLabel={petLabel ?? pet.name}
         />
       </View>
-      </Animated.View>
+      </View>
       <View style={styles.head} pointerEvents="box-none">
         <View style={styles.name}>
-          <Title text={title ?? pet.name.toUpperCase()} size={40} numberOfLines={1} />
-          {shapeLabel ? (
-            <Chip label={shapeLabel} tone="dark" left={<View style={styles.dot} />} onPress={onShapePress} accessibilityLabel={shapeA11y} style={styles.chip} />
+          <Title text={title ?? pet.name.toUpperCase()} size={titleSize} numberOfLines={1} />
+          {moodLabel ? (
+            <Chip label={moodLabel} tone="dark" left={<View style={styles.dot} />} style={styles.chip} />
           ) : null}
         </View>
         {action ? (
-          <Animated.View style={fade} pointerEvents={compact ? 'none' : 'auto'}>
-            <Button
-              label={action.label}
-              onPress={action.onPress}
-              accessibilityLabel={action.accessibilityLabel}
-              variant="white"
-              size="sm"
-              labelSize={14}
-              block={false}
-              style={styles.action}
-            />
-            {action.badge ? (
-              <View pointerEvents="none" style={styles.actionBadge}>
-                <Text variant="bodyHeavy" size={11} color={color.dark}>
-                  {action.badge}
-                </Text>
-              </View>
-            ) : null}
-          </Animated.View>
+          <Button
+            label={action.label}
+            onPress={action.onPress}
+            accessibilityLabel={action.accessibilityLabel}
+            variant="white"
+            size="sm"
+            labelSize={15}
+            block={false}
+            style={styles.action}
+          />
         ) : null}
       </View>
-      {said || button ? (
-        <View style={[styles.speech, meter || care ? styles.speechHigh : null]} pointerEvents="box-none">
-          {said ? (
-            <View pointerEvents="none">
-              <SpeechBubble text={said} tone="dark" tail="left" typing />
-            </View>
-          ) : null}
-          {button ? (
-            <Button
-              label={button.label}
-              onPress={button.onPress}
-              accessibilityLabel={button.accessibilityLabel}
-              variant="accent"
-              size="sm"
-              labelSize={13}
-              block={false}
-              style={styles.speechAction}
-            />
-          ) : null}
+      {speech ? (
+        <View style={styles.speech} pointerEvents="none">
+          <SpeechBubble text={speech} tone="dark" tail="left" typing />
         </View>
       ) : null}
-      {meter ? <View style={styles.meter}>{meter}</View> : null}
-      {care ? (
-        <Animated.View style={[styles.care, fade]} pointerEvents={compact ? 'none' : 'box-none'}>
+      {dozing ? (
+        <View style={styles.care}>
+          <Button
+            label={sleep.wakeLabel}
+            onPress={() => actor.current?.wake()}
+            accessibilityLabel={sleep.wakeA11y}
+            variant="white"
+            size="sm"
+            labelSize={17}
+            block={false}
+            style={styles.wake}
+          />
+        </View>
+      ) : care ? (
+        <View style={styles.care} pointerEvents="box-none">
           {care}
-        </Animated.View>
+        </View>
       ) : null}
     </Panel>
-    </Animated.View>
+    </View>
   );
 }
 
@@ -326,46 +252,25 @@ function Habitat({ petSize, night }: { petSize: number; night: boolean }) {
 }
 
 const styles = StyleSheet.create({
-  panel: {},
   fill: { flex: 1 },
-  // Le minimoa rapetisse vers le coin bas droit, là où il est posé.
-  petOrigin: { transformOrigin: 'right bottom' },
   decor: { position: 'absolute' },
   // Halo de la veilleuse : un disque jaune très transparent.
   glow: { position: 'absolute', backgroundColor: alpha(color.accent, 0.12) },
   // Pet attrapé : le panneau passe devant ses voisins et ne le rogne plus.
   lifted: { zIndex: 10, elevation: 10 },
   night: { borderRadius: 32, backgroundColor: alpha(color.night, 1) },
-  // `.panel` : rayon 32, padding 14 16, hauteur 318.
-  head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, paddingTop: 14, paddingHorizontal: 16 },
+  // `.panneau` : rayon 32, padding 14 16.
+  head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, paddingTop: 14, paddingLeft: 16, paddingRight: 14 },
   name: { flexShrink: 1, minWidth: 0, alignItems: 'flex-start' },
-  chip: { marginTop: 4 },
-  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: color.white },
-  action: { height: 38 },
-  actionBadge: {
-    position: 'absolute',
-    top: -5,
-    right: -4,
-    minWidth: 20,
-    height: 20,
-    paddingHorizontal: 5,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: color.accent,
-    borderWidth: 2,
-    borderColor: color.dark,
-  },
-  // `.bubble` : à 16 du bord, 112 du haut, 150 de large au plus.
-  speech: { position: 'absolute', left: 16, top: 112, maxWidth: 168, zIndex: 2 },
-  // Avec une jauge vedette en bas : la bulle remonte sous la puce de forme.
-  speechHigh: { top: 98 },
-  // Bouton sous la bulle (« Voir qui », « Le réveiller ») : petit, aligné sur la queue de la bulle.
-  speechAction: { alignSelf: 'flex-start', height: 34, marginTop: 8 },
-  // V6-GAccueil : jauge dans un verre sombre, à 14 du bas et 16 du bord gauche.
-  meter: { position: 'absolute', left: 16, bottom: 14, width: 168, zIndex: 2 },
-  // `.sq` : à 6 du bord droit, 6 sous le bas du panneau.
+  // `.humeur` : inclinée de −3°, fond sombre opaque (jamais translucide sur un minimoa).
+  chip: { marginTop: 6, transform: [{ rotate: '-3deg' }] },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: color.white },
+  // `.garde` : 44 pt.
+  action: { height: 44, paddingHorizontal: 18 },
+  speech: { position: 'absolute', left: 16, top: 96, maxWidth: 168, zIndex: 2 },
+  // `.soins` / `.reveil` : à 12 du bord gauche et du bas.
   care: { position: 'absolute', left: 12, bottom: 12, zIndex: 3 },
-  pet: { position: 'absolute', right: 6, bottom: -6 },
-  sulk: SULK_STYLE,
+  wake: { height: 44, paddingHorizontal: 20 },
+  // `.moa` : à −6 du bord droit, −12 sous le bas du panneau.
+  pet: { position: 'absolute', right: -6, bottom: -12 },
 });

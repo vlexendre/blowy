@@ -21,7 +21,7 @@ import { isOverlayOpen } from '../lib/overlay';
 import { ITEM_HEIGHT, TabBarItem } from '../molecules/TabBarItem';
 import { useIndicator, useIndicatorStyle } from '../motion/indicator';
 import { claimTabPeek } from '../motion/pets/peekBudget';
-import { alpha, color, radius, space, veil } from '../theme';
+import { alpha, color, space, veil } from '../theme';
 
 export interface BottomTabItem<K extends string = string> {
   key: K;
@@ -50,11 +50,13 @@ export interface BottomTabBarProps<K extends string = string> {
   style?: StyleProp<ViewStyle>;
 }
 
-/** `.gnav` : onglets (pictogramme + libellé) + 2 × 4 de marge intérieure + 2 × 1 de bordure. */
-const BAR_HEIGHT = ITEM_HEIGHT + 2 * 4 + 2;
-const PAD = 4;
-const GAP = 2;
+/** `.ada-onglets` : onglets de 54 (pictogramme + libellé) + 2 × 6 de marge intérieure + 2 × 1 de bordure. */
+const PAD = 6;
+const GAP = 4;
+const BAR_HEIGHT = ITEM_HEIGHT + 2 * PAD + 2;
 const PEEK = 52;
+/** Marge latérale de la barre. */
+const SIDE = 14;
 
 /** Petite tête qui passe au-dessus de la barre, au-dessus de l'onglet choisi, puis replonge. */
 function TabPeek({
@@ -174,7 +176,7 @@ export function BottomTabBar<K extends string>({
           mood={peek.mood}
           index={peekAt.index}
           step={seg + GAP}
-          offset={20 + 1 + PAD}
+          offset={SIDE + 1 + PAD}
           show={peekAt.key}
         />
       ) : null}
@@ -232,14 +234,14 @@ const styles = StyleSheet.create({
   },
   tint: { backgroundColor: alpha(color.card, 0.62) },
   floating: { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  // Assez de place pour quatre libellés à 320 pt (environ 60 pt par onglet).
-  outer: { paddingHorizontal: 20 },
+  // `.ada-onglets` : à 14 des bords (environ 65 pt par onglet à 320 pt, 83 à 390).
+  outer: { paddingHorizontal: SIDE },
   pill: {
     position: 'absolute',
     top: PAD,
     left: PAD,
     height: ITEM_HEIGHT,
-    borderRadius: radius.lg,
+    borderRadius: ITEM_HEIGHT / 2,
     backgroundColor: color.accent,
   },
   peekClip: { position: 'absolute', width: PEEK, overflow: 'hidden' },

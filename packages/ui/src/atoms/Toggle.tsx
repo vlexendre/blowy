@@ -3,7 +3,7 @@ import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
 import { ease, fadeTo, useReducedMotion } from '../lib/motion';
-import { color, extra, motion, radius } from '../theme';
+import { color, motion, radius, toggle } from '../theme';
 import { Pressable } from './Pressable';
 
 export interface ToggleProps {
@@ -11,8 +11,6 @@ export interface ToggleProps {
   onValueChange?: (value: boolean) => void;
   /** Libellé lu (obligatoire : l'interrupteur n'a pas de texte). */
   accessibilityLabel: string;
-  /** Piste éteinte ; défaut `.sw.off` des réglages. */
-  offColor?: string;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }
@@ -25,11 +23,16 @@ const TRAVEL = W - KNOB - INSET * 2;
 /** Ressort de la pastille : arrive vite, dépasse un peu, se pose. */
 const KNOB_SPRING = { damping: 13, stiffness: 260, mass: 0.7 } as const;
 
+/** Contour intérieur de la piste éteinte (ADA-2027, seconde relecture). */
+const EDGE = 1.5;
+
 /**
- * Interrupteur des maquettes (`.sw`) : piste 52 × 32, jaune allumé, pastille blanche. La pastille file en ressort
- * et s'étire dans sa course ; le jaune arrive en fondu. Animations réduites : fondu de la piste, pastille posée.
+ * Interrupteur, un seul style dans l'app (ADA-2027, relecture finale) : piste 52 × 32, violet allumé (`toggle.on`),
+ * éteinte sombre (`toggle.off`) avec un contour intérieur de 1,5 pt (`toggle.edge`), pastille blanche. Jamais jaune :
+ * le jaune est réservé à l'action principale de l'écran. La pastille file en ressort et s'étire dans sa course ; le
+ * violet arrive en fondu, le contour s'efface. Animations réduites : fondus seuls, pastille posée.
  */
-export function Toggle({ value, onValueChange, accessibilityLabel, offColor = extra.switchOff, disabled, style }: ToggleProps) {
+export function Toggle({ value, onValueChange, accessibilityLabel, disabled, style }: ToggleProps) {
   const reduced = useReducedMotion();
   const x = useSharedValue(value ? 1 : 0);
   const on = useSharedValue(value ? 1 : 0);
@@ -59,6 +62,7 @@ export function Toggle({ value, onValueChange, accessibilityLabel, offColor = ex
     return { transform: [{ translateX: x.value * TRAVEL + shift }, { scaleX: s }, { scaleY: 1 - stretch.value * 0.08 }] };
   });
   const lit = useAnimatedStyle(() => ({ opacity: on.value }));
+  const ring = useAnimatedStyle(() => ({ opacity: 1 - on.value }));
   return (
     <Pressable
       onPress={onValueChange ? () => onValueChange(!value) : undefined}
@@ -69,8 +73,9 @@ export function Toggle({ value, onValueChange, accessibilityLabel, offColor = ex
       accessibilityLabel={accessibilityLabel}
       accessibilityState={{ checked: value }}
       hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-      style={[styles.track, { backgroundColor: offColor }, disabled && styles.disabled, style]}
+      style={[styles.track, disabled && styles.disabled, style]}
     >
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.edge, ring]} />
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.lit, lit]} />
       <Animated.View style={[styles.knob, knob]} />
     </Pressable>
@@ -78,8 +83,9 @@ export function Toggle({ value, onValueChange, accessibilityLabel, offColor = ex
 }
 
 const styles = StyleSheet.create({
-  track: { width: W, height: H, borderRadius: radius.pill, flexShrink: 0 },
-  lit: { borderRadius: radius.pill, backgroundColor: color.accent },
+  track: { width: W, height: H, borderRadius: radius.pill, flexShrink: 0, backgroundColor: toggle.off },
+  edge: { borderRadius: radius.pill, borderWidth: EDGE, borderColor: toggle.edge },
+  lit: { borderRadius: radius.pill, backgroundColor: toggle.on },
   knob: { position: 'absolute', top: INSET, left: INSET, width: KNOB, height: KNOB, borderRadius: KNOB / 2, backgroundColor: color.white },
   disabled: { opacity: 0.5 },
 });

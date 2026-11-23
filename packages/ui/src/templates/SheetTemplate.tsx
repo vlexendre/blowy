@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 5,
     borderRadius: radius.pill,
-    backgroundColor: extra.switchOff,
+    backgroundColor: extra.grabber,
     marginBottom: space.xs,
   },
   body: { gap: 10 },

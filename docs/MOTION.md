@@ -62,9 +62,9 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   passe de l'une à l'autre en fondu-enchaîné de 130 ms au creux d'un petit rebond (fondu seul en animations réduites).
   Soins : `mange` (il croque la pomme), `joue` (il attrape la balle et la garde), `dodo`, câlin `joie` ; refus `boude` ;
   `arrive` (il entre en marchant, de profil), `check`, `think` (`pense`), `wave` (`coucou`) ; `strike(pose)` en tient une.
-  Accueil, un moment par ouverture : il arrive en marchant, ou fait coucou après plus de 12 h ; la nuit (passé son premier
-  jour) il bâille sans s'endormir, quand il boude il garde les bras croisés. Réponse à la sortie : « pas encore » → il réfléchit ; sorti → il rentre en marchant
-  puis saute de joie.
+  Accueil, un moment par ouverture (`homeEntrance`, `features/home/logic.ts`) : il arrive en marchant, fait coucou après
+  plus de 12 h, t'accueille bras ouverts après plus de 3 jours ; la nuit (passé son premier jour) il bâille sans s'endormir.
+  Jamais de bouderie ni de pose « délaissé » à l'écran (ADA-2027, item 6).
 - **Au repos** : respiration (écrasement léger), petit saut de temps en temps, changement d'expression bref
   (les 9 émotions de chaque espèce servent à ça ; habillé, il s'exprime par le corps et de petits signes : étincelles,
   goutte, « ! », « z »), regard vers ce qu'on vient de toucher. L'humeur change au creux d'un petit écrasement
@@ -91,9 +91,9 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   une feuille (`useOverlay`) : rien sur un écran poussé, l'inscription ou une modale. Les `PetPeek` liés à un état (état
   vide, hors ligne, page inconnue, lien disparu, clavier) restent tels quels : ils sont sur place (`inline`) ou suivent leur écran.
 - **Il s'endort** (règle pure `petSleep({ now, bornAt })`, `motion/sleep.ts`) : jamais les premières 24 h après sa naissance
-  ni pendant l'inscription ; jamais d'emblée ni la nuit (22 h – 7 h : seulement l'ambiance, veilleuse et bâillement ; sa
-  bulle propose « Voir qui » → Rencontres). Le jour, après 25 s sans toucher l'accueil, il dort, des « z » montent ; sa
-  bulle le dit et un bouton « Le réveiller » apparaît dessous (`PetStage sleep`) ; un tap le réveille aussi, en sursaut.
+  ni pendant l'inscription ; jamais d'emblée ni la nuit (22 h – 7 h : il bâille seulement). Le jour, après 25 s sans
+  toucher l'accueil, il dort, des « z » montent ; état `sieste` de V6-GAccueil : puce « Fait la sieste », bulle « Zzz… »
+  à côté de la série, bouton blanc « Le réveiller » à la place des soins (`PetStage sleep`) ; un tap le réveille aussi.
   `PetActor` ne dort jamais par défaut (`sleepAfter` vaut `null`) : aucun geste caché sans équivalent visible.
 - **Jamais gênant** : un pet ne recouvre ni un bouton, ni un champ, ni du texte utile ; il ne capture pas les
   touches destinées à ce qu'il y a dessous (sauf sur lui-même). `PetPeek` reste hors des zones sûres (`safe` : sous
@@ -127,9 +127,9 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Compte (code) | chaque chiffre fait « pop » | secousse sur code faux ; coche dessinée sur code bon ; connexion : le pet regarde par-dessus le clavier |
 | Préparation | les lignes se cochent une à une (`PrepChecklist`) | pourcentage qui défile, barre avec dépassement ; erreur : tout s'arrête, le pet s'inquiète |
 | Tout est prêt | le pet saute de joie, confettis (`ReadyHero`) | titre mot à mot puis la phrase |
-| Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) ; séance faite : `StreakCelebration` (le chiffre défile d'un cran, la mèche se rallume plus grande, il saute de joie, confettis ; tap pour fermer) | mèche (`StreakFlame`) qui vacille sur sa tête et le suit (sauts, buste quand il dort), plus basse tant que la séance du jour n'est pas faite ; jauge de sociabilité (`HeroMeter`) : chiffre compté, barre avec dépassement ; réponses de sortie qui rebondissent, réponse du minimoa qui monte ; puce de série qui bat deux fois ; barres, bulle qui s'écrit ; pet attrapable ; il s'endort ; tirer pour rafraîchir ; soin glissé jusqu'au pet |
+| Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) | bulle à côté de la série (réplique d'un soin, 3,5 s ; « Zzz… », « Bien joué. À demain ! »), annoncée à VoiceOver ; pet attrapable ; il s'endort ; tirer pour rafraîchir (`PetRefresh`) ; soin glissé jusqu'au pet ; cartes de l'état du moment en `Appear` (une fois) |
 | Série | la mèche se rallume (braise → jaillit → se pose, étincelles) à la 1re visite, chiffre qui défile depuis 0 ; record : confettis | jours faits cochés un à un ; prochain objet qui bat deux fois ; objets en cascade |
-| Accueil (Ton chemin) | l'étape du jour bat deux fois (`CheminPath`, `Pulse`) | bulle « Commencer » en « pop » ; le minimoa attend à côté ; rien en boucle |
+| Accueil (Ton chemin) | l'étape du jour bat deux fois (`CheminStepRow`, `Pulse` ; fixe en animations réduites) | liste virtualisée ; fondu au-dessus de la barre d'onglets ; rien en boucle |
 | Séance | la bulle du minimoa se réécrit à chaque question | carte choisie qui s'incline ; curseur à ressort ; réaction du minimoa d'après le nom du serveur (`namedMotion` : `hop` → saute de joie, `confetti` → fête ; inconnu : rien) ; réaction écrite qui monte (`PopIn`) ; minimoa animé (Masko, s'il est réglé) : il réfléchit à chaque question, rit ou applaudit à chaque réponse (`mascotMomentFor`) |
 | Fin de séance | le chiffre de la série défile d'un cran, la flamme fait « pop » (`StreakRise`) ; minimoa animé : il applaudit dans la révélation | palier : confettis et puce (moins de 3 s, coupée d'un tap) ; révélation puis personne du jour en cascade ; objets gagnés : `UnlockCelebration` |
 | Son caractère | les barres de la vision se remplissent depuis le centre, l'une après l'autre | jauges du style en petit, même mouvement ; entrées en cascade |

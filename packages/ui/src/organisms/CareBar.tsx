@@ -7,7 +7,7 @@ import { type CareProp, propImage } from '../assets/misc';
 import { CareIcon } from '../atoms/CareIcon';
 import { type CareLevel, CareButton } from '../molecules/CareButton';
 import type { PetLure } from '../motion/pets/lure';
-import { alpha, color, radius, size as sizes, veil } from '../theme';
+import { color, radius, size as sizes, veil } from '../theme';
 
 export interface CareBarProps {
   /** Libellés des gestes (`careLabel` de @blowy/content accepté tel quel). */
@@ -17,7 +17,7 @@ export interface CareBarProps {
   onCare: (action: CareAction) => void;
   /** Appui sur un geste refusé. */
   onRefused?: (action: CareAction) => void;
-  /** Gestes conseillés (disque jaune). */
+  /** Gestes conseillés (disque jaune). Jamais sur l'accueil : le seul jaune y est l'étape du jour. */
   hot?: Partial<Record<CareAction, boolean>>;
   /** Geste en cours d'envoi : les autres sont inactifs. */
   busy?: CareAction | null;
@@ -36,7 +36,7 @@ export interface CareBarProps {
   icons?: Partial<Record<CareAction, ReactNode>>;
   /** Ce que chaque soin porte quand on le glisse jusqu'au pet (`careProp` : pomme, cookie, balle, coussin…). */
   carry?: Partial<Record<CareAction, CareProp | null>>;
-  /** Pastille sombre de disques sans libellé, posée dans la carte du minimoa (V6-GAccueil `.cr2`). */
+  /** Pastille sombre de disques sans libellé, posée dans le panneau du minimoa (V6-GAccueil `.soins`). */
   compact?: boolean;
   style?: StyleProp<ViewStyle>;
 }
@@ -70,8 +70,8 @@ export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure,
 }
 
 const styles = StyleSheet.create({
-  // `.cr2` : disques 44 dans une pastille sombre (#14101F à 82 %), écart 6, marge 6.
-  pill: { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 6, borderRadius: radius.pill, backgroundColor: alpha(color.dark, 0.82) },
+  // `.soins` : disques 44 dans une pastille sombre opaque (#14101F), écart 8, marge 6.
+  pill: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 6, borderRadius: radius.pill, backgroundColor: color.dark },
   // `.card.row`, à l'échelle de densité, aérée en hauteur : padding 16 4, rayon des cartes.
   card: {
     flexDirection: 'row',

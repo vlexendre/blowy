@@ -1,72 +1,48 @@
-import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
-import { layout } from '../lib/styles';
-import { alpha, color, extra, radius, space } from '../theme';
+import { color, extra, space } from '../theme';
 
 export interface SessionBannerProps {
-  /** Petite ligne en capitales (« Séance du jour · 5 questions · 2 min »). */
+  /** Ce que dure la séance (« Séance du jour · 5 questions · 2 min »). */
   kicker: string;
-  /** Le thème de l'unité, en titre (« Ta façon de vivre »). */
+  /** Le titre réel de l'univers du jour, en titre (« Ta façon de vivre »). */
   title: string;
-  /** À droite (« À la fin : ta personne du jour »). */
-  note?: string | null;
-  /** Avancement sur le chemin (0 à 1) : une barre à droite du titre, à la place de la note. */
-  progress?: number | null;
-  /** `unit` : violet en relief (la séance attend) · `calm` : carte sombre (séance faite, rien à faire). */
-  tone?: 'unit' | 'calm';
-  /** Sous le titre : une action ou une ligne de plus (« Demain, une nouvelle séance »). */
-  footer?: ReactNode;
-  onPress?: () => void;
-  accessibilityLabel?: string;
+  /** Ce qu'il y a au bout (« À la fin : ta personne du jour »). */
+  note: string;
 }
 
 /**
- * Le bandeau de la séance du jour, sous la carte du minimoa (V6-GAccueil) : le thème de l'unité en grand, ce que
- * dure la séance, ce qu'il y a au bout. Violet « en relief » (tranche plus foncée dessous) tant que la séance attend.
+ * Le bandeau de la séance du jour (V6-GAccueil `.bandeau`) : violet en relief (tranche plus foncée dessous), tout le
+ * texte en blanc (5,3:1). Il annonce, il ne se touche pas : la seule action est l'étape du jour, sur le chemin.
+ * VoiceOver le lit d'un bloc.
  */
-export function SessionBanner({ kicker, title, note, progress, tone = 'unit', footer, onPress, accessibilityLabel }: SessionBannerProps) {
-  const unit = tone === 'unit';
-  const ink = unit ? extra.relief.unitInk : color.mute;
-  const body = (
-    <View style={[styles.card, unit ? styles.unit : styles.calm]}>
-      <Text variant="label" color={ink} numberOfLines={2}>
+export function SessionBanner({ kicker, title, note }: SessionBannerProps) {
+  return (
+    <View style={styles.card} accessible accessibilityLabel={`${kicker}. ${title}. ${note}`}>
+      <Text variant="bodyBold" size={15} color={color.white}>
         {kicker}
       </Text>
-      <View style={[layout.rowBetween, styles.row]}>
-        <Text variant="h2" size={26} color={color.white} style={layout.shrink}>
-          {title}
-        </Text>
-        {progress != null ? (
-          <View style={styles.track} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <View style={[styles.fill, { width: `${Math.round(Math.max(0.04, Math.min(1, progress)) * 100)}%` }]} />
-          </View>
-        ) : note ? (
-          <Text variant="bodyHeavy" size={13} color={ink} style={styles.note}>
-            {note}
-          </Text>
-        ) : null}
-      </View>
-      {footer}
+      <Text variant="h2" size={30} color={color.white} style={styles.title}>
+        {title}
+      </Text>
+      <Text variant="bodyBold" size={15} color={color.white}>
+        {note}
+      </Text>
     </View>
-  );
-  if (!onPress) return body;
-  return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={accessibilityLabel ?? `${kicker}, ${title}`} scaleTo={0.98}>
-      {body}
-    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: radius.card, paddingHorizontal: space.lg, paddingTop: space.sm + 2, paddingBottom: space.md, gap: 2 },
-  unit: { backgroundColor: extra.relief.unit, borderBottomWidth: 5, borderBottomColor: extra.relief.unitEdge },
-  calm: { backgroundColor: color.panel, borderWidth: 1, borderColor: extra.relief.path },
-  row: { gap: space.md, alignItems: 'center' },
-  note: { maxWidth: 120, textAlign: 'right' },
-  // `.bar` 116 × 8, piste blanche à 22 %, remplissage jaune.
-  track: { width: 116, height: 8, borderRadius: radius.pill, backgroundColor: alpha(color.white, 0.22), overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: radius.pill, backgroundColor: color.accent },
+  // `.bandeau` : rayon 24, marge 12 16, tranche de 5 pt.
+  card: {
+    borderRadius: 24,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.md,
+    backgroundColor: extra.relief.unit,
+    borderBottomWidth: 5,
+    borderBottomColor: extra.relief.unitEdge,
+  },
+  // `.titre` : 22 pt rendus (taille de maquette 30 × 0,74).
+  title: { marginVertical: space.xs },
 });

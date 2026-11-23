@@ -1,8 +1,7 @@
-import { type ReactElement, type ReactNode, useState } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import type { ScreenTemplateProps } from './ScreenTemplate';
 import type { RefreshControlProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
@@ -31,17 +30,8 @@ export interface TabTemplateProps {
   /** Défilement (fonction ou gestionnaire Reanimated, ex. `PetRefresh`). */
   onScroll?: ScreenTemplateProps['onScroll'];
   scrollEventThrottle?: number;
-  /** Pour faire défiler l'onglet (le chemin descend jusqu'à l'étape du jour). */
-  scrollRef?: ScreenTemplateProps['scrollRef'];
   /** Place en plus en bas (ex. `NOW_BAR_SPACE` quand une `NowBar` flotte au-dessus de la barre d'onglets). */
   bottomExtra?: number;
-  /**
-   * Reste en haut, par-dessus le contenu qui défile dessous (accueil : la carte du minimoa au-dessus du chemin). Il peut
-   * rapetisser : le contenu garde la place de sa plus grande taille, rien ne saute.
-   */
-  fixed?: ReactNode;
-  snapToOffsets?: number[];
-  onContentSizeChange?: ScreenTemplateProps['onContentSizeChange'];
 }
 
 /** Grand titre d'onglet (64 dans V6 ; 56 depuis la passe « densité »). */
@@ -67,18 +57,10 @@ export function TabTemplate({
   top = space.sm,
   onScroll,
   scrollEventThrottle,
-  scrollRef,
   bottomExtra = 0,
-  fixed,
-  snapToOffsets,
-  onContentSizeChange,
 }: TabTemplateProps) {
   const barSpace = useTabBarSpace();
-  const insets = useSafeAreaInsets();
-  // Place réservée en haut du contenu : la plus grande hauteur mesurée de `fixed`.
-  const [fixedSpace, setFixedSpace] = useState(0);
   return (
-    <View style={layout.fill}>
     <ScreenTemplate
       scroll={scroll}
       edges={['top']}
@@ -88,9 +70,6 @@ export function TabTemplate({
       refreshControl={refreshControl}
       onScroll={onScroll}
       scrollEventThrottle={scrollEventThrottle}
-      scrollRef={scrollRef}
-      snapToOffsets={snapToOffsets}
-      onContentSizeChange={onContentSizeChange}
       contentStyle={gutter !== undefined ? { paddingHorizontal: gutter } : undefined}
     >
       {brand || title || right ? (
@@ -116,20 +95,8 @@ export function TabTemplate({
           {right ? <View style={styles.right}>{right}</View> : null}
         </View>
       ) : null}
-      <View style={{ gap, paddingTop: top + fixedSpace }}>{children}</View>
+      <View style={{ gap, paddingTop: top }}>{children}</View>
     </ScreenTemplate>
-    {fixed ? (
-      <View
-        style={[styles.fixed, { paddingTop: insets.top + 6, paddingHorizontal: gutter ?? space.lg }]}
-        onLayout={(e) => {
-          const h = e.nativeEvent.layout.height - insets.top;
-          setFixedSpace((s) => (h > s ? h : s));
-        }}
-      >
-        {fixed}
-      </View>
-    ) : null}
-    </View>
   );
 }
 
@@ -139,5 +106,4 @@ const styles = StyleSheet.create({
   brand: { letterSpacing: -0.36, lineHeight: 24 },
   title: { marginTop: space.xs },
   right: { marginBottom: space.sm },
-  fixed: { position: 'absolute', top: 0, left: 0, right: 0, paddingBottom: space.sm, backgroundColor: color.night },
 });

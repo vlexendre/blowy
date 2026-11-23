@@ -3,6 +3,7 @@ export { OnboardingTemplate, type OnboardingTemplateProps } from './OnboardingTe
 export { ScreenTemplate, type ScreenTemplateProps } from './ScreenTemplate';
 export { SettingsTemplate, type SettingsTemplateProps } from './SettingsTemplate';
 export { SheetHandle, SheetTemplate, type SheetTemplateProps, useSheet } from './SheetTemplate';
+export { HomeTemplate, type HomeTemplateProps } from './HomeTemplate';
 export { TabTemplate, type TabTemplateProps } from './TabTemplate';
 export { WelcomeTemplate, type WelcomeTemplateProps } from './WelcomeTemplate';
 export { PlusTemplate, type PlusTemplateProps, type PlusOfferView, type PlusPerkView } from './PlusTemplate';

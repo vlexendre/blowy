@@ -172,7 +172,7 @@ function HomeBench() {
         reaction={reaction}
         reactionKey={key}
         action={{ label: 'garde-robe', onPress: () => play('wave') }}
-        shapeLabel="en pleine forme"
+        moodLabel="en pleine forme"
       />
       <NeedsPanel needs={needs} labels={needLabel} />
       <CareBar labels={careLabel} available={available} hot={{ feed: needs.hunger < 40 }} onCare={(a) => play(a)} onRefused={() => play('no')} />

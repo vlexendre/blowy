@@ -25,6 +25,17 @@ export const color = {
 } as const;
 export type ColorName = keyof typeof color;
 
+/**
+ * Interrupteur (atome `Toggle`), un seul style dans l'app (ADA-2027, relecture finale) : violet allumé (le blanc de la
+ * pastille y tient 5,3:1), piste éteinte sombre cerclée d'un contour intérieur de 1,5 pt (l'état ne tient pas à la
+ * seule teinte : la pastille change aussi de côté).
+ */
+export const toggle = {
+  on: '#7A45F0',
+  off: '#3E3862',
+  edge: '#6F6990',
+} as const;
+
 /** Dégradés verticaux des grands panneaux. */
 export const gradient = {
   accent: ['#FFD23F', '#FFB000'],

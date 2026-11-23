@@ -2,9 +2,9 @@
  * Extension locale des jetons (@blowy/tokens) pour les besoins propres aux composants.
  * Toute couleur de packages/ui vient d'ici ou de @blowy/tokens : aucun hexadécimal ailleurs.
  */
-import { color, type GradientName, gradient, radius, space, speciesColor, speciesGradient, type } from '@blowy/tokens';
+import { color, type GradientName, gradient, radius, space, speciesColor, speciesGradient, toggle, type } from '@blowy/tokens';
 
-export { color, gradient, radius, space, speciesColor, speciesGradient, type };
+export { color, gradient, radius, space, speciesColor, speciesGradient, toggle, type };
 export type { GradientName };
 
 /** Jetons absents de @blowy/tokens (à remonter si l'app ou le site en ont besoin). */
@@ -42,10 +42,10 @@ export const extra = {
   },
   /** Rouge des lignes destructives (`.red` des réglages). */
   dangerSoft: '#FF6B6B',
-  /** Piste d'un interrupteur éteint (`.sw.off`). */
-  switchOff: '#3A3559',
   /** Silhouette de remplacement d'une photo absente (tête, fond). */
   skin: '#FFD9B8',
+  /** Poignée d'une feuille (barre grise en haut). */
+  grabber: '#3A3559',
   wineDeep: '#8C1D4F',
   /** Couleurs de marque imposées par Google pour son « G » (bouton « Continuer avec Google »). */
   google: { red: '#EA4335', blue: '#4285F4', yellow: '#FBBC05', green: '#34A853' },
@@ -54,21 +54,21 @@ export const extra = {
   stem: '#2F8F2A',
   /**
    * Ton chemin (V6-GAccueil) : étapes rondes « en relief », chacune avec l'ombre portée plus foncée de sa couleur
-   * (faite, du jour, coffre, verrouillée), le bandeau violet de la séance du jour et sa tranche.
+   * (faite, du jour, à venir), le bandeau violet de la séance du jour et sa tranche, la lune de « À demain ».
    */
   relief: {
     done: '#A8D52A',
     doneEdge: '#6E8F12',
     nowEdge: '#B37F00',
-    chest: '#2B2450',
-    chestEdge: '#15112A',
-    chestInk: '#C9B8FF',
+    /** Lune de « À demain » (`.carte.demain svg`). */
+    moon: '#C9B8FF',
     locked: '#221E3C',
     lockedEdge: '#0E0C1A',
-    lockedInk: '#8C86A8',
+    lockedInk: '#9A93B8',
+    /** Contour d'une étape à venir (`.nd.lk`, 2 pt). */
+    lockedRing: '#3E3862',
     unit: '#7A45F0',
     unitEdge: '#4E2AA6',
-    unitInk: '#F1EBFF',
     path: '#2E2950',
   },
 } as const;

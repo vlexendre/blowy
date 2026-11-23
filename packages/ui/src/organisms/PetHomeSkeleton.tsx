@@ -1,42 +1,27 @@
 import { StyleSheet, View } from 'react-native';
 
 import { Skeleton } from '../atoms/Skeleton';
-import { color, radius, size as sizes, veil } from '../theme';
 
 /**
- * Accueil en chargement, à la forme du vrai contenu : panneau du minimoa, la carte des quatre soins (disques et
- * barres de besoin), une carte « maintenant » et la rangée de tuiles. Reflets décalés pour ne pas battre ensemble.
- * `needs` est gardé pour compatibilité (les besoins sont portés par les soins).
+ * Accueil en chargement, à la forme du vrai contenu (V6-GAccueil) : le panneau du minimoa, la puce de série, le
+ * bandeau de la séance, puis trois étapes du chemin. Reflets décalés pour ne pas battre ensemble.
  */
-export function PetHomeSkeleton({ cares = 4 }: { needs?: number; cares?: number }) {
+export function PetHomeSkeleton({ panel = 184 }: { panel?: number }) {
   return (
     <View style={styles.root} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      <Skeleton height={318} radius="xl" />
-      <View style={styles.care}>
-        {Array.from({ length: cares }, (_, i) => (
-          <View key={i} style={styles.careCell}>
-            <Skeleton width={56} height={56} radius="circle" delay={120 + i * 90} />
-            <Skeleton width={44} height={10} delay={120 + i * 90} />
-            <Skeleton width={34} height={5} radius="pill" delay={120 + i * 90} />
-          </View>
-        ))}
-      </View>
-      <Skeleton height={56} radius="lg" delay={240} />
-      <View style={styles.tiles}>
-        {Array.from({ length: 4 }, (_, i) => (
-          <View key={i} style={styles.tile}>
-            <Skeleton height={64} radius="md" delay={300 + i * 60} />
-          </View>
-        ))}
-      </View>
+      <Skeleton height={panel} radius="xl" />
+      <Skeleton width={170} height={44} radius="pill" delay={120} />
+      <Skeleton height={100} radius="lg" delay={200} />
+      {[0.62, 0.46, 0.3].map((left, i) => (
+        <View key={left} style={[styles.step, { marginLeft: `${left * 100}%` }]}>
+          <Skeleton width={i === 2 ? 72 : 44} height={i === 2 ? 72 : 44} radius="circle" delay={280 + i * 80} />
+        </View>
+      ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 8 },
-  care: { flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 4, borderRadius: radius.card, backgroundColor: color.panel, borderWidth: sizes.border, borderColor: veil.line },
-  careCell: { flex: 1, alignItems: 'center', gap: 6 },
-  tiles: { flexDirection: 'row', gap: 8 },
-  tile: { flex: 1 },
+  root: { gap: 10 },
+  step: { alignSelf: 'flex-start' },
 });

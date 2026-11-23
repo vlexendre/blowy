@@ -251,8 +251,7 @@ function CareDemo() {
         <PetStage
           pet={{ name: 'Nino', species: 'nino', outfit }}
           action={{ label: 'garde-robe', onPress: () => setSlot('head') }}
-          shape={shape}
-          shapeLabel={shapeLabel[shape]?.title}
+          moodLabel={shapeLabel[shape]?.title}
           speech={reaction ? careLabel[reaction]?.done : 'j’ai un petit creux…'}
           reaction={reaction}
           reactionKey={key}
@@ -365,9 +364,6 @@ function CareLevel() {
       </Item>
       <Item name="NeedsPanel · tout va bien">
         <NeedsPanel needs={{ sociability: 85, hunger: 90, energy: 75, mood: 81 }} labels={needLabel} />
-      </Item>
-      <Item name="PetStage · boude">
-        <PetStage pet={{ name: 'Gaston', species: 'gaston', outfit: looks.gaston }} shape="boude" shapeLabel={shapeLabel.boude?.title} />
       </Item>
       <Item name="Garde-robe · les 64 objets sur les 4 minimoas">
         {ITEM_SLOTS.map((sl) => (

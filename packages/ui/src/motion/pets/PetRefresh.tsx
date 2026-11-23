@@ -3,7 +3,6 @@ import { Image } from 'expo-image';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { Platform, RefreshControl, type RefreshControlProps, StyleSheet, View } from 'react-native';
 import Animated, {
-  runOnJS,
   cancelAnimation,
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -44,13 +43,6 @@ export interface PetRefreshProps {
   bottomInset?: number;
   /** Taille du buste. Défaut 64. */
   size?: number;
-  /**
-   * Sens du geste : rapetisser ce qui est en haut en descendant (`true`), le regrandir en remontant ou tout en haut
-   * (`false`). Seuls les gestes de la personne comptent (pas un défilement fait par l'app).
-   */
-  onCollapse?: (collapsed: boolean) => void;
-  /** Près du haut ou du bas du contenu (une fois par taille de contenu) : pour en charger plus. `y` : défilement. */
-  onEdge?: (edge: 'top' | 'bottom', y: number) => void;
 }
 
 /** Distance de tirage à laquelle iOS déclenche le rafraîchissement (≈ la hauteur du pet qui grimpe). */
@@ -73,8 +65,6 @@ export function PetRefresh({
   bottomPeek = true,
   bottomInset = 0,
   size = 64,
-  onCollapse,
-  onEdge,
 }: PetRefreshProps) {
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
@@ -83,56 +73,8 @@ export function PetRefresh({
   const over = useSharedValue(0);
   const bob = useSharedValue(0);
   const h = size / RENDER_RATIO;
-  const last = useSharedValue(0);
-  const acc = useSharedValue(0);
-  const dragging = useSharedValue(false);
-  const collapsed = useSharedValue(false);
-  const tell = (c: boolean) => onCollapse?.(c);
-  const watch = !!onCollapse;
-  const edgeAt = useSharedValue({ top: -1, bottom: -1 });
-  const edge = (e: 'top' | 'bottom', y: number) => onEdge?.(e, y);
-  const watchEdge = !!onEdge;
   const onScroll = useAnimatedScrollHandler({
-    onBeginDrag: () => {
-      dragging.value = true;
-      acc.value = 0;
-    },
-    onMomentumEnd: () => {
-      dragging.value = false;
-    },
     onScroll: (e) => {
-      if (watchEdge && e.contentSize.height > 0) {
-        const y = e.contentOffset.y;
-        const h = e.contentSize.height;
-        if (y < 500 && y > 0 && edgeAt.value.top !== h) {
-          edgeAt.value = { ...edgeAt.value, top: h };
-          runOnJS(edge)('top', y);
-        }
-        if (y + e.layoutMeasurement.height > h - 500 && edgeAt.value.bottom !== h) {
-          edgeAt.value = { ...edgeAt.value, bottom: h };
-          runOnJS(edge)('bottom', y);
-        }
-      }
-      if (watch) {
-        const y = e.contentOffset.y;
-        const d = y - last.value;
-        last.value = y;
-        if (y <= 8) {
-          if (collapsed.value) {
-            collapsed.value = false;
-            runOnJS(tell)(false);
-          }
-        } else if (dragging.value) {
-          acc.value = (d > 0) === (acc.value > 0) ? acc.value + d : d;
-          if (acc.value > 28 && !collapsed.value) {
-            collapsed.value = true;
-            runOnJS(tell)(true);
-          } else if (acc.value < -28 && collapsed.value) {
-            collapsed.value = false;
-            runOnJS(tell)(false);
-          }
-        }
-      }
       pull.value = Math.max(0, -e.contentOffset.y);
       over.value = Math.max(0, e.contentOffset.y + e.layoutMeasurement.height - e.contentSize.height);
     },

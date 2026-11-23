@@ -197,14 +197,14 @@ export default function FitBoard() {
     );
   }
   if (q.stage) {
-    // Scène de l'accueil seule (`?stage=1&shape=boude&hat=bob`) : boude, nuit (heure du système), tenue.
+    // Panneau de l'accueil seul (`?stage=1&hat=bob`) : tenue, à la taille de V6-GAccueil.
     return (
       <View style={{ flex: 1, backgroundColor: color.night, padding: 14, paddingTop: 60 }}>
         <PetStage
           pet={{ species, name: 'Momo', outfit: q.hat ? { head: q.hat } : undefined, id: 'dev' }}
-          shape={q.shape === 'boude' ? 'boude' : 'en_forme'}
-          shapeLabel={q.shape === 'boude' ? 'Il boude' : 'En pleine forme'}
-          speech={q.shape === 'boude' ? 'Tu m’as oublié…' : 'On sort ce soir ?'}
+          moodLabel="En pleine forme"
+          height={184}
+          petSize={156}
         />
       </View>
     );

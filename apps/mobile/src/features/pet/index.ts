@@ -2,10 +2,8 @@ import type { OutfitDto, PetEvent, PetView, Wardrobe, WardrobeItem } from '@blow
 import {
   addGauges,
   CARE_ACTIONS,
-  CARE_EFFECTS,
   type CareAction,
   canCare,
-  careLevel,
   type ItemSlot,
   decayGauges,
   formOf,
@@ -13,20 +11,15 @@ import {
   itemById,
   type GaugeKey,
   type Gauges,
-  NEED_KEYS,
-  type NeedKey,
   type Needs,
   type PetForm,
-  urgentNeed,
   ZERO_GAUGES,
 } from '@blowy/domain';
 import { useFocusEffect } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { type PetSleep, petSleep } from '@blowy/ui';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { keys, optimistic, patch, rollback, useApi } from '@/core';
 
@@ -102,8 +95,6 @@ export function useRenamePet() {
   });
 }
 
-/** Le jour (série, fête d'une série) vit dans `@/features/rituals`. */
-
 /**
  * S'occuper du pet : nourrir, jouer, sieste, câlin. Optimiste : les jauges bougent à l'appui (règle du domaine), la
  * réponse de l'API les confirme et porte les objets tout juste débloqués ; un refus remet l'état d'avant.
@@ -164,20 +155,6 @@ export function withItem(outfit: OutfitDto, slot: ItemSlot, id: string | null): 
   return next;
 }
 
-/** Soins conseillés (disque jaune) : ceux qui comblent un besoin urgent, sinon celui du besoin le plus bas. */
-export function careHot(needs: Needs): Record<CareAction, boolean> {
-  const urgent = urgentNeed(needs);
-  const lowest = NEED_KEYS.reduce((a, b) => (needs[b] < needs[a] ? b : a));
-  const out = { feed: false, play: false, nap: false, cuddle: false };
-  for (const a of CARE_ACTIONS) {
-    const fills = CARE_EFFECTS[a].fills;
-    const wanted = urgent ? needs[fills] < 40 : fills === lowest;
-    // Jeu et câlin comblent tous deux l'humeur : le câlin n'est mis en avant que si le jeu est refusé.
-    out[a] = canCare(needs, a) && wanted && !(a === 'cuddle' && out.play);
-  }
-  return out;
-}
-
 /** Gestes acceptés maintenant (`canCare`). */
 export function careAvailable(needs: Needs): Record<CareAction, boolean> {
   const out = {} as Record<CareAction, boolean>;
@@ -195,12 +172,6 @@ export function nextItem(items: readonly WardrobeItem[]): (WardrobeItem & { goal
     if (!best || ratio(g) > ratio(best.goal) || (ratio(g) === ratio(best.goal) && g.need - g.have < best.goal.need - best.goal.have)) best = { ...it, goal: g };
   }
   return best;
-}
-
-/** Choix stable d'une phrase parmi plusieurs, d'après l'état du pet (pas d'aléa : même état, même phrase). */
-export function pickLine<T>(lines: readonly T[], needs: Needs): T | undefined {
-  if (lines.length === 0) return undefined;
-  return lines[(needs.hunger + needs.energy + needs.mood) % lines.length];
 }
 
 const WEEK_MS = 7 * 24 * 3600 * 1000;
@@ -254,52 +225,6 @@ export function formHistory(events: readonly PetEvent[], current: PetForm, max =
   for (const step of byMonth.values()) if (past[past.length - 1]?.form !== step.form) past.push(step);
   while (past[past.length - 1]?.form === current) past.pop();
   return [...past.slice(-(max - 1)), { form: current, since: null }];
-}
-
-// ── Accueil : un moment par ouverture ───────────────────────────────────────
-
-/** Dernière ouverture de l'accueil (mémoire de l'appareil). */
-export const useHomeVisit = create<{ last: number | null; mark: (at: number) => void }>()(
-  persist((set) => ({ last: null, mark: (at) => set({ last: at }) }), { name: 'blowy.home-visit', storage: createJSONStorage(() => AsyncStorage) }),
-);
-
-/** Au-delà de cette absence, il fait coucou en te revoyant. */
-export const HELLO_AFTER_MS = 12 * 3600_000;
-
-/** Au-delà de cette absence, il t'accueille bras ouverts (au lieu du coucou) et il a l'air délaissé jusqu'au premier soin. */
-export const WELCOME_AFTER_MS = 3 * 24 * 3600_000;
-
-/**
- * Le petit moment joué à l'ouverture de l'accueil (un seul) : il boude quand il boude (rien à jouer, sa pose de repos
- * le dit) ; après plus de 3 jours d'absence il t'accueille bras ouverts ; la nuit (`night` : après son premier jour) il
- * bâille, sans s'endormir ; après plus de 12 h il fait coucou ; sinon il arrive en marchant. `neglected` : plus de
- * 3 jours sans ouvrir l'app (même la nuit).
- */
-export function homeEntrance(o: { last: number | null; now: number; night: boolean; sulking: boolean }): {
-  moment: 'wave' | 'welcome' | 'arrive' | 'yawn' | null;
-  neglected: boolean;
-} {
-  const away = o.last === null ? 0 : o.now - o.last;
-  const neglected = away > WELCOME_AFTER_MS;
-  if (o.sulking) return { moment: null, neglected };
-  if (neglected) return { moment: 'welcome', neglected };
-  if (o.night) return { moment: 'yawn', neglected };
-  if (away > HELLO_AFTER_MS) return { moment: 'wave', neglected };
-  return { moment: 'arrive', neglected };
-}
-
-/** Sous ce niveau des trois petits besoins (faim, énergie, humeur), il est malade (plaid et thermomètre). */
-export const SICK_BELOW = 20;
-
-/**
- * Pose de repos sur la scène de l'accueil quand quelque chose ne va pas : délaissé (« en danger »), malade ; sinon
- * `null` (la forme d'évolution en pied). Il boude : rien ici (la scène le dit).
- */
-export function homeRest(o: { form: PetForm; needs: Record<NeedKey, number>; sulking: boolean; neglected: boolean }): 'danger' | 'malade' | null {
-  if (o.sulking) return null;
-  if (o.neglected) return 'danger';
-  if (careLevel(o.needs) < SICK_BELOW) return 'malade';
-  return null;
 }
 
 /**

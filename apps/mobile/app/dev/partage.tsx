@@ -20,15 +20,6 @@ export default function SharePreview() {
         />
         <ShareCard
           brand={t.brand}
-          title={t.moments.streak.title}
-          big={{ value: '30', unit: t.moments.streak.unit(30) }}
-          pet={{ ...pet, outfit: { head: 'couronne' } }}
-          callout={t.moments.streak.callout}
-          url="minimoa.app/i/LEA7K2PQ"
-          gradient="orange"
-        />
-        <ShareCard
-          brand={t.brand}
           kicker={t.moments.vision.kicker}
           title="SPONTANÉ ET VOYAGEUR"
           pet={{ name: 'Suzie', species: 'suzie' }}
