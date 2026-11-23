@@ -313,7 +313,7 @@ const fr = {
             billing_grace: `Minimoa+ reste ouvert jusqu’au ${v.endsOn}. Mets à jour ton moyen de paiement : Moi › Minimoa+ › Gérer mon abonnement.`,
             billing_retry:
               'Minimoa+ est en pause. Mets à jour ton moyen de paiement : Moi › Minimoa+ › Gérer mon abonnement.',
-            goodbye: `Merci pour ce bout de chemin. ${v.minimoa}, tes liens et tes habitudes restent là, gratuitement.`,
+            goodbye: `Merci pour ce bout de chemin. ${v.minimoa}, tes liens restent là, gratuitement.`,
             winback:
               'Ça fait un mois que Minimoa+ s’est arrêté. Si l’envie revient, il est toujours là ; le reste continue comme avant.',
           },
@@ -582,7 +582,7 @@ export const notificationTexts = defineMessages({
               billing_grace: `Minimoa+ stays open until ${v.endsOn}. Update your payment method: Me › Minimoa+ › Manage my subscription.`,
               billing_retry:
                 'Minimoa+ is paused. Update your payment method: Me › Minimoa+ › Manage my subscription.',
-              goodbye: `Thanks for coming along. ${v.minimoa}, your links and your habits stay, for free.`,
+              goodbye: `Thanks for coming along. ${v.minimoa}, your links stay, for free.`,
               winback:
                 'It’s been a month since Minimoa+ stopped. If you feel like it again, it’s still here; everything else carries on as before.',
             },
@@ -849,7 +849,7 @@ export const notificationTexts = defineMessages({
               billing_grace: `Minimoa+ sigue abierto hasta el ${v.endsOn}. Actualiza tu método de pago: Yo › Minimoa+ › Gestionar mi suscripción.`,
               billing_retry:
                 'Minimoa+ está en pausa. Actualiza tu método de pago: Yo › Minimoa+ › Gestionar mi suscripción.',
-              goodbye: `Gracias por este tramo del camino. ${v.minimoa}, tus vínculos y tus hábitos siguen aquí, gratis.`,
+              goodbye: `Gracias por este tramo del camino. ${v.minimoa}, tus vínculos siguen aquí, gratis.`,
               winback:
                 'Hace un mes que Minimoa+ terminó. Si te apetece volver, sigue aquí; todo lo demás continúa igual.',
             },
@@ -1113,7 +1113,7 @@ export const notificationTexts = defineMessages({
               billing_grace: `O Minimoa+ continua aberto até ${v.endsOn}. Atualize sua forma de pagamento: Eu › Minimoa+ › Gerenciar minha assinatura.`,
               billing_retry:
                 'O Minimoa+ está pausado. Atualize sua forma de pagamento: Eu › Minimoa+ › Gerenciar minha assinatura.',
-              goodbye: `Obrigado por esse pedaço do caminho. ${v.minimoa}, seus vínculos e seus hábitos continuam aqui, de graça.`,
+              goodbye: `Obrigado por esse pedaço do caminho. ${v.minimoa}, seus vínculos continuam aqui, de graça.`,
               winback:
                 'Faz um mês que o Minimoa+ terminou. Se der vontade de voltar, ele continua aqui; o resto segue igual.',
             },
@@ -1380,7 +1380,7 @@ export const notificationTexts = defineMessages({
               billing_grace: `Minimoa+ blijft open tot ${v.endsOn}. Werk je betaalmethode bij: Ik › Minimoa+ › Mijn abonnement beheren.`,
               billing_retry:
                 'Minimoa+ is gepauzeerd. Werk je betaalmethode bij: Ik › Minimoa+ › Mijn abonnement beheren.',
-              goodbye: `Bedankt voor dit stukje van de weg. ${v.minimoa}, je banden en je gewoonten blijven, gratis.`,
+              goodbye: `Bedankt voor dit stukje van de weg. ${v.minimoa}, je banden blijven, gratis.`,
               winback:
                 'Minimoa+ is een maand geleden gestopt. Heb je weer zin, dan is het er nog; al de rest gaat gewoon door.',
             },

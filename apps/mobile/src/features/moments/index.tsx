@@ -150,17 +150,6 @@ export function MomentSheet({
 }
 
 /** Palier de la série du défi du jour (7, 30, 100 jours) : la carte s'ouvre une fois, à l'accueil. */
-/**
- * Une carte à partager attend (palier de série ou première semaine) : rien d'autre ne doit monter par-dessus
- * (la proposition Minimoa+ d'un moment clé attend la prochaine ouverture calme).
- */
-export function useShareMomentPending(streak: number | null | undefined, bornAt: string | null | undefined): boolean {
-  const days = bornAt ? Math.floor((Date.now() - Date.parse(bornAt)) / DAY_MS) : null;
-  const s = useMomentOffer('streak', streak, STREAK_MOMENTS);
-  const w = useMomentOffer('week', days !== null && days >= 7 && days < 14 ? days : null, WEEK_MOMENTS);
-  return s.step !== null || w.step !== null;
-}
-
 export function StreakMoment({ streak }: { streak: number | null | undefined }) {
   const { step, dismiss } = useMomentOffer('streak', streak, STREAK_MOMENTS);
   const me = useMe(step !== null);

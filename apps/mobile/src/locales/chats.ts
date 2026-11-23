@@ -409,10 +409,6 @@ export const today = messages({
     livesCount: (n: number): string => `${n}/7`,
     livesText:
       'Chaque jour où vous vous écrivez fait grandir le lien. Après une pause, il se réveille dès qu’un mot arrive.',
-    todoTitle: 'Prochain niveau',
-    nextTodo: (level: number, title: string): string => `Niv. ${level} · ${title.toLowerCase()}`,
-    nextChip: (n: number): string => `${n} xp`,
-    nextA11y: 'Voir les niveaux du lien',
   },
   en: {
     streakUnit: (n: number): string => (n === 1 ? 'day' : 'days'),
@@ -460,10 +456,6 @@ export const today = messages({
     livesCount: (n: number): string => `${n}/7`,
     livesText:
       'Every day you write to each other makes the link grow. After a break, it wakes up the moment a word arrives.',
-    todoTitle: 'Next level',
-    nextTodo: (level: number, title: string): string => `Lv. ${level} · ${title.toLowerCase()}`,
-    nextChip: (n: number): string => `${n} xp`,
-    nextA11y: 'See the link’s levels',
   },
   es: {
     streakUnit: (n: number): string => (n === 1 ? 'día' : 'días'),
@@ -510,10 +502,6 @@ export const today = messages({
     livesCount: (n: number): string => `${n}/7`,
     livesText:
       'Cada día que se escriben hace crecer el vínculo. Tras una pausa, se despierta en cuanto llega una palabra.',
-    todoTitle: 'Siguiente nivel',
-    nextTodo: (level: number, title: string): string => `Niv. ${level} · ${title.toLowerCase()}`,
-    nextChip: (n: number): string => `${n} xp`,
-    nextA11y: 'Ver los niveles del vínculo',
   },
   pt: {
     streakUnit: (n: number): string => (n === 1 ? 'dia' : 'dias'),
@@ -561,10 +549,6 @@ export const today = messages({
     livesCount: (n: number): string => `${n}/7`,
     livesText:
       'Cada dia em que vocês se escrevem faz o vínculo crescer. Depois de uma pausa, ele acorda assim que chega uma palavra.',
-    todoTitle: 'Próximo nível',
-    nextTodo: (level: number, title: string): string => `Nív. ${level} · ${title.toLowerCase()}`,
-    nextChip: (n: number): string => `${n} xp`,
-    nextA11y: 'Ver os níveis do vínculo',
   },
   nl: {
     streakUnit: (n: number): string => (n === 1 ? 'dag' : 'dagen'),
@@ -611,10 +595,6 @@ export const today = messages({
     livesCount: (n: number): string => `${n}/7`,
     livesText:
       'Elke dag dat jullie elkaar schrijven laat de band groeien. Na een pauze wordt hij wakker zodra er een woord komt.',
-    todoTitle: 'Volgend niveau',
-    nextTodo: (level: number, title: string): string => `Niv. ${level} · ${title.toLowerCase()}`,
-    nextChip: (n: number): string => `${n} xp`,
-    nextA11y: 'Bekijk de niveaus van de band',
   },
 });
 

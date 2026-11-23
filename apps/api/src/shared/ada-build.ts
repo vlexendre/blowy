@@ -5,6 +5,7 @@
  * `APP_<PLATEFORME>_ADA_BUILD` : une notification qui mène à un écran disparu serait une fonction cachée.
  * Les anciennes versions continuent de les recevoir. À retirer quand `minSupportedBuild` atteint ce build.
  */
+import { firstStepOf } from '@blowy/content';
 import type { NotificationKindKey } from '@blowy/domain';
 import type { AppVersionsEnv } from '../config/app-versions.env';
 
@@ -27,11 +28,17 @@ export const RETIRED_NOTIFICATION_KINDS: ReadonlySet<NotificationKindKey> = new 
   'group_joined',
 ]);
 
+/** Premiers pas dont l'écran n'existe plus (habitudes, groupes) ; une ancienne clé (`d3`…) garde son ancien sujet. */
+const RETIRED_FIRST_STEPS: ReadonlySet<string> = new Set(['habit', 'group']);
+
 /**
- * Une notification sans écran dans la version simplifiée : les types retirés, et le défi du jour hors Ton chemin
- * (seul le rappel de la séance, `step: 'chemin'`, reste).
+ * Une notification sans écran dans la version simplifiée : les types retirés ; le défi du jour et la série en danger
+ * hors Ton chemin (seuls la séance et son rappel du soir, `step: 'chemin'`, restent) ; les premiers pas « habitude » et
+ * « groupe ».
  */
 export function isRetiredNotification(kind: NotificationKindKey, vars: Readonly<Record<string, string>>): boolean {
   if (RETIRED_NOTIFICATION_KINDS.has(kind)) return true;
-  return kind === 'daily_challenge' && vars.step !== 'chemin';
+  if (kind === 'daily_challenge' || kind === 'streak_in_danger') return vars.step !== 'chemin';
+  if (kind === 'first_steps') return RETIRED_FIRST_STEPS.has(firstStepOf(vars.step ?? ''));
+  return false;
 }

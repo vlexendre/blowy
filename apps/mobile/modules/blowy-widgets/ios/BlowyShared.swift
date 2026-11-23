@@ -86,9 +86,9 @@ struct BlowyFrame: Codable, Hashable {
   /// en_forme · bof · boude
   var shape: String
   var streak: Int
-  /// todo · accepted · done
+  /// La séance du jour : todo · done (accepted : ancien défi du jour, plus publié)
   var challenge: String
-  /// Texte du défi, déjà dans la langue de la personne ; nil : phrase générique.
+  /// Plus publié (toujours nil) : l'extension affiche sa phrase « Séance du jour » localisée.
   var challengeText: String?
 
   var date: Date { Date(timeIntervalSince1970: at) }

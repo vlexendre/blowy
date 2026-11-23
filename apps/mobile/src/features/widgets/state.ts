@@ -3,15 +3,15 @@
  * Pur (l'heure est passée en paramètre) : testé dans state.test.ts.
  *
  * Les widgets n'appellent jamais l'API. L'app leur publie une suite de moments calculés d'avance avec les règles
- * du domaine (la sociabilité qui baisse, la forme qui suit, le défi qui repart à minuit) ; l'extension les
+ * du domaine (la sociabilité qui baisse, la forme qui suit, la séance qui repart à minuit) ; l'extension les
  * déroule sans rien recalculer.
  */
-import type { Link, LiveActivityAttributes, LiveActivityKind, LiveActivityState, Pet, RitualsToday, Streak } from '@blowy/contract';
+import type { CheminMap, Link, LiveActivityAttributes, LiveActivityKind, LiveActivityState, Pet, RitualsToday, Streak } from '@blowy/contract';
 import { APP_TIMEZONE, dayOf, decayNeeds, isWriteReminderHour, nextLocalHour, parisHourOf, shapeOf } from '@blowy/domain';
 
 import type { WidgetFrame, WidgetSnapshot } from '@/core/widgets';
 
-/** Un moment toutes les 2 h sur 24 h, plus minuit (le défi repart) : 13 entrées au plus, bien au-dessus des 5 min d'Apple. */
+/** Un moment toutes les 2 h sur 24 h, plus minuit (la séance repart) : 13 entrées au plus, bien au-dessus des 5 min d'Apple. */
 const STEP_S = 2 * 3600;
 const HORIZON_S = 24 * 3600;
 
@@ -23,8 +23,10 @@ export interface WidgetInputs {
   /** Instant de la lecture du pet : ses besoins valent pour cet instant. */
   readAt: Date;
   streak: Streak | null;
-  /** Accueil des rituels (texte et état du défi) ; null s'il n'est pas (encore) lu. */
+  /** Accueil des rituels (sa série) ; null s'il n'est pas (encore) lu. */
   today: RitualsToday | null;
+  /** Carte de Ton chemin (la séance du jour) ; null si elle n'est pas (encore) lue. */
+  chemin: Pick<CheminMap, 'today'> | null;
 }
 
 /** Fin de la journée en cours (minuit, jour de Paris comme celui du défi), en secondes Unix. */
@@ -37,14 +39,14 @@ export function streakAfterMidnight(streak: Streak | null): number {
   return 0;
 }
 
-function challengeToday(i: WidgetInputs, now: Date): Pick<WidgetFrame, 'challenge' | 'challengeText'> {
-  const today = i.today && i.today.day === dayOf(now) ? i.today : null;
-  const done = i.streak?.doneToday ?? today?.streak.doneToday ?? false;
-  if (done) return { challenge: 'done', challengeText: null };
-  return {
-    challenge: today?.challenge.status === 'accepted' ? 'accepted' : 'todo',
-    challengeText: today?.challenge.text ?? null,
-  };
+/**
+ * La séance du jour de Ton chemin : faite (la série du jour validée, ou la carte qui ne l'attend plus), sinon à faire.
+ * Jamais de texte : l'extension affiche sa phrase « Séance du jour » localisée.
+ */
+function sessionToday(i: WidgetInputs, now: Date): Pick<WidgetFrame, 'challenge' | 'challengeText'> {
+  const chemin = i.chemin && i.chemin.today.day === dayOf(now) ? i.chemin.today : null;
+  const done = (i.streak?.doneToday ?? false) || (chemin !== null && chemin.state !== 'todo');
+  return { challenge: done ? 'done' : 'todo', challengeText: null };
 }
 
 /** L'état publié pour les widgets. */
@@ -56,7 +58,7 @@ export function widgetSnapshot(i: WidgetInputs): WidgetSnapshot {
   const times = new Set<number>([first, midnight]);
   for (let t = first + STEP_S; t <= readS + HORIZON_S; t += STEP_S) times.add(t);
 
-  const today = challengeToday(i, i.readAt);
+  const today = sessionToday(i, i.readAt);
   const streakNow = i.streak?.current ?? i.today?.streak.current ?? 0;
   const frames = [...times]
     .sort((a, b) => a - b)

@@ -1,20 +1,11 @@
 /**
- * Accueil, « les gens d'abord » : la carte en tête (qui ton minimoa a pour toi aujourd'hui, ou ce qui lui manque), et la
- * règle du jeu en une phrase. Le reste de l'accueil (soins, tuiles) est dans `pet.ts` (`home`).
+ * Accueil, « les gens d'abord » : la carte en tête (qui ton minimoa a pour toi aujourd'hui, ou ce qui lui manque).
+ * Le reste de l'accueil (soins, tuiles) est dans `pet.ts` (`home`).
  */
 import { messages, plural } from './runtime';
 
 export const accueil = messages({
   fr: {
-    /** La chose à faire maintenant, un seul bouton en bas (`NowBar`). */
-    now: {
-      waved: (name: string): string => `${name} t’a dit bonjour`,
-      wavedSub: 'Réponds-lui dans Rencontres',
-      wrote: (name: string): string => `${name} t’a écrit`,
-      wroteSub: 'Réponds-lui',
-      seance: 'Commencer la séance',
-      seanceSub: (n: number): string => `${n} questions pour mieux te connaître · puis il te présente du monde`,
-    },
     kicker: 'Aujourd’hui',
     /** Des personnes à présenter (suggestions pas encore saluées). */
     present: (pet: string, n: number): string => `${pet} a ${n} ${plural(n, { one: 'personne', other: 'personnes' })} à te présenter`,
@@ -30,8 +21,6 @@ export const accueil = messages({
     wrote: (name: string): string => `${name} t’a écrit`,
     wroteText: (preview: string): string => `« ${preview} »`,
     wroteAction: 'Répondre',
-    /** Ton groupe d'habitude, aujourd'hui. */
-    group: (name: string, up: number, due: number): string => `${name} : ${up}/${due} ont tenu aujourd’hui`,
     /** Test de vision pas passé. */
     visionTitle: 'Dis-lui comment tu vois la vie',
     visionText: '12 situations, 2 minutes : c’est ce qui choisit qui il te présente.',
@@ -65,11 +54,6 @@ export const accueil = messages({
       refuseNote: 'Sinon, les nouvelles t’attendront dans l’app.',
       denied: 'D’accord. Tu pourras les activer plus tard dans Moi › Réglages › Notifications.',
     },
-    /**
-     * La règle, en une phrase, vraie dans le code : sortir, écrire, répondre font monter la sociabilité, qui fixe le
-     * plafond de présentations du jour (`encounterQuota`) ; les soins n'y jouent pas.
-     */
-    rule: (pet: string): string => `Tu sors, tu écris, tu réponds : ${pet} a plus d’énergie pour te présenter du monde.`,
     /** Touché, le minimoa reçoit un câlin. */
     petA11yCuddle: (pet: string): string => `${pet}. Touche-le pour un câlin`,
     /** La nuit, sa bulle propose une action concrète : voir qui est près de chez toi (les présentations). */
@@ -78,14 +62,6 @@ export const accueil = messages({
     asleep: { line: 'Zzz… Je fais un petit somme. Réveille-moi !', wake: 'Le réveiller', wakeA11y: (pet: string): string => `Réveiller ${pet}` },
   },
   en: {
-    now: {
-      waved: (name: string): string => `${name} said hi`,
-      wavedSub: 'Reply in Meet',
-      wrote: (name: string): string => `${name} wrote to you`,
-      wroteSub: 'Reply',
-      seance: 'Start today’s session',
-      seanceSub: (n: number): string => `${n} questions to know you better · then it introduces people`,
-    },
     kicker: 'Today',
     present: (pet: string, n: number): string => `${pet} has ${n} ${plural(n, { one: 'person', other: 'people' })} to introduce you to`,
     presentFriend: (mutual: string): string => `Including someone from ${mutual}’s circle. It tells you why; nothing happens without you.`,
@@ -98,7 +74,6 @@ export const accueil = messages({
     wrote: (name: string): string => `${name} wrote to you`,
     wroteText: (preview: string): string => `“${preview}”`,
     wroteAction: 'Reply',
-    group: (name: string, up: number, due: number): string => `${name}: ${up}/${due} kept it up today`,
     visionTitle: 'Tell it how you see life',
     visionText: '12 situations, 2 minutes: that’s what decides who it introduces you to.',
     visionAction: 'Start',
@@ -125,20 +100,11 @@ export const accueil = messages({
       refuseNote: 'If not, news will wait for you in the app.',
       denied: 'Okay. You can turn them on later in Me › Settings › Notifications.',
     },
-    rule: (pet: string): string => `You go out, you write, you reply: ${pet} has more energy to introduce you to people.`,
     petA11yCuddle: (pet: string): string => `${pet}. Tap for a cuddle`,
     night: { line: 'Late, huh. Want to see who’s near you?', action: 'See who', actionA11y: 'See who’s near you' },
     asleep: { line: 'Zzz… Just a little nap. Wake me up!', wake: 'Wake it up', wakeA11y: (pet: string): string => `Wake ${pet} up` },
   },
   es: {
-    now: {
-      waved: (name: string): string => `${name} te ha saludado`,
-      wavedSub: 'Respóndele en Encuentros',
-      wrote: (name: string): string => `${name} te ha escrito`,
-      wroteSub: 'Respóndele',
-      seance: 'Empezar la sesión',
-      seanceSub: (n: number): string => `${n} preguntas · luego personas como tú`,
-    },
     kicker: 'Hoy',
     present: (pet: string, n: number): string => `${pet} tiene ${n} ${plural(n, { one: 'persona', other: 'personas' })} para presentarte`,
     presentFriend: (mutual: string): string => `Entre ellas, alguien del entorno de ${mutual}. Te dice por qué; nada pasa sin ti.`,
@@ -151,7 +117,6 @@ export const accueil = messages({
     wrote: (name: string): string => `${name} te escribió`,
     wroteText: (preview: string): string => `«${preview}»`,
     wroteAction: 'Responder',
-    group: (name: string, up: number, due: number): string => `${name}: ${up}/${due} cumplieron hoy`,
     visionTitle: 'Cuéntale cómo ves la vida',
     visionText: '12 situaciones, 2 minutos: es lo que decide a quién te presenta.',
     visionAction: 'Empezar',
@@ -178,20 +143,11 @@ export const accueil = messages({
       refuseNote: 'Si no, las novedades te esperarán en la app.',
       denied: 'Vale. Podrás activarlas más tarde en Yo › Ajustes › Notificaciones.',
     },
-    rule: (pet: string): string => `Sales, escribes, respondes: ${pet} tiene más energía para presentarte gente.`,
     petA11yCuddle: (pet: string): string => `${pet}. Tócalo para darle un mimo`,
     night: { line: 'Es tarde, ¿eh? ¿Quieres ver quién está cerca de ti?', action: 'Ver quién', actionA11y: 'Ver quién está cerca de ti' },
     asleep: { line: 'Zzz… Echo una siestecita. ¡Despiértame!', wake: 'Despertarlo', wakeA11y: (pet: string): string => `Despertar a ${pet}` },
   },
   pt: {
-    now: {
-      waved: (name: string): string => `${name} disse olá`,
-      wavedSub: 'Responde em Encontros',
-      wrote: (name: string): string => `${name} escreveu-te`,
-      wroteSub: 'Responde',
-      seance: 'Começar a sessão',
-      seanceSub: (n: number): string => `${n} perguntas · depois pessoas como tu`,
-    },
     kicker: 'Hoje',
     present: (pet: string, n: number): string => `${pet} tem ${n} ${plural(n, { one: 'pessoa', other: 'pessoas' })} para te apresentar`,
     presentFriend: (mutual: string): string => `Inclusive alguém do círculo de ${mutual}. Ele diz por quê; nada acontece sem você.`,
@@ -204,7 +160,6 @@ export const accueil = messages({
     wrote: (name: string): string => `${name} te escreveu`,
     wroteText: (preview: string): string => `“${preview}”`,
     wroteAction: 'Responder',
-    group: (name: string, up: number, due: number): string => `${name}: ${up}/${due} cumpriram hoje`,
     visionTitle: 'Conte como você vê a vida',
     visionText: '12 situações, 2 minutos: é isso que decide quem ele te apresenta.',
     visionAction: 'Começar',
@@ -231,20 +186,11 @@ export const accueil = messages({
       refuseNote: 'Se não, as novidades vão te esperar no app.',
       denied: 'Tudo bem. Você pode ativar depois em Eu › Ajustes › Notificações.',
     },
-    rule: (pet: string): string => `Você sai, escreve, responde: ${pet} fica com mais energia para te apresentar gente.`,
     petA11yCuddle: (pet: string): string => `${pet}. Toque para um carinho`,
     night: { line: 'Tarde, hein. Quer ver quem está perto de você?', action: 'Ver quem', actionA11y: 'Ver quem está perto de você' },
     asleep: { line: 'Zzz… Tirando um cochilo. Me acorda!', wake: 'Acordá-lo', wakeA11y: (pet: string): string => `Acordar ${pet}` },
   },
   nl: {
-    now: {
-      waved: (name: string): string => `${name} zei hallo`,
-      wavedSub: 'Antwoord bij Ontmoetingen',
-      wrote: (name: string): string => `${name} schreef je`,
-      wroteSub: 'Antwoord',
-      seance: 'Sessie starten',
-      seanceSub: (n: number): string => `${n} vragen · daarna mensen zoals jij`,
-    },
     kicker: 'Vandaag',
     present: (pet: string, n: number): string => `${pet} heeft ${n} ${plural(n, { one: 'persoon', other: 'mensen' })} om je aan voor te stellen`,
     presentFriend: (mutual: string): string => `Onder wie iemand uit de kring van ${mutual}. Hij zegt waarom; niets gebeurt zonder jou.`,
@@ -257,7 +203,6 @@ export const accueil = messages({
     wrote: (name: string): string => `${name} heeft je geschreven`,
     wroteText: (preview: string): string => `“${preview}”`,
     wroteAction: 'Reageren',
-    group: (name: string, up: number, due: number): string => `${name}: ${up}/${due} hielden het vandaag vol`,
     visionTitle: 'Vertel hem hoe jij naar het leven kijkt',
     visionText: '12 situaties, 2 minuten: dat bepaalt aan wie hij je voorstelt.',
     visionAction: 'Beginnen',
@@ -284,7 +229,6 @@ export const accueil = messages({
       refuseNote: 'Zo niet, dan wacht het nieuws op je in de app.',
       denied: 'Oké. Je kunt ze later aanzetten in Ik › Instellingen › Meldingen.',
     },
-    rule: (pet: string): string => `Je gaat eropuit, je schrijft, je antwoordt: ${pet} heeft meer energie om je mensen voor te stellen.`,
     petA11yCuddle: (pet: string): string => `${pet}. Tik voor een knuffel`,
     night: { line: 'Laat, hè. Wil je zien wie er bij jou in de buurt is?', action: 'Bekijk wie', actionA11y: 'Bekijk wie er bij jou in de buurt is' },
     asleep: { line: 'Zzz… Even een dutje. Maak me wakker!', wake: 'Wakker maken', wakeA11y: (pet: string): string => `${pet} wakker maken` },

@@ -2,8 +2,8 @@
  * Version simplifiée (docs/ADA-2027.md), côté API :
  * - décision 7 : aucune réponse ne contient l'URL de la photo d'une personne sans lien noué (carte, rencontres, coucous
  *   reçus) ; le flou n'est plus confié au téléphone ;
- * - les notifications des fonctions supprimées de l'app (ligue, défi hors Ton chemin, habitudes, bilans, groupes) ne
- *   partent plus vers un compte dont la dernière app vue est la version simplifiée ; les anciennes versions les reçoivent.
+ * - les notifications des fonctions supprimées de l'app (ligue, défi et série hors Ton chemin, habitudes, bilans,
+ *   groupes, premiers pas « habitude » et « groupe ») ne partent plus vers un compte dont la dernière app vue est la version simplifiée ; les anciennes versions les reçoivent.
  */
 import { randomUUID } from 'node:crypto';
 import { type ApiClient, createApiClient } from '@blowy/api-client';
@@ -94,6 +94,8 @@ describe('ADA 2027 : visages et notifications', () => {
     beforeEach(() => {
       pusher = world.app.get<MemoryPusher>(PUSHER);
       notifier = world.app.get<Notifier>(NOTIFIER);
+      // 19 h à Paris : dans la fenêtre de la série en danger (17-22 h), hors heures calmes.
+      world.clock.advanceHours(8);
     });
 
     /** Inscrit, avec un appareil, et vu sur Ton chemin avec ce build (dernière app vue du compte). */
@@ -118,6 +120,11 @@ describe('ADA 2027 : visages et notifications', () => {
       ['group_asleep', { groupId: randomUUID() }],
       ['group_joined', { name: 'Léa', groupId: randomUUID() }],
       ['daily_challenge', { challenge: 'Dis bonjour à un voisin' }],
+      ['streak_in_danger', { count: '4' }],
+      ['first_steps', { step: 'habit', minimoa: 'Nino' }],
+      ['first_steps', { step: 'group', minimoa: 'Nino' }],
+      // Ancienne clé d'un report : `d3` était le premier pas « groupe ».
+      ['first_steps', { step: 'd3', minimoa: 'Nino' }],
     ] as const;
 
     it('version simplifiée : rien des fonctions retirées ; le rappel de la séance et les messages partent', async () => {
@@ -131,9 +138,23 @@ describe('ADA 2027 : visages et notifications', () => {
       expect(kindsSentTo(nina.token)).toEqual(['daily_challenge', 'message']);
     });
 
+    it('version simplifiée : la série de Ton chemin et les premiers pas qui ont un écran restent', async () => {
+      const kept = [
+        ['streak_in_danger', { count: '4', step: 'chemin' }],
+        ['first_steps', { step: 'people', minimoa: 'Nino' }],
+        ['first_steps', { step: 'words', minimoa: 'Nino' }],
+        ['first_steps', { step: 'week', minimoa: 'Nino' }],
+      ] as const;
+      for (const [i, [kind, vars]] of kept.entries()) {
+        const c = await withDevice(`Kept${i}`, ADA_BUILD);
+        await notifier.notify(c.id, kind, { ...vars });
+        expect(loggedKinds(c.id), `${kind} ${vars.step}`).toContain(kind);
+      }
+    });
+
     it('ancienne version : elle les reçoit toujours', async () => {
-      for (const [kind, vars] of RETIRED) {
-        const old = await withDevice(`Old-${kind}`, OLD_BUILD);
+      for (const [i, [kind, vars]] of RETIRED.entries()) {
+        const old = await withDevice(`Old${i}`, OLD_BUILD);
         await notifier.notify(old.id, kind, { ...vars });
         // Envoyée (ou gardée pour plus tard par les règles habituelles) : la notification passe par la décision.
         expect(loggedKinds(old.id), kind).toContain(kind);

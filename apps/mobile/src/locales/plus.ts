@@ -1,5 +1,5 @@
 /**
- * Textes de la feuille Minimoa+ (« Moi › Minimoa+ », moments clés, points d'entrée `openPlus`). Les faits (offres,
+ * Textes de la feuille Minimoa+ (« Moi › Minimoa+ », points d'entrée `openPlus`). Les faits (offres,
  * avantages, frise de l'essai, mentions, nombre de personnes compatibles) viennent de l'API dans la langue de l'app ;
  * ici, seulement ce que l'app compose elle-même. Un prix n'est jamais écrit dans une phrase : il arrive mis en forme.
  */
@@ -22,10 +22,6 @@ export const plus = messages({
       try_on: (item: string) => `${item} lui va bien.`,
       worn_by: (item: string) => `${item}, pour lui aussi.`,
       collection: (until: string) => `Collection Hiver, jusqu’au ${until}.`,
-      moment_first_link: 'Premier lien. Et la suite ?',
-      moment_streak_7: '7 jours d’affilée. Bien joué.',
-      moment_second_day: (pet: string) => `Deux jours avec ${pet}. Voilà ce que Minimoa+ ajoute.`,
-      chemin_more: (pet: string) => `Autant d’étapes que tu veux, chaque jour, avec ${pet}.`,
     },
     plan: { yearly: 'Annuel', monthly: 'Mensuel', weekly: 'Hebdomadaire' },
     lead: {
@@ -135,10 +131,6 @@ export const plus = messages({
       try_on: (item: string) => `${item} suits them.`,
       worn_by: (item: string) => `${item}, for yours too.`,
       collection: (until: string) => `Winter collection, until ${until}.`,
-      moment_first_link: 'First link. What’s next?',
-      moment_streak_7: '7 days in a row. Nice one.',
-      moment_second_day: (pet: string) => `Two days with ${pet}. Here’s what Minimoa+ adds.`,
-      chemin_more: (pet: string) => `As many steps as you like, every day, with ${pet}.`,
     },
     plan: { yearly: 'Yearly', monthly: 'Monthly', weekly: 'Weekly' },
     lead: {
@@ -235,10 +227,6 @@ export const plus = messages({
       try_on: (item: string) => `${item} le queda bien.`,
       worn_by: (item: string) => `${item}, para el tuyo también.`,
       collection: (until: string) => `Invierno, hasta el ${until}.`,
-      moment_first_link: 'Primer vínculo. ¿Y ahora?',
-      moment_streak_7: '7 días seguidos. ¡Bien hecho!',
-      moment_second_day: (pet: string) => `Dos días con ${pet}. Esto es lo que añade Minimoa+.`,
-      chemin_more: (pet: string) => `Todos los pasos que quieras, cada día, con ${pet}.`,
     },
     plan: { yearly: 'Anual', monthly: 'Mensual', weekly: 'Semanal' },
     lead: {
@@ -335,10 +323,6 @@ export const plus = messages({
       try_on: (item: string) => `${item} ficou ótimo nele.`,
       worn_by: (item: string) => `${item}, pro seu também.`,
       collection: (until: string) => `Coleção Inverno, até ${until}.`,
-      moment_first_link: 'Primeiro vínculo. E agora?',
-      moment_streak_7: '7 dias seguidos. Mandou bem.',
-      moment_second_day: (pet: string) => `Dois dias com ${pet}. Veja o que o Minimoa+ acrescenta.`,
-      chemin_more: (pet: string) => `Quantas etapas quiser, todo dia, com ${pet}.`,
     },
     plan: { yearly: 'Anual', monthly: 'Mensal', weekly: 'Semanal' },
     lead: {
@@ -435,10 +419,6 @@ export const plus = messages({
       try_on: (item: string) => `${item} staat hem goed.`,
       worn_by: (item: string) => `${item}, ook voor de jouwe.`,
       collection: (until: string) => `Wintercollectie, tot ${until}.`,
-      moment_first_link: 'Eerste band. En nu?',
-      moment_streak_7: '7 dagen op rij. Goed zo.',
-      moment_second_day: (pet: string) => `Twee dagen met ${pet}. Dit voegt Minimoa+ toe.`,
-      chemin_more: (pet: string) => `Zoveel stappen als je wilt, elke dag, met ${pet}.`,
     },
     plan: { yearly: 'Jaarlijks', monthly: 'Maandelijks', weekly: 'Wekelijks' },
     lead: {

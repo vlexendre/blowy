@@ -9,7 +9,7 @@
  */
 import { ApiError } from '@blowy/api-client';
 import type { Paywall, PaywallOffer, PlanDto, Subscription } from '@blowy/contract';
-import { ITEMS, type ItemSlot, OFFERS, type Outfit, PLUS_PERKS, PLUS_TRIGGERS, type PlusMoment, type PlusPerk, collectionOfItem, type PlusTrigger, type Species, yearlyDiscountPercent } from '@blowy/domain';
+import { ITEMS, type ItemSlot, OFFERS, type Outfit, PLUS_PERKS, PLUS_TRIGGERS, type PlusPerk, collectionOfItem, type PlusTrigger, type Species, yearlyDiscountPercent } from '@blowy/domain';
 import { type IconName, PlusTemplate, type PlusHeroPose, type PlusOfferView, type PlusPerkView, SheetTemplate } from '@blowy/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -47,9 +47,6 @@ const REASON_PERK: Partial<Record<PlusReason, PlusPerk>> = {
   try_on: 'premium_items',
   worn_by: 'premium_items',
   collection: 'premium_items',
-  moment_first_link: 'more_encounters',
-  moment_streak_7: 'streak_jokers',
-  moment_second_day: 'more_encounters',
 };
 
 /** Raisons dont le titre parle de l'objet touché (essayé, vu sur un autre minimoa). */
@@ -206,7 +203,7 @@ export function usePlusSync(enabled: boolean) {
   }, [enabled, purchases, api]);
 }
 
-// ── Mesure et moments clés (docs/DESIR.md) ───────────────────────────────────
+// ── Mesure (docs/DESIR.md) ───────────────────────────────────────────────────
 
 /** Compte l'ouverture de la feuille par déclencheur, une fois par ouverture (jamais bloquant, rien pour un membre). */
 function usePlusOpened(reason: PlusReason, enabled: boolean) {
@@ -216,36 +213,6 @@ function usePlusOpened(reason: PlusReason, enabled: boolean) {
     // Une fois par feuille.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-}
-
-let momentAsked = false;
-/** Moments que cette version sait ouvrir (le serveur ne répond qu'un de ceux-là) et leur déclencheur. */
-const MOMENT_REASON: Record<PlusMoment, PlusReason> = {
-  first_link: 'moment_first_link',
-  streak_7: 'moment_streak_7',
-  second_day: 'moment_second_day',
-};
-const MOMENTS_ACCEPTED = Object.keys(MOMENT_REASON) as PlusMoment[];
-/**
- * Moment clé (premier lien, 7 jours de série, deuxième jour) : quand l'accueil est calme, demande une fois par
- * lancement au serveur s'il y a un moment à saluer ; le serveur décide et plafonne (une fois par moment, jamais deux
- * propositions fortes en moins de 3 jours, jamais le jour de l'inscription, jamais avec Minimoa+). Alors seulement, la
- * feuille s'ouvre. Plus de feuille à la fin de l'inscription : le « deuxième jour » la remplace.
- */
-export function usePlusMoment(calm: boolean, plus: boolean | undefined) {
-  const api = useApi();
-  useEffect(() => {
-    if (!calm || plus !== false || momentAsked) return;
-    momentAsked = true;
-    // Le serveur a réservé le moment : la feuille s'ouvre même si l'accueil change entre-temps.
-    api.plus
-      .moment({ accepts: MOMENTS_ACCEPTED })
-      .then(({ moment, next }) => {
-        const m = next ?? moment;
-        if (m) setTimeout(() => openPlus(MOMENT_REASON[m]), 700);
-      })
-      .catch(() => undefined);
-  }, [calm, plus, api]);
 }
 
 // ── La feuille ───────────────────────────────────────────────────────────────
@@ -328,6 +295,13 @@ function showcaseFor(item: string | undefined, collection: readonly string[] | n
   return touched ? { ...base, [touched.slot as ItemSlot]: touched.id } : base;
 }
 
+/**
+ * Déclencheurs du domaine sans titre propre ici (fonctions retirées, anciens moments clés, séance en plus : l'API les
+ * garde pour les anciennes versions) : le titre général.
+ */
+const GENERIC_HEADLINE = ['habits_limit', 'detailed_review', 'moment_first_link', 'moment_streak_7', 'moment_second_day', 'chemin_more'] as const;
+const isGenericHeadline = (r: PlusReason): r is (typeof GENERIC_HEADLINE)[number] => (GENERIC_HEADLINE as readonly string[]).includes(r);
+
 function headlineFor(reason: PlusReason, petName: string, item?: string, collectionUntil?: string | null): string {
   const label = item ? itemLabel[item as keyof typeof itemLabel] : undefined;
   if (ITEM_REASONS.includes(reason)) {
@@ -335,7 +309,7 @@ function headlineFor(reason: PlusReason, petName: string, item?: string, collect
   }
   // La date de fin vient du serveur ; hors saison, le titre général.
   if (reason === 'collection') return collectionUntil ? t.headline.collection(collectionUntil) : t.headline.generic(petName);
-  if (reason === 'habits_limit' || reason === 'detailed_review') return typeof t.headline.generic === 'function' ? t.headline.generic(petName) : t.headline.generic;
+  if (isGenericHeadline(reason)) return typeof t.headline.generic === 'function' ? t.headline.generic(petName) : t.headline.generic;
   const h = t.headline[reason];
   return typeof h === 'function' ? h(petName) : h;
 }

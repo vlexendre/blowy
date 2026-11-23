@@ -23,10 +23,8 @@ export const chemin = messages({
       unitKicker: (i: number, done: number, total: number): string => `Univers ${i} · ${done} sur ${total}`,
       unitSignup: 'Univers 1 · fait pendant ton inscription ✓',
       nodeSignup: (title: string): string => `${title}, fait pendant ton inscription`,
-      doneAction: 'Revoir ta personne du jour',
       restKicker: 'C’est tout pour aujourd’hui',
       restTitle: 'À demain',
-      bonusReady: 'L’étape suivante t’attend',
       streak: (n: number): string => `${n} ${days(n)} d’affilée`,
       streakA11y: (n: number): string => `Ta série : ${n} ${days(n)} d’affilée. Ouvrir la série`,
       node: {
@@ -83,7 +81,6 @@ export const chemin = messages({
       weekCount: (n: number): string => `${n} ${plural(n, { one: 'séance faite', other: 'séances faites' })}`,
       freeze: (n: number): string => `Gel de série · ${n} en réserve`,
       freezeText: 'Il protège ta série un jour sans séance. 1 par mois, 1 par semaine avec Minimoa+.',
-      freezePlus: 'Un gel par semaine avec Minimoa+',
       freezeChip: (n: number): string => `${n} ${plural(n, { one: 'gel', other: 'gels' })}`,
       freezeA11y: (n: number): string =>
         `${n} ${plural(n, { one: 'gel de série', other: 'gels de série' })} en réserve`,
@@ -118,8 +115,6 @@ export const chemin = messages({
       path: 'Ton chemin',
       pathText: (done: number, total: number): string =>
         `${done} ${plural(done, { one: 'étape faite', other: 'étapes faites' })} sur ${total}`,
-      detailLocked: 'Le profil détaillé, avec Minimoa+',
-      plusPeople: 'Qui t’a dit bonjour, plus de présentations, d’autres villes, ton profil détaillé.',
     },
     carte: {
       band: { neighborhood: 'dans ton quartier', near: 'à moins de 5 km', around: 'autour de toi' },
@@ -174,10 +169,8 @@ export const chemin = messages({
       unitKicker: (i: number, done: number, total: number): string => `World ${i} · ${done} of ${total}`,
       unitSignup: 'World 1 · done when you signed up ✓',
       nodeSignup: (title: string): string => `${title}, done when you signed up`,
-      doneAction: 'See your person of the day',
       restKicker: 'That’s all for today',
       restTitle: 'See you tomorrow',
-      bonusReady: 'The next step is waiting for you',
       streak: (n: number): string => `${n}-day streak`,
       streakA11y: (n: number): string => `Your streak: ${n} ${daysEn(n)} in a row. Open your streak`,
       node: {
@@ -234,7 +227,6 @@ export const chemin = messages({
       weekCount: (n: number): string => `${n} ${n === 1 ? 'session' : 'sessions'} done`,
       freeze: (n: number): string => `Streak freeze · ${n} left`,
       freezeText: 'It protects your streak on a day without a session. 1 a month, 1 a week with Minimoa+.',
-      freezePlus: 'One freeze a week with Minimoa+',
       freezeChip: (n: number): string => `${n} ${n === 1 ? 'freeze' : 'freezes'}`,
       freezeA11y: (n: number): string => `${n} streak ${n === 1 ? 'freeze' : 'freezes'} in reserve`,
       milestones: 'Milestones · for the wardrobe',
@@ -267,8 +259,6 @@ export const chemin = messages({
       gaugeFoggyA11y: (name: string): string => `${name}: still fuzzy`,
       path: 'Your path',
       pathText: (done: number, total: number): string => `${done} of ${total} steps done`,
-      detailLocked: 'The detailed profile, with Minimoa+',
-      plusPeople: 'Who said hello, more introductions, other cities, your detailed profile.',
     },
     carte: {
       band: { neighborhood: 'in your neighborhood', near: 'within 5 km', around: 'around you' },
@@ -322,10 +312,8 @@ export const chemin = messages({
       unitKicker: (i: number, done: number, total: number): string => `Universo ${i} · ${done} de ${total}`,
       unitSignup: 'Universo 1 · hecho al registrarte ✓',
       nodeSignup: (title: string): string => `${title}, hecho al registrarte`,
-      doneAction: 'Volver a ver a tu persona del día',
       restKicker: 'Eso es todo por hoy',
       restTitle: 'Hasta mañana',
-      bonusReady: 'Te espera el siguiente paso',
       streak: (n: number): string => `${n} ${n === 1 ? 'día' : 'días'} seguidos`,
       streakA11y: (n: number): string =>
         `Tu racha: ${n} ${n === 1 ? 'día' : 'días'} seguidos. Abrir la racha`,
@@ -383,7 +371,6 @@ export const chemin = messages({
       weekCount: (n: number): string => `${n} ${n === 1 ? 'sesión hecha' : 'sesiones hechas'}`,
       freeze: (n: number): string => `Protector de racha · ${n} en reserva`,
       freezeText: 'Protege tu racha un día sin sesión. 1 al mes, 1 a la semana con Minimoa+.',
-      freezePlus: 'Un protector a la semana con Minimoa+',
       freezeChip: (n: number): string => `${n} ${n === 1 ? 'protector' : 'protectores'}`,
       freezeA11y: (n: number): string => `${n} ${n === 1 ? 'protector' : 'protectores'} de racha en reserva`,
       milestones: 'Hitos · para el armario',
@@ -416,8 +403,6 @@ export const chemin = messages({
       gaugeFoggyA11y: (name: string): string => `${name}: aún borroso`,
       path: 'Tu camino',
       pathText: (done: number, total: number): string => `${done} de ${total} etapas hechas`,
-      detailLocked: 'El perfil detallado, con Minimoa+',
-      plusPeople: 'Quién te ha saludado, más presentaciones, otras ciudades, tu perfil detallado.',
     },
     carte: {
       band: { neighborhood: 'en tu barrio', near: 'a menos de 5 km', around: 'cerca de ti' },
@@ -470,10 +455,8 @@ export const chemin = messages({
       unitKicker: (i: number, done: number, total: number): string => `Universo ${i} · ${done} de ${total}`,
       unitSignup: 'Universo 1 · feito no seu cadastro ✓',
       nodeSignup: (title: string): string => `${title}, feito no seu cadastro`,
-      doneAction: 'Ver de novo sua pessoa do dia',
       restKicker: 'Por hoje é só',
       restTitle: 'Até amanhã',
-      bonusReady: 'A próxima etapa está esperando',
       streak: (n: number): string => `${n} ${n === 1 ? 'dia' : 'dias'} seguidos`,
       streakA11y: (n: number): string =>
         `Sua sequência: ${n} ${n === 1 ? 'dia' : 'dias'} seguidos. Abrir a sequência`,
@@ -531,7 +514,6 @@ export const chemin = messages({
       weekCount: (n: number): string => `${n} ${n === 1 ? 'sessão feita' : 'sessões feitas'}`,
       freeze: (n: number): string => `Proteção de sequência · ${n} na reserva`,
       freezeText: 'Ela protege sua sequência num dia sem sessão. 1 por mês, 1 por semana com Minimoa+.',
-      freezePlus: 'Uma proteção por semana com Minimoa+',
       freezeChip: (n: number): string => `${n} ${n === 1 ? 'proteção' : 'proteções'}`,
       freezeA11y: (n: number): string =>
         `${n} ${n === 1 ? 'proteção' : 'proteções'} de sequência guardada${n === 1 ? '' : 's'}`,
@@ -565,8 +547,6 @@ export const chemin = messages({
       gaugeFoggyA11y: (name: string): string => `${name}: ainda vago`,
       path: 'Seu caminho',
       pathText: (done: number, total: number): string => `${done} de ${total} etapas feitas`,
-      detailLocked: 'O perfil detalhado, com Minimoa+',
-      plusPeople: 'Quem te deu oi, mais apresentações, outras cidades, seu perfil detalhado.',
     },
     carte: {
       band: { neighborhood: 'no seu bairro', near: 'a menos de 5 km', around: 'perto de você' },
@@ -620,10 +600,8 @@ export const chemin = messages({
       unitKicker: (i: number, done: number, total: number): string => `Wereld ${i} · ${done} van ${total}`,
       unitSignup: 'Wereld 1 · gedaan bij je inschrijving ✓',
       nodeSignup: (title: string): string => `${title}, gedaan bij je inschrijving`,
-      doneAction: 'Je persoon van de dag terugzien',
       restKicker: 'Dat was het voor vandaag',
       restTitle: 'Tot morgen',
-      bonusReady: 'De volgende stap wacht op je',
       streak: (n: number): string => `${n} ${n === 1 ? 'dag' : 'dagen'} op rij`,
       streakA11y: (n: number): string => `Je reeks: ${n} ${n === 1 ? 'dag' : 'dagen'} op rij. Reeks openen`,
       node: {
@@ -680,7 +658,6 @@ export const chemin = messages({
       weekCount: (n: number): string => `${n} ${n === 1 ? 'sessie' : 'sessies'} gedaan`,
       freeze: (n: number): string => `Reeksbevriezer · nog ${n}`,
       freezeText: 'Hij beschermt je reeks op een dag zonder sessie. 1 per maand, 1 per week met Minimoa+.',
-      freezePlus: 'Eén bevriezer per week met Minimoa+',
       freezeChip: (n: number): string => `${n} ${n === 1 ? 'bevriezer' : 'bevriezers'}`,
       freezeA11y: (n: number): string => `${n} ${n === 1 ? 'reeksbevriezer' : 'reeksbevriezers'} in reserve`,
       milestones: 'Mijlpalen · voor de kledingkast',
@@ -713,8 +690,6 @@ export const chemin = messages({
       gaugeFoggyA11y: (name: string): string => `${name}: nog vaag`,
       path: 'Jouw pad',
       pathText: (done: number, total: number): string => `${done} van ${total} stappen gedaan`,
-      detailLocked: 'Het uitgebreide profiel, met Minimoa+',
-      plusPeople: 'Wie hallo zei, meer kennismakingen, andere steden, je uitgebreide profiel.',
     },
     carte: {
       band: { neighborhood: 'in je buurt', near: 'binnen 5 km', around: 'bij jou in de buurt' },

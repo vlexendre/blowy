@@ -218,7 +218,8 @@ export class PushNotifier implements Notifier {
   ) {}
 
   /**
-   * Notification d'une fonction supprimée de l'app (ligue, défi hors Ton chemin, habitudes, bilans, groupes) pour un
+   * Notification d'une fonction supprimée de l'app (ligue, défi et série hors Ton chemin, habitudes, bilans, groupes,
+   * premiers pas qui y mènent) pour un
    * compte dont la dernière app vue est la version simplifiée (docs/ADA-2027.md) : elle ne part pas. Les anciennes
    * versions la reçoivent toujours. Dernière app vue : celle retenue par Ton chemin (même source que le rappel du matin).
    */

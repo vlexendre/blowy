@@ -1,8 +1,7 @@
 /**
  * Onglet Moi (V6-Moi) : qui tu es (en-tête), puis d'après `GET /v1/profil` (docs/CHEMIN.md) ton type Minimoa, trois
  * chiffres (jours d'affilée, réponses, liens) et « Ce que Nino sait de toi » (niveau, jauges, les floues grisées, lien
- * vers Ton chemin) ; puis le lien « 3 mots », Minimoa+ (les gens d'abord), la liste courte menant aux réglages.
- * Le profil détaillé est réservé à Minimoa+ (`detailLocked`).
+ * vers Ton chemin) ; puis le lien « 3 mots », Minimoa+ (ses avantages réels), la liste courte menant aux réglages.
  */
 import { color, space } from '@blowy/tokens';
 import {
@@ -190,15 +189,9 @@ export default function Moi() {
             key="plus"
             // Pas de prix ici : le montant facturé se lit sur la feuille Minimoa+ (règle Apple 3.1.2, spéc §13).
             title={t.plusTitle}
-            // Membre : l'état de l'abonnement (essai jusqu'au…, se renouvelle le…) tel que l'API le formule ; sinon deux avantages.
-            // Les gens d'abord (V1) : qui t'a dit bonjour, plus de présentations, d'autres villes, le profil détaillé.
-            text={
-              member && subscription.data
-                ? subscription.data.summary
-                : pr?.detailLocked
-                  ? c.plusPeople
-                  : plusPerksLine(perks, 2)
-            }
+            // Membre : l'état de l'abonnement (essai jusqu'au…, se renouvelle le…) tel que l'API le formule ; sinon deux
+            // des avantages montrés sur la feuille Minimoa+.
+            text={member && subscription.data ? subscription.data.summary : plusPerksLine(perks, 2)}
             ctaLabel={member ? undefined : purchases.available ? t.plusCta : t.plusSoonCta}
             onPress={() => openPlus('generic')}
           />

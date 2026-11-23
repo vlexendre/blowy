@@ -12,8 +12,8 @@ export const voisins = messages({
     title: [{ text: 'TON ' }, { text: 'QUARTIER', dim: true }] as TitleSegment[],
     /** Titre de la feuille, toujours visible (le plafond est quotidien). */
     sheetTitle: (n: number): string => (n === 0 ? 'Aujourd’hui · personne pour l’instant' : `Aujourd’hui · ${n} ${n > 1 ? 'personnes' : 'personne'}`),
-    /** Décision 7 : les visages flous sont une protection, pour tout le monde. */
-    sheetNote: 'Visages flous jusqu’à ce que vous vous soyez dit bonjour tous les deux. Positions arrondies.',
+    /** Décision 7 : les photos cachées jusqu'au lien sont une protection, pour tout le monde. */
+    sheetNote: 'Photos cachées jusqu’à ce que vous vous soyez dit bonjour tous les deux. Positions arrondies.',
     expandA11y: 'Ouvrir la liste',
     collapseA11y: 'Replier la liste',
     /** Les autres épingles de la carte, dans la vue en liste. */
@@ -34,7 +34,7 @@ export const voisins = messages({
   en: {
     title: [{ text: 'YOUR ' }, { text: 'NEIGHBORHOOD', dim: true }],
     sheetTitle: (n: number): string => (n === 0 ? 'Today · no one yet' : `Today · ${n} ${n === 1 ? 'person' : 'people'}`),
-    sheetNote: 'Faces stay blurred until you’ve both said hello. Locations are rounded.',
+    sheetNote: 'Photos stay hidden until you’ve both said hello. Locations are rounded.',
     expandA11y: 'Open the list',
     collapseA11y: 'Collapse the list',
     around: (n: number): string => `On the map · ${n}`,
@@ -51,7 +51,7 @@ export const voisins = messages({
   es: {
     title: [{ text: 'TU ' }, { text: 'BARRIO', dim: true }],
     sheetTitle: (n: number): string => (n === 0 ? 'Hoy · nadie por ahora' : `Hoy · ${n} ${n === 1 ? 'persona' : 'personas'}`),
-    sheetNote: 'Caras borrosas hasta que os hayáis saludado los dos. Posiciones redondeadas.',
+    sheetNote: 'Las fotos quedan ocultas hasta que os hayáis saludado los dos. Ubicaciones aproximadas.',
     expandA11y: 'Abrir la lista',
     collapseA11y: 'Plegar la lista',
     around: (n: number): string => `En el mapa · ${n}`,
@@ -68,7 +68,7 @@ export const voisins = messages({
   pt: {
     title: [{ text: 'SEU ' }, { text: 'BAIRRO', dim: true }],
     sheetTitle: (n: number): string => (n === 0 ? 'Hoje · ninguém por enquanto' : `Hoje · ${n} ${n === 1 ? 'pessoa' : 'pessoas'}`),
-    sheetNote: 'Rostos desfocados até vocês dois terem dito oi. Posições arredondadas.',
+    sheetNote: 'As fotos ficam ocultas até vocês dois se cumprimentarem. Localizações arredondadas.',
     expandA11y: 'Abrir a lista',
     collapseA11y: 'Recolher a lista',
     around: (n: number): string => `No mapa · ${n}`,
@@ -85,7 +85,7 @@ export const voisins = messages({
   nl: {
     title: [{ text: 'JOUW ' }, { text: 'BUURT', dim: true }],
     sheetTitle: (n: number): string => (n === 0 ? 'Vandaag · nog niemand' : `Vandaag · ${n} ${n === 1 ? 'persoon' : 'mensen'}`),
-    sheetNote: 'Gezichten blijven wazig tot jullie allebei hallo hebben gezegd. Posities zijn afgerond.',
+    sheetNote: 'Foto’s blijven verborgen tot jullie elkaar allebei gedag hebben gezegd. Locaties zijn afgerond.',
     expandA11y: 'Lijst openen',
     collapseA11y: 'Lijst inklappen',
     around: (n: number): string => `Op de kaart · ${n}`,

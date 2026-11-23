@@ -18,9 +18,10 @@ export interface WidgetFrame {
   sociability: number;
   shape: 'en_forme' | 'bof' | 'boude';
   streak: number;
-  challenge: 'todo' | 'accepted' | 'done';
-  /** Texte du défi ; null : phrase générique de l'extension. */
-  challengeText: string | null;
+  /** La séance du jour de Ton chemin. */
+  challenge: 'todo' | 'done';
+  /** Toujours null : l'extension affiche sa phrase « Séance du jour » (le format v1 garde le champ). */
+  challengeText: null;
 }
 
 /** État publié pour les widgets (version 1). */

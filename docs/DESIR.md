@@ -142,7 +142,7 @@ faux prix de référence) ; nos documents `docs/PAYWALL.md`, `docs/FIDELISATION.
 | Collection | `modules/pets/application/wardrobe.ts` (`keepCollection`, `settle`), `pets/interface/pet.presenter.ts` |
 | Moments, ouvertures, achats | `modules/billing/application/plus-desire.ts`, `plus.usecases.ts` |
 | Rapport | `modules/growth/application/growth-admin.ts`, `apps/admin/src/views/Growth.tsx` |
-| App | `features/plus` (`PLUS_REASONS` = `PLUS_TRIGGERS`, `usePlusMoment`, titres), `app/(tabs)/rencontres.tsx`, `app/carte.tsx`, `app/pet/garde-robe.tsx`, `app/rencontre/[userId].tsx`, `app/(tabs)/pet.tsx` |
+| App | `features/plus` (`PLUS_REASONS` = `PLUS_TRIGGERS`, titres ; plus de feuille automatique depuis ADA 2027), `app/(tabs)/rencontres.tsx`, `app/carte.tsx`, `app/pet/garde-robe.tsx`, `app/rencontre/[userId].tsx`, `app/(tabs)/pet.tsx` |
 | UI | `packages/ui/src/organisms/DesireCards.tsx` (`FarAwayCard`, `CollectionBanner`, `TryOnBar`, `WornPremium`), `ItemDetail.secondary` |
 | Textes | `locales/plus.ts` (titres), `locales/rencontres.ts` (vu de loin, objet porté), `locales/pet.ts` (essayage, collection), `packages/content/src/v7/vision.ts` (`map.far`) |
 | Migration | `supabase/migrations/20261119100000_desir_plus.sql` |

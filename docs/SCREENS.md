@@ -56,9 +56,9 @@ accueil. 9 écrans jusqu'au minimoa vivant (le test compte pour un), 10 jusqu'à
 avec l'entrée en scène, le sexe, les habitudes, la position, les notifications, la promesse et les invitations ; avant
 le 19 nov. : la feuille Minimoa+ entre « tout est prêt » et l'accueil).
 - **Pas de Minimoa+ dans l'inscription** (19 nov. 2026, audit de clarté) : la première session sert à comprendre à quoi
-  sert l'app (les gens). La feuille reste ouverte par un geste partout (`openPlus`) et s'ouvre d'elle-même au plus une
-  fois par moment clé, dont le « deuxième jour » (J2 à J4, `usePlusMoment`, docs/DESIR.md). Le défi du jour ne monte pas
-  non plus en plein écran le jour de l'inscription (serveur).
+  sert l'app (les gens). La feuille ne s'ouvre que par un geste (`openPlus` : Moi, la carte, la garde-robe…) ; elle ne
+  monte plus d'elle-même à un moment clé (supprimé au lot 1 d'ADA 2027, l'API garde `POST /plus/moment` pour les
+  anciennes versions). Le défi du jour ne monte pas non plus en plein écran le jour de l'inscription (serveur).
 - Le minimoa choisi est l'**hôte** : petit en haut à gauche, il pose chaque question dans sa bulle (`OnboardingTemplate host`).
   Une seule barre d'avancement continue de la création à la connexion (`progressAt(step, sub)`, le test compte pour 12).
 - Le compte vient tard ; la création (`useOnboard`) n'a lieu qu'à la préparation, une fois connecté. Déjà connecté sans

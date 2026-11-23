@@ -5,8 +5,8 @@
  * présentées aujourd'hui. Toucher une épingle ou une ligne ouvre la même fiche (`NeighborFiche`), fermable.
  * Sans position : la liste seule, avec une seule action (« Activer », ou « Choisir ma ville » si l'accès est refusé).
  * VoiceOver : la vue en liste (l'alternative à la carte, toutes les épingles comprises) s'ouvre d'elle-même, et la
- * pilule « Liste » la propose à tous. Distance toujours en bandes (« dans ton quartier »), jamais au mètre ; visages
- * flous pour tout le monde jusqu'au lien noué (décision 7). « Déjà croisés » vit maintenant en bas des Chats.
+ * pilule « Liste » la propose à tous. Distance toujours en bandes (« dans ton quartier »), jamais au mètre ; photos
+ * cachées pour tout le monde jusqu'au lien noué (décision 7). « Déjà croisés » vit maintenant en bas des Chats.
  */
 import { entitlements } from '@blowy/domain';
 import { color } from '@blowy/tokens';
@@ -261,9 +261,10 @@ export default function QuartierScreen() {
                 pet: p.user.pet,
                 label: band ? chemin.carte.pin(p.user.displayName, band) : p.user.displayName,
                 hot,
-                // Sa photo, toujours floue sur la carte (décision 7 : jusqu'au lien noué) ; pastille verte s'il est venu aujourd'hui.
+                // Sur la carte, le serveur n'envoie aucune photo (`face: 'hidden'`, décision 7) : l'épingle montre le minimoa.
+                // Pastille verte s'il est venu aujourd'hui.
                 photo: p.user.face === 'hidden' ? null : p.user.avatarUrl,
-                blurred: true,
+                blurred: p.user.face === 'blurred',
                 online: p.activeToday ?? false,
                 accessibilityLabel: hot ? chemin.carte.pinA11yHot(p.user.displayName, band) : t.pinA11y(p.user.pet.name, p.user.displayName),
                 selected: p.user.id === selected,

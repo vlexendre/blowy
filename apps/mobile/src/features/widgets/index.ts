@@ -1,6 +1,6 @@
 /**
  * Widgets iOS et activités en direct : publie l'état des widgets et tient les activités à jour à partir des données
- * déjà lues par l'app (pet, série, défi du jour, liens). Appelé une fois, dans le layout des onglets.
+ * déjà lues par l'app (pet, série, séance du jour, liens). Appelé une fois, dans le layout des onglets.
  * Ne fait rien hors iOS (voir `widgets` dans core).
  */
 import type { Pet } from '@blowy/contract';
@@ -20,12 +20,16 @@ export { outingActivity } from './state';
 const active = (): boolean => AppState.currentState === 'active';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Série seule (lecture légère) et accueil des rituels, partagés avec les écrans des rituels par leurs clés. */
+/**
+ * Série seule (lecture légère), accueil des rituels et carte de Ton chemin (la séance du jour), partagés avec les
+ * écrans par leurs clés.
+ */
 function useRituals(enabled: boolean) {
   const api = useApi();
   const streak = useQuery({ queryKey: keys.ritualsStreak, queryFn: api.rituals.streak, enabled, staleTime: 60_000 });
   const today = useQuery({ queryKey: keys.ritualsToday, queryFn: api.rituals.today, enabled, staleTime: 5 * 60_000 });
-  return { streak, today };
+  const chemin = useQuery({ queryKey: keys.chemin, queryFn: api.chemin.map, enabled, staleTime: 30_000, retry: 1 });
+  return { streak, today, chemin };
 }
 
 async function syncActivities(i: ActivityInputs, push: boolean): Promise<void> {
@@ -78,7 +82,7 @@ export function useWidgetSync(gate: Gate): void {
   const ready = gate === 'ready' && widgets.available;
   const pet = usePet();
   const links = useLinks();
-  const { streak, today } = useRituals(ready);
+  const { streak, today, chemin } = useRituals(ready);
   useActivityTokens(ready);
 
   const petData = pet.data?.pet;
@@ -93,9 +97,10 @@ export function useWidgetSync(gate: Gate): void {
         readAt: new Date(readAt || Date.now()),
         streak: streak.data ?? null,
         today: today.data ?? null,
+        chemin: chemin.data ?? null,
       }),
     );
-  }, [ready, petData, readAt, streak.data, today.data]);
+  }, [ready, petData, readAt, streak.data, today.data, chemin.data]);
 
   // Activités en direct : démarrer, mettre à jour, terminer.
   useEffect(() => {

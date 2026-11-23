@@ -1,4 +1,4 @@
-import type { Link, RitualsToday, Streak } from '@blowy/contract';
+import type { CheminMap, Link, RitualsToday, Streak } from '@blowy/contract';
 import { describe, expect, it } from 'vitest';
 
 import { ACTIVITY_MAX_SECONDS, challengeActivity, decideRunning, endOfDay, linkActivity, outingActivity, streakAfterMidnight, widgetSnapshot } from './state';
@@ -33,12 +33,15 @@ const today = (status: RitualsToday['challenge']['status'], s = streak()): Ritua
     unreadReviewId: null,
   }) as unknown as RitualsToday;
 
+const chemin = (state: CheminMap['today']['state'], day = '2026-11-15'): Pick<CheminMap, 'today'> =>
+  ({ today: { day, state, quota: { used: 0, left: 1, nextSlot: 0, bonusHint: null }, line: '' } }) as unknown as Pick<CheminMap, 'today'>;
+
 const link = (mine: boolean, theirs: boolean, streak = 4, id = '11111111-1111-4111-8111-111111111111'): Link =>
   ({ id, status: 'active', streak, other: { displayName: 'Léa' }, today: { day: '2026-11-15', mine, theirs, atStake: streak > 0 && !(mine && theirs), week: [] } }) as unknown as Link;
 
 describe('widgetSnapshot', () => {
   it('déroule 24 h par pas de 2 h, minuit compris, avec la sociabilité qui baisse', () => {
-    const s = widgetSnapshot({ pet, readAt: NOW, streak: streak(), today: today('offered') });
+    const s = widgetSnapshot({ pet, readAt: NOW, streak: streak(), today: today('offered'), chemin: chemin('todo') });
     expect(s.v).toBe(1);
     expect(s.url).toBe('blowy://pet');
     const ats = s.frames.map((f) => f.at);
@@ -52,32 +55,39 @@ describe('widgetSnapshot', () => {
     for (let i = 1; i < ats.length; i++) expect(ats[i]! - ats[i - 1]!).toBeGreaterThanOrEqual(300);
   });
 
-  it('montre le défi du jour jusqu’à minuit, puis un nouveau défi sans texte', () => {
-    const s = widgetSnapshot({ pet, readAt: NOW, streak: streak(), today: today('accepted') });
+  it('séance à faire jusqu’à minuit, jamais le texte du défi d’avant', () => {
+    const s = widgetSnapshot({ pet, readAt: NOW, streak: streak(), today: today('accepted'), chemin: chemin('todo') });
     const before = s.frames.filter((f) => f.at < MIDNIGHT);
     const after = s.frames.filter((f) => f.at >= MIDNIGHT);
-    expect(before.every((f) => f.challenge === 'accepted' && f.challengeText === 'Un café dehors' && f.streak === 12)).toBe(true);
+    expect(before.every((f) => f.challenge === 'todo' && f.challengeText === null && f.streak === 12)).toBe(true);
     expect(after.every((f) => f.challenge === 'todo' && f.challengeText === null)).toBe(true);
-    // Défi pas fait, pas de joker : la série repart de zéro après minuit.
+    expect(JSON.stringify(s)).not.toContain('Un café dehors');
+    // Séance pas faite, pas de joker : la série repart de zéro après minuit.
     expect(after.every((f) => f.streak === 0)).toBe(true);
   });
 
-  it('défi fait : « relevé » jusqu’à minuit, la série tient', () => {
-    const s = widgetSnapshot({ pet, readAt: NOW, streak: streak({ current: 13, doneToday: true }), today: today('done') });
-    expect(s.frames.filter((f) => f.at < MIDNIGHT).every((f) => f.challenge === 'done')).toBe(true);
-    expect(s.frames.filter((f) => f.at >= MIDNIGHT).every((f) => f.streak === 13)).toBe(true);
+  it('séance faite (série du jour validée) : « faite » jusqu’à minuit, la série tient', () => {
+    const s = widgetSnapshot({ pet, readAt: NOW, streak: streak({ current: 13, doneToday: true }), today: today('done'), chemin: null });
+    expect(s.frames.filter((f) => f.at < MIDNIGHT).every((f) => f.challenge === 'done' && f.challengeText === null)).toBe(true);
+    expect(s.frames.filter((f) => f.at >= MIDNIGHT).every((f) => f.challenge === 'todo' && f.streak === 13)).toBe(true);
   });
 
-  it('un défi d’un autre jour n’est pas montré', () => {
-    const old = { ...today('accepted'), day: '2026-11-14' } as RitualsToday;
-    const s = widgetSnapshot({ pet, readAt: NOW, streak: null, today: old });
-    expect(s.frames[0]!.challengeText).toBeNull();
-    expect(s.frames[0]!.challenge).toBe('todo');
+  it('la carte de Ton chemin dit la séance faite (bonus compris)', () => {
+    for (const state of ['done', 'bonus', 'all_done'] as const) {
+      const s = widgetSnapshot({ pet, readAt: NOW, streak: null, today: null, chemin: chemin(state) });
+      expect(s.frames[0]!.challenge, state).toBe('done');
+    }
+  });
+
+  it('sans carte, ou une carte d’un autre jour : à faire', () => {
+    expect(widgetSnapshot({ pet, readAt: NOW, streak: null, today: null, chemin: null }).frames[0]!.challenge).toBe('todo');
+    const old = widgetSnapshot({ pet, readAt: NOW, streak: null, today: null, chemin: chemin('done', '2026-11-14') });
+    expect(old.frames[0]!).toMatchObject({ challenge: 'todo', challengeText: null });
   });
 
   it('reste identique d’une lecture à l’autre si rien n’a bougé (pas de rechargement inutile)', () => {
-    const a = widgetSnapshot({ pet, readAt: NOW, streak: streak(), today: null });
-    const b = widgetSnapshot({ pet, readAt: new Date(NOW.getTime() + 60_000), streak: streak(), today: null });
+    const a = widgetSnapshot({ pet, readAt: NOW, streak: streak(), today: null, chemin: chemin('todo') });
+    const b = widgetSnapshot({ pet, readAt: new Date(NOW.getTime() + 60_000), streak: streak(), today: null, chemin: chemin('todo') });
     expect(JSON.stringify(a)).toBe(JSON.stringify(b));
   });
 });
