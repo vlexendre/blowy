@@ -49,7 +49,7 @@ export const montpellier: CityPage = {
         '**L’arrière-pays** : le pic Saint-Loup et les garrigues sont à moins d’une heure. Les clubs de randonnée y emmènent des groupes le week-end, et une montée partagée rapproche vite.',
         '**Les associations** : clubs sportifs, langues, danse, théâtre. Le forum des associations de la rentrée permet d’en rencontrer beaucoup en un après-midi.',
         'Pour savoir quelle activité te ressemble, lis le guide pour [trouver l’association ou le club qui te va](/guides/associations-activites-rencontrer-du-monde/).',
-        'Montpellier est au milieu de l’arc méditerranéen. Si tu fais souvent la route, nos pistes pour [rencontrer des gens à Toulouse](/se-faire-des-amis/toulouse/) et pour [se faire des amis à Marseille](/se-faire-des-amis/marseille/) te seront utiles. Et pour que Minimoa ouvre chez toi, [inscris ton quartier](/quartier/).',
+        'Montpellier est au milieu de l’arc méditerranéen. Si tu fais souvent la route, nos pistes pour [rencontrer des gens à Toulouse](/se-faire-des-amis/toulouse/) et pour [se faire des amis à Marseille](/se-faire-des-amis/marseille/) te seront utiles, tout comme, en remontant vers le nord, nos idées pour [rencontrer du monde chez les Stéphanois](/se-faire-des-amis/saint-etienne/). Et pour que Minimoa ouvre chez toi, [inscris ton quartier](/quartier/).',
       ],
     },
   ],

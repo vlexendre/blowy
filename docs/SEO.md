@@ -99,6 +99,14 @@ SEO quand `treg` est disponible.
   verte du canal, Flâneries musicales, Stade de Reims ; sans zone de quartier (renvoi à `/quartier/`). Citée dans le texte
   de Paris, Lille et Strasbourg. Santé : 94 URLs en 200, aucune erreur ; Lighthouse mobile / 92-97 (un premier passage à
   79, cache froid, non reproduit), Toulouse 100-100-100. Positions non relevées (`treg` absent).
+- 23 novembre 2026 : page ville `/se-faire-des-amis/saint-etienne/` (prochaine grande ville absente par population ;
+  requêtes « se faire des amis / rencontrer des gens à Saint-Étienne ») : ville qui se réinvente (mine, Manufacture, design),
+  place Jean-Jaurès, Jacquard et son marché, Crêt de Roc, Carnot-Manufacture-Châteaucreux (Cité du design, Le Fil),
+  Fauriel et Bellevue, halles Mazerat, Geoffroy-Guichard, Fête du livre, Pilat, SaintéLyon, amicales de quartier ; sans
+  zone de quartier (renvoi à `/quartier/`). Citée dans le texte de Lyon, Montpellier et du guide « nouvelle ville ».
+  Santé : 95 URLs en 200, aucune erreur (seul « lien cassé » : `/cdn-cgi/l/email-protection`, réécriture d'adresse
+  e-mail de Cloudflare dans la FAQ de l'accueil, normal) ; Lighthouse mobile / 95-100-100, Nantes 99-100-100. Positions
+  non relevées (`treg` absent).
 
 ## 6. Blog d'actualité et GEO
 
