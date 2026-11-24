@@ -48,7 +48,7 @@ export const rennes: CityPage = {
         '**La culture** : les Trans Musicales en décembre, les salles de concert, et les Champs Libres, lieu culturel près de la gare qui accueille conférences et expositions.',
         '**Les associations** : Rennes a une vie associative très dense, du sport au théâtre en passant par les langues et la musique bretonne. Un fest-noz est d’ailleurs une excellente façon de rencontrer du monde : on danse en chaîne, main dans la main, sans avoir besoin de savoir.',
         'Tu viens d’emménager ? Notre guide pour [repartir de zéro dans une ville inconnue](/guides/se-faire-des-amis-nouvelle-ville/) te propose un plan pour les trois premiers mois.',
-        'Avec Paris à environ une heure et demie de TGV et Nantes tout près, beaucoup de Rennais ont une vie en deux endroits. Nos pages pour [rencontrer du monde à Nantes](/se-faire-des-amis/nantes/) et pour [se faire des amis à Paris quand on n’y connaît personne](/se-faire-des-amis/paris/) prolongent celle-ci. Et pour Minimoa, [ouvre ton quartier rennais](/quartier/).',
+        'Avec Paris à environ une heure et demie de TGV et Nantes tout près, beaucoup de Rennais ont une vie en deux endroits. Nos pages pour [rencontrer du monde à Nantes](/se-faire-des-amis/nantes/) et pour [se faire des amis à Paris quand on n’y connaît personne](/se-faire-des-amis/paris/) prolongent celle-ci, tout comme, de l’autre côté de la Normandie, nos idées pour [se faire des amis dans la ville portuaire du Havre](/se-faire-des-amis/le-havre/). Et pour Minimoa, [ouvre ton quartier rennais](/quartier/).',
       ],
     },
   ],

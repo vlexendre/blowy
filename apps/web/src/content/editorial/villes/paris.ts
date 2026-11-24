@@ -58,7 +58,7 @@ export const paris: CityPage = {
             '**Les grands rendez-vous** : la Fête de la musique en juin ou la Nuit blanche à l’automne transforment la ville en terrasse géante. Parfait pour sortir avec une connaissance et en rencontrer d’autres.',
           ],
         },
-        'Tu hésites ? Le guide des [clubs et associations où l’on se fait des amis](/guides/associations-activites-rencontrer-du-monde/) t’aide à choisir. Et si Paris te pèse, [Lille, à une heure de TGV](/se-faire-des-amis/lille/), ou [la vie rennaise](/se-faire-des-amis/rennes/) ont aussi leurs pages, comme [Reims](/se-faire-des-amis/reims/).',
+        'Tu hésites ? Le guide des [clubs et associations où l’on se fait des amis](/guides/associations-activites-rencontrer-du-monde/) t’aide à choisir. Et si Paris te pèse, [Lille, à une heure de TGV](/se-faire-des-amis/lille/), ou [la vie rennaise](/se-faire-des-amis/rennes/) ont aussi leurs pages, comme [Reims](/se-faire-des-amis/reims/) ou [Le Havre](/se-faire-des-amis/le-havre/).',
       ],
     },
   ],

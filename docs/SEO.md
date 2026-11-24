@@ -107,6 +107,13 @@ SEO quand `treg` est disponible.
   Santé : 95 URLs en 200, aucune erreur (seul « lien cassé » : `/cdn-cgi/l/email-protection`, réécriture d'adresse
   e-mail de Cloudflare dans la FAQ de l'accueil, normal) ; Lighthouse mobile / 95-100-100, Nantes 99-100-100. Positions
   non relevées (`treg` absent).
+- 24 novembre 2026 : page ville `/se-faire-des-amis/le-havre/` (prochaine grande ville absente par population ; requêtes
+  « se faire des amis / rencontrer des gens au Havre ») : centre Perret (Unesco), Saint-François, Saint-Vincent et la
+  plage, ville haute (Sanvic, Bléville, Mont-Gaillard), Docks et Graville ; Halles centrales, Volcan et bibliothèque
+  Niemeyer, MuMa, Tetris au fort de Tourneville, jardins suspendus, forêt de Montgeon, HAC, Transat Jacques Vabre, Un Été
+  au Havre, campus (université, Sciences Po, ENSM, EM Normandie) ; sans zone de quartier (renvoi à `/quartier/`). Citée
+  dans le texte de Paris, Rennes et du guide « nouvelle ville ». Santé : 96 URLs en 200, aucune erreur réelle ;
+  Lighthouse mobile / 95-100-100, Lille 99-100-100. Positions non relevées (`treg` absent).
 
 ## 6. Blog d'actualité et GEO
 
