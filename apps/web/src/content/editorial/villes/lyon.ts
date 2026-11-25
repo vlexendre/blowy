@@ -54,7 +54,7 @@ export const lyon: CityPage = {
           ],
         },
         'Ne sous-estime pas les bouchons et les tables partagées : manger côte à côte délie les langues. Pour les plus réservés, notre guide [se faire des amis quand on est timide](/guides/se-faire-des-amis-timide/) propose des façons douces de se lancer.',
-        'Lyon est aussi un carrefour. Si ton travail ou tes amis t’emmènent souvent vers la Suisse ou la Méditerranée, nos pages pour [se faire des amis à Genève](/se-faire-des-amis/geneve/) et pour [rencontrer du monde à Marseille](/se-faire-des-amis/marseille/) donnent les adresses qui comptent là-bas. Et si tu pars t’installer à une heure à l’ouest, vois comment [se faire des amis à Saint-Étienne](/se-faire-des-amis/saint-etienne/), entre Jacquard et le Pilat.',
+        'Lyon est aussi un carrefour. Si ton travail ou tes amis t’emmènent souvent vers la Suisse ou la Méditerranée, nos pages pour [se faire des amis à Genève](/se-faire-des-amis/geneve/) et pour [rencontrer du monde à Marseille](/se-faire-des-amis/marseille/) donnent les adresses qui comptent là-bas. Et si tu pars t’installer à une heure à l’ouest, vois comment [se faire des amis à Saint-Étienne](/se-faire-des-amis/saint-etienne/), entre Jacquard et le Pilat. Juste de l’autre côté du boulevard, [Villeurbanne, ses Gratte-Ciel et son grand campus](/se-faire-des-amis/villeurbanne/) a aussi sa page.',
       ],
     },
   ],

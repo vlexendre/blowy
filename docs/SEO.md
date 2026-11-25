@@ -114,6 +114,13 @@ SEO quand `treg` est disponible.
   au Havre, campus (université, Sciences Po, ENSM, EM Normandie) ; sans zone de quartier (renvoi à `/quartier/`). Citée
   dans le texte de Paris, Rennes et du guide « nouvelle ville ». Santé : 96 URLs en 200, aucune erreur réelle ;
   Lighthouse mobile / 95-100-100, Lille 99-100-100. Positions non relevées (`treg` absent).
+- 25 novembre 2026 : page ville `/se-faire-des-amis/villeurbanne/` (prochaine grande ville absente par population ;
+  requêtes « se faire des amis / rencontrer des gens à Villeurbanne ») : ville à part entière à côté de Lyon, campus
+  LyonTech-la Doua, Capitale française de la culture 2022, Gratte-Ciel, Charpennes-Tonkin, la Doua et Croix-Luizet,
+  Grandclément et Cusset, Saint-Jean et les Buers ; TNP, Transbordeur, Le Zola et son Festival du film court, Rize,
+  Les Invites, parc de la Feyssine, ASVEL à l'Astroballe ; sans zone de quartier (renvoi à `/quartier/`). Citée dans le
+  texte de Lyon, Saint-Étienne et du guide « nouvelle ville ». Santé : 97 URLs en 200, aucune erreur réelle ; Lighthouse
+  mobile / 95-100-100, Lyon 97-100-100. Positions non relevées (`treg` absent). Prochaine ville : Dijon.
 
 ## 6. Blog d'actualité et GEO
 
