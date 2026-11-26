@@ -49,7 +49,7 @@ export const reims: CityPage = {
         '**Le sport** : un match du Stade de Reims au stade Auguste-Delaune, ou un club amateur de foot, de basket ou d’aviron sur le canal.',
         '**La culture** : la Cartonnerie pour les concerts, le Manège et la Comédie pour le spectacle vivant, les médiathèques pour les ateliers et les clubs de lecture.',
         'Tu viens de poser tes cartons ? Notre guide pour [s’intégrer dans une ville où l’on ne connaît personne](/guides/se-faire-des-amis-nouvelle-ville/) t’aide à tenir le cap les premiers mois. Et si tu rentres tard de Paris, les idées pour [rencontrer des gens à deux pas de chez toi](/guides/rencontrer-des-gens-pres-de-chez-soi/) demandent peu de temps.',
-        'Tu fais l’aller-retour en TGV ? Vois aussi comment [se faire des amis à Paris](/se-faire-des-amis/paris/), où tu passes tes journées, et plus à l’est, comment [rencontrer du monde à Strasbourg](/se-faire-des-amis/strasbourg/) ou [dans la métropole lilloise](/se-faire-des-amis/lille/). Pour que Minimoa arrive dans ton coin de Reims, [ouvre ton quartier](/quartier/), et pour savoir quel genre de pote tu fais, [fais le quiz](/quiz/).',
+        'Tu fais l’aller-retour en TGV ? Vois aussi comment [te faire des amis dans la capitale, où tu passes tes journées](/se-faire-des-amis/paris/), et plus à l’est, comment [rencontrer du monde à Strasbourg](/se-faire-des-amis/strasbourg/) ou [dans la métropole lilloise](/se-faire-des-amis/lille/). Pour que Minimoa arrive dans ton coin de Reims, [ouvre ton quartier](/quartier/), et pour savoir quel genre de pote tu fais, [fais le quiz](/quiz/).',
       ],
     },
   ],

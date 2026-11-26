@@ -48,7 +48,7 @@ export const strasbourg: CityPage = {
         '**Le marché de Noël** : l’hiver, la ville entière est dehors. Un vin chaud partagé est un très bon deuxième rendez-vous.',
         '**De l’autre côté du Rhin** : Kehl est à quelques arrêts de tram. Une sortie transfrontalière en petit groupe, ça crée des souvenirs communs.',
         'Pour choisir une association qui te ressemble, lis notre guide des [associations où l’on se fait vraiment des amis](/guides/associations-activites-rencontrer-du-monde/).',
-        'Ville européenne, Strasbourg voit passer beaucoup de monde pour quelques années. Si ta route continue vers le Grand-Duché ou la capitale, nos pages [se faire des amis au Luxembourg](/se-faire-des-amis/luxembourg/) et [rencontrer des gens à Paris](/se-faire-des-amis/paris/) prennent le relais, avec une étape possible par [la vie étudiante et associative de Reims](/se-faire-des-amis/reims/). Pour que Minimoa ouvre près de chez toi, [inscris ton quartier strasbourgeois](/quartier/).',
+        'Ville européenne, Strasbourg voit passer beaucoup de monde pour quelques années. Si ta route continue vers le Grand-Duché ou la capitale, nos pages [se faire des amis au Luxembourg](/se-faire-des-amis/luxembourg/) et [rencontrer des gens à Paris](/se-faire-des-amis/paris/) prennent le relais, avec une étape possible par [la vie étudiante et associative de Reims](/se-faire-des-amis/reims/) ou, vers le sud-ouest, par [les marchés et les concerts de Dijon](/se-faire-des-amis/dijon/). Pour que Minimoa ouvre près de chez toi, [inscris ton quartier strasbourgeois](/quartier/).',
       ],
     },
   ],

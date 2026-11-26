@@ -49,7 +49,7 @@ export const bruxelles: CityPage = {
         '**Les centres culturels et maisons de quartier** : chaque commune a les siens, avec ateliers, chorales, potagers partagés et repas de quartier.',
         '**Les grands rendez-vous** : Plaisirs d’Hiver en fin d’année, les fêtes de quartier dès les beaux jours. Bon prétexte pour proposer une sortie à un collègue sympa.',
         'Tu viens d’arriver et tu ne connais personne ? Notre guide pour [se faire des amis quand on débarque quelque part](/guides/se-faire-des-amis-nouvelle-ville/) t’aide à démarrer, semaine après semaine.',
-        'Lille n’est qu’à une demi-heure de train et la Wallonie est toute proche : nos pages pour [rencontrer des gens à Liège](/se-faire-des-amis/liege/) et pour [se faire des amis à Lille](/se-faire-des-amis/lille/) complètent celle-ci si tu passes d’une ville à l’autre. Et si ta commune n’a pas encore Minimoa, [inscris ton quartier bruxellois](/quartier/).',
+        'Lille n’est qu’à une demi-heure de train et la Wallonie est toute proche : nos pages pour [rencontrer des gens à Liège, la Cité ardente](/se-faire-des-amis/liege/) et pour [se faire des amis à Lille](/se-faire-des-amis/lille/) complètent celle-ci si tu passes d’une ville à l’autre. Et si ta commune n’a pas encore Minimoa, [inscris ton quartier bruxellois](/quartier/).',
       ],
     },
   ],

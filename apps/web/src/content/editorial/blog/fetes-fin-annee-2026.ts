@@ -44,7 +44,7 @@ export const fetesFinAnnee2026: BlogPost = {
             '**Reviens.** Les marchés durent plusieurs semaines. Repasser au même chalet, c’est devenir un visage familier.',
           ],
         },
-        'À Strasbourg, le marché de Noël fait partie de l’identité de la ville, au même titre que les winstubs : notre page pour [se faire des amis à Strasbourg](/se-faire-des-amis/strasbourg/) donne d’autres pistes pour l’hiver.',
+        'À Strasbourg, le marché de Noël fait partie de l’identité de la ville, au même titre que les winstubs : notre page pour [rencontrer des Strasbourgeois](/se-faire-des-amis/strasbourg/) donne d’autres pistes pour l’hiver.',
       ],
     },
     {

@@ -120,7 +120,18 @@ SEO quand `treg` est disponible.
   Grandclément et Cusset, Saint-Jean et les Buers ; TNP, Transbordeur, Le Zola et son Festival du film court, Rize,
   Les Invites, parc de la Feyssine, ASVEL à l'Astroballe ; sans zone de quartier (renvoi à `/quartier/`). Citée dans le
   texte de Lyon, Saint-Étienne et du guide « nouvelle ville ». Santé : 97 URLs en 200, aucune erreur réelle ; Lighthouse
-  mobile / 95-100-100, Lyon 97-100-100. Positions non relevées (`treg` absent). Prochaine ville : Dijon.
+  mobile / 95-100-100, Lyon 97-100-100. Positions non relevées (`treg` absent).
+- 26 novembre 2026 : page ville `/se-faire-des-amis/dijon/` (prochaine grande ville absente par population ; requêtes
+  « se faire des amis / rencontrer des gens à Dijon ») : Université Bourgogne Europe, Cité internationale de la
+  gastronomie et du vin (mai 2022), centre historique et Halles, Montchapet, Port du Canal, Montmuzard, Fontaine-d'Ouche
+  et Grésilles ; La Vapeur, Opéra, Théâtre Dijon-Bourgogne, lac Kir et Dijon Plage, voie verte du canal, combe à la
+  Serpent, Foire internationale et gastronomique, JDA ; sans zone de quartier (renvoi à `/quartier/`). Citée dans le
+  texte de Lyon, Strasbourg et du guide « nouvelle ville ». Ancres variées sur Genève, Reims, Bruxelles et l'article de
+  blog (ancres exactes répétées). Santé : 98 URLs en 200, aucune erreur ; Lighthouse mobile / 91-100-100, Marseille
+  97-100-100. **Premier relevé de positions** (treg via MCP, 8 requêtes, 0,048 $) : minimoa.app absent du top 30 sur
+  les 8 requêtes (têtes « application / appli / site pour se faire des amis », « près de chez soi », Paris, Lyon,
+  Toulouse, Bordeaux). Les résultats DataForSEO renvoient souvent `google.com/goto` dans `domain` : lire le fil d'Ariane.
+  Prochaine ville : Angers.
 
 ## 6. Blog d'actualité et GEO
 

@@ -48,7 +48,7 @@ export const geneve: CityPage = {
         '**Les associations de quartier et maisons de quartier** : repas canadiens, ateliers, fêtes de rue. C’est souvent là qu’on rencontre des Genevois installés, pas seulement d’autres expatriés.',
         '**Les cafés-langues et tandems** : avec autant de nationalités, ils sont partout. Tu apprends l’allemand ou l’espagnol, quelqu’un améliore son français : la conversation est lancée.',
         'Nouveau dans la région ? Notre guide pour [construire un cercle d’amis après une expatriation](/guides/se-faire-des-amis-nouvelle-ville/) t’aide à partir de zéro.',
-        'Le bassin lémanique se vit à plusieurs villes : on habite d’un côté, on travaille de l’autre. Si c’est ton cas, lis aussi comment [se faire des amis à Lausanne](/se-faire-des-amis/lausanne/), ou, côté français, où [rencontrer des gens à Lyon](/se-faire-des-amis/lyon/).',
+        'Le bassin lémanique se vit à plusieurs villes : on habite d’un côté, on travaille de l’autre. Si c’est ton cas, lis aussi comment [se faire des amis à Lausanne](/se-faire-des-amis/lausanne/), ou, côté français, où [rencontrer du monde à Lyon, entre Presqu’île et Croix-Rousse](/se-faire-des-amis/lyon/).',
       ],
     },
   ],
