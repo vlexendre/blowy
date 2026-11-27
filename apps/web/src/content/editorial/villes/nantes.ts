@@ -48,7 +48,7 @@ export const nantes: CityPage = {
         '**Les jardins** : le Jardin des plantes près de la gare, et de nombreux jardins partagés de quartier où l’on jardine à plusieurs.',
         '**Le bénévolat culturel** : festivals et salles de concert cherchent régulièrement des bénévoles. Une façon de rencontrer des gens qui aiment la même musique que toi.',
         'Pour les associations à rejoindre selon ton caractère, lis notre guide des [clubs et associations qui créent du lien](/guides/associations-activites-rencontrer-du-monde/).',
-        'Nantes et Rennes ne sont qu’à une centaine de kilomètres l’une de l’autre. Notre page [rencontrer des gens à Rennes](/se-faire-des-amis/rennes/) complète celle-ci, tout comme les idées pour [se faire un cercle à Bordeaux](/se-faire-des-amis/bordeaux/) si tu descends vers le sud.',
+        'Nantes et Rennes ne sont qu’à une centaine de kilomètres l’une de l’autre. Notre page [rencontrer des gens à Rennes](/se-faire-des-amis/rennes/) complète celle-ci, tout comme les idées pour [se faire un cercle à Bordeaux](/se-faire-des-amis/bordeaux/) si tu descends vers le sud, ou pour [rencontrer du monde en remontant la Loire jusqu’à Angers](/se-faire-des-amis/angers/).',
       ],
     },
   ],

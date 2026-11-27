@@ -20,12 +20,13 @@ import { saintEtienne } from './villes/saint-etienne';
 import { leHavre } from './villes/le-havre';
 import { villeurbanne } from './villes/villeurbanne';
 import { dijon } from './villes/dijon';
+import { angers } from './villes/angers';
 import { bruxelles } from './villes/bruxelles';
 import { liege } from './villes/liege';
 import { geneve } from './villes/geneve';
 import { lausanne } from './villes/lausanne';
 import { luxembourg } from './villes/luxembourg';
 
-export const CITIES: Record<CitySlug, CityPage> = { paris, lyon, bordeaux, toulouse, nantes, lille, marseille, rennes, montpellier, nice, strasbourg, toulon, reims, 'saint-etienne': saintEtienne, 'le-havre': leHavre, villeurbanne, dijon, bruxelles, liege, geneve, lausanne, luxembourg };
+export const CITIES: Record<CitySlug, CityPage> = { paris, lyon, bordeaux, toulouse, nantes, lille, marseille, rennes, montpellier, nice, strasbourg, toulon, reims, 'saint-etienne': saintEtienne, 'le-havre': leHavre, villeurbanne, dijon, angers, bruxelles, liege, geneve, lausanne, luxembourg };
 export const CITY_LIST: readonly CityPage[] = CITY_SLUGS.map((s) => CITIES[s]);
 export const cityPath = (slug: CitySlug): string => `/se-faire-des-amis/${slug}/`;

@@ -132,6 +132,15 @@ SEO quand `treg` est disponible.
   les 8 requêtes (têtes « application / appli / site pour se faire des amis », « près de chez soi », Paris, Lyon,
   Toulouse, Bordeaux). Les résultats DataForSEO renvoient souvent `google.com/goto` dans `domain` : lire le fil d'Ariane.
   Prochaine ville : Angers.
+- 27 novembre 2026 : page ville `/se-faire-des-amis/angers/` (prochaine grande ville absente par population ; requêtes
+  « se faire des amis / rencontrer des gens à Angers ») : ville de campus (Université d'Angers, UCO), centre et Cité
+  (château, Ralliement, rue Saint-Laud), Doutre et place de la Laiterie, Saint-Serge et l'Iceparc, Belle-Beille, lac de
+  Maine et étang Saint-Nicolas, Monplaisir, Roseraie, Justices ; marché de la place Leclerc, Le Chabada, Le Quai, Premiers
+  Plans, Accroche-Cœurs, La Loire à Vélo, SCO, Ducs d'Angers ; sans zone de quartier (renvoi à `/quartier/`). Citée dans
+  le texte de Nantes, Rennes et du guide « nouvelle ville ». Santé : 99 URLs en 200, aucune erreur ; Lighthouse mobile
+  / 94-100-100, Rennes 100-100-100. Positions (treg, 8 requêtes, 0,048 $) : **premières entrées dans le top 30** —
+  « se faire des amis à marseille » 21e, « rencontrer des gens à lille » 28e ; absent ailleurs (4 têtes, Nantes,
+  Rennes). Prochaine ville : Nîmes.
 
 ## 6. Blog d'actualité et GEO
 
