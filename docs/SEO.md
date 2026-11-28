@@ -141,6 +141,16 @@ SEO quand `treg` est disponible.
   / 94-100-100, Rennes 100-100-100. Positions (treg, 8 requêtes, 0,048 $) : **premières entrées dans le top 30** —
   « se faire des amis à marseille » 21e, « rencontrer des gens à lille » 28e ; absent ailleurs (4 têtes, Nantes,
   Rennes). Prochaine ville : Nîmes.
+- 28 novembre 2026 : page ville `/se-faire-des-amis/grenoble/` (grande ville absente, oubliée de la file : Grenoble
+  passe avant Nîmes par population) : ville universitaire et de recherche (UGA), hypercentre (Grenette, place aux Herbes,
+  Halles Sainte-Claire), Saint-Bruno et Berriat, Île Verte et Saint-Laurent, Championnet et Caserne de Bonne, Grands
+  Boulevards, Abbaye, Villeneuve ; montagne et covoiturage, Bastille et téléphérique, Belle Électrique, MC2, Cabaret
+  Frappé (juillet, Jardin de ville), Street Art Fest Grenoble-Alpes, Brûleurs de Loups à Polesud, GF38, FC Grenoble ;
+  sans zone de quartier. Citée dans le texte de Lyon, Saint-Étienne, Genève et du guide « nouvelle ville ». Santé : 100
+  URLs en 200 (seul signalement : lien Cloudflare `/cdn-cgi/l/email-protection`, protection d'e-mail, sans effet) ;
+  Lighthouse mobile / 95-100-100, Lille 99-100-100. Positions (treg, 3 requêtes, 0,018 $) : **« rencontrer des gens à
+  lille » 5e** (28e la veille) ; « se faire des amis à marseille » sorti du top 30 (21e) ; tête « application pour se
+  faire des amis » absente. Prochaine ville : Nîmes.
 
 ## 6. Blog d'actualité et GEO
 
